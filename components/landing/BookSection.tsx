@@ -24,8 +24,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 const BookSection = () => {
   const [location, setLocation] = useState("");
   const [dates, setDates] = React.useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 20),
+    from: addDays(new Date(), 1),
+    to: addDays(new Date(), 21),
   });
   const [guests, setGuests] = useState("");
   const [showDialog, setShowDialog] = useState(false);
@@ -55,7 +55,7 @@ const BookSection = () => {
               <ul className="flex flex-col gap-4 text-gray-600">
                 <li>Dates: from <span className="text-black">{String(dates?.from)}</span> to <span className="text-black">{String(dates?.to)}</span></li>
                 <li>location: <span className="text-black">{location.toUpperCase()}</span></li>
-                <li>how many peple: <span className="text-black">{guests}</span></li>
+                <li>how many people: <span className="text-black">{guests}</span></li>
               </ul>
             </div>
           </DialogHeader>
