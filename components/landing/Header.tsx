@@ -4,11 +4,13 @@ import React from "react";
 import { Button } from "../ui/button";
 import { Navlinks } from "@/constant";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const pathname = usePathname();
+  const router = useRouter()
   return (
-    <header className="fixed top-0 w-full z-50 backdrop-blur-md bg-white/30 border-b border-[#E5E5E5]">
+    <header className="fixed top-0 w-full z-50 backdrop-blur-md bg-white/80 border-b border-[#E5E5E5]">
       <div className="container mx-auto px-4 md:px-8 flex justify-between items-center py-5">
         <Link href="/" className="font-medium text-2xl">
           LOGO
@@ -23,7 +25,7 @@ const Header = () => {
               </li>
             ))}
           </ul>
-          <Button className=" shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800">
+          <Button onClick={() => router.push("/login")} className=" shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800">
             Login
           </Button>
         </nav>

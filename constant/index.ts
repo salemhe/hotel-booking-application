@@ -44,12 +44,12 @@ export const options = [
 ];
 
 export const countries = [
-  { name: "Afghanistan", value: "afghanistan" },
-  { name: "Albania", value: "albania" },
-  { name: "Algeria", value: "algeria" },
-  { name: "Andorra", value: "andorra" },
-  { name: "Angola", value: "angola" },
-  { name: "Antigua and Barbuda", value: "antigua_and_barbuda" },
+  { name: "Lagos", value: "lagos" },
+  { name: "Anambra", value: "anambra" },
+  { name: "Osun", value: "osun" },
+  { name: "Delta", value: "delta" },
+  { name: "Ekiti", value: "ekiti" },
+  { name: "Bayelsa", value: "bayelsa" },
 ];
 
 export const numberOfPeople = [
@@ -74,3 +74,20 @@ export const numberOfPeople = [
     value: "5",
   },
 ];
+
+
+export const carouselData = [
+  {
+    title: "Seamless Collaboration",
+    description: "Effortlessly work together with your team in real-time.",
+  },
+  {
+    title: "Real-time Updates",
+    description: "Stay in sync with instant updates and notifications.",
+  },
+  {
+    title: "Secure Platform",
+    description: "Your data is protected with enterprise-grade security.",
+  }
+]
+

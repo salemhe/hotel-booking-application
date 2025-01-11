@@ -70,3 +70,13 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.rdrDay {
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.rdrDay:hover:not(.rdrDayPassive) {
+  background-color: #0071c2;
+  color: white;
+}

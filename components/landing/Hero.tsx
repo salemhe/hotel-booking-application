@@ -18,7 +18,7 @@ const Hero = () => {
             eiusmod tempor incididunt ut labore et dolor
           </p>
           <Button className="font-medium text-white text-xl h-12 px-7 leading-8 bg-[#262627] hover:bg-gray-800 shadow-[0px_0px_16.1px_-1px_#00000040] mt-3">
-            Show more{" "}
+            Show more
           </Button>
         </div>
         <div className="flex items-center justify-between">
