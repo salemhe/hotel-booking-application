@@ -36,18 +36,21 @@ import {
   checkPasswordStrength,
 } from "@/schemas/auth";
 import { carouselData } from "@/constant";
+import { useSearchParams } from "next/navigation";
 
 type AccountType = "personal" | "business" | null;
 
 export default function LoginPage() {
   const [isSignIn, setIsSignIn] = useState(false);
-  const [showAccountTypeDialog, setShowAccountTypeDialog] = useState(true);
+  const [showAccountTypeDialog, setShowAccountTypeDialog] = useState(false);
   const [accountType, setAccountType] = useState<AccountType>(null);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [passwordRequirements, setPasswordRequirements] = useState(
     checkPasswordStrength("", "")
   );
+
+  const searchParams = useSearchParams();
 
   const form = useForm<AuthSchema>({
     resolver: zodResolver(authSchema),
@@ -59,6 +62,16 @@ export default function LoginPage() {
 
   const watchPassword = form.watch("password");
   const watchEmail = form.watch("email");
+
+  useEffect(() => {
+    const type = searchParams.get("type");
+    if (type === "login") {
+      setIsSignIn(true);
+    } else {
+      setIsSignIn(false);
+      setShowAccountTypeDialog(true)
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setPasswordRequirements(checkPasswordStrength(watchPassword, watchEmail));
@@ -146,7 +159,12 @@ export default function LoginPage() {
                   >
                     <div className="relative z-10 h-[90vh] flex flex-col px-6 py-6">
                       <div className="w-full flex items-center justify-center">
-                        <Link href="/" className="text-3xl font-bold text-center">LOGO</Link>
+                        <Link
+                          href="/"
+                          className="text-3xl font-bold text-center"
+                        >
+                          LOGO
+                        </Link>
                       </div>
                       <div
                         key={index}
@@ -217,7 +235,6 @@ export default function LoginPage() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
-
                 <FormField
                   control={form.control}
                   name="email"
@@ -306,7 +323,7 @@ export default function LoginPage() {
             <div className="grid grid-cols-3 gap-3">
               <Button variant="outline" className="w-full">
                 <Image
-                  src="/placeholder.svg?height=24&width=24"
+                  src="/google.svg"
                   alt="Google"
                   width={24}
                   height={24}
@@ -314,7 +331,7 @@ export default function LoginPage() {
               </Button>
               <Button variant="outline" className="w-full">
                 <Image
-                  src="/placeholder.svg?height=24&width=24"
+                  src="/apple.svg"
                   alt="Apple"
                   width={24}
                   height={24}
@@ -322,7 +339,7 @@ export default function LoginPage() {
               </Button>
               <Button variant="outline" className="w-full">
                 <Image
-                  src="/placeholder.svg?height=24&width=24"
+                  src="/microsoft.svg"
                   alt="Microsoft"
                   width={24}
                   height={24}
