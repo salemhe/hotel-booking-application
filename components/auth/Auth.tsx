@@ -41,7 +41,7 @@ import { useSearchParams } from "next/navigation";
 type AccountType = "personal" | "business" | null;
 
 export default function Auth() {
-  const [isSignIn, setIsSignIn] = useState(false);
+  const [isSignIn, setIsSignIn] = useState(true);
   const [showAccountTypeDialog, setShowAccountTypeDialog] = useState(false);
   const [accountType, setAccountType] = useState<AccountType>(null);
   const [api, setApi] = useState<CarouselApi>();
@@ -63,15 +63,21 @@ export default function Auth() {
   const watchPassword = form.watch("password");
   const watchEmail = form.watch("email");
 
+  const type = searchParams.get("type");
   useEffect(() => {
-    const type = searchParams.get("type");
+    if (!isSignIn) {
+      setShowAccountTypeDialog(true)
+    }
+  }, [isSignIn])
+
+  useEffect(() => {
     if (type === "login") {
       setIsSignIn(true);
     } else {
       setIsSignIn(false);
       setShowAccountTypeDialog(true)
     }
-  }, [searchParams]);
+  }, [searchParams, type]);
 
   useEffect(() => {
     setPasswordRequirements(checkPasswordStrength(watchPassword, watchEmail));
