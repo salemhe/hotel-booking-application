@@ -1,8 +1,8 @@
 import React from "react";
-import { Button } from "../ui/button";
 import { options } from "@/constant";
 import heroBg from "@/public/hero-bg.png";
 import Image from "next/image";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -10,16 +10,17 @@ const Hero = () => {
       <div className="size-[210px] bg-black/5 rounded-full blur-3xl absolute top-0 -right-32" />
       <div className="md:w-[45%] w-full flex flex-col gap-20">
         <div className="items-start flex flex-col gap-5">
-          <h1 className="text-[#1E1E1E] font-bold text-[42px]">
-            Lorem ipsum dor amet, consectetur{" "}
+          <h1 className="text-[#1E1E1E] font-bold text-[32px] md:text-[42px]">
+            Find Your Perfect Stay, Anywhere You Want to Be.{" "}
           </h1>
           <p className="font-light text-base text-[#B0B0B0]">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolor
+            Step into a world of curated comfort and modern design. Whether
+            you&apos;re chasing adventure, relaxation, or inspiration, we’ve got the
+            ideal space for you. Book now and redefine the way you travel.
           </p>
-          <Button className="font-medium text-white text-xl h-12 px-7 leading-8 bg-[#262627] hover:bg-gray-800 shadow-[0px_0px_16.1px_-1px_#00000040] mt-3">
-            Show more
-          </Button>
+          <Link href="#get-started" className="shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 py-2 rounded-md">
+            Get Started
+          </Link>
         </div>
         <div className="flex items-center justify-between">
           {options.map((option, i) => (
