@@ -42,10 +42,12 @@ type AccountType = "personal" | "business" | null;
 
 export default function Auth() {
   const [isSignIn, setIsSignIn] = useState(true);
+  const [loading, setIsLoading] = useState(false);
   const [showAccountTypeDialog, setShowAccountTypeDialog] = useState(false);
-  const [accountType, setAccountType] = useState<AccountType>(null);
+  const [accountType, setAccountType] = useState<AccountType>("personal");
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const [success, setSuccess] = useState("");
   const [passwordRequirements, setPasswordRequirements] = useState(
     checkPasswordStrength("", "")
   );
@@ -66,16 +68,21 @@ export default function Auth() {
   const type = searchParams.get("type");
   useEffect(() => {
     if (!isSignIn) {
-      setShowAccountTypeDialog(true)
+      setShowAccountTypeDialog(true);
     }
-  }, [isSignIn])
+    form.reset()
+    setSuccess("")
+    setPasswordRequirements(checkPasswordStrength("", ""))
+    setAccountType("personal")
+    setIsLoading(false)
+  }, [isSignIn]);
 
   useEffect(() => {
     if (type === "login") {
       setIsSignIn(true);
     } else {
       setIsSignIn(false);
-      setShowAccountTypeDialog(true)
+      setShowAccountTypeDialog(true);
     }
   }, [searchParams, type]);
 
@@ -96,6 +103,11 @@ export default function Auth() {
 
   function onSubmit(data: AuthSchema) {
     console.log(data);
+    setSuccess(
+      `succesfully ${
+        isSignIn ? "logged in" : "sign up"
+      } for a ${accountType} account, moving to the next phase`
+    );
   }
 
   const plugin = useRef(Autoplay({ delay: 5000 }));
@@ -291,6 +303,12 @@ export default function Auth() {
                   </div>
                 )}
 
+                {success && (
+                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                    {success}
+                  </div>
+                )}
+
                 {isSignIn && (
                   <div className="text-right">
                     <Link
@@ -305,6 +323,7 @@ export default function Auth() {
                 <Button
                   type="submit"
                   className="w-full bg-black text-white hover:bg-black/90"
+                  disabled={loading}
                 >
                   {isSignIn
                     ? "LOGIN"
@@ -328,20 +347,10 @@ export default function Auth() {
 
             <div className="grid grid-cols-3 gap-3">
               <Button variant="outline" className="w-full">
-                <Image
-                  src="/google.svg"
-                  alt="Google"
-                  width={24}
-                  height={24}
-                />
+                <Image src="/google.svg" alt="Google" width={24} height={24} />
               </Button>
               <Button variant="outline" className="w-full">
-                <Image
-                  src="/apple.svg"
-                  alt="Apple"
-                  width={24}
-                  height={24}
-                />
+                <Image src="/apple.svg" alt="Apple" width={24} height={24} />
               </Button>
               <Button variant="outline" className="w-full">
                 <Image

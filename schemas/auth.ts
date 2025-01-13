@@ -20,8 +20,8 @@ export type PasswordRequirement = {
 export function checkPasswordStrength(password: string, email: string): PasswordRequirement[] {
   return [
     {
-      text: "Password Strength",
-      met: password.length >= 8
+      text: "Strong password",
+      met: password.length >= 8 && (!email || !password.toLowerCase().includes(email.split('@')[0].toLowerCase())) && (/[0-9]/.test(password) && /[^a-zA-Z0-9]/.test(password))
     },
     {
       text: "Cannot contain your name or email address",
@@ -32,8 +32,8 @@ export function checkPasswordStrength(password: string, email: string): Password
       met: password.length >= 8
     },
     {
-      text: "Contains a number or symbol",
-      met: /[0-9]/.test(password) || /[^a-zA-Z0-9]/.test(password)
+      text: "Contains number and symbol",
+      met: /[0-9]/.test(password) && /[^a-zA-Z0-9]/.test(password)
     }
   ]
 }
