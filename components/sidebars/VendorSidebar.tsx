@@ -82,7 +82,7 @@ const data = {
     },
     {
       title: "Objectives",
-      url: "/vendorDashboard/Objectives",
+      url: "/vendorDashboard/objectives",
       icon: MdOutlineBarChart,
       items: [
         {
