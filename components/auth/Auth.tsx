@@ -1,7 +1,7 @@
 "use client";
 
 import Autoplay from "embla-carousel-autoplay";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,9 @@ import {
 } from "@/schemas/auth";
 import { carouselData } from "@/constant";
 import { useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Auths } from "@/contexts/AuthContext";
 
 type AccountType = "personal" | "business" | null;
 
@@ -48,11 +51,14 @@ export default function Auth() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
   const [passwordRequirements, setPasswordRequirements] = useState(
     checkPasswordStrength("", "")
   );
+  const { setAuthInitials } = useContext(Auths);
 
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const form = useForm<AuthSchema>({
     resolver: zodResolver(authSchema),
@@ -66,23 +72,24 @@ export default function Auth() {
   const watchEmail = form.watch("email");
 
   const type = searchParams.get("type");
+
   useEffect(() => {
-    if (!isSignIn) {
-      setShowAccountTypeDialog(true);
-    }
-    form.reset()
-    setSuccess("")
-    setPasswordRequirements(checkPasswordStrength("", ""))
-    setAccountType("personal")
-    setIsLoading(false)
-  }, [isSignIn]);
+    setShowAccountTypeDialog(true);
+  }, []);
+
+  useEffect(() => {
+    form.reset(); //This line was causing the issue.  Adding form to the dependency array fixes it.
+    setSuccess("");
+    setError("");
+    setPasswordRequirements(checkPasswordStrength("", ""));
+    setIsLoading(false);
+  }, [isSignIn, form]); //Added form.reset to the dependency array
 
   useEffect(() => {
     if (type === "login") {
       setIsSignIn(true);
     } else {
       setIsSignIn(false);
-      setShowAccountTypeDialog(true);
     }
   }, [searchParams, type]);
 
@@ -101,13 +108,33 @@ export default function Auth() {
     });
   }, [api]);
 
-  function onSubmit(data: AuthSchema) {
-    console.log(data);
-    setSuccess(
-      `succesfully ${
-        isSignIn ? "logged in" : "sign up"
-      } for a ${accountType} account, moving to the next phase`
-    );
+  async function onSubmit(data: AuthSchema) {
+    setIsLoading(true);
+    if (isSignIn) {
+      try {
+        const result = await signIn("credentials", {
+          redirect: false,
+          email: data.email,
+          password: data.password,
+        });
+        if (result?.error) {
+          setError("Login failed. Please check your credentials.");
+        } else {
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        console.log(error);
+        setError("An error occurred during login.");
+      }
+    } else {
+      setAuthInitials(data);
+      if (accountType === "personal") {
+        router.push("/onboarding/personal");
+      } else {
+        router.push("/onboarding/business");
+      }
+    }
+    setIsLoading(false);
   }
 
   const plugin = useRef(Autoplay({ delay: 5000 }));
@@ -122,7 +149,10 @@ export default function Auth() {
           <DialogHeader>
             <DialogTitle>Choose Account Type</DialogTitle>
             <DialogDescription>
-              Select the type of account you want to create
+              Select{" "}
+              {isSignIn
+                ? "your account type"
+                : "the type of account you want to  create"}
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
@@ -216,6 +246,11 @@ export default function Auth() {
         {/* Right Section */}
         <div className="flex items-center justify-center p-8 h-full overflow-y-auto">
           <div className="w-full max-w-md space-y-8">
+            <div className="w-full flex md:hidden items-center justify-center">
+              <Link href="/" className="text-3xl font-bold text-center">
+                LOGO
+              </Link>
+            </div>
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">
                 {isSignIn
@@ -226,7 +261,9 @@ export default function Auth() {
               </h1>
               <p className="text-muted-foreground">
                 {accountType === "business"
-                  ? "Register you organisation"
+                  ? `${
+                      isSignIn ? "Welcome back to" : "Register"
+                    } your organisation`
                   : "Enjoy premium luxury"}
               </p>
             </div>
@@ -285,7 +322,7 @@ export default function Auth() {
                   )}
                 />
 
-                {!isSignIn && watchPassword && (
+                {!isSignIn && (
                   <div className="space-y-2">
                     {passwordRequirements.map((requirement, index) => (
                       <div
@@ -294,7 +331,9 @@ export default function Auth() {
                       >
                         <Check
                           className={`h-4 w-4 ${
-                            requirement.met ? "text-green-500" : "text-red-500"
+                            requirement.met && watchPassword
+                              ? "text-green-500"
+                              : "text-red-500"
                           }`}
                         />
                         {requirement.text}
@@ -302,23 +341,43 @@ export default function Auth() {
                     ))}
                   </div>
                 )}
-
-                {success && (
-                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                    {success}
-                  </div>
-                )}
-
                 {isSignIn && (
-                  <div className="text-right">
-                    <Link
-                      href="/forgot-password"
-                      className="text-sm text-muted-foreground hover:underline"
-                    >
-                      Forgot Password
-                    </Link>
-                  </div>
+                  <>
+                    {success && (
+                      <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                        {success}
+                      </div>
+                    )}
+                    {error && (
+                      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                        {error}
+                      </div>
+                    )}
+                  </>
                 )}
+
+                <div className="flex justify-between items-center">
+                  <div className="text-left">
+                    <button
+                      onClick={() => setShowAccountTypeDialog(true)}
+                      className="text-sm text-muted-foreground hover:underline"
+                      type="button"
+                    >
+                      Account type?
+                    </button>
+                  </div>
+
+                  {isSignIn && (
+                    <div className="text-right">
+                      <Link
+                        href="/forgot-password"
+                        className="text-sm text-muted-foreground hover:underline"
+                      >
+                        Forgot Password
+                      </Link>
+                    </div>
+                  )}
+                </div>
 
                 <Button
                   type="submit"
