@@ -1,30 +1,16 @@
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
 import { useContext } from "react";
 import { Auths } from "@/contexts/AuthContext";
 
-const companyType = ["Hotel", "Restaurant"];
-const teamStrength = ["Excellent", "Average", "Low"];
-
 const schema = z.object({
-  companyName: z.string().min(1, "Company Name is required"),
-  companyType: z.enum(["Hotel", "Restaurant"], {
-    required_error: "Please your company type",
-  }),
-  teamStrength: z.enum(["Excellent", "Average", "Low"], {
-    required_error: "Please select a your team strength",
-  }),
+  firstName: z.string().min(1, "First Name is required"),
+  lastName: z.string().min(1, "Last Name is required"),
+  phone: z.string().min(1, "Phone is required"),
 });
 
 type Step1Props = {
@@ -32,18 +18,17 @@ type Step1Props = {
 };
 
 const Step1 = ({ onNextStep }: Step1Props) => {
-    const { formData } = useContext(Auths);
+  const { formDataPersonal } = useContext(Auths);
   const {
-    control,
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      companyName: formData?.companyName,
-      companyType: formData?.companyType,
-      teamStrength: formData?.teamStrength,
+      firstName: formDataPersonal?.firstName,
+      lastName: formDataPersonal?.lastName,
+      phone: formDataPersonal?.phone,
     },
   });
 
@@ -53,76 +38,49 @@ const Step1 = ({ onNextStep }: Step1Props) => {
   };
 
   return (
-    <form className="w-full max-w-md gap-5 flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="w-full max-w-md gap-5 flex flex-col"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div>
-        <Label htmlFor="companyName">
-          Company Name <span className="text-red-500">*</span>
+        <Label htmlFor="firstName">
+          First Name <span className="text-red-500">*</span>
         </Label>
         <Input
-          id="companyName"
-          {...register("companyName")}
-          placeholder="Enter Company Name"
+          id="firstName"
+          {...register("firstName")}
+          placeholder="Enter First Name"
         />
-        {errors.companyName && (
+        {errors.firstName && (
           <p className="text-red-500 text-sm mt-1">
-            {errors.companyName.message}
+            {errors.firstName.message}
           </p>
         )}
       </div>
       <div>
-        <Label htmlFor="companyType">
-          Company Type <span className="text-red-500">*</span>
+        <Label htmlFor="lastName">
+          Last Name <span className="text-red-500">*</span>
         </Label>
-        <Controller
-          name="companyType"
-          control={control}
-          render={({ field }) => (
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Company Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {companyType.map((item, i) => (
-                  <SelectItem key={i} value={item}>
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+        <Input
+          id="lastName"
+          {...register("lastName")}
+          placeholder="Enter Last Name"
         />
-        {errors.companyType && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.companyType.message}
-          </p>
+        {errors.lastName && (
+          <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
         )}
       </div>
       <div>
-        <Label htmlFor="teamStrength">
-          Team Strength <span className="text-red-500">*</span>
+        <Label htmlFor="phone">
+          Phone <span className="text-red-500">*</span>
         </Label>
-        <Controller
-          name="teamStrength"
-          control={control}
-          render={({ field }) => (
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Team Strength" />
-              </SelectTrigger>
-              <SelectContent>
-                {teamStrength.map((item, i) => (
-                  <SelectItem key={i} value={item}>
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+        <Input
+          id="phone"
+          {...register("phone")}
+          placeholder="e.g. +2341234567890"
         />
-        {errors.teamStrength && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.teamStrength.message}
-          </p>
+        {errors.phone && (
+          <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
         )}
       </div>
       <Button type="submit" className="w-full">
@@ -132,4 +90,4 @@ const Step1 = ({ onNextStep }: Step1Props) => {
   );
 };
 
-export default Step1
+export default Step1;

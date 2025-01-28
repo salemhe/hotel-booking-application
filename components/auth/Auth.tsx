@@ -167,7 +167,7 @@ export default function Auth() {
               <div className="text-left space-y-2">
                 <div className="font-semibold">Personal Account</div>
                 <div className="text-sm text-muted-foreground text-wrap">
-                  For individual use and personal projects
+                  book & make reservations from the palms of your hands
                 </div>
               </div>
             </Button>
@@ -180,9 +180,9 @@ export default function Auth() {
               }}
             >
               <div className="text-left space-y-2">
-                <div className="font-semibold">Business Account</div>
+                <div className="font-semibold">Vendor </div>
                 <div className="text-sm text-muted-foreground text-wrap">
-                  For organizations and teams
+                  restaurant or hotel
                 </div>
               </div>
             </Button>
@@ -295,9 +295,12 @@ export default function Auth() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email Id</FormLabel>
+                      <FormLabel>Email Address</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your email" {...field} />
+                        <Input
+                          placeholder="Enter your email  address"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

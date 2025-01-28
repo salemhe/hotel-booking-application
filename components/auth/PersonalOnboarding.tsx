@@ -13,9 +13,9 @@ const Step2 = dynamic(() => import("./personal/Step2"));
 const PersonalOnboarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const router = useRouter();
-  const { authInitials, updateFormData } = useContext(Auths);
+  const { authInitials, updateFormDataPersonal } = useContext(Auths);
   useEffect(() => {
-    updateFormData(null);
+    updateFormDataPersonal(null);
   }, []);
   useEffect(() => {
     if (!authInitials) {
@@ -27,7 +27,7 @@ const PersonalOnboarding = () => {
   } else {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleNextStep = (data: any) => {
-      updateFormData({
+      updateFormDataPersonal({
         ...data,
         email: authInitials.email,
         password: authInitials.password,
@@ -60,7 +60,7 @@ const PersonalOnboarding = () => {
             <ChevronLeft size={24} /> Back
           </button>
           <div
-            className={`mx-auto max-w-lg px-4 flex flex-col items-center ${
+            className={`mx-auto max-w-lg px-4 flex flex-col items-center mb-5 ${
               currentStep < 2 && "mt-[40px] md:mt-[60px]"
             }`}
           >

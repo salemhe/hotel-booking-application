@@ -15,15 +15,11 @@ import { useContext } from "react";
 import { Auths } from "@/contexts/AuthContext";
 
 const companyType = ["Hotel", "Restaurant"];
-const teamStrength = ["Excellent", "Average", "Low"];
 
 const schema = z.object({
   companyName: z.string().min(1, "Company Name is required"),
   companyType: z.enum(["Hotel", "Restaurant"], {
     required_error: "Please your company type",
-  }),
-  teamStrength: z.enum(["Excellent", "Average", "Low"], {
-    required_error: "Please select a your team strength",
   }),
 });
 
@@ -32,7 +28,7 @@ type Step1Props = {
 };
 
 const Step1 = ({ onNextStep }: Step1Props) => {
-    const { formData } = useContext(Auths);
+    const { formDataBusiness } = useContext(Auths);
   const {
     control,
     register,
@@ -41,9 +37,8 @@ const Step1 = ({ onNextStep }: Step1Props) => {
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      companyName: formData?.companyName,
-      companyType: formData?.companyType,
-      teamStrength: formData?.teamStrength,
+      companyName: formDataBusiness?.companyName,
+      companyType: formDataBusiness?.companyType,
     },
   });
 
@@ -94,34 +89,6 @@ const Step1 = ({ onNextStep }: Step1Props) => {
         {errors.companyType && (
           <p className="text-red-500 text-sm mt-1">
             {errors.companyType.message}
-          </p>
-        )}
-      </div>
-      <div>
-        <Label htmlFor="teamStrength">
-          Team Strength <span className="text-red-500">*</span>
-        </Label>
-        <Controller
-          name="teamStrength"
-          control={control}
-          render={({ field }) => (
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Team Strength" />
-              </SelectTrigger>
-              <SelectContent>
-                {teamStrength.map((item, i) => (
-                  <SelectItem key={i} value={item}>
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        />
-        {errors.teamStrength && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.teamStrength.message}
           </p>
         )}
       </div>

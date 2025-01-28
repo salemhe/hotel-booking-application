@@ -14,32 +14,43 @@ type FormData = {
 interface auth {
   authInitials: AuthInitials | null;
   setAuthInitials: React.Dispatch<React.SetStateAction<AuthInitials | null>>;
-  formData: FormData | null;
-  updateFormData: (data: Partial<FormData | null>) => void;
+  formDataBusiness: FormData | null;
+  updateFormDataBusiness: (data: Partial<FormData | null>) => void;
+  formDataPersonal: FormData | null;
+  updateFormDataPersonal: (data: Partial<FormData | null>) => void;
 }
 
 
 export const Auths = createContext<auth>({
   authInitials: null,
   setAuthInitials: () => {},
-  formData: null,
-  updateFormData: () => {}
+  formDataBusiness: null,
+  updateFormDataBusiness: () => {},
+  formDataPersonal: null,
+  updateFormDataPersonal: () => {}
 }
 );
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [authInitials, setAuthInitials] = useState<AuthInitials | null>(null);
-  const [formData, setFormData] = useState<FormData | null>(null);
+  const [formDataBusiness, setFormDataBusiness] = useState<FormData | null>(null);
+  const [formDataPersonal, setFormDataPersonal] = useState<FormData | null>(null);
 
-  const updateFormData = (data: Partial<FormData | null>) => {
-    setFormData((prev) => {
+  const updateFormDataBusiness = (data: Partial<FormData | null>) => {
+    setFormDataBusiness((prev) => {
+      const newData = { ...prev, ...data };
+      return newData;
+    });
+  };
+  const updateFormDataPersonal = (data: Partial<FormData | null>) => {
+    setFormDataPersonal((prev) => {
       const newData = { ...prev, ...data };
       return newData;
     });
   };
 
   return (
-    <Auths.Provider value={{ authInitials, setAuthInitials, formData, updateFormData }}>
+    <Auths.Provider value={{ authInitials, setAuthInitials, formDataBusiness, formDataPersonal, updateFormDataBusiness, updateFormDataPersonal}}>
       {children}
     </Auths.Provider>
   );

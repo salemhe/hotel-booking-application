@@ -6,6 +6,7 @@ import { Upload, Edit, X } from "lucide-react";
 import Image from "next/image";
 import EditLogoModal from "@/components/edit-logo-modal";
 import { Auths } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 const Step2 = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -14,7 +15,8 @@ const Step2 = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { formData } = useContext(Auths);
+  const { formDataBusiness } = useContext(Auths);
+  const router = useRouter();
 
   const handleFileUpload = (file: File) => {
     setError(null);
@@ -45,7 +47,7 @@ const Step2 = () => {
   const submitData = async () => {
     setIsLoading(true);
     if (logoUrl) {
-      console.log("data", { ...formData, image: logoFile, imageUrl: logoUrl });
+      console.log("data", { ...formDataBusiness, image: logoFile, imageUrl: logoUrl });
       try {
         const response = await fetch(
           `${process.env.BASE_URL}/api/users/register`,
@@ -55,7 +57,7 @@ const Step2 = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              ...formData,
+              ...formDataBusiness,
               image: logoFile,
               imageUrl: logoUrl,
             }),
@@ -63,6 +65,7 @@ const Step2 = () => {
         );
         if (response.ok) {
           setSuccess("Account created successfully.");
+          router.push("/onboarding/success?type=vendor")
         } else {
           setError("Failed to create account. Please try again.");
         }
@@ -73,19 +76,20 @@ const Step2 = () => {
     } else {
       try {
         const response = await fetch(
-          `${process.env.BASE_URL}/api/users/register`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/register`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              ...formData,
+              ...formDataBusiness,
             }),
           }
         );
         if (response.ok) {
           setSuccess("Account created successfully.");
+          router.push("/onboarding/success?type=vendor")
         } else {
           setError("Failed to create account. Please try again.");
         }
@@ -93,7 +97,7 @@ const Step2 = () => {
         console.log(error);
         setError("An error occurred during signup.");
       }
-      console.log("data", formData);
+      console.log("data", formDataBusiness);
     }
     setIsLoading(false);
   };
@@ -146,32 +150,32 @@ const Step2 = () => {
                 <path
                   d="M31.3452 43.3947V36.8652"
                   stroke="#0C0C0C"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M47.2885 14.1921C51.638 14.1921 55.1382 17.7181 55.1382 22.0676V30.9211C48.8069 34.6272 40.4425 36.8663 31.3316 36.8663C22.2208 36.8663 13.882 34.6272 7.55078 30.9211V22.0419C7.55078 17.6923 11.0767 14.1921 15.4263 14.1921H47.2885Z"
                   stroke="#0C0C0C"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 <path
                   d="M40.3527 14.1808V13.2389C40.3527 10.099 37.8048 7.55103 34.6649 7.55103H28.0248C24.8849 7.55103 22.3369 10.099 22.3369 13.2389V14.1808"
                   stroke="#0C0C0C"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 <path
                   d="M7.61377 40.3223L8.1002 46.7796C8.42963 51.1317 12.0559 54.4955 16.4183 54.4955H46.2705C50.6329 54.4955 54.2592 51.1317 54.5887 46.7796L55.0751 40.3223"
                   stroke="#0C0C0C"
-                  stroke-width="4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </>
