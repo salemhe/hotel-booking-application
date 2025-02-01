@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Navlinks } from "@/constant";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const Header = () => {
   const pathname = usePathname();
@@ -11,6 +12,9 @@ const Header = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  const session = useSession();
+  const user = session.data?.user;
 
   return (
     <header className="fixed top-0 w-full z-50 backdrop-blur-md bg-white/80 border-b border-[#E5E5E5]">
@@ -35,14 +39,29 @@ const Header = () => {
               </li>
             ))}
           </ul>
-          <div className="grid grid-cols-2 items-center justify-center">
-          <Link href="/auth?type=login" className="block text-center font-normal text-black text-xl leading-8 px-5 py-2 rounded-md mx-4">
-            Login
-          </Link>
-          <Link href="/auth?type=signup" className="block text-center shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 py-2 rounded-md mx-4">
-            Sign up
-          </Link>
-          </div>
+          {user ? (
+            <Link
+              href={`/${user.role === "personal" ? "userDashboard" : "vendorDashboard"}`}
+                className="block text-center shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 py-2 rounded-md mx-4"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <div className="grid grid-cols-2 items-center justify-center">
+              <Link
+                href="/auth?type=login"
+                className="block text-center font-normal text-black text-xl leading-8 px-5 py-2 rounded-md mx-4"
+              >
+                Login
+              </Link>
+              <Link
+                href="/auth?type=signup"
+                className="block text-center shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 py-2 rounded-md mx-4"
+              >
+                Sign up
+              </Link>
+            </div>
+          )}
         </nav>
         <button className="md:hidden" onClick={toggleMobileMenu}>
           {isMobileMenuOpen ? (
@@ -96,6 +115,15 @@ const Header = () => {
               </li>
             ))}
           </ul>
+          {user ? (
+            <Link
+            href={`/${user.role === "personal" ? "userDashboard" : "vendorDashboard"}`}
+              className="block text-center shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 py-2 rounded-md mx-4"
+            >
+              Dashboard
+            </Link>
+
+          ) : (
           <div className="grid grid-cols-2 items-center gap-2">
             <Link
               href="/auth?type=login"
@@ -110,6 +138,8 @@ const Header = () => {
               Sign up
             </Link>
           </div>
+
+          )}
         </div>
       )}
     </header>

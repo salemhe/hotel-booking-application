@@ -32,7 +32,7 @@ export function HotelSearch() {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!location || !dates || !guests) {
-        return;
+      return;
     }
     const searchParams = new URLSearchParams({
       type: "hotel",
@@ -49,68 +49,72 @@ export function HotelSearch() {
   return (
     <form
       onSubmit={onSubmit}
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 py-7 px-9 bg-[#484848] rounded-3xl shadow-lg items-center"
+      className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-white shadow-lg rounded-xl items-end border border-gray-200"
     >
       <div>
-        <Label className="text-white" htmlFor="hotel-location">Where do you want to stay?</Label>
+        <Label className="text-gray-700" htmlFor="hotel-location">
+          Where do you want to stay?
+        </Label>
         <Input
           id="hotel-location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Enter destination, hotel, or landmark"
-          className="mt-1 bg-white"
+          className="mt-1 bg-white border border-gray-300 rounded-lg"
         />
       </div>
-        <div>
-          <Label className="text-white">Duration</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full mt-1 justify-start text-left font-normal",
-                  !dates?.from && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dates?.from ? (
-                  dates.to ? (
-                    <>
-                      {format(dates.from, "LLL dd, y")} -{" "}
-                      {format(dates.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(dates.from, "LLL dd, y")
-                  )
-                ) : (
-                  "Select date"
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                selected={dates}
-                defaultMonth={dates?.from}
-                onSelect={setDates}
-                numberOfMonths={2}
-                className="rounded-md border"
-                disabled={(date) => isBefore(date, addDays(new Date(), 0))}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
       <div>
-        <Label className="text-white">Guests & Rooms</Label>
+        <Label className="text-gray-700">Duration</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="w-full mt-1 justify-start text-left font-normal"
+              className={cn(
+                "w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg",
+                !dates?.from && "text-muted-foreground"
+              )}
             >
-              <Users className="mr-2 h-4 w-4" />
-              {guests.adults + guests.children} {guests.adults + guests.children === 1 ? "guest" : "guests"}, {guests.rooms} {guests.rooms === 1 ? "room" : "rooms"}
+              <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+              {dates?.from ? (
+                dates.to ? (
+                  <>
+                    {format(dates.from, "dd/LL/y")} -{" "}
+                    {format(dates.to, "dd/LL/y")}
+                  </>
+                ) : (
+                  format(dates.from, "LLL dd, y")
+                )
+              ) : (
+                "Select date"
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              selected={dates}
+              defaultMonth={dates?.from}
+              onSelect={setDates}
+              numberOfMonths={2}
+              className="rounded-md border"
+              disabled={(date) => isBefore(date, addDays(new Date(), 0))}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+      <div>
+        <Label className="text-gray-700">Guests & Rooms</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg"
+            >
+              <Users className="mr-2 h-4 w-4 text-gray-500" />
+              {guests.adults + guests.children}{" "}
+              {guests.adults + guests.children === 1 ? "guest" : "guests"},{" "}
+              {guests.rooms} {guests.rooms === 1 ? "room" : "rooms"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-80">
@@ -161,10 +165,14 @@ export function HotelSearch() {
           </PopoverContent>
         </Popover>
       </div>
-      <Button type="submit" className="h-full">
-        <Search className="mr-2 h-4 w-4" />
-        Search Hotels
-      </Button>
+      <div className="col-span-full flex justify-center mt-4">
+        <Button
+          type="submit"
+          className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-full py-3 text-lg shadow-md"
+        >
+          <Search className="mr-2 h-4 w-4" /> Search Hotels
+        </Button>
+      </div>
     </form>
   );
 }
