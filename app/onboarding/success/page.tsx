@@ -1,10 +1,10 @@
-import Auth from "@/components/auth/Auth";
+import Success from "@/components/auth/Success";
 import { Suspense } from "react";
 
-export default function AuthPage() {
+export default function page() {
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <Auth />
+      <Success />
     </Suspense>
   );
 }

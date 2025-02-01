@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import React, { useState } from "react";
 import { Navlinks } from "@/constant";
@@ -21,25 +21,59 @@ const Header = () => {
         <nav className="md:flex gap-[49px] items-center hidden">
           <ul className="flex gap-8 items-center">
             {Navlinks.map((link, i) => (
-              <li key={i} className={pathname === link.link ? "text-black" : "text-gray-500 transition-colors duration-200 hover:text-black"}>
+              <li
+                key={i}
+                className={
+                  pathname === link.link
+                    ? "text-black"
+                    : "text-gray-500 transition-colors duration-200 hover:text-black"
+                }
+              >
                 <Link href={link.link} className="font-normal text-base">
                   {link.name}
                 </Link>
               </li>
             ))}
           </ul>
-          <Link href="/auth?type=login" className="shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 rounded-md">
+          <div className="grid grid-cols-2 items-center justify-center">
+          <Link href="/auth?type=login" className="block text-center font-normal text-black text-xl leading-8 px-5 py-2 rounded-md mx-4">
             Login
           </Link>
+          <Link href="/auth?type=signup" className="block text-center shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 py-2 rounded-md mx-4">
+            Sign up
+          </Link>
+          </div>
         </nav>
         <button className="md:hidden" onClick={toggleMobileMenu}>
           {isMobileMenuOpen ? (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
             </svg>
           ) : (
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              ></path>
             </svg>
           )}
         </button>
@@ -48,16 +82,34 @@ const Header = () => {
         <div className="md:hidden bg-white border-t border-[#E5E5E5] py-4">
           <ul className="flex flex-col gap-4 p-4">
             {Navlinks.map((link, i) => (
-              <li key={i} className={pathname === link.link ? "text-black" : "text-gray-500 transition-colors duration-200 hover:text-black"}>
+              <li
+                key={i}
+                className={
+                  pathname === link.link
+                    ? "text-black"
+                    : "text-gray-500 transition-colors duration-200 hover:text-black"
+                }
+              >
                 <Link href={link.link} className="font-normal text-base">
                   {link.name}
                 </Link>
               </li>
             ))}
           </ul>
-          <Link href="/auth?type=login" className="block text-center shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 py-2 rounded-md mx-4">
-            Login
-          </Link>
+          <div className="grid grid-cols-2 items-center gap-2">
+            <Link
+              href="/auth?type=login"
+              className="block text-center shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-black text-xl leading-8 hover:bg-gray-50 px-5 py-2 rounded-md mx-4"
+            >
+              Login
+            </Link>
+            <Link
+              href="/auth?type=signup"
+              className="block text-center shadow-[0px_0px_16.1px_-1px_#00000040] font-normal text-white text-xl leading-8 bg-black hover:bg-gray-800 px-5 py-2 rounded-md mx-4"
+            >
+              Sign up
+            </Link>
+          </div>
         </div>
       )}
     </header>
