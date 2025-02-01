@@ -37,7 +37,7 @@ import {
 } from "@/schemas/auth";
 import { carouselData } from "@/constant";
 import { useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn } from "next-auth/react"; 
 import { useRouter } from "next/navigation";
 import { Auths } from "@/contexts/AuthContext";
 
@@ -74,10 +74,6 @@ export default function Auth() {
   const type = searchParams.get("type");
 
   useEffect(() => {
-    setShowAccountTypeDialog(true);
-  }, []);
-
-  useEffect(() => {
     form.reset(); //This line was causing the issue.  Adding form to the dependency array fixes it.
     setSuccess("");
     setError("");
@@ -108,22 +104,27 @@ export default function Auth() {
     });
   }, [api]);
 
+  const where = accountType === "business" ? "/vendorDashboard" : "/userDashboard"
+
   async function onSubmit(data: AuthSchema) {
     setIsLoading(true);
+    setError("")
+    setSuccess("")
     if (isSignIn) {
       try {
-        const result = await signIn("credentials", {
+        const response = await signIn("credentials", {
           redirect: false,
           email: data.email,
           password: data.password,
+          role: accountType
         });
-        if (result?.error) {
-          setError("Login failed. Please check your credentials.");
+        if (response?.error) {
+          setError("Invalid email or password");
         } else {
-          router.push("/dashboard");
+          router.push(where);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setError("An error occurred during login.");
       }
     } else {

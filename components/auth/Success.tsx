@@ -1,12 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Success() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const type = searchParams.get("type");
 
   return (
     <div className="bg-[#979797] w-full h-screen flex items-center justify-center">
@@ -113,11 +111,7 @@ export default function Success() {
               className="w-full bg-black text-white hover:bg-black/90 mt-[20px]"
               size="lg"
               onClick={() => {
-                if (type === "vendor") {
-                  router.push("/vendorDashboard");
-                } else {
-                  router.push("/userDashboard");
-                }
+                router.push("/auth?type=login");
               }}
             >
               Let&apos;s Start!

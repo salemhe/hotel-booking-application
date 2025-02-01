@@ -46,58 +46,35 @@ const Step2 = () => {
 
   const submitData = async () => {
     setIsLoading(true);
-    if (logoUrl) {
-      console.log("data", { ...formDataBusiness, image: logoFile, imageUrl: logoUrl });
-      try {
-        const response = await fetch(
-          `${process.env.BASE_URL}/api/users/register`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...formDataBusiness,
-              image: logoFile,
-              imageUrl: logoUrl,
-            }),
-          }
-        );
-        if (response.ok) {
-          setSuccess("Account created successfully.");
-          router.push("/onboarding/success?type=vendor")
-        } else {
-          setError("Failed to create account. Please try again.");
+    console.log("data", {
+      ...formDataBusiness,
+      image: logoFile,
+      imageUrl: logoUrl,
+    });
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/vendors/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formDataBusiness,
+            image: logoFile,
+            imageUrl: logoUrl,
+          }),
         }
-      } catch (error) {
-        console.log(error);
-        setError("An error occurred during signup.");
+      );
+      if (response.ok) {
+        setSuccess("Account created successfully.");
+        router.push("/onboarding/success");
+      } else {
+        setError("Failed to create account. Please try again.");
       }
-    } else {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/register`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              ...formDataBusiness,
-            }),
-          }
-        );
-        if (response.ok) {
-          setSuccess("Account created successfully.");
-          router.push("/onboarding/success?type=vendor")
-        } else {
-          setError("Failed to create account. Please try again.");
-        }
-      } catch (error) {
-        console.log(error);
-        setError("An error occurred during signup.");
-      }
-      console.log("data", formDataBusiness);
+    } catch (error) {
+      console.log(error);
+      setError("An error occurred during signup.");
     }
     setIsLoading(false);
   };
