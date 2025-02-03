@@ -19,7 +19,7 @@ export default function VendorSignupPage() {
     // Here you would typically handle the signup logic
     console.log("Vendor signup:", { businessName, email, password })
     // Redirect to vendor dashboard or home page after successful signup
-    router.push("/vendor-dashboard")
+    router.push("/vendor-login")
   }
 
   return (

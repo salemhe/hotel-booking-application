@@ -19,7 +19,7 @@ export default function UserSignupPage() {
     // Here you would typically handle the signup logic
     console.log("User signup:", { name, email, password })
     // Redirect to user dashboard or home page after successful signup
-    router.push("/")
+    router.push("/user-login")
   }
 
   return (

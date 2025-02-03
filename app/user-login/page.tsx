@@ -18,7 +18,7 @@ export default function UserLoginPage() {
     // Here you would typically handle the login logic
     console.log("User login:", { email, password })
     // Redirect to user dashboard or home page after successful login
-    router.push("/")
+    router.push("/userDashboard")
   }
 
   return (

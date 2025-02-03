@@ -18,7 +18,7 @@ export default function VendorLoginPage() {
     // Here you would typically handle the login logic
     console.log("Vendor login:", { email, password })
     // Redirect to vendor dashboard or home page after successful login
-    router.push("/vendor-dashboard")
+    router.push("/vendorDashboard")
   }
 
   return (
