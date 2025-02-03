@@ -275,7 +275,7 @@ function Hotels() {
                 <CardHeader className="p-0">
                   <Image
                     // src={hotel.image || "/placeholder.svg"}
-                    src="/placeholder.svg"
+                    src="/hero-bg.jpg"
                     alt={hotel.name}
                     width={300}
                     height={200}

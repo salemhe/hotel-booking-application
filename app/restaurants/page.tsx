@@ -317,7 +317,7 @@ function Restaurants() {
                 <CardHeader className="p-0">
                   <Image
                     // src={restaurant.image || "/placeholder.svg"}
-                    src="/placeholder.svg"
+                    src="/hero-bg.jpg"
                     alt={restaurant.name}
                     width={300}
                     height={200}
