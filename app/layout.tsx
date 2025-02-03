@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { SessionProvider } from "next-auth/react";
+// import { AuthProvider } from "@/contexts/AuthContext";
+import { Toaster } from "@/components/ui/toaster";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -12,8 +14,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Hotel Booking App",
-  description: "Hotel Booking Application",
+  title: "Brand - Restaurant and Hotel Booking",
+  description: "Book your favorite restaurants and hotels with ease",
 };
 
 export default function RootLayout({
@@ -24,9 +26,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${poppins.variable} antialiased`}>
-        <SessionProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </SessionProvider>
+          {/* <AuthProvider> */}
+            <div className="flex flex-col min-h-screen">
+              <Navigation />
+              <main className="flex-grow bg-gray-50">{children}</main>
+              <Footer />
+            </div>
+            <Toaster />
+          {/* </AuthProvider> */}
       </body>
     </html>
   );

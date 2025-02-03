@@ -1,15 +1,7 @@
-import { auth } from "@/auth";
 
-import { redirect } from "next/navigation";
 import React from "react";
 
 async function Page() {
-  const session = await auth();
-  const user = session?.user;
-
-  if (!user) {
-    redirect("/auth");
-  }
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
