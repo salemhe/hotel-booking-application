@@ -85,9 +85,10 @@ const Navigation = () => {
                 >
                   Sign Up
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                {/* TODO show if user is logged in */}
+                {/* <DropdownMenuItem>
                   <Link href="/account">Your Account</Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -115,7 +116,8 @@ const Navigation = () => {
                   ))}
                 </div>
                 <div className="pt-4 pb-3 border-t border-gray-200">
-                  <div className="flex items-center px-4">
+                  {/* TODO show if user is logged in */}
+                  {/* <div className="flex items-center px-4">
                     <div className="flex-shrink-0">
                       <User className="h-10 w-10 rounded-full" />
                     </div>
@@ -127,35 +129,33 @@ const Navigation = () => {
                         guest@example.com
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="mt-3 space-y-1">
-                    <Button
-                      variant="ghost"
-                      className="w-full text-left"
+                  <SheetClose 
+                      className="w-full text-left hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2"
                       onClick={() => {
                         setIsAccountTypeModalOpen(true);
                         setAuth("login");
                       }}
                     >
                       Login
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full text-left"
+                    </SheetClose>
+                    <SheetClose 
+                      className="w-full text-left hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2"
                       onClick={() => {
                         setIsAccountTypeModalOpen(true);
                         setAuth("signup");
                       }}
                     >
                       Sign Up
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full text-left"
+                    </SheetClose>
+                    {/* TODO show if user is logged in */}
+                    {/* <SheetClose 
+                      className="w-full text-left hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2"
                       asChild
                     >
                       <Link href="/account">Your Account</Link>
-                    </Button>
+                    </SheetClose> */}
                   </div>
                 </div>
               </SheetContent>

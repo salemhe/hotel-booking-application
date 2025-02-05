@@ -31,6 +31,9 @@ export function RestaurantSearch() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!location) {
+      return
+    }
     const searchParams = new URLSearchParams({
       location,
       date: date?.toISOString() || "",

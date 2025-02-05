@@ -34,7 +34,8 @@ export default function DealsPage() {
           <Card key={deal.id}>
             <CardHeader className="p-0">
               <Image
-                src={deal.image || "/placeholder.svg"}
+                // src={deal.image || "/placeholder.svg"}
+                src="/hero-bg.jpg"
                 alt={deal.title}
                 width={300}
                 height={200}

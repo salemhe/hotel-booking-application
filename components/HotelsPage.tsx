@@ -12,9 +12,9 @@ import {
   PocketIcon as Pool,
   Star,
   ChevronLeft,
+  CalendarIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -41,11 +41,15 @@ import {
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "./ui/calendar";
 
 export default function HotelPage({ id }: { id: string }) {
   const [api, setApi] = useState<CarouselApi>();
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+  const [checkIn, setCheckIn] = useState<Date>();
+  const [checkOut, setCheckOut] = useState<Date>();
   const [guests, setGuests] = useState("");
   const [rooms, setRooms] = useState("");
   const [current, setCurrent] = useState(0);
@@ -128,7 +132,7 @@ export default function HotelPage({ id }: { id: string }) {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+      <Button variant="ghost" onClick={() => router.push("hotels")} className="mb-4">
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Hotels
       </Button>
 
@@ -152,10 +156,7 @@ export default function HotelPage({ id }: { id: string }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Carousel
-                className="w-full max-w-xs mx-auto"
-                setApi={setApi}
-              >
+              <Carousel className="w-full max-w-xs mx-auto" setApi={setApi}>
                 <CarouselContent>
                   {hotel.images.map((image, index) => (
                     <CarouselItem key={index}>
@@ -251,23 +252,55 @@ export default function HotelPage({ id }: { id: string }) {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="checkIn">Check-in Date</Label>
-                    <Input
-                      id="checkIn"
-                      type="date"
-                      value={checkIn}
-                      onChange={(e) => setCheckIn(e.target.value)}
-                      required
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg",
+                            !checkIn && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                          {checkIn ? format(checkIn, "PPP") : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          initialFocus
+                          mode="single"
+                          selected={checkIn}
+                          onSelect={setCheckIn}
+                          disabled={(checkIn) => checkIn < new Date()}
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div>
                     <Label htmlFor="checkOut">Check-out Date</Label>
-                    <Input
-                      id="checkOut"
-                      type="date"
-                      value={checkOut}
-                      onChange={(e) => setCheckOut(e.target.value)}
-                      required
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg",
+                            !checkOut && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                          {checkOut ? format(checkOut, "PPP") : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          initialFocus
+                          mode="single"
+                          selected={checkOut}
+                          onSelect={setCheckOut}
+                          disabled={(checkOut) => checkOut < new Date()}
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div>
                     <Label htmlFor="guests">Number of Guests</Label>

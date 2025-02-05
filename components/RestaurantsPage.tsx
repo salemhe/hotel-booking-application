@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { type CarouselApi } from "@/components/ui/carousel";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { MapPin, Clock, Phone, Globe, Star, ChevronLeft } from "lucide-react";
+import { MapPin, Clock, Phone, Globe, Star, ChevronLeft, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -33,10 +32,14 @@ import {
 } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "./ui/calendar";
 
-export default function RestaurantPage({ id }:  { id: string }) {
+export default function RestaurantPage({ id }: { id: string }) {
   const [api, setApi] = useState<CarouselApi>();
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState<Date>();
   const [time, setTime] = useState("");
   const [guests, setGuests] = useState("");
   const [current, setCurrent] = useState(0);
@@ -118,7 +121,7 @@ export default function RestaurantPage({ id }:  { id: string }) {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+      <Button variant="ghost" onClick={() => router.push("/restaurants")} className="mb-4">
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Restaurants
       </Button>
 
@@ -144,10 +147,7 @@ export default function RestaurantPage({ id }:  { id: string }) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Carousel
-                className="w-full max-w-xs mx-auto"
-                setApi={setApi}
-              >
+              <Carousel className="w-full max-w-xs mx-auto" setApi={setApi}>
                 <CarouselContent>
                   {restaurant.images.map((image, index) => (
                     <CarouselItem key={index}>
@@ -242,13 +242,29 @@ export default function RestaurantPage({ id }:  { id: string }) {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="date">Date</Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      required
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg",
+                            !date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                          {date ? format(date, "PPP") : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          initialFocus
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          disabled={(date) => date < new Date()}
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div>
                     <Label htmlFor="time">Time</Label>

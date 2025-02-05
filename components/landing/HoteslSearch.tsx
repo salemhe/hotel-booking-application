@@ -2,175 +2,135 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { addDays, format, isBefore } from "date-fns";
-import { CalendarIcon, Search, Users } from "lucide-react";
+import { CalendarIcon, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { DateRange } from "react-day-picker";
 
 export function HotelSearch() {
   const router = useRouter();
   const [location, setLocation] = useState("");
-  const [dates, setDates] = useState<DateRange | undefined>({
-    from: addDays(new Date(), 1),
-    to: addDays(new Date(), 21),
-  });
-  const [guests, setGuests] = useState({
-    adults: 2,
-    children: 0,
-    rooms: 1,
-  });
+  const [checkIn, setCheckIn] = useState<Date>();
+  const [checkOut, setCheckOut] = useState<Date>();
+  const [guests, setGuests] = useState("");
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!location || !dates || !guests) {
+    if (!location) {
       return;
     }
     const searchParams = new URLSearchParams({
       type: "hotel",
       location,
-      checkIn: dates?.from?.toISOString() || "",
-      checkOut: dates?.to?.toISOString() || "",
-      adults: guests.adults.toString(),
-      children: guests.children.toString(),
-      rooms: guests.rooms.toString(),
+      checkIn: checkIn?.toISOString() || "",
+      checkOut: checkOut?.toISOString() || "",
+      guests,
     });
-    router.push(`/search-results?${searchParams.toString()}`);
+    router.push(`/hotels?${searchParams.toString()}`);
   };
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 bg-white shadow-lg rounded-xl items-end border border-gray-200"
-    >
+    <form onSubmit={onSubmit} className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
       <div>
-        <Label className="text-gray-700" htmlFor="hotel-location">
-          Where do you want to stay?
-        </Label>
-        <Input
-          id="hotel-location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          placeholder="Enter destination, hotel, or landmark"
-          className="mt-1 bg-white border border-gray-300 rounded-lg"
-        />
+        <Label htmlFor="hotel-location">Location</Label>
+        <div className="mt-1 relative rounded-md shadow-sm">
+          <MapPin
+            className="absolute top-1/2 left-3 -mt-2 text-gray-400"
+            size={16}
+          />
+          <Input
+            id="hotel-location"
+            placeholder="Enter a location"
+            className="pl-10"
+            value={location}
+            onChange={(e) => {
+              setLocation(e.target.value);
+            }}
+          />
+        </div>
       </div>
       <div>
-        <Label className="text-gray-700">Duration</Label>
+        <Label htmlFor="hotel-check-in">Check-in Date</Label>
         <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg",
-                !dates?.from && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
-              {dates?.from ? (
-                dates.to ? (
-                  <>
-                    {format(dates.from, "dd/LL/y")} -{" "}
-                    {format(dates.to, "dd/LL/y")}
-                  </>
-                ) : (
-                  format(dates.from, "LLL dd, y")
-                )
-              ) : (
-                "Select date"
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="range"
-              selected={dates}
-              defaultMonth={dates?.from}
-              onSelect={setDates}
-              numberOfMonths={2}
-              className="rounded-md border"
-              disabled={(date) => isBefore(date, addDays(new Date(), 0))}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg",
+                  !checkIn && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                {checkIn ? format(checkIn, "PPP") : "Select date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="single"
+                selected={checkIn}
+                onSelect={setCheckIn}
+                disabled={(checkIn) => checkIn < new Date()}
+              />
+            </PopoverContent>
+          </Popover>
       </div>
       <div>
-        <Label className="text-gray-700">Guests & Rooms</Label>
+        <Label htmlFor="hotel-check-out">Check-out Date</Label>
         <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg"
-            >
-              <Users className="mr-2 h-4 w-4 text-gray-500" />
-              {guests.adults + guests.children}{" "}
-              {guests.adults + guests.children === 1 ? "guest" : "guests"},{" "}
-              {guests.rooms} {guests.rooms === 1 ? "room" : "rooms"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80">
-            <div className="grid gap-4">
-              <div className="grid grid-cols-2 items-center gap-4">
-                <Label>Adults</Label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={guests.adults}
-                  onChange={(e) =>
-                    setGuests({
-                      ...guests,
-                      adults: Number.parseInt(e.target.value),
-                    })
-                  }
-                />
-              </div>
-              <div className="grid grid-cols-2 items-center gap-4">
-                <Label>Children</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  value={guests.children}
-                  onChange={(e) =>
-                    setGuests({
-                      ...guests,
-                      children: Number.parseInt(e.target.value),
-                    })
-                  }
-                />
-              </div>
-              <div className="grid grid-cols-2 items-center gap-4">
-                <Label>Rooms</Label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={guests.rooms}
-                  onChange={(e) =>
-                    setGuests({
-                      ...guests,
-                      rooms: Number.parseInt(e.target.value),
-                    })
-                  }
-                />
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full mt-1 justify-start text-left font-normal border border-gray-300 rounded-lg",
+                  !checkOut && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                {checkOut ? format(checkOut, "PPP") : "Select date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="single"
+                selected={checkOut}
+                onSelect={setCheckOut}
+                disabled={(checkOut) => checkOut < new Date()}
+              />
+            </PopoverContent>
+          </Popover>
       </div>
-      <div className="col-span-full flex justify-center mt-4">
-        <Button
-          type="submit"
-          className="bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-full py-3 text-lg shadow-md"
-        >
-          <Search className="mr-2 h-4 w-4" /> Search Hotels
+      <div>
+        <Label htmlFor="hotel-guests">Number of Guests</Label>
+        <Select value={guests} onValueChange={setGuests}>
+          <SelectTrigger id="hotel-guests">
+            <SelectValue placeholder="Select" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">1 guest</SelectItem>
+            <SelectItem value="2">2 guests</SelectItem>
+            <SelectItem value="3">3 guests</SelectItem>
+            <SelectItem value="4">4 guests</SelectItem>
+            <SelectItem value="5">5+ guests</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="sm:col-span-2">
+        <Button type="submit" className="w-full">
+          <Search className="mr-2 h-4 w-4" />
+          Search Hotels
         </Button>
       </div>
     </form>

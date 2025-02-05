@@ -18,9 +18,16 @@ export default async function BookingConfirmationPage({ params }: { params: Prom
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Button variant="ghost" onClick={() => redirect("/")} className="mb-4">
-        <ChevronLeft className="mr-2 h-4 w-4" /> Back to Home
-      </Button>
+      <form
+        action={async () => {
+          "use server";
+          redirect(`/`);
+        }}
+      >
+        <Button variant="ghost" type="submit" className="mb-4">
+          <ChevronLeft className="mr-2 h-4 w-4" /> Back to Home
+        </Button>
+      </form>
 
       <Card className="max-w-md mx-auto">
         <CardHeader>
@@ -50,12 +57,26 @@ export default async function BookingConfirmationPage({ params }: { params: Prom
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button onClick={() => redirect(`/hotels/${id}`)} className="w-full">
-            View Hotel Details
-          </Button>
-          <Button variant="outline" onClick={() => redirect("/")} className="w-full">
-            Book Another Hotel
-          </Button>
+        <form
+            action={async () => {
+              "use server";
+              redirect(`/hotels/${id}`);
+            }}
+          >
+            <Button type="submit" className="w-full">
+              View Hotel Details
+            </Button>
+          </form>
+          <form
+            action={async () => {
+              "use server";
+              redirect(`/hotels`);
+            }}
+          >
+            <Button variant="outline" type="submit" className="w-full">
+              Book Another Hotel
+            </Button>
+          </form>
         </CardFooter>
       </Card>
     </div>
