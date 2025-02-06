@@ -73,7 +73,7 @@ export function InventoryOrderSettings({
           </p>
         )}
       </div>
-      <div className="flex justify-between flex-col items-center sm:flex-row">
+      <div className="flex justify-between flex-col items-center sm:flex-row gap-2">
         <Button type="button" variant="outline" onClick={onBack}>
           Back
         </Button>
