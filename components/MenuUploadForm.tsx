@@ -1,0 +1,127 @@
+"use client";
+
+import { useState } from "react";
+import { BasicInfo } from "./form-sections/BasicInfo";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { PortionCustomization } from "./form-sections/PortionCustomization";
+import { InventoryOrderSettings } from "./form-sections/InventoryOrderSettings";
+import { PricingAvailability } from "./form-sections/PricingAvailability";
+import { useRouter } from "next/navigation";
+
+const STEPS = [
+  "Basic Info",
+  "Pricing & Availability",
+  "Portion & Customization",
+  "Inventory & Order Settings",
+];
+
+type MenuUploadFormProps = {
+  onClose: () => void;
+  formData: object;
+  setFormData: (data: object) => void
+};
+
+export function MenuUploadForm({ onClose, formData, setFormData }: MenuUploadFormProps) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter()
+
+  const handleNext = (stepData: object) => {
+    setFormData((prev: object) => ({ ...prev, ...stepData }));
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  const handleBack = () => {
+    setCurrentStep((prev) => prev - 1);
+  };
+
+  const save = () => {
+    localStorage.setItem("menuFormData", JSON.stringify(formData));
+    toast({
+      title: "Menu item Saved as Draft",
+      description: "Your new menu item has been saved as Dreaft.",
+    });
+  };
+
+  const handleSubmit = async (finalStepData: object) => {
+    setIsSubmitting(true);
+    const finalFormData = { ...formData, ...finalStepData };
+    console.log("Final form data:", finalFormData);
+
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Clear form data from localStorage after successful submission
+      localStorage.removeItem("menuFormData");
+
+      toast({
+        title: "Menu item added successfully",
+        description: "Your new menu item has been published.",
+      });
+      onClose();
+      router.push("/vendorDashboard")
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Error",
+        description:
+          "There was a problem adding your menu item. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-lg relative w-full">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-2 top-2"
+        onClick={onClose}
+      >
+        <X className="h-4 w-4" />
+      </Button>
+      <h2 className="text-2xl font-bold mb-4">Add Menu Item</h2>
+      <div className="mb-6">
+        <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div
+            className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out"
+            style={{ width: `${((currentStep + 1) / STEPS.length) * 100}%` }}
+          ></div>
+        </div>
+      </div>
+      {currentStep === 0 && (
+        <BasicInfo onNext={handleNext} initialData={formData} />
+      )}
+      {currentStep === 1 && (
+        <PricingAvailability
+          onNext={handleNext}
+          onBack={handleBack}
+          initialData={formData}
+        />
+      )}
+      {currentStep === 2 && (
+        <PortionCustomization
+          onNext={handleNext}
+          onBack={handleBack}
+          initialData={formData}
+        />
+      )}
+      {currentStep === 3 && (
+        <InventoryOrderSettings
+          save={save}
+          onSubmit={handleSubmit}
+          onBack={handleBack}
+          initialData={formData}
+          isSubmitting={isSubmitting}
+        />
+      )}
+    </div>
+  );
+}
