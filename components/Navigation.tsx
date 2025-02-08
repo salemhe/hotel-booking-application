@@ -43,8 +43,9 @@ const Navigation = () => {
               </Link>
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+          <div className="hidden sm:ml- sm:flex sm:space-x-8">
             {navItems.map((item) => (
+              
               <Link
                 key={item.name}
                 href={item.href}
@@ -59,10 +60,28 @@ const Navigation = () => {
             ))}
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+          <p
+              className= "border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+               onClick={() => {
+                setIsAccountTypeModalOpen(true);
+                setAuth("login");
+              }}
+            >
+              Login
+            </p>
+          <p
+              className= "border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+               onClick={() => {
+                setIsAccountTypeModalOpen(true);
+                setAuth("login");
+              }}
+            >
+              Create Account
+            </p>
             <Button variant="ghost" size="icon">
               <ShoppingCart className="h-5 w-5" />
             </Button>
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <User className="h-5 w-5" />
@@ -85,12 +104,12 @@ const Navigation = () => {
                 >
                   Sign Up
                 </DropdownMenuItem>
-                {/* TODO show if user is logged in */}
-                {/* <DropdownMenuItem>
+                TODO show if user is logged in
+                <DropdownMenuItem>
                   <Link href="/account">Your Account</Link>
-                </DropdownMenuItem> */}
+                </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
           <div className="sm:hidden flex items-center">
             <Sheet>
@@ -117,7 +136,7 @@ const Navigation = () => {
                 </div>
                 <div className="pt-4 pb-3 border-t border-gray-200">
                   {/* TODO show if user is logged in */}
-                  {/* <div className="flex items-center px-4">
+                  <div className="flex items-center px-4">
                     <div className="flex-shrink-0">
                       <User className="h-10 w-10 rounded-full" />
                     </div>
@@ -129,7 +148,7 @@ const Navigation = () => {
                         guest@example.com
                       </div>
                     </div>
-                  </div> */}
+                  </div>
                   <div className="mt-3 space-y-1">
                   <SheetClose 
                       className="w-full text-left hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2"
