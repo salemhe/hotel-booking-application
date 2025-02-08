@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { api } from "@/lib/axios-config"
 import { toast } from "sonner"
+import { AxiosError } from "axios"
 
 export default function UserSignupPage() {
   const [formData, setFormData] = useState({
@@ -32,8 +33,14 @@ export default function UserSignupPage() {
 
       toast.success("Registration successful! Please verify your email.");
       router.push(`/verify-otp?email=${formData.email}`);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Registration failed");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || "Registration failed");
+      } else if (error instanceof Error) {
+        toast.error(error.message || "Registration failed");
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setLoading(false);
     }

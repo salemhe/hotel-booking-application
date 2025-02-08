@@ -1,44 +1,74 @@
-"use client"
-import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { api } from "@/lib/axios-config"
-import { toast } from "sonner"
+"use client";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { api } from "@/lib/axios-config";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+
+const Loading = () => {
+  return (
+    <div className="flex items-center justify-center w-full h-screen">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+    </div>
+  );
+};
 
 export default function OTPVerificationPage() {
-  const [otp, setOtp] = useState("")
-  const [email, setEmail] = useState("")
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  return (
+    <Suspense fallback={<Loading />}>
+      <OTPVerificationComponent />
+    </Suspense>
+  );
+}
+
+function OTPVerificationComponent() {
+  const [otp, setOtp] = useState("");
+  const [email, setEmail] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const emailFromParams = searchParams.get('email')
+    const emailFromParams = searchParams.get("email");
     if (emailFromParams) {
-      setEmail(emailFromParams)
+      setEmail(emailFromParams);
     } else {
       // Redirect if no email is found
-      router.push('/user-signup')
+      router.push("/user-signup");
     }
-  }, [searchParams, router])
+  }, [searchParams, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-       await api.post('/users/verify-otp', { email, otp })
-      
+      await api.post("/users/verify-otp", { email, otp });
+
       // Show success toast
-      toast.success('Email verified successfully!')
-      
+      toast.success("Email verified successfully!");
+
       // Redirect to login page
-      router.push("/user-login")
-    } catch (error: any) {
-      // Handle OTP verification errors
-      toast.error(error.response?.data?.message || 'OTP verification failed')
+      router.push("/user-login");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(
+          error.response?.data?.message || "OTP verification failed failed"
+        );
+      } else if (error instanceof Error) {
+        toast.error(error.message || "OTP verification failed failed");
+      } else {
+        toast.error("An unknown error occurred");
+      }
     }
-  }
+  };
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -69,5 +99,5 @@ export default function OTPVerificationPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
