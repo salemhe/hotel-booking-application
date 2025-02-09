@@ -6,7 +6,7 @@ import {
   Command,
   GalleryVerticalEnd,
 //   Map,
-//   PieChart,
+  PieChart,
 //   UserCog,
   // LogOut,
 //   Settings2,
@@ -17,7 +17,6 @@ import {
   MessageSquareMore, 
    Settings,
 } from "lucide-react"
-import { PiHandCoinsLight } from "react-icons/pi";
 import { FaHotel } from "react-icons/fa6";
 import { IoDocumentTextOutline } from "react-icons/io5";
 
@@ -81,8 +80,8 @@ const data = {
       ],
     },
     {
-      title: "Users",
-      url: "/adminDashboard/users",
+      title: "User Management",
+      url: "/adminDashboard/manageUser",
       icon: User,
       items: [
         {
@@ -100,8 +99,8 @@ const data = {
       ],
     },
     {
-      title: "Hotel Owners",
-      url: "/adminDashboard/hotelOwners",
+      title: "Manage Vendors",
+      url: "/adminDashboard/manageVendor",
       icon:  FaHotel,
       items: [
         {
@@ -123,8 +122,8 @@ const data = {
       ],
     },
     {
-      title: "Booking Details",
-      url: "/adminDashboard/bookingDetails",
+      title: "Booking Overview",
+      url: "/adminDashboard/bookingOverview",
       icon: IoDocumentTextOutline,
       items: [
         {
@@ -146,9 +145,9 @@ const data = {
       ],
     },
     {
-      title: "Refunds",
-      url: "/adminDashboard/refunds",
-      icon: PiHandCoinsLight,
+      title: "Reports & Analytics",
+      url: "/adminDashboard/reports",
+      icon: PieChart,
       items: [
         {
           title: "Introduction",
@@ -171,17 +170,17 @@ const data = {
   ],
   projects: [
     {
-      name: "Message",
-      url: "/adminDashboard/message",
+      name: "Complaints",
+      url: "/adminDashboard/complaints",
       icon:  MessageSquareMore,
     },
     {
-      name: "Help",
+      name: "Support",
       url: "/adminDashboard/help",
       icon: CircleHelp,
     },
     {
-      name: "Setting",
+      name: "Platform Setting",
       url: "/adminDashboard/setting",
       icon:  Settings,
     },

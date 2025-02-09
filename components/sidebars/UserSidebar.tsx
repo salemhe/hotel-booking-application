@@ -11,12 +11,14 @@ import {
   // LogOut,
 //   Settings2,
   LayoutDashboard,
-  // StickyNote,
   CircleHelp,
-  MessageSquareMore, 
    Settings,
 } from "lucide-react"
 import { PiHandCoinsLight } from "react-icons/pi";
+import { MdOutlineReviews } from "react-icons/md";
+import { SlMagnifier } from "react-icons/sl";
+import { PiListHeartLight } from "react-icons/pi";
+
 import { IoDocumentTextOutline } from "react-icons/io5";
 
 import { NavMain } from "@/components/nav-main"
@@ -59,8 +61,8 @@ const data = {
   ],
   navMain: [
     {
-      title: "Dashboard",
-      url: "/userDashboard",
+      title: "Home",
+      url: "/",
       icon: LayoutDashboard,
       isActive: true,
       items: [
@@ -78,9 +80,8 @@ const data = {
         },
       ],
     },
-    
     {
-      title: "Booking ",
+      title: "My Bookings ",
       url: "/userDashboard/booking",
       icon: IoDocumentTextOutline,
       items: [
@@ -103,8 +104,52 @@ const data = {
       ],
     },
     {
-      title: "Refunds",
-      url: "/userDashboard/refunds",
+      title: "Search Restaurants",
+      url: "/userDashboard/search",
+      icon: SlMagnifier,
+      isActive: true,
+      items: [
+        {
+          title: "History",
+          url: "#",
+        },
+        {
+          title: "Starred",
+          url: "#",
+        },
+        {
+          title: "Settings",
+          url: "#",
+        },
+      ],
+    },
+    
+    {
+      title: "Wishlist ",
+      url: "/userDashboard/wishlist",
+      icon: PiListHeartLight,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Payments & transactions",
+      url: "/userDashboard/payment",
       icon: PiHandCoinsLight,
       items: [
         {
@@ -125,20 +170,38 @@ const data = {
         },
       ],
     },
-  ],
-  projects: [
     {
-      name: "Message",
-      url: "/userDashboard/message",
-      icon:  MessageSquareMore,
+      title: "Reviews and Ratings",
+      url: "/userDashboard/reviews",
+      icon: MdOutlineReviews,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
+          url: "#",
+        },
+      ],
     },
+  ],
+  projects: [ 
     {
-      name: "Help",
+      name: "Suport & Help",
       url: "/userDashboard/help",
       icon: CircleHelp,
     },
     {
-      name: "Setting",
+      name: "Profile & Setting",
       url: "/userDashboard/setting",
       icon:  Settings,
     },

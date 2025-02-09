@@ -6,17 +6,17 @@ import {
   Command,
   GalleryVerticalEnd,
 //   Map,
-//   PieChart,
+  PieChart,
 //   UserCog,
   // LogOut,
 //   Settings2,
   LayoutDashboard,
-  // StickyNote,
+  StickyNote,
   CircleHelp,
-  MessageSquareMore, 
+  // MessageSquareMore, 
    Settings,
 } from "lucide-react"
-import { BsImage } from "react-icons/bs";
+// import { BsImage } from "react-icons/bs";
 import { PiHandCoinsLight } from "react-icons/pi";
 import { MdOutlineBarChart } from "react-icons/md";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -81,8 +81,8 @@ const data = {
       ],
     },
     {
-      title: "Objectives",
-      url: "/vendorDashboard/objectives",
+      title: "Perfomance & Insights",
+      url: "/vendorDashboard/insights",
       icon: MdOutlineBarChart,
       items: [
         {
@@ -100,8 +100,27 @@ const data = {
       ],
     },
     {
-      title: "Bookings",
-      url: "/vendorDashboard/booking",
+      title: "My Listings",
+      url: "/vendorDashboard/listings",
+      icon: StickyNote,
+      items: [
+        {
+          title: "Genesis",
+          url: "#",
+        },
+        {
+          title: "Explorer",
+          url: "#",
+        },
+        {
+          title: "Quantum",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Bookings Management",
+      url: "/vendorDashboard/bookingManagement",
       icon: IoDocumentTextOutline,
       items: [
         {
@@ -123,9 +142,9 @@ const data = {
       ],
     },
     {
-      title: "Photos",
-      url: "/vendorDashboard/photos",
-      icon: BsImage,
+      title: "Availability & Pricing",
+      url: "/vendorDashboard/pricing",
+      icon: PieChart,
       items: [
         {
           title: "Introduction",
@@ -146,8 +165,8 @@ const data = {
       ],
     },
     {
-      title: "Refunds",
-      url: "/vendorDashboard/refunds",
+      title: "Payments & Earnings",
+      url: "/vendorDashboard/payment",
       icon: PiHandCoinsLight,
       items: [
         {
@@ -171,17 +190,12 @@ const data = {
   ],
   projects: [
     {
-      name: "Message",
-      url: "/vendorDashboard/message",
-      icon:  MessageSquareMore,
-    },
-    {
-      name: "Help",
-      url: "/vendorDashboard/help",
+      name: "Support & Dispute Resolution",
+      url: "/vendorDashboard/support",
       icon: CircleHelp,
     },
     {
-      name: "Setting",
+      name: "Account & Setting",
       url: "/vendorDashboard/setting",
       icon:  Settings,
     },
