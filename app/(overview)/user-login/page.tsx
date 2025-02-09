@@ -62,7 +62,7 @@ const UserLoginPage = () => {
       await api.get(`/users/profile/${userId}`);
 
       toast.success("Welcome back!");
-      router.push("/userDashboard");
+      router.push("/userDashboard/booking");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");

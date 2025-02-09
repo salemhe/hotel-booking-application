@@ -61,8 +61,8 @@ const data = {
   ],
   navMain: [
     {
-      title: "Dashboard",
-      url: "/userDashboard",
+      title: "Home",
+      url: "/",
       icon: LayoutDashboard,
       isActive: true,
       items: [
@@ -81,27 +81,7 @@ const data = {
       ],
     },
     {
-      title: "Search & Browse",
-      url: "/userDashboard/search",
-      icon: SlMagnifier,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Bookings ",
+      title: "My Bookings ",
       url: "/userDashboard/booking",
       icon: IoDocumentTextOutline,
       items: [
@@ -123,6 +103,27 @@ const data = {
         },
       ],
     },
+    {
+      title: "Search Restaurants",
+      url: "/userDashboard/search",
+      icon: SlMagnifier,
+      isActive: true,
+      items: [
+        {
+          title: "History",
+          url: "#",
+        },
+        {
+          title: "Starred",
+          url: "#",
+        },
+        {
+          title: "Settings",
+          url: "#",
+        },
+      ],
+    },
+    
     {
       title: "Wishlist ",
       url: "/userDashboard/wishlist",
