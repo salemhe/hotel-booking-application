@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { api, setAuthToken } from "@/lib/axios-config";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 interface DecodedToken {
   id?: string;
@@ -62,13 +63,20 @@ const UserLoginPage = () => {
 
       toast.success("Welcome back!");
       router.push("/userDashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || "Login failed");
+      } else if (error instanceof Error) {
+        toast.error(error.message || "Login failed");
+      } else {
+        toast.error("An unknown error occurred");
+      }
+      
       localStorage.removeItem("authToken");
       localStorage.removeItem("userId");
       localStorage.removeItem("tokenExp");
       setAuthToken(null);
       
-      toast.error(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
