@@ -40,7 +40,7 @@ export default function UserSignupPage() {
   };
 
   return (
-    <div className="container mx-auto py-10 px-4">
+    <div className=" from-blue-50 to-indigo-50  bg-gradient-to-br mx-auto py-10 px-4">
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <CardTitle>User Sign Up</CardTitle>
@@ -54,7 +54,7 @@ export default function UserSignupPage() {
                 <Input id={field} name={field} type={field === "password" ? "password" : "text"} required onChange={handleChange} />
               </div>
             ))}
-            <Button type="submit" className="w-full mt-4" disabled={loading}>
+            <Button type="submit" className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" disabled={loading}>
               {loading ? "Signing up..." : "Sign Up"}
             </Button>
           </form>
