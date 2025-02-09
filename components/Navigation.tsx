@@ -67,7 +67,7 @@ const Navigation = () => {
               className= "border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                onClick={() => {
                 setIsAccountTypeModalOpen(true);
-                setAuth("login");
+                setAuth("signup");
               }}
             >
               Create Account

@@ -58,7 +58,7 @@ export default function UserSignupPage() {
             {["firstName", "lastName", "email", "phone", "password"].map((field) => (
               <div key={field} className="mb-4">
                 <Label htmlFor={field}>{field.replace(/([A-Z])/g, " $1")}</Label>
-                <Input id={field} name={field} type={field === "password" ? "password" : "text"} required onChange={handleChange} />
+                <Input placeholder={`Enter your ${field.toLowerCase()}`} id={field} name={field} type={field === "password" ? "password" : "text"} required onChange={handleChange} />
               </div>
             ))}
             <Button type="submit" className="w-full mt-4" disabled={loading}>
