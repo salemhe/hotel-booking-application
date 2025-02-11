@@ -46,7 +46,7 @@ function Header() {
         }
 
         setAuthToken(token);
-        console.log("Token Set in Axios:", api.defaults.headers.common["Authorization"]);
+        // console.log("Token Set in Axios:", api.defaults.headers.common["Authorization"]);
 
         const profileResponse = await api.get(`/users/profile/${userId}`);
         setProfile(profileResponse.data);
