@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { BasicInfo } from "./form-sections/BasicInfo";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PortionCustomization } from "./form-sections/PortionCustomization";
 import { InventoryOrderSettings } from "./form-sections/InventoryOrderSettings";
@@ -18,12 +16,11 @@ const STEPS = [
 ];
 
 type MenuUploadFormProps = {
-  onClose: () => void;
   formData: object;
   setFormData: (data: object) => void
 };
 
-export function MenuUploadForm({ onClose, formData, setFormData }: MenuUploadFormProps) {
+export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -62,7 +59,6 @@ export function MenuUploadForm({ onClose, formData, setFormData }: MenuUploadFor
         title: "Menu item added successfully",
         description: "Your new menu item has been published.",
       });
-      onClose();
       router.push("/vendorDashboard")
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -79,14 +75,6 @@ export function MenuUploadForm({ onClose, formData, setFormData }: MenuUploadFor
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg relative w-full">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute right-2 top-2"
-        onClick={onClose}
-      >
-        <X className="h-4 w-4" />
-      </Button>
       <h2 className="text-2xl font-bold mb-4">Add Menu Item</h2>
       <div className="mb-6">
         <div className="w-full bg-gray-200 rounded-full h-2.5">

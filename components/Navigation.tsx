@@ -238,6 +238,24 @@ const Navigation = () => {
             ))}
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+          {/* <p
+              className= "border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+               onClick={() => {
+                setIsAccountTypeModalOpen(true);
+                setAuth("login");
+              }}
+            >
+              Login
+            </p>
+          <p
+              className= "border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+               onClick={() => {
+                setIsAccountTypeModalOpen(true);
+                setAuth("signup");
+              }}
+            >
+              Create Account
+            </p> */}
             {/* {isLoggedIn && (
               <Button variant="ghost" size="icon">
                 <BellDot className="h-5 w-5" />
