@@ -29,11 +29,11 @@ export default function MenuCard({ menuItems, isLoading }: MenuCardProps) {
                 <div className="text-right">
                   {item.discountPrice && item.discountPrice < item.price ? (
                     <div>
-                      <span className="text-sm text-gray-500 line-through">${item.price.toFixed(2)}</span>
-                      <span className="text-red-600 font-semibold ml-2">${item.discountPrice.toFixed(2)}</span>
+                      <span className="text-sm text-gray-500 line-through">₦{item.price.toFixed(2)}</span>
+                      <span className="text-green-600 font-semibold ml-2">₦{item.discountPrice.toFixed(2)}</span>
                     </div>
                   ) : (
-                    <span className="font-semibold text-gray-900">${item.price.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-900">₦{item.price.toFixed(2)}</span>
                   )}
                 </div>
               </li>

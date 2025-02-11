@@ -57,7 +57,7 @@ export default function UserSignupPage() {
         <form onSubmit={handleSubmit}>
             {["firstName", "lastName", "email", "phone", "password"].map((field) => (
               <div key={field} className="mb-4">
-                <Label htmlFor={field}>{field.replace(/([A-Z])/g, " $1")}</Label>
+                <Label htmlFor={field}>{field.replace(/([A-Z])/g, " ₦1")}</Label>
                 <Input placeholder={`Enter your ${field.toLowerCase()}`} id={field} name={field} type={field === "password" ? "password" : "text"} required onChange={handleChange} />
               </div>
             ))}

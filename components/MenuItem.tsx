@@ -39,7 +39,7 @@ const MenuItem = () => {
           <span className="font-medium">Cuisine:</span> {cuisine} |{" "}
           <span className="font-medium">Category:</span> {category}
         </p>
-        <p className="text-lg font-bold text-primary mt-2">${price}</p>
+        <p className="text-lg font-bold text-primary mt-2">₦{price}</p>
       </div>
 
       {/* Action Buttons */}

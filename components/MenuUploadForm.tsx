@@ -8,13 +8,6 @@ import { InventoryOrderSettings } from "./form-sections/InventoryOrderSettings";
 import { PricingAvailability } from "./form-sections/PricingAvailability";
 import { useRouter } from "next/navigation";
 
-const STEPS = [
-  "Basic Info",
-  "Pricing & Availability",
-  "Portion & Customization",
-  "Inventory & Order Settings",
-];
-
 type MenuUploadFormProps = {
   formData: object;
   setFormData: (data: object) => void
@@ -59,7 +52,7 @@ export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
         title: "Menu item added successfully",
         description: "Your new menu item has been published.",
       });
-      router.push("/vendorDashboard")
+      router.push("/vendorDashboard/menu")
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
@@ -80,7 +73,7 @@ export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
         <div className="w-full bg-gray-200 rounded-full h-2.5">
           <div
             className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out"
-            style={{ width: `${((currentStep + 1) / STEPS.length) * 100}%` }}
+            style={{ width: `${((currentStep + 1) / 4) * 100}%` }}
           ></div>
         </div>
       </div>
