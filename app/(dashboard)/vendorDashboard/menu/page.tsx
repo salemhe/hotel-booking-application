@@ -4,8 +4,8 @@ import MenuItem from "@/components/MenuItem";
 export default function VendorMenuPage() {
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Vendor Menu Management</h1>
-      <div className="mb-8 flex items-start">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Your Menu</h2>
         <AddMenuButton />
       </div>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
