@@ -189,7 +189,7 @@ const data = {
       ],
     },
     {
-      title: "Menu Items",
+      title: "Manage Menu",
       url: "/vendorDashboard/menu",
       icon: BookOpen,
       items: [
