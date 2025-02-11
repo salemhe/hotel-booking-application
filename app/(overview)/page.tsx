@@ -54,7 +54,7 @@ export default function Home() {
               </CardHeader>
               <CardContent className="p-6">
                 <CardTitle>Restaurant {index}</CardTitle>
-                <CardDescription>Cuisine Type • $$ • 4.5 ★</CardDescription>
+                <CardDescription>Cuisine Type • ₦₦ • 4.5 ★</CardDescription>
                 <p className="mt-2 text-sm text-gray-500">
                   Experience exquisite flavors and impeccable service at this top-rated restaurant.
                 </p>
@@ -100,7 +100,7 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="p-6">
                   <CardTitle>Hotel {index}</CardTitle>
-                  <CardDescription>Location • $$$ • 4.8 ★</CardDescription>
+                  <CardDescription>Location • ₦₦₦ • 4.8 ★</CardDescription>
                   <p className="mt-2 text-sm text-gray-500">
                     Luxurious accommodations with easy access to the city&apos;s best restaurants.
                   </p>

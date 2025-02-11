@@ -17,7 +17,7 @@ const hotels = [
     name: "Luxury Resort & Spa",
     type: "Resort",
     rating: 4.8,
-    price: "$$$",
+    price: "₦₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -25,7 +25,7 @@ const hotels = [
     name: "City Center Hotel",
     type: "Business",
     rating: 4.5,
-    price: "$$",
+    price: "₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -33,7 +33,7 @@ const hotels = [
     name: "Beachfront Paradise",
     type: "Resort",
     rating: 4.7,
-    price: "$$$",
+    price: "₦₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -41,7 +41,7 @@ const hotels = [
     name: "Mountain View Lodge",
     type: "Lodge",
     rating: 4.6,
-    price: "$$",
+    price: "₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -49,7 +49,7 @@ const hotels = [
     name: "Boutique Downtown Inn",
     type: "Boutique",
     rating: 4.4,
-    price: "$$",
+    price: "₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -57,7 +57,7 @@ const hotels = [
     name: "Family-Friendly Suites",
     type: "Suites",
     rating: 4.3,
-    price: "$$",
+    price: "₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -65,7 +65,7 @@ const hotels = [
     name: "Historic Grand Hotel",
     type: "Luxury",
     rating: 4.9,
-    price: "$$$",
+    price: "₦₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -73,7 +73,7 @@ const hotels = [
     name: "Eco-Friendly Retreat",
     type: "Eco",
     rating: 4.6,
-    price: "$$",
+    price: "₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -81,7 +81,7 @@ const hotels = [
     name: "Skyline Penthouse Apartments",
     type: "Apartments",
     rating: 4.7,
-    price: "$$$",
+    price: "₦₦₦",
     image: "/placeholder.svg?height=200&width=300",
   },
   {
@@ -89,7 +89,7 @@ const hotels = [
     name: "Cozy Bed & Breakfast",
     type: "B&B",
     rating: 4.5,
-    price: "$",
+    price: "₦",
     image: "/placeholder.svg?height=200&width=300",
   },
 ]

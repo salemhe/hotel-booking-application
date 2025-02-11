@@ -15,6 +15,7 @@ import {
   CircleHelp,
   // MessageSquareMore, 
    Settings,
+   BookOpen,
 } from "lucide-react"
 // import { BsImage } from "react-icons/bs";
 import { PiHandCoinsLight } from "react-icons/pi";
@@ -168,6 +169,29 @@ const data = {
       title: "Payments & Earnings",
       url: "/vendorDashboard/payment",
       icon: PiHandCoinsLight,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Manage Menu",
+      url: "/vendorDashboard/menu",
+      icon: BookOpen,
       items: [
         {
           title: "Introduction",

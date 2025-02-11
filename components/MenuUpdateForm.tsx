@@ -8,19 +8,19 @@ import { InventoryOrderSettings } from "./form-sections/InventoryOrderSettings";
 import { PricingAvailability } from "./form-sections/PricingAvailability";
 import { useRouter } from "next/navigation";
 
+
 type MenuUploadFormProps = {
   formData: object;
-  setFormData: (data: object) => void
 };
 
-export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
+export function MenuUpdateForm({ formData }: MenuUploadFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const router = useRouter()
 
   const handleNext = (stepData: object) => {
-    setFormData((prev: object) => ({ ...prev, ...stepData }));
+    console.log("stepData", stepData)
     setCurrentStep((prev) => prev + 1);
   };
 

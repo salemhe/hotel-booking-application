@@ -67,7 +67,7 @@ export default function RestaurantPage({ id }: { id: string }) {
     cuisine: "Italian",
     rating: 4.5,
     reviews: 328,
-    priceRange: "$$",
+    priceRange: "₦₦",
     address: "123 Main St, Anytown, USA",
     phone: "(555) 123-4567",
     website: "https://example.com",
@@ -218,7 +218,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                       {section.items.map((item) => (
                         <li key={item.name} className="flex justify-between">
                           <span>{item.name}</span>
-                          <span>${item.price.toFixed(2)}</span>
+                          <span>₦{item.price.toFixed(2)}</span>
                         </li>
                       ))}
                     </ul>

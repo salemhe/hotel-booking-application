@@ -46,8 +46,8 @@ export default function DealsPage() {
               <CardTitle>{deal.title}</CardTitle>
               <CardDescription>{deal.description}</CardDescription>
               <div className="mt-4">
-                <span className="text-2xl font-bold text-green-600">${deal.price}</span>
-                <span className="ml-2 text-sm text-gray-500 line-through">${deal.originalPrice}</span>
+                <span className="text-2xl font-bold text-green-600">₦{deal.price}</span>
+                <span className="ml-2 text-sm text-gray-500 line-through">₦{deal.originalPrice}</span>
               </div>
             </CardContent>
             <CardFooter>

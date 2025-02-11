@@ -77,7 +77,7 @@ export default function HotelPage({ id }: { id: string }) {
     type: "Luxury",
     rating: 4.8,
     reviews: 512,
-    priceRange: "$$$",
+    priceRange: "₦₦₦",
     address: "456 Ocean Ave, Beachtown, USA",
     description:
       "Experience unparalleled luxury in our beachfront hotel. Enjoy stunning ocean views, world-class amenities, and impeccable service for an unforgettable stay.",
@@ -228,7 +228,7 @@ export default function HotelPage({ id }: { id: string }) {
                   <TabsContent key={room.type} value={room.type}>
                     <div className="space-y-2">
                       <p className="font-semibold">
-                        ${room.price.toFixed(2)} / night
+                        ₦{room.price.toFixed(2)} / night
                       </p>
                       <p>{room.description}</p>
                     </div>

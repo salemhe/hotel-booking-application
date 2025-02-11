@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "./ui/button";
 import { Trash2, Pencil } from "lucide-react";
+import Link from "next/link";
 
 const menuList = {
   id: 1,
@@ -18,7 +19,7 @@ const MenuItem = () => {
   return (
     <div
       key={id}
-      className="w-full max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all hover:scale-105 hover:shadow-xl p-5"
+      className="w-full max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all hover:shadow-xl p-5"
     >
       {/* Image Section */}
       <div className="relative w-full h-56">
@@ -38,13 +39,15 @@ const MenuItem = () => {
           <span className="font-medium">Cuisine:</span> {cuisine} |{" "}
           <span className="font-medium">Category:</span> {category}
         </p>
-        <p className="text-lg font-bold text-primary mt-2">${price}</p>
+        <p className="text-lg font-bold text-primary mt-2">₦{price}</p>
       </div>
 
       {/* Action Buttons */}
       <div className="flex justify-between items-center mt-4">
-        <Button variant="outline" className="flex items-center gap-2">
-          <Pencil size={16} /> Edit
+        <Button variant="outline">
+          <Link href={`menu/${id}`} className="flex items-center gap-2">
+            <Pencil size={16} /> Edit
+          </Link>
         </Button>
         <Button variant="destructive" size="icon">
           <Trash2 />
