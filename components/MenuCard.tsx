@@ -2,11 +2,11 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { delay } from "@/lib/utils"
 
-interface MenuItem {
-  name: string
-  price: number
-  discountPrice?: number
-}
+// interface MenuItem {
+//   name: string
+//   price: number
+//   discountPrice?: number
+// }
 
 async function fetchMenuItems() {
   await delay(1800) // Simulate network delay
