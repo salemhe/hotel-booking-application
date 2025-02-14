@@ -22,7 +22,7 @@ export default function VendorLoginPage() {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
       if (storedUser.email === email) {
         localStorage.setItem("role", storedUser.role)
-        router.push(storedUser.role === "super-admin" ? "/vendorDashboard/insights" : "/vendorashboard")
+        router.push(storedUser.role === "super-admin" ? "/vendorDashboard/insights" : "/vendorDashboard")
       } else {
         alert("Invalid credentials")
       }

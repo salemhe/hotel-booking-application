@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { delay } from "@/lib/utils"
 
 async function fetchDashboardStats() {
-  await delay(1500) // Simulate network delay
+  await delay(2000) // Simulate network delay
   return {
     totalMenuItems: 142,
     dailyOrders: 78,

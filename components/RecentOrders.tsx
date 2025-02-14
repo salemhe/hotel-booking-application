@@ -3,35 +3,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { delay } from "@/lib/utils"
 
 async function fetchRecentOrders() {
-  await delay(2200) // Simulate network delay
+  await delay(2000) // Simulate network delay
   return [
     {
       id: "1",
       name: "Olivia Martin",
       email: "olivia.martin@email.com",
       total: "₦79.00",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "",
     },
     {
       id: "2",
       name: "Jackson Lee",
       email: "jackson.lee@email.com",
       total: "₦45.50",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "",
     },
     {
       id: "3",
       name: "Isabella Nguyen",
       email: "isabella.nguyen@email.com",
       total: "₦92.25",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "",
     },
     {
       id: "4",
       name: "William Kim",
       email: "will.kim@email.com",
       total: "₦63.75",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "",
     },
   ]
 }

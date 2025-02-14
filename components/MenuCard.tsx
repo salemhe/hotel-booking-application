@@ -1,31 +1,27 @@
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { delay } from "@/lib/utils"
-
-// interface MenuItem {
-//   name: string
-//   price: number
-//   discountPrice?: number
-// }
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { delay } from "@/lib/utils";
 
 async function fetchMenuItems() {
-  await delay(1800) // Simulate network delay
+  await delay(2000); // Simulate network delay
   return [
-    { name: "Spaghetti Carbonara", price: 12.99 },
-    { name: "Margherita Pizza", price: 10.99, discountPrice: 8.99 },
-    { name: "Caesar Salad", price: 8.99 },
-    { name: "Grilled Chicken", price: 15.99 },
-    { name: "Tiramisu", price: 6.99 },
-  ]
+    { name: "Jollof Rice", price: 1500, discountPrice: 1200 },
+    { name: "Pasta", price: 12.5 },
+    { name: "Pizza", price: 15.0, discountPrice: 12.99 },
+    { name: "Salad", price: 7.99 },
+    { name: "Sushi", price: 18.0, discountPrice: 14.5 },
+  ];
 }
 
 export async function MenuCard() {
-  const menuItems = await fetchMenuItems()
+  const menuItems = await fetchMenuItems();
 
   return (
     <Card className="w-full bg-white shadow-lg">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold text-blue-600">Your Menu</CardTitle>
+        <CardTitle className="text-xl font-semibold text-blue-600">
+          Your Menu
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {menuItems.length > 0 ? (
@@ -36,11 +32,17 @@ export async function MenuCard() {
                 <div className="text-right">
                   {item.discountPrice && item.discountPrice < item.price ? (
                     <div>
-                      <span className="text-sm text-gray-500 line-through">₦{item.price.toFixed(2)}</span>
-                      <span className="text-green-500 font-semibold ml-2">₦{item.discountPrice.toFixed(2)}</span>
+                      <span className="text-sm text-gray-500 line-through">
+                        ₦{item.price.toFixed(2)}
+                      </span>
+                      <span className="text-green-500 font-semibold ml-2">
+                        ₦{item.discountPrice.toFixed(2)}
+                      </span>
                     </div>
                   ) : (
-                    <span className="font-semibold text-gray-900">₦{item.price.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-900">
+                      ₦{item.price.toFixed(2)}
+                    </span>
                   )}
                 </div>
               </li>
@@ -51,12 +53,14 @@ export async function MenuCard() {
         )}
 
         <div className="mt-4 text-right">
-          <Link href="/vendorDashboard/menu" className="text-blue-600 hover:underline">
+          <Link
+            href="/vendorDashboard/menu"
+            className="text-blue-600 hover:underline"
+          >
             View More →
           </Link>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

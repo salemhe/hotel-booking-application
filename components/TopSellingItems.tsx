@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { delay } from "@/lib/utils"
 
 async function fetchTopSellingItems() {
-  await delay(1700) // Simulate network delay
+  await delay(2000) // Simulate network delay
   return [
     {
       id: "1",
