@@ -79,10 +79,10 @@ export function InventoryOrderSettings({
         </Button>
         <div className="flex gap-2">
           <Button type="button" variant="secondary" onClick={save}>
-            Save
+            Save as Draft
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save and Publish"}
+            {isSubmitting ? "Publising..." : "Publish"}
           </Button>
         </div>
       </div>

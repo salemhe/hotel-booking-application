@@ -19,7 +19,7 @@ export default function AddMenuButton() {
       };
 
   return (
-    <div className="flex items-center justify-center w-full container mx-auto my-10 px-4">
+    <div className="flex items-center justify-center w-full max-w-screen-sm mx-auto my-10 px-4">
       <MenuUpdateForm formData={formData} />
     </div>
   )

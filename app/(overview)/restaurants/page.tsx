@@ -1,16 +1,38 @@
-"use client"
+"use client";
 
-import { useState, useEffect, Suspense } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import { Star, ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Slider } from "@/components/ui/slider"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useState, useEffect, Suspense } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import {
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Calendar,
+  Users,
+  Search,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const restaurants = [
   {
@@ -103,7 +125,7 @@ const restaurants = [
     image: "/placeholder.svg?height=200&width=300",
     location: "Dallas",
   },
-]
+];
 
 const Loading = () => {
   return (
@@ -119,92 +141,109 @@ export default function RestaurantsPage() {
     <Suspense fallback={<Loading />}>
       <Restaurants />
     </Suspense>
-  )
+  );
 }
 
 function Restaurants() {
-  const searchParams = useSearchParams()
-  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [cuisineFilter, setCuisineFilter] = useState<string[]>([])
-  const [priceFilter, setPriceFilter] = useState<string[]>([])
-  const [ratingFilter, setRatingFilter] = useState(0)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [locationFilter, setLocationFilter] = useState("")
+  const searchParams = useSearchParams();
+  const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [cuisineFilter, setCuisineFilter] = useState<string[]>([]);
+  const [priceFilter, setPriceFilter] = useState<string[]>([]);
+  const [ratingFilter, setRatingFilter] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
 
-  const itemsPerPage = 6
-  const totalPages = Math.ceil(filteredRestaurants.length / itemsPerPage)
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(filteredRestaurants.length / itemsPerPage);
 
-  const cuisines = Array.from(new Set(restaurants.map((r) => r.cuisine)))
-  const prices = Array.from(new Set(restaurants.map((r) => r.price)))
+  const cuisines = Array.from(new Set(restaurants.map((r) => r.cuisine)));
+  const prices = Array.from(new Set(restaurants.map((r) => r.price)));
 
   useEffect(() => {
-    const location = searchParams.get("location") || ""
-    const cuisine = searchParams.get("cuisine") || ""
+    const location = searchParams.get("location") || "";
+    const cuisine = searchParams.get("cuisine") || "";
 
-    setLocationFilter(location)
+    setLocationFilter(location);
     if (cuisine && cuisine !== "any") {
-      setCuisineFilter([cuisine])
+      setCuisineFilter([cuisine]);
     }
-    setSearchQuery(location) // Use location as initial search query
+    setSearchQuery(location); // Use location as initial search query
 
-    applyFilters()
-  }, [searchParams])
+    applyFilters();
+  }, [searchParams]);
 
   useEffect(() => {
-    applyFilters()
-  },  [cuisineFilter, priceFilter, ratingFilter, searchQuery]) // Only searchParams is needed here
+    applyFilters();
+  }, [cuisineFilter, priceFilter, ratingFilter, searchQuery]); // Only searchParams is needed here
 
   const applyFilters = () => {
-    let filtered = restaurants
+    let filtered = restaurants;
     if (cuisineFilter.length > 0) {
-      filtered = filtered.filter((restaurant) => cuisineFilter.includes(restaurant.cuisine))
+      filtered = filtered.filter((restaurant) =>
+        cuisineFilter.includes(restaurant.cuisine)
+      );
     }
     if (priceFilter.length > 0) {
-      filtered = filtered.filter((restaurant) => priceFilter.includes(restaurant.price))
+      filtered = filtered.filter((restaurant) =>
+        priceFilter.includes(restaurant.price)
+      );
     }
     if (ratingFilter > 0) {
-      filtered = filtered.filter((restaurant) => restaurant.rating >= ratingFilter)
+      filtered = filtered.filter(
+        (restaurant) => restaurant.rating >= ratingFilter
+      );
     }
     if (searchQuery) {
       filtered = filtered.filter(
         (restaurant) =>
           restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          restaurant.location.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+          restaurant.cuisine
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          restaurant.location.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
     if (locationFilter) {
       filtered = filtered.filter((restaurant) =>
-        restaurant.location.toLowerCase().includes(locationFilter.toLowerCase()),
-      )
+        restaurant.location.toLowerCase().includes(locationFilter.toLowerCase())
+      );
     }
     // Note: dateFilter and guestsFilter are not used in filtering as the mock data doesn't include this information
     // In a real application, you would use these to filter restaurants based on availability
 
-    setFilteredRestaurants(filtered)
-    setCurrentPage(1)
-  }
+    setFilteredRestaurants(filtered);
+    setCurrentPage(1);
+  };
 
   const resetFilters = () => {
-    setCuisineFilter([])
-    setPriceFilter([])
-    setRatingFilter(0)
-    setSearchQuery("")
-    setLocationFilter("")
-    setFilteredRestaurants(restaurants)
-    setCurrentPage(1)
-  }
+    setCuisineFilter([]);
+    setPriceFilter([]);
+    setRatingFilter(0);
+    setSearchQuery("");
+    setLocationFilter("");
+    setFilteredRestaurants(restaurants);
+    setCurrentPage(1);
+  };
 
-  const paginatedRestaurants = filteredRestaurants.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const paginatedRestaurants = filteredRestaurants.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleCuisineChange = (cuisine: string) => {
-    setCuisineFilter((prev) => (prev.includes(cuisine) ? prev.filter((c) => c !== cuisine) : [...prev, cuisine]))
-  }
+    setCuisineFilter((prev) =>
+      prev.includes(cuisine)
+        ? prev.filter((c) => c !== cuisine)
+        : [...prev, cuisine]
+    );
+  };
 
   const handlePriceChange = (price: string) => {
-    setPriceFilter((prev) => (prev.includes(price) ? prev.filter((p) => p !== price) : [...prev, price]))
-  }
+    setPriceFilter((prev) =>
+      prev.includes(price) ? prev.filter((p) => p !== price) : [...prev, price]
+    );
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -272,9 +311,15 @@ function Restaurants() {
                     onValueChange={(value) => setRatingFilter(value[0])}
                     className="mt-2"
                   />
-                  <span className="text-sm text-gray-500">{ratingFilter.toFixed(1)}</span>
+                  <span className="text-sm text-gray-500">
+                    {ratingFilter.toFixed(1)}
+                  </span>
                 </div>
-                <Button onClick={resetFilters} variant="outline" className="w-full">
+                <Button
+                  onClick={resetFilters}
+                  variant="outline"
+                  className="w-full"
+                >
                   Reset Filters
                 </Button>
               </div>
@@ -287,33 +332,64 @@ function Restaurants() {
           {/* Search Bar */}
           <Card className="mb-8">
             <CardContent className="p-6">
-              <form
-                className="flex flex-col md:flex-row gap-4"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  applyFilters()
-                }}
-              >
-                <div className="flex-grow">
-                  <Label htmlFor="search" className="sr-only">
-                    Search Restaurants
-                  </Label>
-                  <Input
-                    id="search"
-                    placeholder="Search restaurants, cuisines, or locations"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
+              <form className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <Label htmlFor="location">Location</Label>
+                  <div className="relative mt-1">
+                    <MapPin
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      id="location"
+                      placeholder="Enter a location"
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
-                <Button type="submit">Search</Button>
+                <div>
+                  <Label htmlFor="date">Date</Label>
+                  <div className="relative mt-1">
+                    <Calendar
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input id="date" type="date" className="pl-10" />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="guests">Guests</Label>
+                  <div className="relative mt-1">
+                    <Users
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Select>
+                      <SelectTrigger className="pl-10">
+                        <SelectValue placeholder="Number of guests" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1 guest</SelectItem>
+                        <SelectItem value="2">2 guests</SelectItem>
+                        <SelectItem value="3">3 guests</SelectItem>
+                        <SelectItem value="4">4 guests</SelectItem>
+                        <SelectItem value="5">5+ guests</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </form>
+              <Button className="w-full mt-6">
+                <Search className="mr-2" size={18} />
+                Search Restaurants
+              </Button>
             </CardContent>
           </Card>
 
           {/* Restaurant Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {paginatedRestaurants.map((restaurant) => (
-              <Card key={restaurant.id}>
+              <Card className="overflow-hidden" key={restaurant.id}>
                 <CardHeader className="p-0">
                   <Image
                     // src={restaurant.image || "/placeholder.svg"}
@@ -322,12 +398,13 @@ function Restaurants() {
                     width={300}
                     height={200}
                     className="w-full h-48 object-cover"
-                  />
+                  />  
                 </CardHeader>
                 <CardContent className="p-4">
                   <CardTitle>{restaurant.name}</CardTitle>
                   <CardDescription>
-                    {restaurant.cuisine} • {restaurant.price} • {restaurant.location}
+                    {restaurant.cuisine} • {restaurant.price} •{" "}
+                    {restaurant.location}
                   </CardDescription>
                   <div className="flex items-center mt-2">
                     <Star className="text-yellow-400 mr-1" size={18} />
@@ -358,7 +435,9 @@ function Restaurants() {
               </span>
               <Button
                 variant="outline"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
               >
                 <ChevronRight className="h-4 w-4" />
@@ -368,6 +447,5 @@ function Restaurants() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

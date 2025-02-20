@@ -60,10 +60,10 @@ function OTPVerificationComponent() {
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(
-          error.response?.data?.message || "OTP verification failed failed"
+          error.response?.data?.message || "OTP verification failed"
         );
       } else if (error instanceof Error) {
-        toast.error(error.message || "OTP verification failed failed");
+        toast.error(error.message || "OTP verification failed");
       } else {
         toast.error("An unknown error occurred");
       }
@@ -88,6 +88,7 @@ function OTPVerificationComponent() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   maxLength={6}
+                  minLength={6}
                   required
                 />
               </div>

@@ -40,7 +40,7 @@ export async function RecentOrders() {
   const recentOrders = await fetchRecentOrders()
 
   return (
-    <Card className="bg-white shadow-lg">
+    <Card className="bg-white shadow-lg w-full">
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-blue-600">Recent Orders</CardTitle>
       </CardHeader>

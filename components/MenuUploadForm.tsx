@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { BasicInfo } from "./form-sections/BasicInfo";
-import { useToast } from "@/hooks/use-toast";
 import { PortionCustomization } from "./form-sections/PortionCustomization";
 import { InventoryOrderSettings } from "./form-sections/InventoryOrderSettings";
 import { PricingAvailability } from "./form-sections/PricingAvailability";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/axios-config";
+import { toast } from "sonner"
 
 type MenuUploadFormProps = {
   formData: object;
@@ -16,7 +17,6 @@ type MenuUploadFormProps = {
 export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
   const router = useRouter()
 
   const handleNext = (stepData: object) => {
@@ -30,10 +30,7 @@ export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
 
   const save = () => {
     localStorage.setItem("menuFormData", JSON.stringify(formData));
-    toast({
-      title: "Menu item Saved as Draft",
-      description: "Your new menu item has been saved as Dreaft.",
-    });
+    toast.success("Your new menu item has been successfully saved as Draft.")
   };
 
   const handleSubmit = async (finalStepData: object) => {
@@ -43,24 +40,16 @@ export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await api.post("/vendors/create-menu", {finalFormData})
 
       // Clear form data from localStorage after successful submission
       localStorage.removeItem("menuFormData");
-
-      toast({
-        title: "Menu item added successfully",
-        description: "Your new menu item has been published.",
-      });
+      
+      toast.success("Menu item added successfully")
       router.push("/vendorDashboard/menu")
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast({
-        title: "Error",
-        description:
-          "There was a problem adding your menu item. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("There was a problem adding your menu item. Please try again.")
     } finally {
       setIsSubmitting(false);
     }

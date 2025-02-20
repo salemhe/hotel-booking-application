@@ -1,4 +1,4 @@
-import Link from "next/link";
+// import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { delay } from "@/lib/utils";
 
@@ -8,6 +8,8 @@ async function fetchMenuItems() {
     { name: "Jollof Rice", price: 1500, discountPrice: 1200 },
     { name: "Pasta", price: 12.5 },
     { name: "Pizza", price: 15.0, discountPrice: 12.99 },
+    { name: "Salad", price: 7.99 },
+    { name: "Sushi", price: 18.0, discountPrice: 14.5 },
     { name: "Salad", price: 7.99 },
     { name: "Sushi", price: 18.0, discountPrice: 14.5 },
   ];
@@ -25,7 +27,7 @@ export async function MenuCard() {
       </CardHeader>
       <CardContent>
         {menuItems.length > 0 ? (
-          <ul className="space-y-3">
+          <ul className="space-y-8">
             {menuItems.slice(0, 5).map((item, index) => (
               <li key={index} className="flex justify-between items-center">
                 <span className="text-gray-700">{item.name}</span>
@@ -52,14 +54,14 @@ export async function MenuCard() {
           <p className="text-gray-500">No menu items available.</p>
         )}
 
-        <div className="mt-4 text-right">
+        {/* <div className="mt-4 text-right">
           <Link
             href="/vendorDashboard/menu"
             className="text-blue-600 hover:underline"
           >
             View More →
           </Link>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );

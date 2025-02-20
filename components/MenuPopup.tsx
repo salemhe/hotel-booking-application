@@ -51,7 +51,7 @@ export function MenuPopup() {
 
   return (
     <>
-      <Button onClick={handleButtonClick}><Plus className="w-4 h-4 mr-2" size={24} /> Add a Menu Item</Button>
+      <Button className=' bg-blue-500 hover:bg-blue-400' onClick={handleButtonClick}><Plus className="w-4 h-4 mr-2" size={24} /> Add a Menu Item</Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
