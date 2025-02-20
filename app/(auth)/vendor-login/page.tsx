@@ -22,15 +22,13 @@ export default function VendorLoginPage() {
     setLoading(true);
   
     try {
-      console.log('Form submission started'); // Debug log
-  
-      if (!email || !password) {
-        toast({
-          title: "Error",
-          description: "Please fill in all fields",
-          variant: "destructive"
-        });
-        return;
+      // Retrieve user role from localStorage (replace with API call in real apps)
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
+      if (storedUser.email === email) {
+        localStorage.setItem("role", storedUser.role)
+        router.push(storedUser.role === "super-admin" ? "/vendorDashboard/insights" : "/vendorDashboard")
+      } else {
+        alert("Invalid credentials")
       }
   
       console.log('Calling login service'); // Debug log
