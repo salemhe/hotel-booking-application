@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from "../ui/button"
 import { AuthService } from "@/services/auth.services"
 import { api } from '@/lib/axios-config'
+import { AxiosError } from 'axios'
 
 export interface VendorProfile {
   _id: string
@@ -77,10 +78,13 @@ function Header() {
         } else {
           console.warn("Invalid vendors data format")
         }
-      } catch (error: any) {
-        console.error("Failed to fetch vendor data:", error)
-        if (error.response) {
-          console.error("Error response:", error.response.status, error.response.data)
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          console.error(error.response?.data?.message || "failed to fetch vendor data");
+        } else if (error instanceof Error) {
+          console.error(error.message || "failed to fetch vendor data");
+        } else {
+          console.error("An unknown error occurred");
         }
       } finally {
         setLoading(false)

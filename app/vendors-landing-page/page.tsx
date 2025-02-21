@@ -8,9 +8,10 @@ import {
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios-config';
 import { AuthService } from '@/services/auth.services';
-import { BellDot, ChevronDown, LogOut, X, Menu } from "lucide-react"
+import { ChevronDown, LogOut, X, Menu } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { AxiosError } from 'axios';
 
 export interface VendorProfile {
   _id: string
@@ -118,10 +119,13 @@ const LandingPage = () => {
         } else {
           console.warn("Invalid vendors data format")
         }
-      } catch (error: any) {
-        console.error("Failed to fetch vendor data:", error)
-        if (error.response) {
-          console.error("Error response:", error.response.status, error.response.data)
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          console.error(error.response?.data?.message || "failed to fetch vendor data");
+        } else if (error instanceof Error) {
+          console.error(error.message || "failed to fetch vendor data");
+        } else {
+          console.error("An unknown error occurred");
         }
       } finally {
         setLoading(false)
