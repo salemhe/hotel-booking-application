@@ -15,7 +15,7 @@ export default function VendorDasboardLayout({
         <AppSidebar />
         <SidebarInset>
           <Header />
-          <ProtectedRoute requiredRole="super-admin">
+          <ProtectedRoute requiredRole="vendor">
           <div className="mt-20">
             {children}
           </div>

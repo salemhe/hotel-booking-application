@@ -1,26 +1,27 @@
-import Header from "@/components/headers/UserHeader"
-import { AppSidebar } from "@/components/sidebars/UserSidebar"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { AuthWrapper } from "@/components/AuthWrapper" // Adjust path as needed
+// app/vendorDashboard/layout.tsx
+import Header from "@/components/headers/VendorHeader";
+import { AppSidebar } from "@/components/sidebars/VendorSidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import SessionManager from "@/components/SessionManager";
 
-export default function OwnerDashboardLayout({
+export default function VendorDashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex">
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <AuthWrapper>
+    <SessionManager>
+      <div className="flex">
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
             <Header />
             <div className="mt-20">
               {children}
             </div>
-          </AuthWrapper>
-        </SidebarInset>
-      </SidebarProvider>
-    </div>
-  )
+          </SidebarInset>
+        </SidebarProvider>
+      </div>
+    </SessionManager>
+  );
 }
