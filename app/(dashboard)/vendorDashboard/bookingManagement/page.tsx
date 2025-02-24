@@ -372,8 +372,21 @@ export default function AdminDashboard(): ReactElement {
     return `#${id.substring(0, 4)}`;
   };
   
-  // Loading state or unauthorized state
-  if (!token) {
+ 
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-12 bg-gray-200 rounded w-full"></div>
+          <div className="h-64 bg-gray-200 rounded w-full"></div>
+        </div>
+      </div>
+    );
+  }
+   // Loading state or unauthorized state
+   if (!token) {
     return (
       <div className="min-h-screen bg-gray-50 p-6 flex flex-col items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
@@ -389,19 +402,6 @@ export default function AdminDashboard(): ReactElement {
       </div>
     );
   }
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-10 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-12 bg-gray-200 rounded w-full"></div>
-          <div className="h-64 bg-gray-200 rounded w-full"></div>
-        </div>
-      </div>
-    );
-  }
-  
   return (
     <div className="min-h-screen bg-gray-50 p-4">
     <div className="max-w-7xl mx-auto">
