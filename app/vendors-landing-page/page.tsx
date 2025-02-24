@@ -8,7 +8,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios-config';
 import { AuthService } from '@/services/auth.services';
-import { BellDot, ChevronDown, LogOut, X, Menu } from "lucide-react"
+import { ChevronDown, LogOut, X, Menu } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 
@@ -118,9 +118,10 @@ const LandingPage = () => {
         } else {
           console.warn("Invalid vendors data format")
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Failed to fetch vendor data:", error)
-        if (error.response) {
+        if (error && typeof error === 'object' && 'response' in error && error.response && 
+            typeof error.response === 'object' && 'status' in error.response && 'data' in error.response) {
           console.error("Error response:", error.response.status, error.response.data)
         }
       } finally {

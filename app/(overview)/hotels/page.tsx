@@ -126,30 +126,29 @@ function Hotels() {
   const prices = Array.from(new Set(hotels.map((h) => h.price)))
 
   useEffect(() => {
+    const applyFilters = () => {
+      let filtered = hotels
+      if (typeFilter.length > 0) {
+        filtered = filtered.filter((hotel) => typeFilter.includes(hotel.type))
+      }
+      if (priceFilter.length > 0) {
+        filtered = filtered.filter((hotel) => priceFilter.includes(hotel.price))
+      }
+      if (ratingFilter > 0) {
+        filtered = filtered.filter((hotel) => hotel.rating >= ratingFilter)
+      }
+      if (searchQuery) {
+        filtered = filtered.filter(
+          (hotel) =>
+            hotel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            hotel.type.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      }
+      setFilteredHotels(filtered)
+      setCurrentPage(1)
+    }
     applyFilters()
-  }, [typeFilter, priceFilter, ratingFilter, searchQuery]) //Corrected dependency
-
-  const applyFilters = () => {
-    let filtered = hotels
-    if (typeFilter.length > 0) {
-      filtered = filtered.filter((hotel) => typeFilter.includes(hotel.type))
-    }
-    if (priceFilter.length > 0) {
-      filtered = filtered.filter((hotel) => priceFilter.includes(hotel.price))
-    }
-    if (ratingFilter > 0) {
-      filtered = filtered.filter((hotel) => hotel.rating >= ratingFilter)
-    }
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (hotel) =>
-          hotel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          hotel.type.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    }
-    setFilteredHotels(filtered)
-    setCurrentPage(1)
-  }
+  }, [typeFilter, priceFilter, ratingFilter, searchQuery])
 
   const resetFilters = () => {
     setTypeFilter([])

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, Suspense, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -138,24 +138,7 @@ function Restaurants() {
   const cuisines = Array.from(new Set(restaurants.map((r) => r.cuisine)))
   const prices = Array.from(new Set(restaurants.map((r) => r.price)))
 
-  useEffect(() => {
-    const location = searchParams.get("location") || ""
-    const cuisine = searchParams.get("cuisine") || ""
-
-    setLocationFilter(location)
-    if (cuisine && cuisine !== "any") {
-      setCuisineFilter([cuisine])
-    }
-    setSearchQuery(location) // Use location as initial search query
-
-    applyFilters()
-  }, [searchParams])
-
-  useEffect(() => {
-    applyFilters()
-  },  [cuisineFilter, priceFilter, ratingFilter, searchQuery]) // Only searchParams is needed here
-
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = restaurants
     if (cuisineFilter.length > 0) {
       filtered = filtered.filter((restaurant) => cuisineFilter.includes(restaurant.cuisine))
@@ -184,7 +167,24 @@ function Restaurants() {
 
     setFilteredRestaurants(filtered)
     setCurrentPage(1)
-  }
+  }, [cuisineFilter, priceFilter, ratingFilter, searchQuery, locationFilter])
+
+  useEffect(() => {
+    const location = searchParams.get("location") || ""
+    const cuisine = searchParams.get("cuisine") || ""
+
+    setLocationFilter(location)
+    if (cuisine && cuisine !== "any") {
+      setCuisineFilter([cuisine])
+    }
+    setSearchQuery(location) // Use location as initial search query
+
+    applyFilters()
+  }, [searchParams, applyFilters])
+
+  useEffect(() => {
+    applyFilters()
+  }, [applyFilters])
 
   const resetFilters = () => {
     setCuisineFilter([])

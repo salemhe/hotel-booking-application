@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import Image from "next/image"
 
 const schema = z.object({
   dishName: z.string().min(1, "Dish name is required"),
@@ -135,7 +136,7 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
         >
           <div className="space-y-1 text-center">
             {imagePreview ? (
-              <img
+              <Image
                 src={imagePreview || "/placeholder.svg"}
                 alt="Preview"
                 className="mx-auto h-32 w-32 object-cover rounded-md"
