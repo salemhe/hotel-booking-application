@@ -79,12 +79,16 @@ function Header() {
           console.warn("Invalid vendors data format")
         }
       } catch (error: unknown) {
-        if (error instanceof AxiosError) {
-          console.error(error.response?.data?.message || "failed to fetch vendor data");
-        } else if (error instanceof Error) {
-          console.error(error.message || "failed to fetch vendor data");
-        } else {
-          console.error("An unknown error occurred");
+        console.error("Failed to fetch vendor data:", error)
+        interface ApiError {
+          response: {
+            status: number;
+            data: unknown;
+          };
+        }
+        if (error && typeof error === 'object' && 'response' in error) {
+          const apiError = error as ApiError;
+          console.error("Error response:", apiError.response.status, apiError.response.data);
         }
       } finally {
         setLoading(false)

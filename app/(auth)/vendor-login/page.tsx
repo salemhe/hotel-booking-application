@@ -23,14 +23,11 @@ export default function VendorLoginPage() {
   
     try {
       // Retrieve user role from localStorage (replace with API call in real apps)
-      const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
-      if (storedUser.email === email) {
-        localStorage.setItem("role", storedUser.role)
-        router.push(storedUser.role === "super-admin" ? "/vendorDashboard/insights" : "/vendorDashboard")
-      } else {
-        alert("Invalid credentials")
-      }
-  
+      // const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
+      // if (storedUser.email === email) {
+      //   localStorage.setItem("role", storedUser.role)
+      //   router.push(storedUser.role === "super-admin" ? "/vendorDashboard/insights" : "/vendorDashboard")
+      // }
       console.log('Calling login service'); // Debug log
       const response = await AuthService.login(email, password);
       console.log('Login service response:', response); // Debug log

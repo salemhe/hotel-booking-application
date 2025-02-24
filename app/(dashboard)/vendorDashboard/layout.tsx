@@ -2,7 +2,6 @@ import Header from "@/components/headers/VendorHeader";
 import { AppSidebar } from "@/components/sidebars/VendorSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 // import ProtectedRoute from "@/components/ProtectedRoute";
-// TODO will have to uncomment this line when the protected route is implemented
 
 
 export default function VendorDasboardLayout({
