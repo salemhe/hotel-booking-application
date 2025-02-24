@@ -90,14 +90,14 @@ export default function VendorSignupPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4">
+    <div className="min-h-[100dvh] bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-xs">
           <CardHeader className="space-y-3 pb-6 px-6">
             <div className="flex justify-center mb-2">
               <Store className="h-12 w-12 text-emerald-400" />
             </div>
-            <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-bold text-center bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               {showOTPInput ? "Verify Your Email" : "Create Vendor Account"}
             </CardTitle>
           </CardHeader>
@@ -118,7 +118,7 @@ export default function VendorSignupPage() {
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white h-12"
+                  className="w-full bg-linear-to-r from-emerald-600 to-teal-600 text-white h-12"
                   disabled={loading}
                 >
                   {loading ? "Verifying..." : "Verify Email"}
@@ -294,7 +294,7 @@ export default function VendorSignupPage() {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
+                  className="w-full h-12 bg-linear-to-r from-emerald-600 to-teal-600 text-white"
                   disabled={loading}
                 >
                   {loading ? "Creating Account..." : "Create Account"}

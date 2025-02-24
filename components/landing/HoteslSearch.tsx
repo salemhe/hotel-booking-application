@@ -44,7 +44,7 @@ export function HotelSearch() {
     <form onSubmit={onSubmit} className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
       <div>
         <Label htmlFor="hotel-location">Location</Label>
-        <div className="mt-1 relative rounded-md shadow-sm">
+        <div className="mt-1 relative rounded-md shadow-xs">
           <MapPin
             className="absolute top-1/2 left-3 -mt-2 text-gray-400"
             size={16}

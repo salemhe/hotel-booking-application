@@ -1,164 +1,36 @@
-// import Image from "next/image"
-// import Link from "next/link"
-// import { ArrowRight} from "lucide-react"
-// import { Button } from "@/components/ui/button"
-// import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-// import { TabbedSearch } from "@/components/landing/TabbedSearch"
-
-// export default function Home() {
-//   return (
-//     <div className="bg-gray-100">
-//       {/* Hero section */}
-//       <div className="relative bg-blue-600">
-//         <div className="absolute inset-0">
-//           <Image
-//             className="w-full h-full object-cover"
-//             src="/hero-bg.jpg"
-//             alt="Hero background"
-//             width={1600}
-//             height={600}
-//           />
-//           <div className="absolute inset-0 bg-blue-600 opacity-75" aria-hidden="true"></div>
-//         </div>
-//         <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
-//           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-//             Discover Amazing Dining Experiences
-//           </h1>
-//           <p className="mt-6 text-xl text-blue-100 max-w-3xl">
-//             Find and book the best restaurants and hotels for your next culinary adventure.
-//           </p>
-//         </div>
-//       </div>
-
-//       <TabbedSearch />
-
-//       {/* Featured Restaurants section */}
-//       <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
-//         <div className="text-center">
-//           <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Featured Restaurants</h2>
-//           <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
-//             Discover our top-rated dining experiences
-//           </p>
-//         </div>
-//         <div className="mt-12 grid gap-8 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-12">
-//           {[1, 2, 3].map((index) => (
-//             <Card key={index}>
-//               <CardHeader className="p-0">
-//                 <Image
-//                   src="/hero-bg.jpg"
-//                   alt={`Featured restaurant ${index}`}
-//                   width={300}
-//                   height={200}
-//                   className="w-full h-48 object-cover rounded-t-lg"
-//                 />
-//               </CardHeader>
-//               <CardContent className="p-6">
-//                 <CardTitle>Restaurant {index}</CardTitle>
-//                 <CardDescription>Cuisine Type • ₦₦ • 4.5 ★</CardDescription>
-//                 <p className="mt-2 text-sm text-gray-500">
-//                   Experience exquisite flavors and impeccable service at this top-rated restaurant.
-//                 </p>
-//               </CardContent>
-//               <CardFooter className="p-6 pt-0">
-//                 <Button asChild className="w-full">
-//                   <Link href={`/restaurants/${index}`}>Book Now</Link>
-//                 </Button>
-//               </CardFooter>
-//             </Card>
-//           ))}
-//         </div>
-//         <div className="mt-12 text-center">
-//           <Button asChild>
-//             <Link href="/restaurants">
-//               View All Restaurants
-//               <ArrowRight className="ml-2 h-4 w-4" />
-//             </Link>
-//           </Button>
-//         </div>
-//       </div>
-
-//       {/* Featured Hotels section */}
-//       <div className="bg-gray-50">
-//         <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
-//           <div className="text-center">
-//             <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Featured Hotels</h2>
-//             <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
-//               Find the perfect place to stay for your culinary journey
-//             </p>
-//           </div>
-//           <div className="mt-12 grid gap-8 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-12">
-//             {[1, 2, 3].map((index) => (
-//               <Card key={index}>
-//                 <CardHeader className="p-0">
-//                   <Image
-//                     src="/hero-bg.jpg"
-//                     alt={`Featured hotel ${index}`}
-//                     width={300}
-//                     height={200}
-//                     className="w-full h-48 object-cover rounded-t-lg"
-//                   />
-//                 </CardHeader>
-//                 <CardContent className="p-6">
-//                   <CardTitle>Hotel {index}</CardTitle>
-//                   <CardDescription>Location • ₦₦₦ • 4.8 ★</CardDescription>
-//                   <p className="mt-2 text-sm text-gray-500">
-//                     Luxurious accommodations with easy access to the city&apos;s best restaurants.
-//                   </p>
-//                 </CardContent>
-//                 <CardFooter className="p-6 pt-0">
-//                   <Button asChild className="w-full">
-//                     <Link href={`/hotels/${index}`}>Book Now</Link>
-//                   </Button>
-//                 </CardFooter>
-//               </Card>
-//             ))}
-//           </div>
-//           <div className="mt-12 text-center">
-//             <Button asChild>
-//               <Link href="/hotels">
-//                 View All Hotels
-//                 <ArrowRight className="ml-2 h-4 w-4" />
-//               </Link>
-//             </Button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ChefHat,
   Search,
-  Star,
-  Users,
-  Utensils,
-  Clock,
-  MapPin,
+  Coffee,
+  Pizza,
+  Fish,
+  Soup,
+  Beef,
+  Salad,
+  IceCream,
+  Cookie,
+  Gift,
+  ThumbsUp,
+  Timer,
+  Sparkles,
   ArrowRight,
-  Menu,
-  LogIn,
-  UserCircle,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
+  Utensils,
+  Star,
+  CalendarIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -166,369 +38,493 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 export default function LandingPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
+  const [location, setLocation] = useState<string>();
+  const [cuisine, setCuisine] = useState<string>();
+  const [guests, setGuests] = useState<string>();
+  const [date, setDate] = useState<Date>();
+  const [time, setTime] = useState<string>();
 
-  useEffect(() => {
-    // Check for auth token in localStorage
-    const token = localStorage.getItem("auth_token");
-    setIsAuthenticated(!!token);
-  }, []);
+
+
+  const cuisineTypes = [
+    { name: "Italian", icon: Pizza },
+    { name: "Seafood", icon: Fish },
+    { name: "Asian", icon: Soup },
+    { name: "Steakhouse", icon: Beef },
+    { name: "Café", icon: Coffee },
+    { name: "Vegetarian", icon: Salad },
+    { name: "Desserts", icon: IceCream },
+    { name: "Bakery", icon: Cookie },
+  ];
+
+  const features = [
+    {
+      icon: Timer,
+      title: "Quick Booking",
+      description: "Reserve your table in seconds",
+      color: "text-blue-600 bg-blue-100",
+    },
+    {
+      icon: Gift,
+      title: "Special Offers",
+      description: "Exclusive deals and discounts",
+      color: "text-green-600 bg-green-100",
+    },
+    {
+      icon: ThumbsUp,
+      title: "Verified Reviews",
+      description: "Real feedback from diners",
+      color: "text-purple-600 bg-purple-100",
+    },
+    {
+      icon: Sparkles,
+      title: "Premium Experience",
+      description: "Curated dining selections",
+      color: "text-orange-600 bg-orange-100",
+    },
+  ];
+
+  const cities = [
+    {
+      name: "Lagos",
+      image: "/hero-bg.jpg",
+      restaurants: 1200,
+      cuisine: "Diverse Culinary Scene",
+    },
+    {
+      name: "Abuja",
+      image: "/hero-bg.jpg",
+      restaurants: 980,
+      cuisine: "International Fusion",
+    },
+    {
+      name: "Anambra",
+      image: "/hero-bg.jpg",
+      restaurants: 850,
+      cuisine: "Classic American",
+    },
+    {
+      name: "Bayelsa",
+      image: "/hero-bg.jpg",
+      restaurants: 720,
+      cuisine: "Latin & Seafood",
+    },
+  ];
+
+  const deals = [
+    {
+      title: "Weekend Brunch Special",
+      description: "Complimentary mimosa with any brunch entrée",
+      restaurant: "Sunrise Café",
+      discount: "20% OFF",
+      validUntil: "Weekends Only",
+      image: "/hero-bg.jpg",
+    },
+    {
+      title: "Date Night Package",
+      description: "4-course dinner for two with wine pairing",
+      restaurant: "La Romance",
+      discount: "Save $50",
+      validUntil: "Tuesday-Thursday",
+      image: "/hero-bg.jpg",
+    },
+    {
+      title: "Happy Hour Delights",
+      description: "Half-price appetizers and craft cocktails",
+      restaurant: "Urban Lounge",
+      discount: "50% OFF",
+      validUntil: "4PM-7PM Daily",
+      image: "/hero-bg.jpg",
+    },
+  ];
 
   const testimonials = [
     {
       name: "Sarah Johnson",
-      rating: 5,
+      role: "Food Enthusiast",
+      image: "/hero-bg.jpg",
       comment:
-        "Found my new favorite Italian restaurant through TableScout! The booking process was seamless.",
+        "The best restaurant booking platform I've ever used. So easy and reliable!",
+      rating: 5,
     },
     {
       name: "Michael Chen",
-      rating: 5,
+      role: "Food Blogger",
+      image: "/hero-bg.jpg",
       comment:
-        "Great app for last-minute dinner reservations. Saved me multiple times!",
+        "Game-changer for restaurant reservations. Love the instant confirmation!",
+      rating: 5,
     },
     {
       name: "Emma Davis",
-      rating: 5,
+      role: "Restaurant Owner",
+      image: "/hero-bg.jpg",
       comment:
-        "Love the special offers and the variety of restaurants available.",
+        "Increased our bookings by 40%. The platform is a must-have for restaurants.",
+      rating: 5,
     },
     {
-      name: "James Wilson",
-      rating: 5,
+      name: "Alex Thompson",
+      role: "Regular Diner",
+      image: "/hero-bg.jpg",
       comment:
-        "The best restaurant booking platform I've used. Simple and efficient!",
+        "Never had a bad experience. The recommendations are always spot-on!",
+      rating: 5,
+    },
+    {
+      name: "Lisa Wang",
+      role: "Food Critic",
+      image: "/hero-bg.jpg",
+      comment:
+        "Finally, a platform that understands what diners and restaurants need.",
+      rating: 5,
+    },
+    {
+      name: "David Miller",
+      role: "Chef",
+      image: "/hero-bg.jpg",
+      comment: "The attention to detail and customer service is exceptional.",
+      rating: 5,
     },
   ];
 
+  const handleSubmit = () => {
+    if (!location || !cuisine) return;
+    router.push(`/restaurants?location=${location}&cuisine=${cuisine}&guests=${guests}&date=${date}&time=${time}`)
+  }
+
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-blue-50 to-white dark:from-slate-950 dark:to-slate-900">
-      <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/95">
-        <div className="container flex h-16 items-center justify-between mx-auto px-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <ChefHat className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              Bookie
-            </span>
-          </Link>
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link
-              href="#how-it-works"
-              className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400"
-            >
-              How It Works
-            </Link>
-            <Link
-              href="/restaurants"
-              className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400"
-            >
-              Browse Restaurants
-            </Link>
-            <Link
-              href="deals"
-              className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400"
-            >
-              Special Offers
-            </Link>
-            {isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    onClick={() => router.push("/dashboard")}
-                    variant="ghost"
-                    className="relative"
-                  >
-                    <UserCircle className="h-5 w-5 mr-2" />
-                    My Account
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard">Dashboard</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/bookings">My Bookings</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile">Profile Settings</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => {
-                      localStorage.removeItem("auth_token");
-                      setIsAuthenticated(false);
-                    }}
-                    className="text-red-600 dark:text-red-400"
-                  >
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <div className="flex items-center space-x-4">
-                <Button
-                  onClick={() => router.push("/user-login")}
-                  variant="ghost"
-                  className="flex items-center"
-                >
-                  <LogIn className="h-5 w-5 mr-2" />
-                  Sign In
-                </Button>
-                <Button
-                  onClick={() => router.push("/user-signup")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Sign Up
-                </Button>
-              </div>
-            )}
-          </nav>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" className="md:hidden">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <nav className="flex flex-col space-y-4">
-                <Link
-                  href="#how-it-works"
-                  className="text-sm font-medium hover:text-blue-600"
-                >
-                  How It Works
-                </Link>
-                <Link
-                  href="/restaurants"
-                  className="text-sm font-medium hover:text-blue-600"
-                >
-                  Browse Restaurants
-                </Link>
-                <Link
-                  href="deals"
-                  className="text-sm font-medium hover:text-blue-600"
-                >
-                  Special Offers
-                </Link>
-                {isAuthenticated ? (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      className="text-sm font-medium hover:text-blue-600"
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      href="/bookings"
-                      className="text-sm font-medium hover:text-blue-600"
-                    >
-                      My Bookings
-                    </Link>
-                    <Button
-                      variant="ghost"
-                      onClick={() => {
-                        localStorage.removeItem("auth_token");
-                        setIsAuthenticated(false);
-                      }}
-                      className="justify-start text-red-600"
-                    >
-                      Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant="ghost" className="justify-start">
-                      Sign In
-                    </Button>
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      Sign Up
-                    </Button>
-                  </>
-                )}
-              </nav>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </header>
+    <div className="flex min-h-screen flex-col">
+      {/* Header Section */}
+      
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-green-900">
-            <div className="absolute inset-0 bg-[url('/hero-bg.jpg')] opacity-50 bg-cover bg-center" />
+        <section className="relative py-16 md:py-24 min-h-[600px] flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0">
+            <Image
+              src="/hero-bg.jpg"
+              alt="Fine dining ambiance"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-linear-to-r from-blue-900/90 to-green-900/90" />
           </div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="container relative py-24 md:py-32 mx-auto px-4"
-          >
-            <div className="mx-auto max-w-4xl text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+          <div className="relative container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="sm:text-center mb-12"
+            >
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
                 Your Perfect Dining Experience Awaits
               </h1>
-              <p className="mt-6 text-lg leading-8 text-blue-100">
+              <p className="text-xl text-blue-100 max-w-2xl mx-auto">
                 Book your table at the finest restaurants in seconds. No calls
                 needed, instant confirmation.
               </p>
-              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <div className="relative w-full flex-1 sm:max-w-md">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Search restaurants or cuisines"
-                    className="pl-9 pr-4 py-1 text-base bg-white/95 dark:bg-slate-950/95 w-full"
-                  />
-                </div>
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
-                >
-                  Find a Table
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        </section>
-
-        {/* Featured Restaurants */}
-        <section className="py-16 bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-950">
-          <div className="container mx-auto px-4">
+            </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="max-w-4xl mx-auto"
             >
-              <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Top-Rated Restaurants
-              </h2>
-              <p className="mt-4 text-muted-foreground">
-                Discover the most loved dining spots in your area
-              </p>
-            </motion.div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <Card className="overflow-hidden group">
-                    <div className="aspect-[16/9] relative overflow-hidden">
-                      <div className="absolute inset-0 bg-[url('/hero-bg.jpg')] bg-cover bg-center transform transition-transform group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <Card className="bg-white/95 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Location</label>
+                      <Select value={location} onValueChange={setLocation}>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select City" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {cities.map((city) => (
+                            <SelectItem
+                              key={city.name}
+                              value={city.name.toLowerCase()}
+                            >
+                              {city.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-xl">
-                            Fine Dining {i}
-                          </CardTitle>
-                          <CardDescription className="flex items-center mt-1">
-                            <MapPin className="h-4 w-4 mr-1" />
-                            Downtown Area
-                          </CardDescription>
-                        </div>
-                        <Badge
-                          variant="secondary"
-                          className="bg-orange-500 text-white"
-                        >
-                          <Star className="h-3 w-3 mr-1 fill-current" />
-                          4.8
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                        <span className="flex items-center">
-                          <Utensils className="h-4 w-4 mr-1" />
-                          Italian
-                        </span>
-                        <span className="flex items-center">
-                          <Users className="h-4 w-4 mr-1" />
-                          2-8
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          30-60m
-                        </span>
-                      </div>
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                        Book Now
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Cuisine</label>
+                      <Select value={cuisine} onValueChange={setCuisine}>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select Cuisine" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {cuisineTypes.map((cuisine) => (
+                            <SelectItem
+                              key={cuisine.name}
+                              value={cuisine.name.toLowerCase()}
+                            >
+                              {cuisine.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Guests</label>
+                      <Select value={guests} onValueChange={setGuests}>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Number of Guests" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                            <SelectItem key={num} value={num.toString()}>
+                              {num} {num === 1 ? "Guest" : "Guests"}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Date</label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !date && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? format(date, "PPP") : "Pick a date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Time</label>
+                      <Select value={time} onValueChange={setTime}>
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select time" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 24 }, (_, i) => {
+                            const hour = i.toString().padStart(2, "0");
+                            return (
+                              <SelectItem key={hour} value={`${hour}:00`}>
+                                {`${hour}:00`}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <Button onClick={handleSubmit} className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Search className="mr-2 h-4 w-4" />
+                    Find a Table
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </section>
 
         {/* How It Works */}
-        <section id="how-it-works" className="py-16">
+        <section className="py-20 bg-linear-to-b from-white to-blue-50">
           <div className="container mx-auto px-4">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="text-3xl font-bold tracking-tight text-center mb-12 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent"
-            >
-              Book in 3 Simple Steps
-            </motion.h2>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                How It Works
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Book your favorite restaurant in 3 simple steps
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 {
-                  title: "Search",
-                  description:
-                    "Find restaurants by cuisine, location, or availability",
                   icon: Search,
-                  color: "blue",
+                  title: "Find",
+                  description:
+                    "Search for restaurants by location, cuisine, or availability",
                 },
                 {
+                  icon: CalendarIcon,
                   title: "Book",
-                  description: "Reserve your table with just a few clicks",
-                  icon: Clock,
-                  color: "green",
+                  description:
+                    "Select your preferred date, time, and party size",
                 },
                 {
-                  title: "Dine",
-                  description: "Enjoy your meal at your chosen restaurant",
                   icon: Utensils,
-                  color: "orange",
+                  title: "Dine",
+                  description: "Enjoy your meal with instant confirmation",
                 },
-              ].map((step, i) => (
+              ].map((step, index) => (
                 <motion.div
-                  key={i}
+                  key={step.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.2 }}
+                  className="relative"
                 >
-                  <Card className="relative h-full hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div
-                        className={`mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-${step.color}-100 dark:bg-${step.color}-900/20`}
-                      >
-                        <step.icon
-                          className={`h-6 w-6 text-${step.color}-600 dark:text-${step.color}-400`}
-                        />
+                  <Card className="h-full">
+                    <CardContent className="pt-6">
+                      <div className="mb-4 w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto">
+                        <step.icon className="w-6 h-6 text-blue-600" />
                       </div>
-                      <CardTitle>{step.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">
-                        {step.description}
+                      <div className="text-center">
+                        <h3 className="text-xl font-semibold mb-2">
+                          {step.title}
+                        </h3>
+                        <p className="text-gray-600">{step.description}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  {index < 2 && (
+                    <ArrowRight className="hidden md:block absolute top-1/2 -right-8 w-8 h-8 text-blue-600 transform -translate-y-1/2" />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="py-20 bg-linear-to-b from-blue-50 to-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                Why Choose Bookie?
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Experience the best in dining reservations with our premium
+                features
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-center"
+                >
+                  <div
+                    className={`mx-auto w-16 h-16 mb-6 rounded-full ${feature.color} flex items-center justify-center`}
+                  >
+                    <feature.icon className={`w-8 h-8 ${feature.color}`} />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Popular Cities */}
+        <section className="py-20 bg-linear-to-b from-white to-blue-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                Popular Dining Cities
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Explore top restaurants in these culinary destinations
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {cities.map((city, index) => (
+                <motion.div
+                  key={city.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="group cursor-pointer"
+                >
+                  <div className="relative h-64 rounded-xl overflow-hidden">
+                    <Image
+                      src={city.image}
+                      alt={city.name}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-blue-900/90 to-transparent" />
+                    <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
+                      <h3 className="text-2xl font-bold mb-1">{city.name}</h3>
+                      <p className="text-blue-200 text-sm">
+                        {city.restaurants} Restaurants
                       </p>
+                      <p className="text-blue-200 text-sm">{city.cuisine}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Cuisine Categories */}
+        <section className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                Explore by Cuisine
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Find restaurants by your favorite type of food
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {cuisineTypes.map((cuisine, index) => (
+                <motion.div
+                  key={cuisine.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="group"
+                >
+                  <Card className="text-center hover:border-blue-200 transition-colors">
+                    <CardContent className="p-6">
+                      <div className="mb-4 w-16 h-16 mx-auto rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                        <cuisine.icon className="w-8 h-8 text-blue-600" />
+                      </div>
+                      <h3 className="font-semibold">{cuisine.name}</h3>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -537,30 +533,85 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="py-16 bg-blue-50 dark:bg-slate-900/50 overflow-hidden">
+        {/* Special Offers */}
+        <section className="py-20 bg-linear-to-b from-blue-50 to-white">
           <div className="container mx-auto px-4">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="text-3xl font-bold tracking-tight text-center mb-12 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent"
-            >
-              What Our Users Say
-            </motion.h2>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                Special Offers
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Exclusive deals from top restaurants
+              </p>
+            </div>
+            <Carousel className="w-full">
+              <CarouselContent>
+                {deals.map((deal, index) => (
+                  <CarouselItem
+                    key={index}
+                    className="basis-3/4 md:basis-1/2 lg:basis-1/3 p-2"
+                  >
+                    <Card className="overflow-hidden">
+                      <div className="relative h-48">
+                        <Image
+                          src={deal.image || "/placeholder.svg"}
+                          alt={deal.title}
+                          fill
+                          className="object-cover"
+                        />
+                        <div className="absolute top-4 right-4">
+                          <Badge className="bg-blue-600 text-white">
+                            {deal.discount}
+                          </Badge>
+                        </div>
+                      </div>
+                      <CardHeader>
+                        <CardTitle>{deal.title}</CardTitle>
+                        <CardDescription>{deal.restaurant}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-600 mb-2">{deal.description}</p>
+                        <p className="text-sm font-medium text-blue-600">
+                          {deal.validUntil}
+                        </p>
+                      </CardContent>
+                      <CardFooter>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                          <Gift className="mr-2 h-4 w-4" />
+                          Claim Offer
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section className="py-20 overflow-hidden bg-linear-to-b from-blue-50 to-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                What Our Users Say
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Join thousands of satisfied diners and restaurant owners
+              </p>
+            </div>
             <div className="relative">
-              <div className="flex animate-marquee space-x-8">
+              <div className="flex space-x-8 animate-marquee">
                 {[...testimonials, ...testimonials].map((testimonial, i) => (
-                  <Card key={i} className="w-[300px] flex-shrink-0">
+                  <Card key={i} className="w-[300px] shrink-0">
                     <CardHeader>
                       <div className="flex items-center gap-4">
                         <div className="h-12 w-12 rounded-full overflow-hidden">
                           <Image
-                            src="/hero-bg.jpg"
+                            src={testimonial.image}
                             alt={testimonial.name}
-                            width={50}
-                            height={50}
+                            width={48}
+                            height={48}
                             className="h-full w-full object-cover"
                           />
                         </div>
@@ -568,16 +619,19 @@ export default function LandingPage() {
                           <CardTitle className="text-lg">
                             {testimonial.name}
                           </CardTitle>
-                          <div className="flex text-orange-400">
-                            {[...Array(testimonial.rating)].map((_, i) => (
-                              <Star key={i} className="h-4 w-4 fill-current" />
-                            ))}
-                          </div>
+                          <CardDescription>{testimonial.role}</CardDescription>
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground">
+                      <div className="flex text-yellow-400 mb-2">
+                        {Array.from({ length: testimonial.rating }).map(
+                          (_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-current" />
+                          )
+                        )}
+                      </div>
+                      <p className="text-gray-600">
                         &quot;{testimonial.comment}&quot;
                       </p>
                     </CardContent>
@@ -588,163 +642,102 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Partner CTA */}
-        <section className="py-16">
+        {/* Restaurant Vendors CTA */}
+        <section className="py-20 bg-linear-to-r from-blue-600 to-green-600">
           <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="rounded-2xl bg-gradient-to-r from-blue-600 to-green-600 p-8 md:p-12 lg:p-16"
-            >
-              <div className="grid gap-8 md:grid-cols-2 md:gap-12">
-                <div>
-                  <h2 className="text-3xl font-bold tracking-tight text-white mb-4">
-                    Simplify Reservations & Grow Your Business
-                  </h2>
-                  <p className="text-blue-100 mb-6">
-                    Say goodbye to no-shows and manual booking hassles! Our
-                    advanced reservation system helps you manage table
-                    availability, streamline customer flow, and increase
-                    efficiency. Take your restaurant to the next level with
-                    smart technology!
-                  </p>
-                  <Button variant="secondary" size="lg" asChild>
-                    <Link
-                      href="/vendors-landing-page"
-                      className="flex items-center"
-                    >
-                      Join for Free
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-                <div className="grid grid-cols-2 gap-4 text-white">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="text-white">
+                <h2 className="text-3xl font-bold mb-6">
+                  Simplify Reservations & Grow Your Business
+                </h2>
+                <p className="text-xl mb-8 text-blue-50">
+                  Say goodbye to no-shows and manual booking hassles! Our
+                  advanced reservation system helps you manage table
+                  availability, streamline customer flow, and increase
+                  efficiency. Take your restaurant to the next level with smart
+                  technology!
+                </p>
+                <div className="grid sm:grid-cols-2 gap-4 mb-8">
                   {[
-                    { number: "5000+", label: "Restaurants" },
-                    { number: "100K+", label: "Monthly Bookings" },
-                    { number: "500K+", label: "Happy Diners" },
-                    { number: "50+", label: "Cities" },
+                    { number: "50K+", label: "Monthly Bookings" },
+                    { number: "2K+", label: "Restaurant Partners" },
+                    { number: "95%", label: "Customer Satisfaction" },
+                    { number: "30%", label: "Revenue Increase" },
                   ].map((stat, i) => (
                     <motion.div
-                      key={i}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: i * 0.1 }}
                       viewport={{ once: true }}
-                      className="rounded-lg bg-white/10 p-4 backdrop-blur-sm"
+                      key={stat.label}
+                      className="bg-white/10 rounded-lg p-4 backdrop-blur-xs"
                     >
                       <div className="text-2xl font-bold">{stat.number}</div>
-                      <div className="text-sm text-blue-100">{stat.label}</div>
+                      <div className="text-blue-100">{stat.label}</div>
                     </motion.div>
                   ))}
                 </div>
+                <Button variant="secondary" size="lg" asChild>
+                  <Link
+                    href="/vendors-landing-page"
+                    className="flex items-center"
+                  >
+                    Join for Free
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
               </div>
-            </motion.div>
+              <div className="relative hidden md:block">
+                <div className="absolute inset-0 bg-linear-to-r from-blue-600/20 to-green-600/20 rounded-2xl" />
+                <Image
+                  src="/hero-bg.jpg"
+                  alt="Restaurant Management"
+                  width={800}
+                  height={600}
+                  className="rounded-2xl"
+                />
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Newsletter */}
-        <section className="py-16 bg-blue-50 dark:bg-slate-900/50">
+        <section className="py-20 bg-linear-to-b from-white to-blue-50">
           <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="mx-auto max-w-xl text-center"
-            >
-              <h2 className="text-3xl font-bold tracking-tight mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Stay Updated
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                Subscribe to our newsletter for exclusive restaurant
-                recommendations and special offers.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1"
-                />
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  Subscribe
-                </Button>
+            <Card className="max-w-4xl mx-auto overflow-hidden">
+              <div className="grid md:grid-cols-2">
+                <div className="relative h-64 md:h-auto">
+                  <Image
+                    src="/hero-bg.jpg"
+                    alt="Newsletter"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-r from-blue-900/90 to-green-900/90" />
+                  <div className="absolute inset-0 p-6 flex flex-col justify-center text-white">
+                    <h3 className="text-2xl font-bold mb-2">Stay Updated</h3>
+                    <p className="text-blue-100">
+                      Get the latest deals and restaurant recommendations
+                    </p>
+                  </div>
+                </div>
+                <div className="p-6 md:p-8">
+                  <div className="space-y-4">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      className="w-full"
+                    />
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                      Subscribe for Exclusive Offers
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </motion.div>
+            </Card>
           </div>
         </section>
       </main>
-
-      <footer className="border-t py-12 bg-white dark:bg-slate-950">
-        <div className="container grid gap-8 md:grid-cols-2 lg:grid-cols-4 mx-auto px-4">
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <ChefHat className="h-6 w-6 text-blue-600" />
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Bookie
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Making restaurant reservations simple and enjoyable.
-            </p>
-          </div>
-          {[
-            {
-              title: "Company",
-              links: ["About Us", "Careers", "Press", "Contact"],
-            },
-            {
-              title: "Resources",
-              links: ["Blog", "Help Center", "Guidelines", "FAQs"],
-            },
-            {
-              title: "Legal",
-              links: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
-            },
-          ].map((section, i) => (
-            <div key={i}>
-              <h3 className="font-semibold mb-4">{section.title}</h3>
-              <ul className="space-y-2">
-                {section.links.map((link, j) => (
-                  <li key={j}>
-                    <Link
-                      href="#"
-                      className="text-sm text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400"
-                    >
-                      {link}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="mt-8 border-t border-gray-300 pt-8 md:flex md:items-center md:justify-between container mx-auto px-4">
-          <div className="flex space-x-6 md:order-2">
-            <Link href="#" className="text-gray-400 hover:text-gray-300">
-              <span className="sr-only">Facebook</span>
-              <Facebook className="h-6 w-6" aria-hidden="true" />
-            </Link>
-            <Link href="#" className="text-gray-400 hover:text-gray-300">
-              <span className="sr-only">Twitter</span>
-              <Twitter className="h-6 w-6" aria-hidden="true" />
-            </Link>
-            <Link href="#" className="text-gray-400 hover:text-gray-300">
-              <span className="sr-only">Instagram</span>
-              <Instagram className="h-6 w-6" aria-hidden="true" />
-            </Link>
-            <Link href="#" className="text-gray-400 hover:text-gray-300">
-              <span className="sr-only">LinkedIn</span>
-              <Linkedin className="h-6 w-6" aria-hidden="true" />
-            </Link>
-          </div>
-          <p className="mt-8 text-sm text-gray-400 md:mt-0 md:order-1">
-            &copy; 2023 Brand name, Inc. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

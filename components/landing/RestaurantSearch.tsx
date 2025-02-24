@@ -32,7 +32,7 @@ export function RestaurantSearch() {
       >
         <div>
           <Label htmlFor="restaurant-location">Restaurant</Label>
-          <div className="mt-1 relative rounded-md shadow-sm">
+          <div className="mt-1 relative rounded-md shadow-xs">
             <UtensilsCrossed
               className="absolute top-1/2 left-3 -mt-2 text-gray-400"
               size={16}
@@ -50,7 +50,7 @@ export function RestaurantSearch() {
         </div>
         <div>
           <Label htmlFor="restaurant-location">Location</Label>
-          <div className="mt-1 relative rounded-md shadow-sm">
+          <div className="mt-1 relative rounded-md shadow-xs">
             <MapPin
               className="absolute top-1/2 left-3 -mt-2 text-gray-400"
               size={16}

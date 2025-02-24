@@ -63,14 +63,14 @@ export default function VendorLoginPage() {
   };
   
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+    <div className="min-h-[100dvh] bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
-        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-xs">
           <CardHeader className="space-y-3 pb-6 md:pb-8 px-4 sm:px-6 md:px-8">
             <div className="flex justify-center mb-2">
               <Store className="h-12 w-12 text-emerald-600" />
             </div>
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-center bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Vendor Login
             </CardTitle>
             <CardDescription className="text-center text-gray-600 text-sm sm:text-base">
@@ -115,7 +115,7 @@ export default function VendorLoginPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full h-10 sm:h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm sm:text-base font-medium shadow-md hover:shadow-lg transition-all duration-200"
+                className="w-full h-10 sm:h-12 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm sm:text-base font-medium shadow-md hover:shadow-lg transition-all duration-200"
                 disabled={loading}
               >
                 {loading ? (

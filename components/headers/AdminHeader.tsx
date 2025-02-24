@@ -43,7 +43,7 @@ function Header() {
 //   }, []);
 
   return (
-   <header className="flex h-20  items-center gap-2 w-full bg-white z-10 border-b border-gray-100  md:pr-64 group-has-[[data-collapsible=icon]]/sidebar-wrapper:pr-12 transition-[width,height] ease-linear fixed group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-16">
+   <header className="flex h-20  items-center gap-2 w-full bg-white z-10 border-b border-gray-100  md:pr-64 group-has-data-[collapsible=icon]/sidebar-wrapper:pr-12 transition-[width,height] ease-linear fixed group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
    <div className="flex items-center justify-between gap- px-4 w-full">
      <div className="flex items-center justify-center gap-3">
       <SidebarTrigger className="-ml-1" />

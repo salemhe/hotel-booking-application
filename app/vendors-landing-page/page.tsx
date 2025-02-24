@@ -197,7 +197,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      <header className="bg-linear-to-r from-blue-600 to-blue-800 text-white">
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center relative">
       {/* Logo */}
       <div className="flex items-center space-x-2">

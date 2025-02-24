@@ -36,10 +36,10 @@ export default function AccountTypeModal({ isOpen, onClose, auth }: AccountTypeM
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[550px] p-8 rounded-3xl shadow-2xl bg-gradient-to-b from-white via-white to-gray-50 transform transition-all duration-500">
+      <DialogContent className="sm:max-w-[550px] p-8 rounded-3xl shadow-2xl bg-linear-to-b from-white via-white to-gray-50 transform transition-all duration-500">
         <DialogHeader className="mb-8">
           <div className="space-y-4">
-            <DialogTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 pb-1">
+            <DialogTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 pb-1">
               Choose Your Journey
             </DialogTitle>
             <p className="text-center text-gray-600 text-lg font-medium">
@@ -52,14 +52,14 @@ export default function AccountTypeModal({ isOpen, onClose, auth }: AccountTypeM
           <div
             className={`transform transition-all duration-300 ${
               hoveredButton === "user" ? "scale-[1.02]" : "scale-100"
-            } ${isAnimating ? "blur-sm" : ""}`}
+            } ${isAnimating ? "blur-xs" : ""}`}
             onMouseEnter={() => setHoveredButton("user")}
             onMouseLeave={() => setHoveredButton(null)}
           >
             <Button
               className={`group w-full h-28 relative overflow-hidden ${
                 accountType === "user"
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-200"
+                  ? "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-200"
                   : "bg-white hover:bg-gray-50 hover:shadow-md"
               } rounded-2xl border-2 transition-all duration-500 ${
                 accountType === "user" ? "border-blue-400" : "border-gray-200"
@@ -67,7 +67,7 @@ export default function AccountTypeModal({ isOpen, onClose, auth }: AccountTypeM
               onClick={() => handleAccountSelect("user")}
               variant="outline"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-r from-blue-600/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
                   <div className={`p-4 rounded-xl ${
@@ -100,14 +100,14 @@ export default function AccountTypeModal({ isOpen, onClose, auth }: AccountTypeM
           <div
             className={`transform transition-all duration-300 ${
               hoveredButton === "vendor" ? "scale-[1.02]" : "scale-100"
-            } ${isAnimating ? "blur-sm" : ""}`}
+            } ${isAnimating ? "blur-xs" : ""}`}
             onMouseEnter={() => setHoveredButton("vendor")}
             onMouseLeave={() => setHoveredButton(null)}
           >
             <Button
               className={`group w-full h-28 relative overflow-hidden ${
                 accountType === "vendor"
-                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-200"
+                  ? "bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-200"
                   : "bg-white hover:bg-gray-50 hover:shadow-md"
               } rounded-2xl border-2 transition-all duration-500 ${
                 accountType === "vendor" ? "border-emerald-400" : "border-gray-200"
@@ -115,7 +115,7 @@ export default function AccountTypeModal({ isOpen, onClose, auth }: AccountTypeM
               onClick={() => handleAccountSelect("vendor")}
               variant="outline"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/10 to-teal-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-r from-emerald-600/10 to-teal-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="flex items-center justify-between px-6">
                 <div className="flex items-center gap-4">
                   <div className={`p-4 rounded-xl ${
@@ -152,7 +152,7 @@ export default function AccountTypeModal({ isOpen, onClose, auth }: AccountTypeM
             disabled={!accountType}
             className={`w-full p-6 rounded-xl text-lg font-bold transition-all duration-500 ${
               accountType
-                ? `bg-gradient-to-r ${
+                ? `bg-linear-to-r ${
                     accountType === "user"
                       ? "from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                       : "from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"

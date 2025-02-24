@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, ShoppingCart, LogOut, ChevronDown } from "lucide-react";
+import { Menu, LogOut, ChevronDown, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { api, setAuthToken } from "@/lib/axios-config";
 import {
@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import AccountTypeModal  from "./AccountTypeModal";
+import AccountTypeModal from "./AccountTypeModal";
 
 export interface UserProfile {
   id: string;
@@ -34,7 +34,7 @@ const Navigation = () => {
   const [auth, setAuth] = useState("");
   const pathname = usePathname();
   const router = useRouter();
-  
+
   // Auth state management
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const isLoggedIn = !!profile;
@@ -100,7 +100,7 @@ const Navigation = () => {
               </div> */}
               <div className="hidden md:block text-left">
                 <p className="text-sm font-medium">
-                  Hi, {profile.firstName} 
+                  Hi, {profile.firstName}
                   {/* {profile.lastName} */}
                 </p>
                 {/* <p className="text-xs text-muted-foreground">User</p> */}
@@ -108,7 +108,6 @@ const Navigation = () => {
               <div className="w-8 h-8 rounded-ful flex items-center justify-center">
                 <ChevronDown className="" />
               </div>
-              
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
@@ -161,8 +160,8 @@ const Navigation = () => {
               </div>
               <div className="ml-3">
                 <div className="text-base font-medium text-gray-800">
-                 Hi,  {profile.firstName} 
-                 {/* {profile.lastName} */}
+                  Hi, {profile.firstName}
+                  {/* {profile.lastName} */}
                 </div>
                 <div className="text-sm font-medium text-gray-500">
                   {profile.email}
@@ -212,13 +211,16 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg">
+    <nav className="bg-white shadow-lg sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-sm supports-backdrop-filter:bg-white/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-2xl font-bold text-blue-600">
-                LOGO
+            <div className="shrink-0 flex items-center">
+              <Link href="/" className="flex items-center space-x-2">
+                <ChefHat className="h-8 w-8 text-blue-600" />
+                <span className="text-2xl font-bold bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                  Bookie
+                </span>
               </Link>
             </div>
           </div>
@@ -230,7 +232,7 @@ const Navigation = () => {
                 className={`${
                   pathname === item.href
                     ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                    : "border-transparent text-gray-700 hover:border-gray-900 hover:text-gray-900"
                 } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
               >
                 {item.name}
@@ -238,7 +240,7 @@ const Navigation = () => {
             ))}
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
-          {/* <p
+            {/* <p
               className= "border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
                onClick={() => {
                 setIsAccountTypeModalOpen(true);
@@ -261,11 +263,10 @@ const Navigation = () => {
                 <BellDot className="h-5 w-5" />
               </Button>
             )} */}
-            <Button variant="ghost" size="icon">
+            {/* <Button variant="ghost" size="icon">
               <ShoppingCart className="h-5 w-5" />
-            </Button>
+            </Button> */}
             {renderAuthButtons()}
-            
           </div>
           <div className="sm:hidden flex items-center">
             <Sheet>

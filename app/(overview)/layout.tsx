@@ -28,9 +28,9 @@ export default function RootLayout({
       <body className={`${poppins.variable} antialiased`}>
           {/* <AuthProvider> */}
             <div className="flex flex-col min-h-screen">
-              {/* <Navigation /> */}
-              <main className="flex-grow bg-gray-50">{children}</main>
-              {/* <Footer /> */}
+              <Navigation />
+              <main className="grow bg-gray-50">{children}</main>
+              <Footer />
             </div>
             <Toaster />
           {/* </AuthProvider> */}

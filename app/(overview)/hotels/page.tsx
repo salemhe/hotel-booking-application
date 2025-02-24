@@ -252,7 +252,7 @@ function Hotels() {
           <Card className="mb-8">
             <CardContent className="p-6">
               <form className="flex flex-col md:flex-row gap-4">
-                <div className="flex-grow">
+                <div className="grow">
                   <Label htmlFor="search" className="sr-only">
                     Search Hotels
                   </Label>
