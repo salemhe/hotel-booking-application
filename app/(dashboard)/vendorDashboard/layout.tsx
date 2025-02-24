@@ -1,7 +1,7 @@
 import Header from "@/components/headers/VendorHeader";
 import { AppSidebar } from "@/components/sidebars/VendorSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import ProtectedRoute from "@/components/ProtectedRoute";
+// import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 export default function VendorDasboardLayout({
@@ -15,11 +15,11 @@ export default function VendorDasboardLayout({
         <AppSidebar />
         <SidebarInset>
           <Header />
-          <ProtectedRoute requiredRole="vendor">
+          {/* <ProtectedRoute requiredRole="vendor"> */}
           <div className="mt-20">
             {children}
           </div>
-          </ProtectedRoute>
+          {/* </ProtectedRoute> */}
         </SidebarInset>
       </SidebarProvider>
     </div>

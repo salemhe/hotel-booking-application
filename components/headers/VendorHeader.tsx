@@ -77,10 +77,17 @@ function Header() {
         } else {
           console.warn("Invalid vendors data format")
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Failed to fetch vendor data:", error)
-        if (error.response) {
-          console.error("Error response:", error.response.status, error.response.data)
+        interface ApiError {
+          response: {
+            status: number;
+            data: unknown;
+          };
+        }
+        if (error && typeof error === 'object' && 'response' in error) {
+          const apiError = error as ApiError;
+          console.error("Error response:", apiError.response.status, apiError.response.data);
         }
       } finally {
         setLoading(false)
