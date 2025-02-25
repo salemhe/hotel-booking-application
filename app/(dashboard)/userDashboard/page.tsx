@@ -15,6 +15,7 @@ export interface UserProfile {
 
 export default function UserDashboard() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true); // Add a loading state
   const router = useRouter();
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function UserDashboard() {
           const expiresAt = sessionResponse.data.expiresAt;
 
           if (new Date(expiresAt) < new Date()) {
-            router.push("/user-login");
+            // router.push("/user-login");
             return;
           }
 
@@ -41,20 +42,23 @@ export default function UserDashboard() {
         }
 
         setAuthToken(token);
+
         console.log("Token Set in Axios:", api.defaults.headers.common["Authorization"]);
 
         const profileResponse = await api.get(`/users/profile/${userId}`);
         setProfile(profileResponse.data);
       } catch (error) {
         console.error("Session Fetch Error:", error);
-        router.push("/user-login");
+        // router.push("/user-login");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserData();
   }, [router]);
 
-  if (!profile) {
+  if (loading) {
     return (
       <div className="flex flex-col gap-4 p-4">
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
@@ -76,17 +80,17 @@ export default function UserDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-sm">Name: {profile.firstName} {profile.lastName}</p>
-              <p className="text-sm">Email: {profile.email}</p>
-              <p className="text-sm">Phone: {profile.phone}</p>
+              <p className="text-sm">Name: {profile?.firstName} {profile?.lastName}</p>
+              <p className="text-sm">Email: {profile?.email}</p>
+              <p className="text-sm">Phone: {profile?.phone}</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Session Information</CardTitle>
           </CardHeader>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );
