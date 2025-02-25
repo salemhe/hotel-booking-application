@@ -36,6 +36,21 @@ interface AuthUser {
   email: string;
   role: string;
   token?: string;
+  id: string,
+  firstName: string,
+  lastName: string,
+  phone: string,
+  profile: {
+    id: string;
+    name: string;
+    businessName: string;
+    email: string;
+    address: string;
+    branch: string;
+    profileImage: string;
+    services: string[];
+    token: string;
+  };
 }
 
 export class AuthService {
@@ -122,7 +137,12 @@ export class AuthService {
      this.setUser({
        email: data.profile.email,
        role: data.profile.role || "vendor",
-       token: data.profile.token
+       token: data.profile.token,
+       profile: data.profile,
+        id: data.profile.id,
+        firstName: "",
+        lastName: "",
+        phone: "",
      });
  
      return data;

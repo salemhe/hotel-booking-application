@@ -1,12 +1,12 @@
 "use client";
 import MenuItem from "@/components/MenuItem";
 import { MenuPopup } from "@/components/MenuPopup";
-import { api } from "@/lib/axios-config";
+import { AuthService } from "@/services/auth.services";
+import API from "@/utils/axios";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const vendorId = 3;
 
 export default function VendorMenuPage() {
   const [data, setData] = useState([]);
@@ -15,21 +15,21 @@ export default function VendorMenuPage() {
     const data = async () => {
       const menu = await fetchMenu();
       setData(menu);
+      console.log("menu", menu);
     };
     data();
   }, []);
 
+  const user = AuthService.getUser()
+
   const fetchMenu = async () => {
     try {
-      const menuResponse = await api.get(`/vendors/menus/${vendorId}`);
+      const menuResponse = await API.get(`/vendors/menus/${user?.profile.id}`);
       return menuResponse.data.menus;
     } catch (error) {
+      console.log("menu fetch error", error)
       if (error instanceof AxiosError) {
-        toast.error(error.message);
-      } else if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An error occured wile fetching menus");
+        toast.error(error.response?.data.message);
       }
     } finally {
       setLoading(false);
@@ -51,7 +51,7 @@ export default function VendorMenuPage() {
       ) : (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4">
           {data.map((menu, i) => (
-            <MenuItem key={i} />
+            <MenuItem data={data[i]} key={i} />
           ))}
         </div>
       )}

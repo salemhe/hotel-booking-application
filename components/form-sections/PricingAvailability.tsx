@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { Switch } from "@/components/ui/switch"
+import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label";
 
 const schema = z.object({
@@ -21,7 +21,7 @@ const schema = z.object({
     .number()
     .min(0, "Discount price must be a positive number")
     .optional(),
-  //   availabilityStatus: z.boolean(),
+    availabilityStatus: z.boolean(),
   preparationTime: z.string().min(1, "Preparation time is required"),
 });
 
@@ -47,6 +47,7 @@ export function PricingAvailability({
       price: initialData.price ?? 0, // Ensure it's always a number
       discountPrice: initialData.discountPrice ?? 0, // Optional, default to 0
       preparationTime: initialData.preparationTime ?? "", // Ensure it's always a string
+      availabilityStatus: initialData.availabilityStatus ?? false,
     },
   });
 
@@ -82,10 +83,10 @@ export function PricingAvailability({
           </p>
         )}
       </div>
-      {/* <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2">
         <Switch id="availabilityStatus" {...register("availabilityStatus")} />
         <Label htmlFor="availabilityStatus">Available</Label>
-      </div> */}
+      </div>
       <div>
         <Label htmlFor="preparationTime">Preparation Time</Label>
         <Controller

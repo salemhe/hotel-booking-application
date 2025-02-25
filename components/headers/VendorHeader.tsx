@@ -10,7 +10,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from "../ui/button"
 import { AuthService } from "@/services/auth.services"
 import { api } from '@/lib/axios-config'
-import { AxiosError } from 'axios'
 
 export interface VendorProfile {
   _id: string

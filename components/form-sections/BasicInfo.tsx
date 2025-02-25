@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -17,11 +17,11 @@ import {
 import { Label } from "@/components/ui/label";
 
 const schema = z.object({
-  dishName: z.string().min(1, "Dish name is required"),
+  itemName: z.string().min(1, "Dish name is required"),
   category: z.string().min(1, "Category is required"),
   cuisineType: z.string().min(1, "Cuisine type is required"),
-  //   description: z.string().min(1, "Description is required"),
-  image: z.any().optional(),
+  description: z.string().min(1, "Description is required"),
+  itemImage: z.any().optional(),
 });
 
 type BasicInfoProps = {
@@ -31,7 +31,7 @@ type BasicInfoProps = {
 
 export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(
-    initialData.image || null
+    initialData.itemImage || null
   );
   const {
     register,
@@ -41,15 +41,16 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      dishName: initialData.dishName ?? "", // Ensure it's always a string
+      itemName: initialData.itemName ?? "", // Ensure it's always a string
       category: initialData.category ?? "",
       cuisineType: initialData.cuisineType ?? "",
-      image: initialData.image ?? null, // Default to null for optional fields
+      image: initialData.itemImage ?? null, // Default to null for optional fields
+      description: initialData.description ?? "",
     },
   });
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    onNext({ ...data, image: imagePreview });
+    onNext({ ...data, itemImage: imagePreview });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,10 +67,14 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <Label htmlFor="dishName">Dish Name</Label>
-        <Input id="dishName" {...register("dishName")} placeholder="Enter Dish name" />
-        {errors.dishName && (
-          <p className="text-red-500 text-sm mt-1">{errors.dishName.message}</p>
+        <Label htmlFor="itemName">Dish Name</Label>
+        <Input
+          id="itemName"
+          {...register("itemName")}
+          placeholder="Enter Dish name"
+        />
+        {errors.itemName && (
+          <p className="text-red-500 text-sm mt-1">{errors.itemName.message}</p>
         )}
       </div>
       <div>
@@ -122,11 +127,15 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
           </p>
         )}
       </div>
-      {/* <div>
+      <div>
         <Label htmlFor="description">Description</Label>
         <Textarea id="description" {...register("description")} />
-        {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
-      </div> */}
+        {errors.description && (
+          <p className="text-red-500 text-sm mt-1">
+            {errors.description.message}
+          </p>
+        )}
+      </div>
       <div>
         <Label htmlFor="image">Image Upload</Label>
         <div

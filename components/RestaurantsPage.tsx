@@ -4,7 +4,15 @@ import { useEffect, useState } from "react";
 import { type CarouselApi } from "@/components/ui/carousel";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { MapPin, Clock, Phone, Globe, Star, ChevronLeft, CalendarIcon } from "lucide-react";
+import {
+  MapPin,
+  Clock,
+  Phone,
+  Globe,
+  Star,
+  ChevronLeft,
+  CalendarIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -36,6 +44,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "./ui/calendar";
+import API from "@/utils/axios";
+import { AxiosError } from "axios";
+
+type restaurants = {
+  isVerified: boolean;
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  services: string[];
+};
 
 export default function RestaurantPage({ id }: { id: string }) {
   const [api, setApi] = useState<CarouselApi>();
@@ -44,7 +64,10 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [guests, setGuests] = useState("");
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [data, setData] = useState<restaurants | null>(null);
+  const [errors, setErrors] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -59,6 +82,41 @@ export default function RestaurantPage({ id }: { id: string }) {
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
+
+  const fetchData = async (id: string) => {
+    try {
+      const response = await API.get(`/vendors/`);
+      return response.data.find(
+        (restaurant: restaurants) => restaurant._id === id
+      );
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log("fetch error", error.message);
+        setErrors(error.message);
+      }
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const data = async () => {
+      const restaurant = await fetchData(id);
+      setData(restaurant);
+    };
+    data();
+  }, [id]);
+
+  if (!data) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        {errors ? errors : "Loading..."}
+      </div>
+    );
+  }
+
+  if (!data || errors) {
+    return <div className="container mx-auto py-8 px-4">Error: {errors}</div>;
+  }
 
   // In a real application, you would fetch the restaurant data based on the ID
   const restaurant = {
@@ -107,21 +165,48 @@ export default function RestaurantPage({ id }: { id: string }) {
     ],
   };
 
-  const handleReservation = (e: React.FormEvent) => {
+  const handleReservation = async (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would typically handle the reservation logic
     console.log("Reservation:", { date, time, guests });
-    toast({
-      title: "Reservation Confirmed!",
-      description: `Your table for ${guests} on ${date} at ${time} has been booked.`,
-    });
-    // Redirect to confirmation page
-    router.push(`/reservation-confirmation/${id}`);
+    setLoading(true);
+    try {
+      const response = await API.post(`/users/bookings/`, {
+        type: "restaurant",
+        vendor: data._id,
+        tableNumber: 2,
+        guests: guests,
+      });
+      console.log("Reservation response:", response);
+      toast({
+        title: "Reservation Confirmed!",
+        description: `Your table for ${guests} on ${date} at ${time} has been booked. your room number is ${response.data.booking.tableNumber}`,
+      });
+      // Redirect to confirmation page
+      router.push(`/userDashboard/booking`);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("Error submitting reservation:", error.response?.data);
+        toast({
+          title: "Error",
+          description:
+            "There was a problem processing your reservation. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Button variant="ghost" onClick={() => router.push("/restaurants")} className="mb-4">
+      <Button
+        variant="ghost"
+        onClick={() => router.push("/restaurants")}
+        className="mb-4"
+      >
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Restaurants
       </Button>
 
@@ -129,9 +214,7 @@ export default function RestaurantPage({ id }: { id: string }) {
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl font-bold">
-                {restaurant.name}
-              </CardTitle>
+              <CardTitle className="text-3xl font-bold">{data.name}</CardTitle>
               <CardDescription>
                 <div className="flex items-center space-x-2">
                   <Badge variant="secondary">{restaurant.cuisine}</Badge>
@@ -173,11 +256,11 @@ export default function RestaurantPage({ id }: { id: string }) {
               <div className="mt-6 space-y-2">
                 <div className="flex items-center">
                   <MapPin className="h-5 w-5 text-gray-400 mr-2" />
-                  <p>{restaurant.address}</p>
+                  <p>{data.address}</p>
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-gray-400 mr-2" />
-                  <p>{restaurant.phone}</p>
+                  <p>{data.phone}</p>
                 </div>
                 <div className="flex items-center">
                   <Globe className="h-5 w-5 text-gray-400 mr-2" />
@@ -305,7 +388,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                     </Select>
                   </div>
                   <Button type="submit" className="w-full">
-                    Book Now
+                    {loading ? "Loading..." : "Reserve Table"}
                   </Button>
                 </div>
               </form>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Star,
   ChevronLeft,
@@ -46,128 +46,15 @@ import API from "@/utils/axios";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
-const restaurantsExample = [
-  {
-    _id: "1",
-    name: "The Italian Place",
-    cuisine: "Italian",
-    rating: 4.5,
-    price: "₦₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "New York",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "2",
-    name: "Sushi Heaven",
-    cuisine: "Japanese",
-    rating: 4.8,
-    price: "₦₦₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "Los Angeles",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "3",
-    name: "Taco Fiesta",
-    cuisine: "Mexican",
-    rating: 4.2,
-    price: "₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "Miami",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "4",
-    name: "Curry House",
-    cuisine: "Indian",
-    rating: 4.6,
-    price: "₦₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "Chicago",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "5",
-    name: "Pasta Paradise",
-    cuisine: "Italian",
-    rating: 4.3,
-    price: "₦₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "New York",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "6",
-    name: "Burger Bliss",
-    cuisine: "American",
-    rating: 4.1,
-    price: "₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "Los Angeles",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "7",
-    name: "Dim Sum Delight",
-    cuisine: "Chinese",
-    rating: 4.7,
-    price: "₦₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "San Francisco",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "8",
-    name: "Le Petit Bistro",
-    cuisine: "French",
-    rating: 4.9,
-    price: "₦₦₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "New Orleans",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "9",
-    name: "Veggie Vibes",
-    cuisine: "Vegetarian",
-    rating: 4.4,
-    price: "₦₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "Portland",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-  {
-    _id: "10",
-    name: "Steakhouse Supreme",
-    cuisine: "American",
-    rating: 4.6,
-    price: "₦₦₦",
-    profileImage: "/placeholder.svg?height=200&width=300",
-    address: "Dallas",
-    businessName: "Chicken Republic",
-    businessType: "restaurant",
-  },
-];
-
 export default function Restaurants() {
-  const router = useRouter();
-  const pathname = usePathname();
+  // const router = useRouter();
+  // const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [restaurants, setRestaurants] =
-    useState<Restaurant[]>(restaurantsExample);
+    useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -212,16 +99,16 @@ export default function Restaurants() {
     (locationFilter ? 1 : 0);
 
   // Update URL with search params
-  const updateSearchParams = useCallback(
-    (newParams: string) => {
-      const params = new URLSearchParams(searchQuery);
-      params.set("search", newParams);
+  // const updateSearchParams = useCallback(
+  //   (newParams: string) => {
+  //     const params = new URLSearchParams(searchQuery);
+  //     params.set("search", newParams);
 
-      // Update URL without refresh
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    },
-    [pathname, router, searchQuery]
-  );
+  //     // Update URL without refresh
+  //     router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  //   },
+  //   [pathname, router, searchQuery]
+  // );
 
   // Debounced search function
   const handleSearch = async (data?: string) => {
@@ -231,9 +118,10 @@ export default function Restaurants() {
     try {
       const result = await API.get(`/vendors${data ? `?businessName=${data}` : ""}`);
       setRestaurants(result.data);
+      console.log(result.data)
       setTotal(result.data.length);
       // Update URL params
-      updateSearchParams(searchParams.toString());
+      // updateSearchParams(searchParams.toString());
     } catch (error) {
       console.error("Search failed:", error);
       // Handle error (show toast, etc.)
@@ -308,7 +196,7 @@ export default function Restaurants() {
 
   useEffect(() => {
     applyFilters();
-  }, [cuisineFilter, priceFilter, ratingFilter, sortOrder, sortBy]);
+  }, [cuisineFilter, priceFilter, ratingFilter, sortOrder, sortBy, restaurants]);
 
   const paginatedRestaurants = filteredRestaurants.slice(
     (currentPage - 1) * itemsPerPage,
@@ -331,16 +219,16 @@ export default function Restaurants() {
     //     cuisineFilter.includes(restaurant.cuisine)
     //   );
     // }
-    if (priceFilter.length > 0) {
-      filtered = filtered.filter((restaurant) =>
-        priceFilter.includes(restaurant.price)
-      );
-    }
-    if (ratingFilter > 0) {
-      filtered = filtered.filter(
-        (restaurant) => restaurant.rating >= ratingFilter
-      );
-    }
+    // if (priceFilter.length > 0) {
+    //   filtered = filtered.filter((restaurant) =>
+    //     priceFilter.includes("$$")
+    //   );
+    // }
+    // if (ratingFilter > 0) {
+    //   filtered = filtered.filter(
+    //     (restaurant) => 5 >= ratingFilter
+    //   );
+    // }
     if (searchQuery) {
       filtered = filtered.filter((restaurant) =>
         restaurant.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -586,9 +474,8 @@ export default function Restaurants() {
                 <CardHeader className="p-0">
                   <div className="relative h-48">
                     <Image
-                      // src={restaurant.profileImage || "/placeholder.svg"}
-                      src="/hero-bg.jpg"
-                      alt={restaurant.name}
+                      src={"/hero-bg.jpg"}
+                      alt={restaurant.name || "image of restaurant"}
                       fill
                       className="object-cover"
                     />
@@ -599,7 +486,7 @@ export default function Restaurants() {
                     {restaurant.name}
                   </CardTitle>
                   <CardDescription>
-                    {restaurant.businessType} • {restaurant.price} •{" "}
+                    Test • $$ •{" "}
                     {restaurant.address}
                   </CardDescription>
                   <div className="flex items-center mt-2">

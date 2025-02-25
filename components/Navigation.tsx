@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, LogOut, ChevronDown, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { api, setAuthToken } from "@/lib/axios-config";
+// import { api, setAuthToken } from "@/lib/axios-config";
 import {
   Sheet,
   SheetClose,
@@ -19,14 +19,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import AccountTypeModal from "./AccountTypeModal";
+import { AuthService } from "@/services/auth.services";
 
 export interface UserProfile {
-  id: string;
-  firstName: string;
-  lastName: string;
   email: string;
-  phone: string;
-  profileImage: string;
+  role: string;
+  token?: string;
+  firstName: string;
+  profile: {
+    id: string;
+    name: string;
+    businessName: string;
+    email: string;
+    address: string;
+    branch: string;
+    profileImage: string;
+    services: string[];
+    token: string;
+  };
 }
 
 const Navigation = () => {
@@ -37,7 +47,7 @@ const Navigation = () => {
 
   // Auth state management
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const isLoggedIn = !!profile;
+  const isLoggedIn = AuthService.isAuthenticated() && profile?.firstName;
 
   const navItems = [
     { name: "Restaurants", href: "/restaurants" },
@@ -48,41 +58,40 @@ const Navigation = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        let token = localStorage.getItem("authToken");
-        let userId = localStorage.getItem("userId");
+      // try {
+      //   let token = localStorage.getItem("auth_token");
+      //   let userId = localStorage.getItem("user_id");
 
-        if (!token || !userId) {
-          const sessionResponse = await api.get("/sessions/user");
-          token = sessionResponse.data.token;
-          userId = sessionResponse.data.userId;
-          const expiresAt = sessionResponse.data.expiresAt;
+      //   if (!token || !userId ) {
+      //     const sessionResponse = await api.get("/sessions/user");
+      //     token = sessionResponse.data.token;
+      //     userId = sessionResponse.data.userId;
+      //     const expiresAt = sessionResponse.data.expiresAt;
 
-          if (new Date(expiresAt) < new Date()) {
-            return;
-          }
+      //     if (new Date(expiresAt) < new Date()) {
+      //       return;
+      //     }
 
-          if (token && userId) {
-            localStorage.setItem("authToken", token);
-            localStorage.setItem("userId", userId);
-          }
-        }
+      //     if (token && userId) {
+      //       localStorage.setItem("auth_token", token);
+      //       localStorage.setItem("user_id", userId);
+      //     }
+      //   }
 
-        setAuthToken(token);
-        const profileResponse = await api.get(`/users/profile/${userId}`);
-        setProfile(profileResponse.data);
-      } catch (error) {
-        console.error("Session Fetch Error:", error);
-        setProfile(null);
-      }
+      //   setAuthToken(token);
+      //   const profileResponse = await api.get(`/users/profile/${userId}`);
+      // } catch (error) {
+        //   console.error("Session Fetch Error:", error);
+        //   setProfile(null);
+        // }
+          setProfile(AuthService.getUser());
     };
 
     fetchUserData();
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userId");
+    AuthService.logout()
     setProfile(null);
     router.push("/user-login");
   };
@@ -155,12 +164,16 @@ const Navigation = () => {
             <div className="flex items-center px-4">
               <div className="bg-gray-500 w-10 h-10 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold">
-                  {profile.firstName?.charAt(0).toUpperCase() || "U"}
+                  {
+                  // profile.profile.name?.charAt(0).toUpperCase() || 
+                  profile.firstName?.charAt(0).toUpperCase() || "U"}
                 </span>
               </div>
               <div className="ml-3">
                 <div className="text-base font-medium text-gray-800">
-                  Hi, {profile.firstName}
+                  Hi, {
+                  // profile.profile.name || 
+                  profile.firstName}
                   {/* {profile.lastName} */}
                 </div>
                 <div className="text-sm font-medium text-gray-500">

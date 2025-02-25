@@ -9,31 +9,14 @@ export type SearchFilters = {
   sortOrder?: "asc" | "desc";
 };
 
-export type SearchResponse = [{
-  // restaurants: Restaurant[]
-  // total: number
-  // page: number
-  // totalPages: number
-  _id: string;
-  name: string;
-  businessName: string;
-  businessType: string;
-  // email: string;
-  // phone: string;
-  address: string;
-  // branch: string;
-  // role: string;
-  profileImage: string;
-  // services: string[];
-  price: string;
-  rating: number;
-}];
-
-export type Restaurant = {
-  _id: string;
-  name: string;
-  businessName: string;
-    businessType: string;
+export type SearchResponse = [
+  {
+    // restaurants: Restaurant[]
+    // total: number
+    // page: number
+    // totalPages: number
+    _id: string;
+    name: string;
     // email: string;
     // phone: string;
     address: string;
@@ -41,6 +24,21 @@ export type Restaurant = {
     // role: string;
     profileImage: string;
     // services: string[];
-    price: string;
-    rating: number;
+    // price: string;
+    // rating: number;
+  }
+];
+
+export type Restaurant = {
+  _id: string;
+  name: string;
+  // email: string;
+  // phone: string;
+  address: string;
+  // branch: string;
+  // role: string;
+  profileImage: string;
+  // services: string[];
+  // price: string;
+  // rating: number;
 };
