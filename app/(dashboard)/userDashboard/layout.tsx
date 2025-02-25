@@ -1,6 +1,6 @@
 // app/vendorDashboard/layout.tsx
-import Header from "@/components/headers/VendorHeader";
-import { AppSidebar } from "@/components/sidebars/VendorSidebar";
+import Header from "@/components/headers/UserHeader";
+import { AppSidebar } from "@/components/sidebars/UserSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 // import SessionManager from "@/components/SessionManager";
 
