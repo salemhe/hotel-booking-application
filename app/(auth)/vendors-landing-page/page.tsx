@@ -120,12 +120,10 @@ const LandingPage = () => {
           console.warn("Invalid vendors data format")
         }
       } catch (error: unknown) {
-        if (error instanceof AxiosError) {
-          console.error(error.response?.data?.message || "failed to fetch vendor data");
-        } else if (error instanceof Error) {
-          console.error(error.message || "failed to fetch vendor data");
-        } else {
-          console.error("An unknown error occurred");
+        console.error("Failed to fetch vendor data:", error)
+        if (error && typeof error === 'object' && 'response' in error && error.response && 
+            typeof error.response === 'object' && 'status' in error.response && 'data' in error.response) {
+          console.error("Error response:", error.response.status, error.response.data)
         }
       } finally {
         setLoading(false)
