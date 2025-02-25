@@ -31,7 +31,7 @@ const MenuItem = ({ data }: { data: dataType }) => {
       {/* Image Section with Gradient Overlay */}
       <div className="relative w-full h-56 rounded-xl overflow-hidden">
         <Image
-          src={itemImage || "/hero-bg.jpg"}
+          src={`https://hotel-booking-app-backend-30q1.onrender.com/uploads/${itemImage}` || "/hero-bg.jpg"}
           layout="fill"
           objectFit="cover"
           className="rounded-xl"
