@@ -11,7 +11,6 @@ import { AuthService } from '@/services/auth.services';
 import { ChevronDown, LogOut, X, Menu } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { AxiosError } from 'axios';
 
 export interface VendorProfile {
   _id: string
