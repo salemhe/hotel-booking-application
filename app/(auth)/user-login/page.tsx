@@ -59,7 +59,7 @@ const UserLoginPage = () => {
     setLoading(true);
 
     try {
-      const { data } = await API.post("/users/login", { email, password });
+      const { data } = await API.post("api/users/login", { email, password });
       if (!data.token) throw new Error("No token received");
 
       const decodedToken = jwtDecode(data.token);
