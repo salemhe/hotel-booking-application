@@ -2,7 +2,7 @@
 import Header from "@/components/headers/VendorHeader";
 import { AppSidebar } from "@/components/sidebars/VendorSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import SessionManager from "@/components/SessionManager";
+// import SessionManager from "@/components/SessionManager";
 
 export default function VendorDashboardLayout({
   children,
@@ -10,7 +10,7 @@ export default function VendorDashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SessionManager>
+    // <SessionManager>
       <div className="flex">
         <SidebarProvider>
           <AppSidebar />
@@ -22,6 +22,6 @@ export default function VendorDashboardLayout({
           </SidebarInset>
         </SidebarProvider>
       </div>
-    </SessionManager>
+    // </SessionManager>
   );
 }

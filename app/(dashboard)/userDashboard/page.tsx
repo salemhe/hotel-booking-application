@@ -24,7 +24,7 @@ export default function UserDashboard() {
         let userId = localStorage.getItem("userId");
 
         if (!token || !userId) {
-          const sessionResponse = await api.get("/sessions/user");
+          const sessionResponse = await api.get("api/sessions/user");
           token = sessionResponse.data.token;
           userId = sessionResponse.data.userId;
           const expiresAt = sessionResponse.data.expiresAt;
