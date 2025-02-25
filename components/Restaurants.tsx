@@ -474,7 +474,7 @@ export default function Restaurants() {
                 <CardHeader className="p-0">
                   <div className="relative h-48">
                     <Image
-                      src={"/hero-bg.jpg"}
+                      src={ `https://hotel-booking-app-backend-30q1.onrender.com/uploads/${restaurant.profileImage}` || "/hero-bg.jpg"}
                       alt={restaurant.name || "image of restaurant"}
                       fill
                       className="object-cover"
