@@ -31,7 +31,7 @@ export default function UserDashboard() {
           const expiresAt = sessionResponse.data.expiresAt;
 
           if (new Date(expiresAt) < new Date()) {
-            router.push("/user-login");
+            // router.push("/user-login");
             return;
           }
 
@@ -49,7 +49,7 @@ export default function UserDashboard() {
         setProfile(profileResponse.data);
       } catch (error) {
         console.error("Session Fetch Error:", error);
-        router.push("/user-login");
+        // router.push("/user-login");
       } finally {
         setLoading(false);
       }
