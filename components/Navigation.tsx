@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import AccountTypeModal from "./AccountTypeModal";
+// import AccountTypeModal from "./AccountTypeModal";
 import { AuthService } from "@/services/auth.services";
 
 export interface UserProfile {
@@ -26,6 +26,8 @@ export interface UserProfile {
   role: string;
   token?: string;
   firstName: string;
+  lastName: string; 
+  profileImage?: string;
   profile: {
     id: string;
     name: string;
@@ -40,7 +42,7 @@ export interface UserProfile {
 }
 
 const Navigation = () => {
-  const [isAccountTypeModalOpen, setIsAccountTypeModalOpen] = useState(false);
+  // const [isAccountTypeModalOpen, setIsAccountTypeModalOpen] = useState(false);
   const [auth, setAuth] = useState("");
   const pathname = usePathname();
   const router = useRouter();
@@ -137,7 +139,8 @@ const Navigation = () => {
         <p
           className="border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
           onClick={() => {
-            setIsAccountTypeModalOpen(true);
+            
+            router.push('/user-login')
             setAuth("login");
           }}
         >
@@ -146,7 +149,8 @@ const Navigation = () => {
         <p
           className="border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
           onClick={() => {
-            setIsAccountTypeModalOpen(true);
+            
+            router.push('/user-signup')
             setAuth("signup");
           }}
         >
@@ -202,7 +206,8 @@ const Navigation = () => {
             <SheetClose
               className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
               onClick={() => {
-                setIsAccountTypeModalOpen(true);
+                // setIsAccountTypeModalOpen(true);
+                router.push('/user-login')
                 setAuth("login");
               }}
             >
@@ -211,7 +216,8 @@ const Navigation = () => {
             <SheetClose
               className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
               onClick={() => {
-                setIsAccountTypeModalOpen(true);
+                // setIsAccountTypeModalOpen(true);
+                router.push('/user-signup')
                 setAuth("signup");
               }}
             >
@@ -224,7 +230,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-sm supports-backdrop-filter:bg-white/60">
+    <nav className=" shadow-lg sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-sm supports-backdrop-filter:bg-white/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
@@ -311,11 +317,11 @@ const Navigation = () => {
           </div>
         </div>
       </div>
-      <AccountTypeModal
+      {/* <AccountTypeModal
         auth={auth}
         isOpen={isAccountTypeModalOpen}
         onClose={() => setIsAccountTypeModalOpen(false)}
-      />
+      /> */}
     </nav>
   );
 };

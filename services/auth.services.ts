@@ -128,7 +128,8 @@ export class AuthService {
      }
  
      // Create session
-     const session = await SessionService.createSession(data.profile.id, data.profile.token);
+     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+     const session = await SessionService.createSession(data.profile.id, data.profile.token, expiresAt);
       
      // Store session ID
      localStorage.setItem(this.SESSION_ID_KEY, session._id);
