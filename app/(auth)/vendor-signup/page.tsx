@@ -241,7 +241,7 @@ export default function VendorSignupPage() {
                 <div className="space-y-2">
                   <Label>Services Offered</Label>
                   <div className="flex flex-wrap gap-2">
-                    {["Hotel", "Restaurant", "Spa", "Event Space"].map((service) => (
+                    {["Hotel", "Restaurant"].map((service) => (
                       <Button
                         key={service}
                         type="button"

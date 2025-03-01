@@ -1,96 +1,68 @@
-"use client"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { api, setAuthToken } from "@/lib/axios-config"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-export interface UserProfile {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  profileImage: string;
-}
+"use client";
+// import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Activity, User, 
+  // Mail, Phone
+ } from "lucide-react";
 
 export default function UserDashboard() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true); // Add a loading state
-  const router = useRouter();
+  // const { user, loading } = useSession();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        let token = localStorage.getItem("authToken");
-        let userId = localStorage.getItem("userId");
+  // if (loading) {
+  //   return (
+  //     <div className="flex flex-col gap-4 p-4">
+  //       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+  //         <div className="aspect-video animate-pulse rounded-xl bg-gray-100" />
+  //         <div className="aspect-video animate-pulse rounded-xl bg-gray-100" />
+  //         <div className="aspect-video animate-pulse rounded-xl bg-gray-100" />
+  //       </div>
+  //       <div className="min-h-[100vh] animate-pulse flex-1 rounded-xl bg-gray-100" />
+  //     </div>
+  //   );
+  // }
 
-        if (!token || !userId) {
-          const sessionResponse = await api.get("api/sessions/user");
-          token = sessionResponse.data.token;
-          userId = sessionResponse.data.userId;
-          const expiresAt = sessionResponse.data.expiresAt;
-
-          if (new Date(expiresAt) < new Date()) {
-            // router.push("/user-login");
-            return;
-          }
-
-          if (token && userId) {
-            localStorage.setItem("authToken", token);
-            localStorage.setItem("userId", userId);
-          }
-        }
-
-        setAuthToken(token);
-
-        console.log("Token Set in Axios:", api.defaults.headers.common["Authorization"]);
-
-        const profileResponse = await api.get(`/users/profile/${userId}`);
-        setProfile(profileResponse.data);
-      } catch (error) {
-        console.error("Session Fetch Error:", error);
-        // router.push("/user-login");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-4 p-4">
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="aspect-video animate-pulse rounded-xl bg-gray-100" />
-          <div className="aspect-video animate-pulse rounded-xl bg-gray-100" />
-          <div className="aspect-video animate-pulse rounded-xl bg-gray-100" />
-        </div>
-        <div className="min-h-[100vh] animate-pulse flex-1 rounded-xl bg-gray-100" />
-      </div>
-    );
-  }
+  // if (!user) {
+  //   return null;
+  // }
 
   return (
     <div className="container mx-auto py-10 px-4">
+      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
-          <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Profile Information</CardTitle>
+            <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <p className="text-sm">Name: {profile?.firstName} {profile?.lastName}</p>
-              <p className="text-sm">Email: {profile?.email}</p>
-              <p className="text-sm">Phone: {profile?.phone}</p>
-            </div>
+            {/* <div className="space-y-4 pt-2">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm">Name: {user?.firstName} {user?.lastName}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm">Email: {user?.email}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm">Phone: {user?.phone || "Not provided"}</span>
+              </div>
+            </div> */}
           </CardContent>
         </Card>
-        {/* <Card>
-          <CardHeader>
-            <CardTitle>Session Information</CardTitle>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Account Activity</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-        </Card> */}
+          <CardContent>
+            <div className="text-2xl font-bold">Active</div>
+            <p className="text-xs text-muted-foreground">Your session is currently active</p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

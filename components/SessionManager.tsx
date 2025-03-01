@@ -25,3 +25,5 @@ export default function SessionManager({ children }: { children: React.ReactNode
 
   return <>{children}</>;
 }
+
+
