@@ -44,6 +44,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -58,13 +60,11 @@ import { cn } from "@/lib/utils";
 
 export default function LandingPage() {
   const router = useRouter();
-  const [location, setLocation] = useState<string>();
-  const [cuisine, setCuisine] = useState<string>();
-  const [guests, setGuests] = useState<string>();
+  // const [location, setLocation] = useState<string>();
+  const [cuisine, setCuisine] = useState<string>("");
+  const [guests, setGuests] = useState<string>("");
   const [date, setDate] = useState<Date>();
-  const [time, setTime] = useState<string>();
-
-
+  const [time, setTime] = useState<string>("");
 
   const cuisineTypes = [
     { name: "Italian", icon: Pizza },
@@ -104,34 +104,58 @@ export default function LandingPage() {
     },
   ];
 
-  const cities = [
+  const restaurants = [
     {
-      name: "Lagos",
+      name: "The Yellow Chilli",
       image: "/hero-bg.jpg",
-      restaurants: 1200,
-      cuisine: "Diverse Culinary Scene",
+      location: "Victoria Island, Lagos",
+      cuisine: "Nigerian & Continental",
     },
     {
-      name: "Abuja",
+      name: "Ocean Basket",
       image: "/hero-bg.jpg",
-      restaurants: 980,
-      cuisine: "International Fusion",
+      location: "Lekki, Lagos",
+      cuisine: "Seafood",
     },
     {
-      name: "Anambra",
+      name: "Bungalow Restaurant",
       image: "/hero-bg.jpg",
-      restaurants: 850,
-      cuisine: "Classic American",
+      location: "Ikeja, Lagos",
+      cuisine: "International",
     },
     {
-      name: "Bayelsa",
+      name: "Terra Kulture",
       image: "/hero-bg.jpg",
-      restaurants: 720,
-      cuisine: "Latin & Seafood",
+      location: "Victoria Island, Lagos",
+      cuisine: "Nigerian",
     },
   ];
 
   const deals = [
+    {
+      title: "Weekend Brunch Special",
+      description: "Complimentary mimosa with any brunch entrée",
+      restaurant: "Sunrise Café",
+      discount: "20% OFF",
+      validUntil: "Weekends Only",
+      image: "/hero-bg.jpg",
+    },
+    {
+      title: "Date Night Package",
+      description: "4-course dinner for two with wine pairing",
+      restaurant: "La Romance",
+      discount: "Save $50",
+      validUntil: "Tuesday-Thursday",
+      image: "/hero-bg.jpg",
+    },
+    {
+      title: "Happy Hour Delights",
+      description: "Half-price appetizers and craft cocktails",
+      restaurant: "Urban Lounge",
+      discount: "50% OFF",
+      validUntil: "4PM-7PM Daily",
+      image: "/hero-bg.jpg",
+    },
     {
       title: "Weekend Brunch Special",
       description: "Complimentary mimosa with any brunch entrée",
@@ -209,14 +233,14 @@ export default function LandingPage() {
   ];
 
   const handleSubmit = () => {
-    if (!location || !cuisine) return;
-    router.push(`/restaurants?location=${location}&cuisine=${cuisine}&guests=${guests}&date=${date}&time=${time}`)
-  }
+    router.push(
+      `/restaurants?&cuisine=${cuisine}&guests=${guests}&date=${date}&time=${time}`
+    );
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header Section */}
-      
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -252,8 +276,8 @@ export default function LandingPage() {
             >
               <Card className="bg-white/95 backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    {/* <div className="space-y-2">
                       <label className="text-sm font-medium">Location</label>
                       <Select value={location} onValueChange={setLocation}>
                         <SelectTrigger className="bg-white">
@@ -270,7 +294,7 @@ export default function LandingPage() {
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
+                    </div> */}
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Cuisine</label>
                       <Select value={cuisine} onValueChange={setCuisine}>
@@ -350,7 +374,10 @@ export default function LandingPage() {
                       </Select>
                     </div>
                   </div>
-                  <Button onClick={handleSubmit} className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Button
+                    onClick={handleSubmit}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
                     <Search className="mr-2 h-4 w-4" />
                     Find a Table
                   </Button>
@@ -420,57 +447,21 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="py-20 bg-linear-to-b from-blue-50 to-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Why Choose Bookie?
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Experience the best in dining reservations with our premium
-                features
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="text-center"
-                >
-                  <div
-                    className={`mx-auto w-16 h-16 mb-6 rounded-full ${feature.color} flex items-center justify-center`}
-                  >
-                    <feature.icon className={`w-8 h-8 ${feature.color}`} />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Popular Cities */}
+        {/* Popular Restaurants */}
         <section className="py-20 bg-linear-to-b from-white to-blue-50">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Popular Dining Cities
+                Popular Restaurants
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Explore top restaurants in these culinary destinations
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {cities.map((city, index) => (
+              {restaurants.map((restaurant, index) => (
                 <motion.div
-                  key={city.name}
+                  key={restaurant.name}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
@@ -478,18 +469,22 @@ export default function LandingPage() {
                 >
                   <div className="relative h-64 rounded-xl overflow-hidden">
                     <Image
-                      src={city.image}
-                      alt={city.name}
+                      src={restaurant.image}
+                      alt={restaurant.name}
                       fill
                       className="object-cover transition-transform group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-blue-900/90 to-transparent" />
                     <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
-                      <h3 className="text-2xl font-bold mb-1">{city.name}</h3>
+                      <h3 className="text-2xl font-bold mb-1">
+                        {restaurant.name}
+                      </h3>
                       <p className="text-blue-200 text-sm">
-                        {city.restaurants} Restaurants
+                        {restaurant.location}
                       </p>
-                      <p className="text-blue-200 text-sm">{city.cuisine}</p>
+                      <p className="text-blue-200 text-sm">
+                        {restaurant.cuisine}
+                      </p>
                     </div>
                   </div>
                 </motion.div>
@@ -545,13 +540,20 @@ export default function LandingPage() {
               </p>
             </div>
             <Carousel className="w-full">
-              <CarouselContent>
+              <div className="flex gap-4 items-center">
+                <h2 className="font-medium text-lg">Offers</h2>
+                <div className="flex items-center h-fit">
+                  <CarouselPrevious className="static translate-y-0" />
+                  <CarouselNext className="static translate-y-0" />
+                </div>
+              </div>
+              <CarouselContent className="px-4">
                 {deals.map((deal, index) => (
                   <CarouselItem
                     key={index}
-                    className="basis-3/4 md:basis-1/2 lg:basis-1/3 p-2"
+                    className="basis-11/12 md:basis-1/2 lg:basis-1/3 p-2"
                   >
-                    <Card className="overflow-hidden">
+                    <Card className="overflow-hidden flex flex-col justify-between">
                       <div className="relative h-48">
                         <Image
                           src={deal.image || "/placeholder.svg"}
@@ -578,7 +580,7 @@ export default function LandingPage() {
                       <CardFooter>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700">
                           <Gift className="mr-2 h-4 w-4" />
-                          Claim Offer
+                          Claim now
                         </Button>
                       </CardFooter>
                     </Card>
@@ -638,6 +640,42 @@ export default function LandingPage() {
                   </Card>
                 ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="py-20 bg-linear-to-b from-blue-50 to-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                Why Choose Bookie?
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Experience the best in dining reservations with our premium
+                features
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-center"
+                >
+                  <div
+                    className={`mx-auto w-16 h-16 mb-6 rounded-full ${feature.color} flex items-center justify-center`}
+                  >
+                    <feature.icon className={`w-8 h-8 ${feature.color}`} />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>

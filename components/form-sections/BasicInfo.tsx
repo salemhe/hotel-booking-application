@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import Image from "next/image"
 
 const schema = z.object({
-  itemName: z.string().min(1, "Dish name is required"),
+  dishName: z.string().min(1, "Dish name is required"),
   category: z.string().min(1, "Category is required"),
   cuisineType: z.string().min(1, "Cuisine type is required"),
   description: z.string().min(1, "Description is required"),
@@ -42,7 +42,7 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      itemName: initialData.itemName ?? "", // Ensure it's always a string
+      dishName: initialData.dishName ?? "", // Ensure it's always a string
       category: initialData.category ?? "",
       cuisineType: initialData.cuisineType ?? "",
       image: initialData.itemImage ?? null, // Default to null for optional fields
@@ -54,28 +54,43 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
     onNext({ ...data, itemImage: imagePreview });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+  
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Restaurant_booking"); // Replace with your Cloudinary upload preset
+  
+    try {
+      const response = await fetch("https://api.cloudinary.com/v1_1/dm9roxgf5/image/upload", {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to upload image");
+      }
+  
+      const data = await response.json();
+      setImagePreview(data.secure_url); // Use the Cloudinary URL
+    } catch (error) {
+      console.error("Image upload error:", error);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <Label htmlFor="itemName">Dish Name</Label>
+        <Label htmlFor="dishName">Dish Name</Label>
         <Input
-          id="itemName"
-          {...register("itemName")}
+          id="dishName"
+          {...register("dishName")}
           placeholder="Enter Dish name"
         />
-        {errors.itemName && (
-          <p className="text-red-500 text-sm mt-1">{errors.itemName.message}</p>
+        {errors.dishName && (
+          <p className="text-red-500 text-sm mt-1">{errors.dishName.message}</p>
         )}
       </div>
       <div>
@@ -130,7 +145,7 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
       </div>
       <div>
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" {...register("description")} />
+        <Textarea placeholder="Enter description" id="description" {...register("description")} />
         {errors.description && (
           <p className="text-red-500 text-sm mt-1">
             {errors.description.message}
@@ -148,6 +163,8 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
               <Image
                 src={imagePreview || "/placeholder.svg"}
                 alt="Preview"
+                width={200}
+                height={200}
                 className="mx-auto h-32 w-32 object-cover rounded-md"
               />
             ) : (

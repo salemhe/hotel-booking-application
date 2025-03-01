@@ -11,7 +11,7 @@ const schema = z.object({
   stockQuantity: z
     .number()
     .int()
-    .min(0, "Stock quantity must be a non-negative integer"),
+    .min(1, "Stock quantity must be at least 1"),
   maxOrderPerCustomer: z
     .number()
     .int()

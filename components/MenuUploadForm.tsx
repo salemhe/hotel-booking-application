@@ -40,7 +40,7 @@ export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
 
     try {
       // Simulate API call
-      await API.post("api/vendors/create-menu", finalFormData)
+      await API.post("/vendors/create-menu", finalFormData)
 
       // Clear form data from localStorage after successful submission
       localStorage.removeItem("menuFormData");

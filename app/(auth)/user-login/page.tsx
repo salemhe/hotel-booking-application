@@ -59,7 +59,7 @@ const UserLoginPage = () => {
     setLoading(true);
 
     try {
-      const { data } = await API.post("api/users/login", { email, password });
+      const { data } = await API.post("/users/login", { email, password });
       if (!data.token) throw new Error("No token received");
 
       const decodedToken = jwtDecode(data.token);
@@ -67,7 +67,7 @@ const UserLoginPage = () => {
 
       const userId = extractUserId(decodedToken);
       AuthService.setToken(data.token);
-      const response = await API.get(`api/users/profile/${userId}`);
+      const response = await API.get(`/users/profile/${userId}`);
       const user = response.data;
       AuthService.setUser({
         id: user.id,

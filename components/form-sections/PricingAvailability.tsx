@@ -21,8 +21,8 @@ const schema = z.object({
     .number()
     .min(0, "Discount price must be a positive number")
     .optional(),
-    availabilityStatus: z.boolean(),
   preparationTime: z.string().min(1, "Preparation time is required"),
+  availabilityStatus: z.literal(true, { errorMap: () => ({ message: "Availability status must be true" }) }),
 });
 
 type PricingAvailabilityProps = {
@@ -47,7 +47,7 @@ export function PricingAvailability({
       price: initialData.price ?? 0, // Ensure it's always a number
       discountPrice: initialData.discountPrice ?? 0, // Optional, default to 0
       preparationTime: initialData.preparationTime ?? "", // Ensure it's always a string
-      availabilityStatus: initialData.availabilityStatus ?? false,
+      availabilityStatus: initialData.availabilityStatus ?? true,
     },
   });
 
@@ -84,8 +84,17 @@ export function PricingAvailability({
         )}
       </div>
       <div className="flex items-center space-x-2">
-        <Switch id="availabilityStatus" {...register("availabilityStatus")} />
+        <Controller
+          name="availabilityStatus"
+          control={control}
+          render={({ field }) => (
+            <Switch id="availabilityStatus" onCheckedChange={field.onChange} checked={field.value} />
+          )}
+        />
         <Label htmlFor="availabilityStatus">Available</Label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <p className="text-gray-700">Menu must be Available</p>
       </div>
       <div>
         <Label htmlFor="preparationTime">Preparation Time</Label>
@@ -98,11 +107,11 @@ export function PricingAvailability({
                 <SelectValue placeholder="Select preparation time" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="10min">10 min</SelectItem>
-                <SelectItem value="15min">15 min</SelectItem>
-                <SelectItem value="30min">30 min</SelectItem>
-                <SelectItem value="45min">45 min</SelectItem>
-                <SelectItem value="1hr+">1 hr+</SelectItem>
+                <SelectItem value="10">10 min</SelectItem>
+                <SelectItem value="15">15 min</SelectItem>
+                <SelectItem value="30">30 min</SelectItem>
+                <SelectItem value="45">45 min</SelectItem>
+                <SelectItem value="60">1 hr+</SelectItem>
               </SelectContent>
             </Select>
           )}
