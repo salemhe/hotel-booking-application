@@ -46,6 +46,7 @@ const Navigation = () => {
   const [auth, setAuth] = useState("");
   const pathname = usePathname();
   const router = useRouter();
+  console.log(auth)
 
   // Auth state management
   const [profile, setProfile] = useState<UserProfile | null>(null);
