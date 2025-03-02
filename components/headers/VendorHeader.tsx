@@ -69,6 +69,7 @@ function Header() {
 
           if (loggedInVendor) {
             setProfile(loggedInVendor)
+            console.log(loggedInVendor)
             // Store role in localStorage for ProtectedRoute
             localStorage.setItem("role", loggedInVendor.role)
           } else {
@@ -108,11 +109,11 @@ function Header() {
   }
 
   const getInitials = () => {
-    if (profile?.name) {
-      const nameParts = profile.name.split(' ')
+    if (profile?.businessName) {
+      const nameParts = profile.businessName.split(' ')
       return nameParts.length > 1 
         ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0).toUpperCase()}`
-        : profile.name.charAt(0).toUpperCase()
+        : profile.businessName.charAt(0).toUpperCase()
     }
     return "V"
   }
@@ -142,12 +143,13 @@ function Header() {
                   </span>
                 </div>
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium">
-                    {loading ? "Loading..." : `Hi, ${profile?.name || "Vendor"}`}
-                  </p>
                   <p className="text-xs text-muted-foreground">
                     {loading ? "" : (profile?.businessName || "Business")}
                   </p>
+                  <p className="text-sm font-medium">
+                    {/* {loading ? "Loading..." : `Hi, ${profile?.name || "Vendor"}`} */}
+                  </p>
+                  
                 </div>
                 <div className="w-8 h-8 rounded-ful flex items-center justify-center">
                   <ChevronDown className="" />
