@@ -17,8 +17,8 @@ import { Label } from "@/components/ui/label";
 const schema = z.object({
   portionSize: z.string().min(1, "Portion size is required"),
   spiceLevel: z.string().min(1, "Spice level is required"),
-  addOns: z.array(z.string()).optional(),
-  dietaryInfo: z.array(z.string()).optional(),
+  addOns: z.array(z.string()).min(1, "Add-ons are required"),
+  dietaryInfo: z.array(z.string()).min(1, "Dietary information is required"),
 });
 
 type PortionCustomizationProps = {

@@ -35,7 +35,7 @@ const MenuItem = ({ data }: { data: dataType }) => {
           layout="fill"
           objectFit="cover"
           className="rounded-xl"
-          alt={itemName}
+          alt={itemName || "Menu Item"} 
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent"></div>
       </div>

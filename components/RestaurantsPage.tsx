@@ -174,7 +174,7 @@ export default function RestaurantPage({ id }: { id: string }) {
       const response = await API.post(`/users/bookings/`, {
         type: "restaurant",
         vendor: data._id,
-        tableNumber: 2,
+        tableNumber: Math.floor(Math.random() * 10),
         guests: guests,
       });
       console.log("Reservation response:", response);
