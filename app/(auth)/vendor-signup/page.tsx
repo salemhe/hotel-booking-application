@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Store, Mail, Lock, User, Building2, ArrowLeft, Phone, MapPin } from "lucide-react"
+import { Store, Mail, Lock, User, Building2, ArrowLeft, Phone, MapPin, GitBranch } from "lucide-react"
 import Link from "next/link"
 import { AuthService } from "@/services/auth.services"
 import { toast } from "@/components/ui/use-toast"
@@ -13,10 +13,12 @@ import { toast } from "@/components/ui/use-toast"
 export default function VendorSignupPage() {
   const [formData, setFormData] = useState({
     businessName: "",
+    businessType: "Hotel", // Added businessType field with default value
     name: "",
     email: "",
     phone: "",
     address: "",
+    branch: "", // Added branch field
     password: "",
     role: "vendor" as "vendor" | "super-admin",
     services: [] as string[]
@@ -153,6 +155,23 @@ export default function VendorSignupPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="businessType">Business Type</Label>
+                  <div className="relative">
+                    <Store className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="businessType"
+                      name="businessType"
+                      type="text"
+                      placeholder="Hotel, Restaurant, etc."
+                      value={formData.businessType}
+                      onChange={handleInputChange}
+                      required
+                      className="pl-10 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
@@ -221,6 +240,22 @@ export default function VendorSignupPage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="branch">Branch</Label>
+                  <div className="relative">
+                    <GitBranch className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="branch"
+                      name="branch"
+                      type="text"
+                      placeholder="Branch Location (if applicable)"
+                      value={formData.branch}
+                      onChange={handleInputChange}
+                      className="pl-10 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
@@ -266,6 +301,7 @@ export default function VendorSignupPage() {
                   </div>
                 </div>
 
+                {/* Account Type Selection */}
                 <div className="space-y-2">
                   <Label>Account Type</Label>
                   <div className="flex gap-3">

@@ -43,7 +43,18 @@ function Header() {
 
     useEffect(() => {
     const fetchUserData = async () => {
-          setUser(AuthService.getUser());
+          const authUser = AuthService.getUser();
+          if (authUser) {
+            setUser({
+              ...authUser,
+              profile: {
+                ...authUser.profile,
+                profileImage: '',
+                services: [],
+                token: authUser.token || ''
+              }
+            });
+          }
     };
 
     fetchUserData();

@@ -35,9 +35,9 @@ export interface UserProfile {
     email: string;
     address: string;
     branch: string;
-    profileImage: string;
-    services: string[];
-    token: string;
+    profileImage?: string;
+    services?: string[];
+    token?: string;
   };
 }
 

@@ -16,20 +16,33 @@ interface LoginResponse {
   };
 }
 
-interface RegisterResponse {
-  message: string;
-  vendor: {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-    role: string;
-    profileImage: string;
-    services: string[];
-    _id: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+// interface RegisterResponse {
+//   message: string;
+//   vendor: {
+//     name: string;
+//     email: string;
+//     phone: string;
+//     address: string;
+//     role: string;
+//     profileImage: string;
+//     services: string[];
+//     _id: string;
+//     createdAt: string;
+//     updatedAt: string;
+//   };
+// }
+
+interface RegisterData {
+  name: string;
+  businessName: string;
+  businessType: string;
+  email: string;
+  phone: string;
+  address: string;
+  branch?: string;
+  password: string;
+  role: string;
+  services: string[];
 }
 
 interface AuthUser {
@@ -47,9 +60,6 @@ interface AuthUser {
     email: string;
     address: string;
     branch: string;
-    profileImage: string;
-    services: string[];
-    token: string;
   };
 }
 
@@ -59,31 +69,43 @@ export class AuthService {
   private static USER_KEY = "auth_user";
   private static SESSION_ID_KEY = "session_id";
 
-  static async register(formData: {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-    password: string;
-    role: "vendor" | "super-admin";
-    profileImage?: string;
-    services?: string[];
-  }): Promise<RegisterResponse> {
-    const response = await fetch(`${this.BASE_URL}/api/vendors/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Registration failed");
+  static async register(data: RegisterData) {
+    try {
+      // const url = `${this.BASE_URL}/api/vendors/register`;
+      // console.log("Making registration request to:", url);
+      
+      const response = await fetch(`${this.BASE_URL}/api/vendors/register`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          businessName: data.businessName,
+          businessType: data.businessType,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          branch: data.branch || '',
+          password: data.password,
+          role: data.role,
+          services: data.services,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error("Registration error:", error);
+      throw error;
     }
-
-    return response.json();
   }
+  
 
   static async verifyOTP(email: string, otp: string): Promise<{ message: string }> {
     const response = await fetch(`${this.BASE_URL}/api/vendors/verify-otp`, {
