@@ -113,7 +113,7 @@ export default function Restaurants() {
   // Debounced search function
   const handleSearch = async (data?: string) => {
     setIsLoading(true);
-    applyFilters();
+    // applyFilters();
 
     try {
       const result = await API.get(
@@ -131,7 +131,7 @@ export default function Restaurants() {
         toast.error(error.message);
         if (error.status === 401 || error.status === 403) {
           // Redirect to login page
-          router.push("/login");
+          router.push("/user-login");
         }
       }
     } finally {
@@ -243,7 +243,7 @@ export default function Restaurants() {
     // }
     if (searchQuery) {
       filtered = filtered.filter((restaurant) =>
-        restaurant.name.toLowerCase().includes(searchQuery.toLowerCase())
+        restaurant.businessName.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     if (locationFilter) {
