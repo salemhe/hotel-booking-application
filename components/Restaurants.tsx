@@ -129,7 +129,7 @@ export default function Restaurants() {
       // Handle error (show toast, etc.)
       if (error instanceof AxiosError) {
         toast.error(error.message);
-        if (error.code === "403") {
+        if (error.status === 401 || error.status === 403) {
           // Redirect to login page
           router.push("/login");
         }
