@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Star,
   ChevronLeft,
@@ -52,6 +52,7 @@ export default function Restaurants() {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
 
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
@@ -128,6 +129,10 @@ export default function Restaurants() {
       // Handle error (show toast, etc.)
       if (error instanceof AxiosError) {
         toast.error(error.message);
+        if (error.code === "403") {
+          // Redirect to login page
+          router.push("/login");
+        }
       }
     } finally {
       setIsLoading(false);
