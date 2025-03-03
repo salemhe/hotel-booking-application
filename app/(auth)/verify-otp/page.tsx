@@ -97,6 +97,29 @@ function OTPVerificationComponent() {
               Verify OTP
             </Button>
           </form>
+          <Button
+            type="button"
+            className="w-full mt-4"
+            variant="link"
+            onClick={async () => {
+              try {
+                await api.post("/users/resend-otp", { email });
+                toast.success("OTP resent successfully!");
+              } catch (error: unknown) {
+                if (error instanceof AxiosError) {
+                  toast.error(
+                    error.response?.data?.message || "Failed to resend OTP"
+                  );
+                } else if (error instanceof Error) {
+                  toast.error(error.message || "Failed to resend OTP");
+                } else {
+                  toast.error("An unknown error occurred");
+                }
+              }
+            }}
+          >
+            Resend OTP
+          </Button>
         </CardContent>
       </Card>
     </div>
