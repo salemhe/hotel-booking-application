@@ -51,7 +51,7 @@ import { AxiosError } from "axios";
 type restaurants = {
   isVerified: boolean;
   _id: string;
-  name: string;
+  businessName: string;
   email: string;
   phone: string;
   address: string;
@@ -206,6 +206,7 @@ export default function RestaurantPage({ id }: { id: string }) {
         vendor: data._id,
         tableNumber: Math.floor(Math.random() * 10),
         guests: guests,
+        menuId: menu ? menu[0]._id : "",
       });
       console.log("Reservation response:", response);
       toast({
@@ -213,7 +214,7 @@ export default function RestaurantPage({ id }: { id: string }) {
         description: `Your table for ${guests} on ${date} at ${time} has been booked. your room number is ${response.data.booking.tableNumber}`,
       });
       // Redirect to confirmation page
-      router.push(`/userDashboard/booking`);
+      // router.push(`/userDashboard/booking`);
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error("Error submitting reservation:", error.response?.data);
@@ -244,7 +245,7 @@ export default function RestaurantPage({ id }: { id: string }) {
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl font-bold">{data.name}</CardTitle>
+              <CardTitle className="text-3xl font-bold">{data.businessName}</CardTitle>
               <CardDescription>
                 <div className="flex items-center space-x-2">
                   <Badge variant="secondary">{restaurant.cuisine}</Badge>
@@ -317,11 +318,11 @@ export default function RestaurantPage({ id }: { id: string }) {
               {menu && menu.length > 0 ? (
                 <Tabs defaultValue={menu[0].category}>
                   <TabsList>
-                  {menu.map((item) => (
-                    <TabsTrigger key={item._id} value={item.category}>
-                    {item.category}
+                    {Array.from(new Set(menu.map((item) => item.category))).map((category) => (
+                    <TabsTrigger key={category} value={category}>
+                      {category}
                     </TabsTrigger>
-                  ))}
+                    ))}
                   </TabsList>
                   {menu.map((item) => (
                   <TabsContent key={item._id} value={item.category}>
