@@ -556,7 +556,7 @@ export default function Restaurants() {
                     <Image
                       src={
                         `${restaurant.profileImage ? 'https://hotel-booking-app-backend-30q1.onrender.com/uploads/${restaurant.profileImage}' : "/hero-bg.jpg"}`}
-                      alt={restaurant.name || "image of restaurant"}
+                      alt={"image of restaurant"}
                       fill
                       className="object-cover"
                     />
@@ -564,10 +564,10 @@ export default function Restaurants() {
                 </CardHeader>
                 <CardContent className="p-4">
                   <CardTitle className="line-clamp-1">
-                    {restaurant.name}
+                    {restaurant.businessName}
                   </CardTitle>
                   <CardDescription>
-                    Test • $$ • {restaurant.address}
+                    Restaurant • $$ • {restaurant.address}
                   </CardDescription>
                   <div className="flex items-center mt-2">
                     <Star className="text-yellow-400 mr-1" size={18} />

@@ -12,6 +12,7 @@ import {
   Star,
   ChevronLeft,
   CalendarIcon,
+  FolderX,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -57,6 +58,18 @@ type restaurants = {
   services: string[];
 };
 
+type Menu = [
+  {
+    _id: string;
+    vendor: string;
+    dishName: string;
+    description: string;
+    price: number;
+    category: string;
+    itemImage: string;
+  }
+];
+
 export default function RestaurantPage({ id }: { id: string }) {
   const [api, setApi] = useState<CarouselApi>();
   const [date, setDate] = useState<Date>();
@@ -65,6 +78,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [menu, setMenu] = useState<Menu | null>(null);
   const router = useRouter();
   const [data, setData] = useState<restaurants | null>(null);
   const [errors, setErrors] = useState("");
@@ -98,10 +112,26 @@ export default function RestaurantPage({ id }: { id: string }) {
     }
   };
 
+  const fetchMenu = async (id: string) => {
+    try {
+      const response = await API.get(`/vendors/menus/${id}`);
+      console.log("menu", response.data);
+      return response.data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log("fetch error", error.message);
+        setErrors(error.message);
+      }
+      return null;
+    }
+  };
+
   useEffect(() => {
     const data = async () => {
       const restaurant = await fetchData(id);
+      const menu = await fetchMenu(id);
       setData(restaurant);
+      setMenu(menu.menus);
     };
     data();
   }, [id]);
@@ -284,30 +314,34 @@ export default function RestaurantPage({ id }: { id: string }) {
               <CardTitle>Menu</CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue={restaurant.menu[0].category}>
-                <TabsList>
-                  {restaurant.menu.map((section) => (
-                    <TabsTrigger
-                      key={section.category}
-                      value={section.category}
-                    >
-                      {section.category}
+              {menu && menu.length > 0 ? (
+                <Tabs defaultValue={menu[0].category}>
+                  <TabsList>
+                  {menu.map((item) => (
+                    <TabsTrigger key={item._id} value={item.category}>
+                    {item.category}
                     </TabsTrigger>
                   ))}
-                </TabsList>
-                {restaurant.menu.map((section) => (
-                  <TabsContent key={section.category} value={section.category}>
+                  </TabsList>
+                  {menu.map((item) => (
+                  <TabsContent key={item._id} value={item.category}>
                     <ul className="space-y-2">
-                      {section.items.map((item) => (
-                        <li key={item.name} className="flex justify-between">
-                          <span>{item.name}</span>
-                          <span>₦{item.price.toFixed(2)}</span>
-                        </li>
-                      ))}
+                    <li className="flex justify-between">
+                      <span>{item.dishName}</span>
+                      <span>₦{item.price.toFixed(2)}</span>
+                    </li>
                     </ul>
                   </TabsContent>
-                ))}
-              </Tabs>
+                  ))}
+                </Tabs>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <FolderX size={150} />
+                  <p className="text-gray-500 text-center">
+                    No menu available at the moment. Please check back later.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
