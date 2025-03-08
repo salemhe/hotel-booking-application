@@ -124,7 +124,7 @@ const Navigation = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuItem asChild>
-              <Link href="/userDashboard/booking">Dashboard</Link>
+              <Link href="/userDashboard/search">Dashboard</Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
@@ -163,7 +163,7 @@ const Navigation = () => {
 
   const renderMobileMenu = () => {
     return (
-      <div className="pt-4 pb-3 border-t border-gray-200">
+      <div className="pt-4 pb-3 border-t border-gray-200 z-20 flex">
         {isLoggedIn && profile ? (
           <>
             <div className="flex items-center px-4">

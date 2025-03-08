@@ -70,6 +70,14 @@ type Menu = [
   }
 ];
 
+const Loading = () => {
+  return (
+    <div className="flex items-center justify-center w-full h-screen">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+    </div>
+  );
+};
+
 export default function RestaurantPage({ id }: { id: string }) {
   const [api, setApi] = useState<CarouselApi>();
   const [date, setDate] = useState<Date>();
@@ -139,7 +147,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   if (!data) {
     return (
       <div className="container mx-auto py-8 px-4">
-        {errors ? errors : "Loading..."}
+        {errors ? errors : <Loading />}
       </div>
     );
   }

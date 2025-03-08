@@ -21,6 +21,7 @@ import { AxiosError } from "axios";
 import API from "@/utils/axios";
 import { AuthService } from "@/services/auth.services";
 
+
 interface DecodedToken {
   id?: string;
   exp?: number;
@@ -80,7 +81,7 @@ const UserLoginPage = () => {
       });
 
       toast.success("Welcome back!");
-      router.push("/userDashboard");
+      router.push("/userDashboard/search");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");
