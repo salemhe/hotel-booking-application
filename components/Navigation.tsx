@@ -22,23 +22,11 @@ import {
 import { AuthService } from "@/services/auth.services";
 
 export interface UserProfile {
+  id: string;
   email: string;
-  role: string;
-  token?: string;
   firstName: string;
   lastName: string; 
   profileImage?: string;
-  profile: {
-    id: string;
-    name: string;
-    businessName: string;
-    email: string;
-    address: string;
-    branch: string;
-    profileImage?: string;
-    services?: string[];
-    token?: string;
-  };
 }
 
 const Navigation = () => {

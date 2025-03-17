@@ -19,7 +19,7 @@ import { setAuthToken } from "@/lib/axios-config";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import API from "@/utils/axios";
-import { AuthService } from "@/services/auth.services";
+import { AuthService } from "@/services/userAuth.services";
 
 
 interface DecodedToken {
@@ -76,7 +76,7 @@ const UserLoginPage = () => {
         lastName: user.lastName,
         email: user.email,
         phone: user.phone,
-        role: user.role,
+        profileImage: user.profileImage,
         profile: user.profile,
       });
 

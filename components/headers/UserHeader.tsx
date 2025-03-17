@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BellDot, ChevronDown, LogOut, User, Settings } from "lucide-react";
 import { getTimeBasedGreeting } from "./timeGreeting";
@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { useRouter } from 'next/navigation';
-import { useSession } from '@/components/UserSessionManager';
-import { AuthService } from '@/services/auth.services';
-import { UserProfile } from '../Navigation';
+import { useRouter } from "next/navigation";
+import { AuthService } from "@/services/userAuth.services";
+import { UserProfile } from "../Navigation";
+// import { revalidatePath } from 'next/cache';
 
 // export interface UserProfile {
 //   email: string;
@@ -37,39 +37,40 @@ import { UserProfile } from '../Navigation';
 
 function Header() {
   const { timePhrase, greeting } = getTimeBasedGreeting();
-  const { logout, isLoading } = useSession();
+  // const { logout, isLoading } = useSession();
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserProfile | null>(null);
-  // const router = useRouter();
+  const router = useRouter();
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchUserData = async () => {
-          const authUser = AuthService.getUser();
-          if (authUser) {
-            setUser({
-              ...authUser,
-              profile: {
-                ...authUser.profile,
-                profileImage: '',
-                services: [],
-                token: authUser.token || ''
-              }
-            });
-          }
+      const authUser = AuthService.getUser();
+      if (authUser) {
+        setUser({
+          ...authUser,
+          // profileImage: "",
+          // profile: {
+          //   ...authUser.profile,
+          // },
+        });
+      }
+      setLoading(false);
     };
-
+    
     fetchUserData();
   }, []);
 
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      await logout();
+      await AuthService.logout();
+      router.push("/user-login");
     } catch (error) {
       console.error("Failed to logout:", error);
     }
   };
 
-  if (isLoading ) {
+  if (loading) {
     return (
       <header className="flex h-20 items-center gap-2 w-full bg-white z-10 border-b border-gray-100 md:pr-64 group-has-data-[collapsible=icon]/sidebar-wrapper:pr-12 transition-[width,height] ease-linear fixed group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
         <div className="flex items-center justify-between gap- px-4 w-full">
@@ -118,7 +119,10 @@ function Header() {
                 <div className="flex items-center gap-2 cursor-pointer">
                   <Avatar>
                     {user?.profileImage ? (
-                      <AvatarImage src={user.profileImage} alt={`${user?.firstName} ${user?.lastName}`} />
+                      <AvatarImage
+                        src={user.profileImage}
+                        alt={`${user?.firstName} ${user?.lastName}`}
+                      />
                     ) : null}
                     <AvatarFallback className="bg-indigo-600 text-white">
                       {user?.firstName?.charAt(0).toUpperCase() || "U"}
@@ -146,7 +150,10 @@ function Header() {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 flex items-center gap-2">
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="cursor-pointer text-red-600 flex items-center gap-2"
+                >
                   <LogOut className="w-4 h-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
