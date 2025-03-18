@@ -41,7 +41,7 @@ const Navigation = () => {
   const isLoggedIn = AuthService.isAuthenticated() && profile?.firstName;
 
   const navItems = [
-    { name: "Restaurants", href: "/restaurants" },
+    { name: "Restaurants", href: "/userDashboard/search" },
     { name: "Hotels", href: "/hotels" },
     { name: "Deals", href: "/deals" },
     { name: "Manage Booking", href: "/manage-booking" },

@@ -222,7 +222,7 @@ export default function RestaurantPage({ id }: { id: string }) {
         description: `Your table for ${guests} on ${date} at ${time} has been booked. your room number is ${response.data.booking.tableNumber}`,
       });
       // Redirect to confirmation page
-      // router.push(`/userDashboard/booking`);
+      router.push(`/userDashboard/booking/${response.data.booking._id}`);
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error("Error submitting reservation:", error.response?.data);
@@ -243,7 +243,7 @@ export default function RestaurantPage({ id }: { id: string }) {
     <div className="container mx-auto py-8 px-4">
       <Button
         variant="ghost"
-        onClick={() => router.push("/restaurants")}
+        onClick={() => router.push("/userDashboard/search")}
         className="mb-4"
       >
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Restaurants

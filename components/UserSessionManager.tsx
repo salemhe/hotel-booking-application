@@ -13,7 +13,6 @@ const SessionManager = ({ children }: { children: ReactNode }) => {
       try {
         const isValid = AuthService.isAuthenticated();
         setIsAuthenticated(isValid);
-        console.log(isValid);
 
         if (!isValid) {
           await AuthService.logout();

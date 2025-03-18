@@ -87,7 +87,6 @@ export class AuthService {
   
   static isAuthenticated(): boolean {
     const token = this.getToken();
-    console.log(token)
     return !!token && this.validateToken(token);
   }
   

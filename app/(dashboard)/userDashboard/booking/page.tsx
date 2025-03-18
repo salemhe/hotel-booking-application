@@ -5,11 +5,18 @@ import { useState, useRef } from "react";
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Search,
   Printer,
   MoreVertical,
   SearchXIcon,
   Download,
+  ArrowUpRightFromSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +37,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { AuthService } from "@/services/auth.services";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -167,6 +175,7 @@ interface Booking {
 
 function BookingCard({ booking }: { booking: Booking }) {
   const [receipt, setReceipt] = useState<Booking | null>(null);
+  const router = useRouter()
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
@@ -218,19 +227,50 @@ function BookingCard({ booking }: { booking: Booking }) {
           </div>
 
           <div className="flex items-center justify-end gap-2 pt-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                handlePrint(booking);
-              }}
-              size="icon"
-              className="h-8 w-8"
-            >
-              <Printer className="h-4 w-4" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/userDashboard/booking/${booking.id}`)}
+                    size="icon"
+                    className="h-8 w-8"
+                  >
+                    <ArrowUpRightFromSquare className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Enter</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      handlePrint(booking);
+                    }}
+                    size="icon"
+                    className="h-8 w-8"
+                  >
+                    <Printer className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Print</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="h-8 w-8">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  title="More"
+                  className="h-8 w-8"
+                >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -274,7 +314,7 @@ const Data = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center w-full bg-black/80 z-30">
       <div className="bg-white rounded-2xl shadow-lg max-w-[320px] w-full receipt-safe">
-        <div className="p-6" ref={receiptRef} >
+        <div className="p-6" ref={receiptRef}>
           <h2 className="text-xl font-medium flex items-center gap-2 mb-4">
             <span className="max-w-[150px] truncate block">{receipt.name}</span>
             <span className="text-muted-foreground">Receipt</span>
