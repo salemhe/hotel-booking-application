@@ -28,7 +28,7 @@ export default function RootLayout({
           {/* <AuthProvider> */}
             <div className="flex flex-col min-h-screen">
               <Navigation />
-              <main className="grow bg-gray-50">{children}</main>
+              <main className="grow">{children}</main>
               <Footer />
             </div>
             <Toaster />

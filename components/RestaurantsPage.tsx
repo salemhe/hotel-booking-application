@@ -83,6 +83,8 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState("");
   const [guests, setGuests] = useState("");
+  const [seats, setSeats] = useState("");
+  const [meals, setMeals] = useState("");
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -212,14 +214,14 @@ export default function RestaurantPage({ id }: { id: string }) {
       const response = await API.post(`/users/bookings/`, {
         type: "restaurant",
         vendor: data._id,
-        tableNumber: Math.floor(Math.random() * 10),
+        tableNumber: seats,
         guests: guests,
-        menuId: menu ? menu[0]._id : "",
+        menuId: meals,
       });
       console.log("Reservation response:", response);
       toast({
         title: "Reservation Confirmed!",
-        description: `Your table for ${guests} on ${date} at ${time} has been booked. your room number is ${response.data.booking.tableNumber}`,
+        description: `Your table for ${guests} guests on ${date ? format(date, "PPP") : "the selected date"} at ${time} has been successfully booked. Your table number is ${response.data.booking.tableNumber}.`,
       });
       // Redirect to confirmation page
       router.push(`/userDashboard/booking/${response.data.booking._id}`);
@@ -425,6 +427,36 @@ export default function RestaurantPage({ id }: { id: string }) {
                         {["1", "2", "3", "4", "5", "6", "7", "8"].map((n) => (
                           <SelectItem key={n} value={n}>
                             {n} {n === "1" ? "guest" : "guests"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="seats">Number of Seats</Label>
+                    <Select value={seats} onValueChange={setSeats}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select number of Seats" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["1", "2", "3", "4", "5", "6", "7", "8"].map((n) => (
+                          <SelectItem key={n} value={n}>
+                            {n} {n === "1" ? "seat" : "seats"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="meals">Menu Item</Label>
+                    <Select value={meals} onValueChange={setMeals}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Menu Item" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {menu?.map((n) => (
+                          <SelectItem key={n._id} value={n._id}>
+                            {n.dishName}
                           </SelectItem>
                         ))}
                       </SelectContent>

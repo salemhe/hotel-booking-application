@@ -120,37 +120,65 @@ export default function BookingList() {
               <TabsList>
                 <TabsTrigger value="Current">Current</TabsTrigger>
                 <TabsTrigger value="Past">Past</TabsTrigger>
-                <TabsTrigger value="Upcoming">Upcoming</TabsTrigger>
               </TabsList>
             </div>
             <TabsContent value="Current">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredBookings.map((booking) => (
-                  <BookingCard key={booking.id} booking={booking} />
-                ))}
-              </div>
+            {filteredBookings.filter((booking) => {
+                const today = new Date();
+                const bookingDate = new Date(booking.date);
+                return bookingDate > today;
+              }).length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredBookings
+                    .filter((booking) => {
+                      const today = new Date();
+                      const bookingDate = new Date(booking.date);
+                      return bookingDate > today;
+                    })
+                    .map((booking) => (
+                      <BookingCard key={booking.id} booking={booking} />
+                    ))}
+                </div>
+              ) : (
+                <div className="w-full py-[50] px-4 flex items-center justify-center">
+                  <div className="flex flex-col gap-8 items-center">
+                    <SearchXIcon className="size-[64]" />
+                    <p className="text-center">
+                      No Bookings to show yet, Start booking your affordable
+                      restaurants today.
+                    </p>
+                  </div>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="Past">
-              <div className="w-full py-[50] px-4 flex items-center justify-center">
-                <div className="flex flex-col gap-8 items-center">
-                  <SearchXIcon className="size-[64]" />
-                  <p className="text-center">
-                    No Bookings to show yet, Start booking your afforable
-                    restaurants today.
-                  </p>
+              {filteredBookings.filter((booking) => {
+                const today = new Date();
+                const bookingDate = new Date(booking.date);
+                return bookingDate < today;
+              }).length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredBookings
+                    .filter((booking) => {
+                      const today = new Date();
+                      const bookingDate = new Date(booking.date);
+                      return bookingDate < today;
+                    })
+                    .map((booking) => (
+                      <BookingCard key={booking.id} booking={booking} />
+                    ))}
                 </div>
-              </div>
-            </TabsContent>
-            <TabsContent value="Upcoming">
-              <div className="w-full py-[50] px-4 flex items-center justify-center">
-                <div className="flex flex-col gap-8 items-center">
-                  <SearchXIcon className="size-[64]" />
-                  <p className="text-center">
-                    No Bookings to show yet, Start booking your afforable
-                    restaurants today.
-                  </p>
+              ) : (
+                <div className="w-full py-[50] px-4 flex items-center justify-center">
+                  <div className="flex flex-col gap-8 items-center">
+                    <SearchXIcon className="size-[64]" />
+                    <p className="text-center">
+                      No Bookings to show yet, Start booking your affordable
+                      restaurants today.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </TabsContent>
           </Tabs>
         </main>
@@ -164,7 +192,7 @@ interface Booking {
   name: string;
   location: string;
   image: string;
-  dateRange: string;
+  date: string;
   seats: number;
   pricePerTable: number;
   totalPayment: number;
@@ -175,7 +203,7 @@ interface Booking {
 
 function BookingCard({ booking }: { booking: Booking }) {
   const [receipt, setReceipt] = useState<Booking | null>(null);
-  const router = useRouter()
+  const router = useRouter();
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
@@ -198,9 +226,6 @@ function BookingCard({ booking }: { booking: Booking }) {
           fill
           className="object-cover"
         />
-        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium">
-          {formatPrice(booking.pricePerTable)} per table
-        </div>
       </div>
       <CardContent className="p-4">
         <div className="space-y-3">
@@ -212,7 +237,7 @@ function BookingCard({ booking }: { booking: Booking }) {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Date</span>
-              <span className="font-medium">{booking.dateRange}</span>
+              <span className="font-medium">{booking.date}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Seats</span>
@@ -232,7 +257,9 @@ function BookingCard({ booking }: { booking: Booking }) {
                 <TooltipTrigger asChild>
                   <Button
                     variant="outline"
-                    onClick={() => router.push(`/userDashboard/booking/${booking.id}`)}
+                    onClick={() =>
+                      router.push(`/userDashboard/booking/${booking.id}`)
+                    }
                     size="icon"
                     className="h-8 w-8"
                   >
@@ -333,9 +360,7 @@ const Data = ({
           <div className="flex flex-col py-4 gap-2 text-sm">
             <p className="flex justify-between">
               <span className="text-muted-foreground">Date:</span>
-              <span className="text-blue-900 font-medium">
-                {receipt.dateRange}
-              </span>
+              <span className="text-blue-900 font-medium">{receipt.date}</span>
             </p>
             <p className="flex justify-between">
               <span className="text-muted-foreground">Time:</span>
@@ -371,41 +396,45 @@ const bookings = [
   {
     id: "7t2gyuw7y7uhu72",
     name: "Ocean Basket",
-    meal: "RIce and Chicken",
+    meal: "Rice and Chicken",
     location: "Victoria Island",
     image: "/hero-bg.jpg",
-    dateRange: "5th Feb - 10th Feb",
+    date: new Date().toISOString().split("T")[0], // Today's date
     seats: 3,
     pricePerTable: 80000,
     totalPayment: 80000,
-    tableType: "2-seat",
-    time: "7pm",
+    tableType: "2-seats",
+    time: "19:00",
   },
   {
     id: "bus6783uyeg73",
-    name: "Velivet Bar & Lounge",
+    name: "Velvet Bar & Lounge",
     meal: "Chicken Bucket",
     location: "Lekki",
     image: "/hero-bg.jpg",
-    dateRange: "5th Mar - 8th Mar",
+    date: new Date(new Date().setDate(new Date().getDate() - 2))
+      .toISOString()
+      .split("T")[0], // 2 days ago
     seats: 6,
     pricePerTable: 80000,
     totalPayment: 80000,
     tableType: "2-seats",
-    time: "11am",
+    time: "11:00",
   },
   {
     id: "ukniweh78738ee",
     name: "Shiro Lagos",
     meal: "Eba & Ewedu Soup",
     location: "Banana Island",
-    image: "/hero-bg.jpg",
-    dateRange: "20th Feb - 21st Feb",
+    image: "/restaurant.jpg",
+    date: new Date(new Date().setDate(new Date().getDate() + 5))
+      .toISOString()
+      .split("T")[0], // 5 days from now
     seats: 4,
     pricePerTable: 80000,
     totalPayment: 80000,
     tableType: "3-seats",
-    time: "2pm",
+    time: "14:00",
   },
   {
     id: "heu38y22hbsi",
@@ -413,11 +442,28 @@ const bookings = [
     meal: "Yam & Egg",
     location: "Opebi",
     image: "/hero-bg.jpg",
-    dateRange: "20th Feb - 21st Feb",
+    date: new Date(new Date().setDate(new Date().getDate() + 10))
+      .toISOString()
+      .split("T")[0], // 10 days from now
     seats: 5,
     pricePerTable: 80000,
     totalPayment: 80000,
     tableType: "4-seats",
-    time: "3pm",
+    time: "15:00",
+  },
+  {
+    id: "38juwin2u92wu",
+    name: "Chicken Republic",
+    meal: "Rice & Chicken",
+    location: "Opebi",
+    image: "/chicken-republic.jpg",
+    date: new Date(new Date().setDate(new Date().getDate() + 10))
+      .toISOString()
+      .split("T")[0], // 10 days from now
+    seats: 7,
+    pricePerTable: 80000,
+    totalPayment: 80000,
+    tableType: "7-seats",
+    time: "11:00",
   },
 ];
