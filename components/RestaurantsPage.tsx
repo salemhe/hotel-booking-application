@@ -360,19 +360,23 @@ export default function RestaurantPage({ id }: { id: string }) {
                     {menu.map((item) => (
                       <TabsContent key={item._id} value={item.category}>
                         <Card className="space-y-2">
-                          <CardContent className="">
-                            <div className="flex justify-between p-2">
+                          <CardContent className="flex flex-col w-full p-2">
+                            <div className="flex">
                               <Image
-                                src={item.itemImage || "/hero-bg.jpg"}
+                                src={`https://hotel-booking-app-backend-30q1.onrender.com/uploads/${item.itemImage}` || "/hero-bg.jpg"}
                                 alt={item.itemName}
                                 width={100}
                                 height={100}
-                                className="rounded-md"
+                                className="rounded-md object-cover h-[100px] w-[100px]"
                               />
                               <div>
-                                <h2>{item.dishName || item.itemName}</h2>
-                                <span>₦{item.price.toLocaleString()}</span>
+                                <h2 className="font-semibold">{item.dishName || item.itemName}</h2>
+                                <span className="text-muted-foreground">₦{item.price.toLocaleString()}</span>
                               </div>
+                            </div>
+                            <div className="w-full flex flex-col mt-2">
+                              <h3 className="font-semibold text-muted-foreground">Description:</h3>
+                              <p className=" break-words">{item.description}</p>
                             </div>
                           </CardContent>
                         </Card>
