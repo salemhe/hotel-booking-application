@@ -47,6 +47,8 @@ import { format } from "date-fns";
 import { Calendar } from "./ui/calendar";
 import API from "@/utils/axios";
 import { AxiosError } from "axios";
+import ItemSelector from "./ItemSelector";
+import { ScrollArea } from "./ui/scroll-area";
 
 type restaurants = {
   isVerified: boolean;
@@ -58,17 +60,16 @@ type restaurants = {
   services: string[];
 };
 
-type Menu = [
-  {
-    _id: string;
-    vendor: string;
-    dishName: string;
-    description: string;
-    price: number;
-    category: string;
-    itemImage: string;
-  }
-];
+type Menu = {
+  _id: string;
+  vendor: string;
+  dishName: string;
+  description: string;
+  price: number;
+  category: string;
+  itemImage: string;
+  itemName: string;
+};
 
 const Loading = () => {
   return (
@@ -88,11 +89,15 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [menu, setMenu] = useState<Menu | null>(null);
+  const [menu, setMenu] = useState<Menu[] | null>(null);
   const router = useRouter();
   const [data, setData] = useState<restaurants | null>(null);
   const [errors, setErrors] = useState("");
   const { toast } = useToast();
+
+  const handleSelectionChange = (selected: string[]) => {
+    setMeals(selected[0]);
+  };
 
   useEffect(() => {
     if (!api) {
@@ -124,8 +129,7 @@ export default function RestaurantPage({ id }: { id: string }) {
 
   const fetchMenu = async (id: string) => {
     try {
-      const response = await API.get(`/vendors/menus/${id}`);
-      console.log("menu", response.data);
+      const response = await API.get(`/vendors/menus?vendorId=${id}`);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -141,7 +145,9 @@ export default function RestaurantPage({ id }: { id: string }) {
       const restaurant = await fetchData(id);
       const menu = await fetchMenu(id);
       setData(restaurant);
-      setMenu(menu.menus);
+      if (menu) {
+        setMenu(menu.menus);
+      }
     };
     data();
   }, [id]);
@@ -157,6 +163,14 @@ export default function RestaurantPage({ id }: { id: string }) {
   if (!data || errors) {
     return <div className="container mx-auto py-8 px-4">Error: {errors}</div>;
   }
+
+  const menuItem = [
+    { name: "Main Course", value: "mainCourse" },
+    { name: "Dessert", value: "dessert" },
+    { name: "Appetizer", value: "appetizer" },
+    { name: "Lunch", value: "lunch" },
+    { name: "Drink", value: "drink" },
+  ];
 
   // In a real application, you would fetch the restaurant data based on the ID
   const restaurant = {
@@ -217,11 +231,17 @@ export default function RestaurantPage({ id }: { id: string }) {
         tableNumber: seats,
         guests: guests,
         menuId: meals,
+        checkIn: date,
+        checkOut: date,
       });
       console.log("Reservation response:", response);
       toast({
         title: "Reservation Confirmed!",
-        description: `Your table for ${guests} guests on ${date ? format(date, "PPP") : "the selected date"} at ${time} has been successfully booked. Your table number is ${response.data.booking.tableNumber}.`,
+        description: `Your table for ${guests} guests on ${
+          date ? format(date, "PPP") : "the selected date"
+        } at ${time} has been successfully booked. Your table number is ${
+          response.data.booking.tableNumber
+        }.`,
       });
       // Redirect to confirmation page
       router.push(`/userDashboard/booking/${response.data.booking._id}`);
@@ -255,7 +275,9 @@ export default function RestaurantPage({ id }: { id: string }) {
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl font-bold">{data.businessName}</CardTitle>
+              <CardTitle className="text-3xl font-bold">
+                {data.businessName}
+              </CardTitle>
               <CardDescription>
                 <div className="flex items-center space-x-2">
                   <Badge variant="secondary">{restaurant.cuisine}</Badge>
@@ -325,34 +347,47 @@ export default function RestaurantPage({ id }: { id: string }) {
               <CardTitle>Menu</CardTitle>
             </CardHeader>
             <CardContent>
-              {menu && menu.length > 0 ? (
-                <Tabs defaultValue={menu[0].category}>
-                  <TabsList>
-                    {Array.from(new Set(menu.map((item) => item.category))).map((category) => (
-                    <TabsTrigger key={category} value={category}>
-                      {category}
+              <Tabs defaultValue="mainCourse">
+                <TabsList className="flex flex-wrap w-full h-auto">
+                  {menuItem.map((category, i) => (
+                    <TabsTrigger key={i} value={category.value}>
+                      {category.name}
                     </TabsTrigger>
-                    ))}
-                  </TabsList>
-                  {menu.map((item) => (
-                  <TabsContent key={item._id} value={item.category}>
-                    <ul className="space-y-2">
-                    <li className="flex justify-between">
-                      <span>{item.dishName}</span>
-                      <span>₦{item.price.toFixed(2)}</span>
-                    </li>
-                    </ul>
-                  </TabsContent>
                   ))}
-                </Tabs>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-8">
-                  <FolderX size={150} />
-                  <p className="text-gray-500 text-center">
-                    No menu available at the moment. Please check back later.
-                  </p>
-                </div>
-              )}
+                </TabsList>
+                {menu && menu.length > 0 ? (
+                  <ScrollArea className="h-72 rounded-md">
+                    {menu.map((item) => (
+                      <TabsContent key={item._id} value={item.category}>
+                        <Card className="space-y-2">
+                          <CardContent className="">
+                            <div className="flex justify-between p-2">
+                              <Image
+                                src={item.itemImage || "/hero-bg.jpg"}
+                                alt={item.itemName}
+                                width={100}
+                                height={100}
+                                className="rounded-md"
+                              />
+                              <div>
+                                <h2>{item.dishName || item.itemName}</h2>
+                                <span>₦{item.price.toLocaleString()}</span>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                    ))}
+                  </ScrollArea>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <FolderX size={150} />
+                    <p className="text-gray-500 text-center">
+                      No menu available at the moment. Please check back later.
+                    </p>
+                  </div>
+                )}
+              </Tabs>
             </CardContent>
           </Card>
         </div>
@@ -448,19 +483,36 @@ export default function RestaurantPage({ id }: { id: string }) {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="meals">Menu Item</Label>
-                    <Select value={meals} onValueChange={setMeals}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Menu Item" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {menu?.map((n) => (
-                          <SelectItem key={n._id} value={n._id}>
-                            {n.dishName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="meals">Select Menu Items</Label>
+                    {menu && (
+                      <ItemSelector
+                        items={menu}
+                        onSelectionChange={handleSelectionChange}
+                      />
+                    )}
+                    {/* <div className="border p-2 rounded-lg">
+                      {menu?.map((item) => (
+                        <div
+                          key={item._id}
+                          className="flex items-center space-x-2"
+                        >
+                          <Checkbox
+                            id={item._id}
+                            checked={meals.includes(item._id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setMeals([...meals, item._id]); // Add selected meal
+                              } else {
+                                setMeals(meals.filter((id) => id !== item._id)); // Remove unselected meal
+                              }
+                            }}
+                          />
+                          <label htmlFor={item._id} className="text-sm">
+                            {item.dishName}
+                          </label>
+                        </div>
+                      ))}
+                    </div> */}
                   </div>
                   <Button type="submit" className="w-full">
                     {loading ? "Loading..." : "Reserve Table"}

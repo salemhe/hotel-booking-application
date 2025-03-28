@@ -11,7 +11,7 @@ export default function SessionManager({ children }: { children: React.ReactNode
     const checkSession = async () => {
       const isValidSession = await AuthService.checkSession();
       if (!isValidSession) {
-        router.push('/vendor-login');
+        router.push('/vendor-login'); 
       }
     };
 
