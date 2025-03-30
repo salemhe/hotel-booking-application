@@ -232,7 +232,7 @@ export default function RestaurantPage({ id }: { id: string }) {
         guests: guests,
         menuId: meals,
         checkIn: date,
-        checkOut: date,
+        checkOut: date ? new Date(new Date(date).getTime() + 2 * 60 * 60 * 1000) : null,
       });
       console.log("Reservation response:", response);
       toast({
@@ -244,7 +244,7 @@ export default function RestaurantPage({ id }: { id: string }) {
         }.`,
       });
       // Redirect to confirmation page
-      router.push(`/userDashboard/booking/${response.data.booking._id}`);
+      router.push(`/userDashboard/payment/${response.data.booking._id}`);
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error("Error submitting reservation:", error.response?.data);
