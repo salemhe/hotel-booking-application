@@ -161,7 +161,7 @@ export function PaymentBreakdown() {
         <CardTitle className="text-xl font-semibold text-blue-600">
           Payment Breakdown
         </CardTitle>
-        <div className="flex flex-col md:flex-row justify-end md:items-center mb-4 gap-4">
+        <div className="flex flex-col md:flex-row justify-end md:items-center mb-4 gap-4 w-full">
           <Button
             variant="outline"
             title="Reset filters"
@@ -171,8 +171,8 @@ export function PaymentBreakdown() {
             Reset Filters
             <RefreshCcwIcon />
           </Button>
-          <div className="flex gap-2 flex-wrap">
-            <div className="flex md:items-center gap-2 flex-col md:flex-row">
+          <div className="flex gap-2 flex-wrap w-full md:w-auto">
+            <div className="flex md:items-center gap-2 flex-col md:flex-row w-full md:w-auto">
               <span className="text-sm text-muted-foreground whitespace-nowrap">
                 Sort by
               </span>
@@ -188,7 +188,7 @@ export function PaymentBreakdown() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex md:items-center gap-2 flex-col md:flex-row">
+            <div className="flex md:items-center gap-2 flex-col md:flex-row w-full md:w-auto">
               <span className="text-sm text-muted-foreground">Status</span>
               <Select
                 value={status}

@@ -60,14 +60,11 @@ export default function PaymentMethodSelection() {
   // Handle Paystack checkout
   const handlePaystackCheckout = () => {
     setIsRedirecting(true);
-
-    // Simulate redirect to Paystack checkout
-    // In a real implementation, you would use Paystack's SDK or API
+    // TODO navigate to paystack checkout
     setTimeout(() => {
       alert("Redirecting to Paystack checkout...");
-      // window.location.href = "https://checkout.paystack.com/..."
+      setIsRedirecting(false);
     }, 1500);
-    setIsRedirecting(false);
   };
 
   // Go back to payment selection

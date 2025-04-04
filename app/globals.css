@@ -2,6 +2,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+no-scroll-bars {
+  scrollbar-width: thin;
+  scrollbar-color: transparent;
+}
+
 @theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
