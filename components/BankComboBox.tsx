@@ -32,7 +32,7 @@ export function BankCombobox({ banks, value, onChange, isLoading = false }: Bank
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between h-12 rounded-md"
+            className="w-full justify-between h-10 rounded-md"
             disabled={isLoading}
             type="button"
           >
