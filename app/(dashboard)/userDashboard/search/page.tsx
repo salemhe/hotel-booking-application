@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Search, Store, Frown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -9,12 +9,9 @@ import Image from "next/image"
 import { AuthService } from "@/services/auth.services"
 import API from "@/utils/axios"
 import Link from "next/link"
+import debounce from "debounce"
 
 // Define the Restaurant type
-interface Restaurant {
-  businessName: string;
-  createdAt: string;
-}
 
 export default function RestaurantDashboard() {
   const authUser = AuthService.getUser();
@@ -23,18 +20,11 @@ export default function RestaurantDashboard() {
   const [filteredReservations, setFilteredReservations] = useState([])
   const [loading, setLoading] = useState(false)
 
-  const fetchRestaurants = async (query = "", sort = "date") => {
+  const fetchRestaurants = async (query = "") => {
     setLoading(true)
     try {
-      const response = await API.get(`/vendors?businessName=${query}`)
-      let data = await response.data
-
-      // Sort the data based on the selected sort option
-      if (sort === "name") {
-        data = data.sort((a: Restaurant, b: Restaurant) => (a.businessName || "").localeCompare(b.businessName || ""))
-      } else if (sort === "date") {
-        data = data.sort((a: Restaurant, b: Restaurant) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      }
+      const response = await API.get(`/users/restaurant-search?query=${query}`)
+      const data = await response.data.data
 
       setFilteredReservations(data)
     } catch (error) {
@@ -44,9 +34,36 @@ export default function RestaurantDashboard() {
     }
   }
 
+  const sortRestaurants = (restaurant: Reservation[]): Reservation[] => {
+    return [...restaurant].sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "oldest":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "name":
+          return (a.businessName || "").localeCompare(b.businessName || "");
+        default:
+          return 0;
+      }
+    });
+  };
+
+  const debouncedResults = useMemo(() => {
+    return debounce((e: React.ChangeEvent<HTMLInputElement>) => fetchRestaurants(e.target.value), 3000);
+  }, []);
+
   useEffect(() => {
-    fetchRestaurants(searchQuery, sortBy)
-  }, [searchQuery, sortBy])
+    return () => {
+      debouncedResults.clear();
+    };
+  });
+
+  const filteredRestaurants = sortRestaurants(filteredReservations);
+
+  useEffect(() => {
+    fetchRestaurants(searchQuery)
+  }, [searchQuery])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950">
@@ -64,7 +81,10 @@ export default function RestaurantDashboard() {
                 placeholder="Search restaurant"
                 className="pl-9 bg-white dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-800"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  debouncedResults(e)
+                  setSearchQuery(e.target.value)}
+                }
               />
             </div>
             <div className="flex items-center gap-2">
@@ -97,14 +117,14 @@ export default function RestaurantDashboard() {
                   </Card>
                 ))}
               </div>
-            ) : filteredReservations.length === 0 ? (
+            ) : filteredRestaurants.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-10">
                 <Frown className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">No reservations found. Try adjusting your filters or search query.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {filteredReservations.map((reservation, index) => (
+                {filteredRestaurants.map((reservation, index) => (
                   <ReservationCard key={index} reservation={reservation} />
                 ))}
               </div>
@@ -128,6 +148,7 @@ interface Reservation {
   status: string;
   location: string;
   rating?: number; // Assuming rating is optional
+  createdAt: string;
 }
 
 function ReservationCard({ reservation }: { reservation: Reservation }) {

@@ -364,7 +364,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                             <div className="flex">
                               <Image
                                 src={`https://hotel-booking-app-backend-30q1.onrender.com/uploads/${item.itemImage}` || "/hero-bg.jpg"}
-                                alt={item.itemName}
+                                alt={item.itemName || item.dishName}
                                 width={100}
                                 height={100}
                                 className="rounded-md object-cover h-[100px] w-[100px]"

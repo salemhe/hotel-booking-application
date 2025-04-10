@@ -7,7 +7,14 @@ import * as z from "zod";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -21,6 +28,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 // import { verifyBankAccount, getBanks } from "@/lib/action"
 import { getBanks, verifyBankAccount } from "@/lib/action";
 import { BankCombobox } from "./BankComboBox";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import API from "@/utils/axios";
+import { AxiosError } from "axios";
+import { revalidatePath } from "next/cache";
 
 // Form validation schema
 const formSchema = z.object({
@@ -43,6 +55,8 @@ export default function VendorBankForm() {
   const [error, setError] = useState<string | null>(null);
   const [banks, setBanks] = useState<Bank[]>([]);
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -109,12 +123,34 @@ export default function VendorBankForm() {
       setError("Please verify your account details first");
       return;
     }
+    setIsLoading(true);
+    setError(null);
 
-    // Here you would typically save the payment details
-    console.log("Saving payment details:", { ...values, accountName });
-
-    // For demo purposes, show success message
-    alert("Payment details saved successfully!");
+    try {
+      const response = await API.patch("/vendors/save-payment", {
+        business_name: "Bookie",
+        bank_code: values.bankCode,
+        account_number: values.accountNumber,
+        percentage_charge: 15,
+      });
+      toast.success("Payment details saved successfully!");
+      console.log("Payment details saved:", response);
+      revalidatePath("/vendorsDashboard/payment");
+      router.push("/vendorsDashboard/payment");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error("Error saving payment details:", error);
+        setError(
+          error.response?.data?.message || "Failed to save payment details"
+        );
+        toast.error(
+          error.response?.data?.message || "Failed to save payment details"
+        );
+      }
+      return;
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -172,7 +208,12 @@ export default function VendorBankForm() {
                 <Button
                   type="button"
                   onClick={verifyAccount}
-                  disabled={isVerifying || isLoadingBanks || accountNumber.length < 10 || !bankCode}
+                  disabled={
+                    isVerifying ||
+                    isLoadingBanks ||
+                    accountNumber.length < 10 ||
+                    !bankCode
+                  }
                   className="h-10 px-4 bg-blue-600 hover:bg-blue-600/80"
                 >
                   {isVerifying ? (
@@ -203,9 +244,13 @@ export default function VendorBankForm() {
             <Button
               type="submit"
               className="w-full h-10 mt-6 bg-blue-600 hover:bg-blue-600/80"
-              disabled={!accountName || isVerifying}
+              disabled={!accountName || isVerifying || isLoading}
             >
-              Save Payment Details
+              {isLoading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                "Save Payment Details"
+              )}
             </Button>
           </form>
         </Form>
