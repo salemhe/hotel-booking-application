@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -21,16 +20,13 @@ import {
   Utensils,
   Star,
   CalendarIcon,
+  ChefHat,
+  Book,
+  CheckCircle2,
+  CircleDot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -48,23 +44,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 export default function LandingPage() {
-  const router = useRouter();
-  // const [location, setLocation] = useState<string>();
-  const [cuisine, setCuisine] = useState<string>("");
-  const [guests, setGuests] = useState<string>("");
-  const [date, setDate] = useState<Date>();
-  const [time, setTime] = useState<string>("");
 
   const cuisineTypes = [
     { name: "Italian", icon: Pizza },
@@ -106,31 +87,31 @@ export default function LandingPage() {
 
   const restaurants = [
     {
-      name: "The Yellow Chilli",
-      image: "/hero-bg.jpg",
-      location: "Victoria Island, Lagos",
-      cuisine: "Nigerian & Continental",
+      name: "Chicken Republic",
+      image: "/chicken-republic.jpg",
+      location: "Ikeja City Mall, Ikeja, Lagos",
+      cuisine: "Nigerian Fast Food",
     },
     {
-      name: "Ocean Basket",
-      image: "/hero-bg.jpg",
-      location: "Lekki, Lagos",
-      cuisine: "Seafood",
+      name: "KFC Nigeria",
+      image: "/KFC.png",
+      location: "Admiralty Way, Lekki Phase 1, Lagos",
+      cuisine: "American Fried Chicken",
     },
     {
-      name: "Bungalow Restaurant",
-      image: "/hero-bg.jpg",
-      location: "Ikeja, Lagos",
-      cuisine: "International",
+      name: "The Place Restaurant",
+      image: "/the-place.jpg",
+      location: "Circle Mall, Lekki, Lagos",
+      cuisine: "Nigerian Quick Service",
     },
     {
-      name: "Terra Kulture",
-      image: "/hero-bg.jpg",
-      location: "Victoria Island, Lagos",
-      cuisine: "Nigerian",
+      name: "Domino's Pizza Nigeria",
+      image: "/dominos.webp",
+      location: "Akin Adesola Street, Victoria Island, Lagos",
+      cuisine: "Pizza & Fast Casual",
     },
   ];
-
+  
   const deals = [
     {
       title: "Weekend Brunch Special",
@@ -232,12 +213,6 @@ export default function LandingPage() {
     },
   ];
 
-  const handleSubmit = () => {
-    router.push(
-      `/restaurants?&cuisine=${cuisine}&guests=${guests}&date=${date}&time=${time}`
-    );
-  };
-
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header Section */}
@@ -245,7 +220,7 @@ export default function LandingPage() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative py-16 md:py-24 min-h-[600px] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0">
+          {/* <div className="absolute inset-0">
             <Image
               src="/hero-bg.jpg"
               alt="Fine dining ambiance"
@@ -253,31 +228,39 @@ export default function LandingPage() {
               className="object-cover"
             />
             <div className="absolute inset-0 bg-linear-to-r from-blue-900/90 to-green-900/90" />
-          </div>
-          <div className="relative container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="sm:text-center mb-12"
-            >
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-                Your Perfect Dining Experience Awaits
-              </h1>
-              <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-                Book your table at the finest restaurants in seconds. No calls
-                needed, instant confirmation.
-              </p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="max-w-4xl mx-auto"
-            >
-              <Card className="bg-white/95 backdrop-blur-sm">
+          </div> */}
+          <div className="max-w-[1200px] mx-auto px-4 grid md:grid-cols-2">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className=" mb-12"
+              >
+                <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+                  Book the Perfect Table Anytime, Anywhere.
+                </h1>
+                <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+                  Discover and reserve tables at the best restaurants in town in
+                  seconds.
+                </p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="max-w-4xl mx-auto flex gap-2 flex-col sm:flex-row"
+              >
+                <Button asChild className="rounded-full h-[50px] bg-blue-700 hover:bg-blue-700/90" size='lg'>
+                  <Link href="/userDashboard/search">Book a Table</Link>
+                </Button>
+                <Button asChild className="rounded-full h-[50px]" variant='outline' size='lg'>
+                  <Link href="/vendors-landing-page">Join as a Restaurant</Link>
+                </Button>
+                {/* <Button>Join as a Restaurant</Button> */}
+                {/* <Card className="bg-white/95 backdrop-blur-sm">
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    {/* <div className="space-y-2">
+                    <div className="space-y-2">
                       <label className="text-sm font-medium">Location</label>
                       <Select value={location} onValueChange={setLocation}>
                         <SelectTrigger className="bg-white">
@@ -294,7 +277,7 @@ export default function LandingPage() {
                           ))}
                         </SelectContent>
                       </Select>
-                    </div> */}
+                    </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Cuisine</label>
                       <Select value={cuisine} onValueChange={setCuisine}>
@@ -382,13 +365,43 @@ export default function LandingPage() {
                     Find a Table
                   </Button>
                 </CardContent>
-              </Card>
+              </Card> */}
+              </motion.div>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="w-full flex items-center justify-center"
+            >
+              <div className="relative size-[300px] md:size-[450px] mt-[80px] md:mt-0 items-center flex justify-center">
+                <ChefHat
+                  size={300}
+                  className="animate-pulse text-blue-200 size-[300px] md:size-[450px]"
+                />
+                <CircleDot
+                  size={100}
+                  className="top-[50%] left-[50%] absolute text-blue-700 -translate-[50%] size-[80px] md:size-[100]"
+                />
+                <Utensils
+                  size={100}
+                  className="right-0 md:right-10 bottom-0 md:bottom-10 -rotate-45 absolute text-green-500 size-[80px] md:size-[100]"
+                />
+                <Book
+                  size={100}
+                  className="left-0 md:left-10 bottom-0 md:bottom-10 rotate-45 absolute text-purple-500 size-[80px] md:size-[100]"
+                />
+                <CheckCircle2
+                  size={100}
+                  className="left-[50%] -translate-[50%] top-0 md:top-10 absolute text-orange-500 size-[80px] md:size-[100]"
+                />
+              </div>
             </motion.div>
           </div>
         </section>
 
         {/* How It Works */}
-        <section className="py-20 bg-linear-to-b from-white to-blue-50">
+        <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
@@ -427,10 +440,10 @@ export default function LandingPage() {
                 >
                   <Card className="h-full">
                     <CardContent className="pt-6">
-                      <div className="mb-4 w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto">
+                      <div className="mb-4 w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                         <step.icon className="w-6 h-6 text-blue-600" />
                       </div>
-                      <div className="text-center">
+                      <div className="text-start">
                         <h3 className="text-xl font-semibold mb-2">
                           {step.title}
                         </h3>
@@ -438,9 +451,6 @@ export default function LandingPage() {
                       </div>
                     </CardContent>
                   </Card>
-                  {index < 2 && (
-                    <ArrowRight className="hidden md:block absolute top-1/2 -right-8 w-8 h-8 text-blue-600 transform -translate-y-1/2" />
-                  )}
                 </motion.div>
               ))}
             </div>
@@ -448,7 +458,7 @@ export default function LandingPage() {
         </section>
 
         {/* Popular Restaurants */}
-        <section className="py-20 bg-linear-to-b from-white to-blue-50">
+        <section className="py-20 ">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
@@ -467,7 +477,7 @@ export default function LandingPage() {
                   transition={{ delay: index * 0.1 }}
                   className="group cursor-pointer"
                 >
-                  <div className="relative h-64 rounded-xl overflow-hidden">
+                  <div className="relative h-64 rounded-4xl overflow-hidden">
                     <Image
                       src={restaurant.image}
                       alt={restaurant.name}
@@ -514,7 +524,7 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.05 }}
                   className="group"
                 >
-                  <Card className="text-center hover:border-blue-200 transition-colors">
+                  <Card className="text-center hover:border-blue-200 transition-colors rounded-full">
                     <CardContent className="p-6">
                       <div className="mb-4 w-16 h-16 mx-auto rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                         <cuisine.icon className="w-8 h-8 text-blue-600" />
@@ -529,7 +539,7 @@ export default function LandingPage() {
         </section>
 
         {/* Special Offers */}
-        <section className="py-20 bg-linear-to-b from-blue-50 to-white">
+        <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
@@ -592,7 +602,7 @@ export default function LandingPage() {
         </section>
 
         {/* Testimonials */}
-        <section className="py-20 overflow-hidden bg-linear-to-b from-blue-50 to-white">
+        <section className="py-20 overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
@@ -603,7 +613,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="relative">
-              <div className="flex space-x-8 animate-marquee">
+              <div className="flex space-x-8 animate-marquee2 md:animate-marquee space-y-8">
                 {[...testimonials, ...testimonials].map((testimonial, i) => (
                   <Card key={i} className="w-[300px] shrink-0">
                     <CardHeader>
@@ -645,7 +655,7 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-20 bg-linear-to-b from-blue-50 to-white">
+        <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
@@ -715,7 +725,7 @@ export default function LandingPage() {
                     </motion.div>
                   ))}
                 </div>
-                <Button variant="secondary" size="lg" asChild>
+                <Button variant="secondary" className=" rounded-full" size="lg" asChild>
                   <Link
                     href="/vendors-landing-page"
                     className="flex items-center"
@@ -728,7 +738,7 @@ export default function LandingPage() {
               <div className="relative hidden md:block">
                 <div className="absolute inset-0 bg-linear-to-r from-blue-600/20 to-green-600/20 rounded-2xl" />
                 <Image
-                  src="/hero-bg.jpg"
+                  src="/restaurant.webp"
                   alt="Restaurant Management"
                   width={800}
                   height={600}
@@ -740,13 +750,13 @@ export default function LandingPage() {
         </section>
 
         {/* Newsletter */}
-        <section className="py-20 bg-linear-to-b from-white to-blue-50">
+        <section className="py-20">
           <div className="container mx-auto px-4">
             <Card className="max-w-4xl mx-auto overflow-hidden">
               <div className="grid md:grid-cols-2">
                 <div className="relative h-64 md:h-auto">
                   <Image
-                    src="/hero-bg.jpg"
+                    src="/restaurant.jpg"
                     alt="Newsletter"
                     fill
                     className="object-cover"

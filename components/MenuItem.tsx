@@ -16,7 +16,7 @@ import Link from "next/link";
 interface dataType {
   _id: string;
   vendor: string;
-  itemName: string;
+  dishName: string;
   description: string;
   price: number;
   category: string;
@@ -24,7 +24,7 @@ interface dataType {
 }
 
 const MenuItem = ({ data }: { data: dataType }) => {
-  const { _id, itemName, itemImage, category, price } = data;
+  const { _id, dishName, itemImage, category, price } = data;
 
   return (
     <div className="w-full max-w-sm bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden transform transition-all hover:shadow-2xl p-6 border border-gray-200">
@@ -35,7 +35,7 @@ const MenuItem = ({ data }: { data: dataType }) => {
           layout="fill"
           objectFit="cover"
           className="rounded-xl"
-          alt={itemName || "Menu Item"} 
+          alt={dishName || "Menu Item"} 
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent"></div>
       </div>
@@ -43,7 +43,7 @@ const MenuItem = ({ data }: { data: dataType }) => {
       {/* Content Section */}
       <div className="py-4 space-y-2">
         <h3 className="text-2xl font-semibold text-gray-900 truncate">
-          {itemName}
+          {dishName}
         </h3>
         <p className="text-sm text-gray-600">
           {/* <span className="font-medium text-gray-800">Cuisine:</span> {vendor}{" "}

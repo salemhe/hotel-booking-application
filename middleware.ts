@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth_token')
   
   if (!token) {
-    return NextResponse.redirect(new URL('/vendor-login', request.url))
+    return NextResponse.redirect(new URL('/vendor-login', request.url)) 
   }
   
   // Add role-based route protection here if needed

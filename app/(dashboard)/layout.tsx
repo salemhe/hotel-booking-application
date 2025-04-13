@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "../globals.css";
 // import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
 
-const poppins = Poppins({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-poppins",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-dm-sans",
 });
 
 export const metadata: Metadata = {
@@ -23,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${poppins.variable} antialiased`}>
+      <body className={`${dmSans.variable} antialiased`}>
           {/* <AuthProvider> */}
             <div className="flex flex-col min-h-screen">
               <main className="grow bg-gray-50">{children}</main>

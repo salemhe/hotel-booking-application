@@ -32,6 +32,7 @@ export type SearchResponse = [
 export type Restaurant = {
   _id: string;
   name: string;
+  businessName: string;
   // email: string;
   // phone: string;
   address: string;

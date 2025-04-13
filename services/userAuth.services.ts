@@ -20,20 +20,19 @@ interface LoginResponse {
 }
 
 export interface UserProfile {
-  id: string;
-  firstName: string;
-  lastName: string;
   email: string;
-  phone: string;
-  profileImage: string;
-  role?: string;
+  id: string,
+  firstName: string,
+  lastName: string,
+  phone: string,
+  profileImage: string,
   profile?: {
-    bio?: string;
-    location?: string;
-    preferences?: {
-      notifications?: boolean;
-      newsletter?: boolean;
-    };
+    id: string;
+    name: string;
+    businessName: string;
+    email: string;
+    address: string;
+    branch: string;
   };
 }
 
@@ -45,9 +44,10 @@ export interface DecodedToken {
 
 export class AuthService {
   private static user: UserProfile | null = null;
+  private static USER_KEY = "auth_user";
   private static token: string | null = null;
   private static SESSION_ID_KEY = "session_id";
-  private static AUTH_TOKEN_KEY = "authToken";
+  private static AUTH_TOKEN_KEY = "auth_token";
 
   static setToken(token: string) {
     this.token = token;
@@ -62,12 +62,18 @@ export class AuthService {
     return this.token;
   }
   
-  static setUser(user: UserProfile) {
-    this.user = user;
-  }
-  
   static getUser(): UserProfile | null {
-    return this.user;
+    if (typeof window !== "undefined") {
+      const userStr = localStorage.getItem(this.USER_KEY);
+      return userStr ? JSON.parse(userStr) : null;
+    }
+    return null;
+  }
+
+  static setUser(user: UserProfile): void {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    }
   }
   
   static clearAuth() {
@@ -75,6 +81,7 @@ export class AuthService {
     this.user = null;
     localStorage.removeItem(this.AUTH_TOKEN_KEY);
     localStorage.removeItem(this.SESSION_ID_KEY);
+    localStorage.removeItem(this.USER_KEY);
     setAuthToken(null);
   }
   
@@ -156,7 +163,7 @@ export class AuthService {
         lastName: res.data.user.lastName,
         email: res.data.user.email,
         phone: "", // Set default value for required field
-        profileImage: res.data.user.profileImage,
+        profileImage: res.data.user?.profileImage,
       };
       this.setUser(userProfile);
   
@@ -235,7 +242,6 @@ export class AuthService {
               email: userData.email,
               phone: userData.phone || "",
               profileImage: userData.profileImage || "",
-              role: userData.role || "user",
               profile: userData.profile
             };
             

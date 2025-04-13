@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Star,
   ChevronLeft,
@@ -52,6 +52,7 @@ export default function Restaurants() {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
 
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState(restaurants);
@@ -112,7 +113,7 @@ export default function Restaurants() {
   // Debounced search function
   const handleSearch = async (data?: string) => {
     setIsLoading(true);
-    applyFilters();
+    // applyFilters();
 
     try {
       const result = await API.get(
@@ -128,6 +129,10 @@ export default function Restaurants() {
       // Handle error (show toast, etc.)
       if (error instanceof AxiosError) {
         toast.error(error.message);
+        if (error.status === 401 || error.status === 403) {
+          // Redirect to login page
+          router.push("/user-login");
+        }
       }
     } finally {
       setIsLoading(false);
@@ -238,7 +243,7 @@ export default function Restaurants() {
     // }
     if (searchQuery) {
       filtered = filtered.filter((restaurant) =>
-        restaurant.name.toLowerCase().includes(searchQuery.toLowerCase())
+        restaurant.businessName.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     if (locationFilter) {
@@ -556,7 +561,7 @@ export default function Restaurants() {
                     <Image
                       src={
                         `${restaurant.profileImage ? 'https://hotel-booking-app-backend-30q1.onrender.com/uploads/${restaurant.profileImage}' : "/hero-bg.jpg"}`}
-                      alt={restaurant.name || "image of restaurant"}
+                      alt={"image of restaurant"}
                       fill
                       className="object-cover"
                     />
@@ -564,10 +569,10 @@ export default function Restaurants() {
                 </CardHeader>
                 <CardContent className="p-4">
                   <CardTitle className="line-clamp-1">
-                    {restaurant.name}
+                    {restaurant.businessName}
                   </CardTitle>
                   <CardDescription>
-                    Test • $$ • {restaurant.address}
+                    Restaurant • $$ • {restaurant.address}
                   </CardDescription>
                   <div className="flex items-center mt-2">
                     <Star className="text-yellow-400 mr-1" size={18} />

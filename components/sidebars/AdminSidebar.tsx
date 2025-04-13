@@ -16,6 +16,7 @@ import {
   CircleHelp,
   MessageSquareMore, 
    Settings,
+   BadgeDollarSignIcon,
 } from "lucide-react"
 import { FaHotel } from "react-icons/fa6";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -102,6 +103,29 @@ const data = {
       title: "Manage Vendors",
       url: "/adminDashboard/manageVendor",
       icon:  FaHotel,
+      items: [
+        {
+          title: "Introduction",
+          url: "#",
+        },
+        {
+          title: "Get Started",
+          url: "#",
+        },
+        {
+          title: "Tutorials",
+          url: "#",
+        },
+        {
+          title: "Changelog",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Track Payments",
+      url: "/adminDashboard/track-payments",
+      icon: BadgeDollarSignIcon,
       items: [
         {
           title: "Introduction",

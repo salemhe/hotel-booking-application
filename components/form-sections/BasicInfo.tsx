@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -34,6 +34,9 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialData.itemImage || null
   );
+  const [image, setImage] = useState<File | null>(
+    initialData.itemImage || null
+  );
   const {
     register,
     handleSubmit,
@@ -45,39 +48,38 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
       dishName: initialData.dishName ?? "", // Ensure it's always a string
       category: initialData.category ?? "",
       cuisineType: initialData.cuisineType ?? "",
-      image: initialData.itemImage ?? null, // Default to null for optional fields
+      itemImage: initialData.itemImage ?? null, // Default to null for optional fields
       description: initialData.description ?? "",
     },
   });
 
+  useEffect(() => {
+    if (image) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(image);
+    }
+  }, [image])
+
   const onSubmit = (data: z.infer<typeof schema>) => {
-    onNext({ ...data, itemImage: imagePreview });
+    onNext({ ...data, itemImage: image });
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
   
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "Restaurant_booking"); // Replace with your Cloudinary upload preset
-  
-    try {
-      const response = await fetch("https://api.cloudinary.com/v1_1/dm9roxgf5/image/upload", {
-        method: "POST",
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
-  
-      const data = await response.json();
-      setImagePreview(data.secure_url); // Use the Cloudinary URL
-    } catch (error) {
-      console.error("Image upload error:", error);
+    // Ensure file is a JPG
+    if (file.type !== "image/jpeg") {
+      alert("Only JPG images are allowed.");
+      return;
     }
+  
+    setImage(file);
   };
+  
   
 
   return (
