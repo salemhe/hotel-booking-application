@@ -1,26 +1,33 @@
-"use client"
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Store, Mail, Lock, ArrowRight } from "lucide-react"
-import { AuthService } from "@/services/auth.services"
-import { toast } from "@/components/ui/use-toast"
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Store, Mail, Lock, ArrowRight } from "lucide-react";
+import { AuthService } from "@/services/auth.services";
+import { toast } from "sonner";
 
 export default function VendorLoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   // In your page.tsx handleSubmit function
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
       // Retrieve user role from localStorage (replace with API call in real apps)
       // const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
@@ -28,37 +35,31 @@ export default function VendorLoginPage() {
       //   localStorage.setItem("role", storedUser.role)
       //   router.push(storedUser.role === "super-admin" ? "/vendorDashboard/insights" : "/vendorDashboard")
       // }
-      console.log('Calling login service'); // Debug log
       const response = await AuthService.login(email, password);
-      console.log('Login service response:', response); // Debug log
-  
-      toast({
-        title: "Success",
-        description: `Welcome back, ${response.profile.name}!`,
-      });
-  
+
+      toast.success(`Welcome back, ${response.profile.name}!`);
+
       // Add a delay before redirect
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const role = AuthService.getUserRole();
       if (role === "super-admin") {
-        router.push("/vendorDashboard/insights");
+        router.push("/vendorDashboard");
       } else {
         router.push("/vendorDashboard");
       }
-  
     } catch (error) {
-      console.error('Submit error:', error);
-      toast({
-        title: "Login failed",
-        description: error instanceof Error ? error.message : "Please check your credentials and try again",
-        variant: "destructive"
-      });
+      console.error("Submit error:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Please check your credentials and try again"
+      );
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="min-h-[100dvh] bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
@@ -77,7 +78,10 @@ export default function VendorLoginPage() {
           <CardContent className="px-4 sm:px-6 md:px-8">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Email
                 </Label>
                 <div className="relative">
@@ -94,7 +98,10 @@ export default function VendorLoginPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Password
                 </Label>
                 <div className="relative">
@@ -119,7 +126,6 @@ export default function VendorLoginPage() {
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span>Logging in...</span>
-
                   </div>
                 ) : (
                   "Sign in"
@@ -130,18 +136,20 @@ export default function VendorLoginPage() {
           <CardFooter className="flex flex-col space-y-4 sm:space-y-6 pb-6 sm:pb-8 px-4 sm:px-6 md:px-8">
             <div className="flex items-center gap-3 w-full">
               <div className="flex-1 border-t border-gray-200" />
-              <span className="text-xs sm:text-sm text-gray-500 font-medium">OR</span>
+              <span className="text-xs sm:text-sm text-gray-500 font-medium">
+                OR
+              </span>
               <div className="flex-1 border-t border-gray-200" />
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full text-sm">
-              <Link 
+              <Link
                 href="/vendor-signup"
                 className="text-emerald-600 hover:text-emerald-700 transition-colors font-medium inline-flex items-center gap-2 group"
               >
                 Create a vendor account
                 <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link 
+              <Link
                 href="/forgot-password"
                 className="text-gray-600 hover:text-emerald-600 transition-colors"
               >
@@ -152,5 +160,5 @@ export default function VendorLoginPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

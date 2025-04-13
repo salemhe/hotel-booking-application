@@ -85,7 +85,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [time, setTime] = useState("");
   const [guests, setGuests] = useState("");
   const [seats, setSeats] = useState("");
-  const [meals, setMeals] = useState("");
+  const [meals, setMeals] = useState<string[]>([]);
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -96,7 +96,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   const { toast } = useToast();
 
   const handleSelectionChange = (selected: string[]) => {
-    setMeals(selected[0]);
+    setMeals(selected);
   };
 
   useEffect(() => {
@@ -230,9 +230,9 @@ export default function RestaurantPage({ id }: { id: string }) {
         vendor: data._id,
         tableNumber: seats,
         guests: guests,
-        menuId: meals,
-        checkIn: date,
-        checkOut: date ? new Date(new Date(date).getTime() + 2 * 60 * 60 * 1000) : null,
+        menuIds: meals,
+        time,
+        date
       });
       console.log("Reservation response:", response);
       toast({
