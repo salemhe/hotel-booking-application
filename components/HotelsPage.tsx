@@ -127,7 +127,7 @@ export default function HotelPage({ id }: { id: string }) {
       description: `Your stay from ${checkIn} to ${checkOut} for ${guests} guests in ${rooms} room(s) has been booked.`,
     });
     // Redirect to confirmation page
-    router.push(`/booking-confirmation/${id}`);
+    router.push(`/payment/${id}`);
   };
 
   return (
@@ -332,7 +332,7 @@ export default function HotelPage({ id }: { id: string }) {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full cursor-pointer">
                     Book Now
                   </Button>
                 </div>
