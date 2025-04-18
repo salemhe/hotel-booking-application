@@ -85,7 +85,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [time, setTime] = useState("");
   const [guests, setGuests] = useState("");
   const [seats, setSeats] = useState("");
-  const [meals, setMeals] = useState<string[]>([]);
+  const [meals, setMeals] = useState("");
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -97,7 +97,8 @@ export default function RestaurantPage({ id }: { id: string }) {
 
   const handleSelectionChange = (selected: string[]) => {
 
-    setMeals([selected[0]]);
+    setMeals(selected[0]);
+
     
   };
 
@@ -247,8 +248,8 @@ export default function RestaurantPage({ id }: { id: string }) {
         vendor:               data._id,
         tableNumber:          Number(seats),
         guests:               Number(guests),
-        Menuid:               meals,
-        reservationDateTime,   // optional, if supported
+        menuId:               meals,
+        date:                reservationDateTime,
       };
   
       console.log("Final payload:", payload);
@@ -274,13 +275,13 @@ export default function RestaurantPage({ id }: { id: string }) {
   };
   
   return (
-    <div className="container mxauto py8 px4">
+    <div className="container mx-auto py-8 px-4">
       <Button
         variant="ghost"
         onClick={() => router.push("/userDashboard/search")}
-        className="mb4"
+        className="mb-4"
       >
-        <ChevronLeft className="mr2 h4 w4" /> Back to Restaurants
+        <ChevronLeft className="mr-2 h-4 w-4" /> Back to Restaurants
       </Button>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
