@@ -85,7 +85,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [time, setTime] = useState("");
   const [guests, setGuests] = useState("");
   const [seats, setSeats] = useState("");
-  const [meals, setMeals] = useState("");
+  const [meals, setMeals] = useState<string[]>([]);
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -97,7 +97,7 @@ export default function RestaurantPage({ id }: { id: string }) {
 
   const handleSelectionChange = (selected: string[]) => {
 
-    setMeals(selected[0]);
+    setMeals([selected[0]]);
     
   };
 

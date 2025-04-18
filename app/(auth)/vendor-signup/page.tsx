@@ -1,14 +1,30 @@
-"use client"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Store, Mail, Lock, User, Building2, ArrowLeft, Phone, MapPin, GitBranch } from "lucide-react"
-import Link from "next/link"
-import { AuthService } from "@/services/auth.services"
-import { toast } from "@/components/ui/use-toast"
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Store,
+  Mail,
+  Lock,
+  User,
+  Building2,
+  ArrowLeft,
+  Phone,
+  MapPin,
+  GitBranch,
+} from "lucide-react";
+import Link from "next/link";
+import { AuthService } from "@/services/auth.services";
+import { toast } from "sonner";
 
 export default function VendorSignupPage() {
   const [formData, setFormData] = useState({
@@ -21,75 +37,54 @@ export default function VendorSignupPage() {
     branch: "", // Added branch field
     password: "",
     role: "vendor" as "vendor" | "super-admin",
-    services: [] as string[]
-  })
-  const [loading, setLoading] = useState(false)
-  const [showOTPInput, setShowOTPInput] = useState(false)
-  const [otp, setOTP] = useState("")
-  const router = useRouter()
+    services: [] as string[],
+  });
+  const [loading, setLoading] = useState(false);
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [otp, setOTP] = useState("");
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     try {
-      await AuthService.register(formData)
-      setShowOTPInput(true)
-      toast({
-        title: "Registration successful",
-        description: "Please check your email for the OTP verification code.",
-      })
+      await AuthService.register(formData);
+      setShowOTPInput(true);
+      toast.success("Please check your email for the OTP verification code.");
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: error instanceof Error ? error.message : "Please try again",
-        variant: "destructive"
-      })
+      toast.error(error instanceof Error ? error.message : "Please try again");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleOTPVerification = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     try {
-      await AuthService.verifyOTP(formData.email, otp)
-      toast({
-        title: "Email verified",
-        description: "Your account has been verified. Please log in.",
-      })
-      router.push("/vendor-login")
+      await AuthService.verifyOTP(formData.email, otp);
+      toast.success("Your account has been verified. Please log in.");
+      router.push("/vendor-login");
     } catch (error) {
-      toast({
-        title: "Verification failed",
-        description: error instanceof Error ? error.message : "Please try again",
-        variant: "destructive"
-      })
+      toast.error(error instanceof Error ? error.message : "Please try again");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleResendOTP = async () => {
     try {
-      await AuthService.resendOTP(formData.email)
-      toast({
-        title: "OTP Resent",
-        description: "Please check your email for the new verification code.",
-      })
+      await AuthService.resendOTP(formData.email);
+      toast.success("Please check your email for the new verification code.");
     } catch (error) {
-      toast({
-        title: "Failed to resend OTP",
-        description: error instanceof Error ? error.message : "Please try again",
-        variant: "destructive"
-      })
+      toast.error(error instanceof Error ? error.message : "Please try again");
     }
-  }
+  };
 
   return (
     <div className="min-h-[100dvh] bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4">
@@ -118,8 +113,8 @@ export default function VendorSignupPage() {
                     className="h-12"
                   />
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-linear-to-r from-emerald-600 to-teal-600 text-white h-12"
                   disabled={loading}
                 >
@@ -131,7 +126,7 @@ export default function VendorSignupPage() {
                     onClick={handleResendOTP}
                     className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
                   >
-                   {" Didn't receive code? Resend"}
+                    {" Didn't receive code? Resend"}
                   </button>
                 </div>
               </form>
@@ -280,19 +275,23 @@ export default function VendorSignupPage() {
                       <Button
                         key={service}
                         type="button"
-                        variant={formData.services.includes(service) ? "default" : "outline"}
+                        variant={
+                          formData.services.includes(service)
+                            ? "default"
+                            : "outline"
+                        }
                         className={`${
                           formData.services.includes(service)
                             ? "bg-emerald-600 text-white"
                             : "text-gray-700"
                         }`}
                         onClick={() => {
-                          setFormData(prev => ({
+                          setFormData((prev) => ({
                             ...prev,
                             services: prev.services.includes(service)
-                              ? prev.services.filter(s => s !== service)
-                              : [...prev.services, service]
-                          }))
+                              ? prev.services.filter((s) => s !== service)
+                              : [...prev.services, service],
+                          }));
                         }}
                       >
                         {service}
@@ -307,9 +306,13 @@ export default function VendorSignupPage() {
                   <div className="flex gap-3">
                     <Button
                       type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, role: "vendor" }))}
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, role: "vendor" }))
+                      }
                       className={`w-1/2 flex items-center justify-center gap-2 ${
-                        formData.role === "vendor" ? "bg-emerald-600 text-white" : "bg-gray-200"
+                        formData.role === "vendor"
+                          ? "bg-emerald-600 text-white"
+                          : "bg-gray-200"
                       }`}
                     >
                       <Store className="h-4 w-4" />
@@ -317,9 +320,16 @@ export default function VendorSignupPage() {
                     </Button>
                     <Button
                       type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, role: "super-admin" }))}
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          role: "super-admin",
+                        }))
+                      }
                       className={`w-1/2 flex items-center justify-center gap-2 ${
-                        formData.role === "super-admin" ? "bg-emerald-600 text-white" : "bg-gray-200"
+                        formData.role === "super-admin"
+                          ? "bg-emerald-600 text-white"
+                          : "bg-gray-200"
                       }`}
                     >
                       <User className="h-4 w-4" />
@@ -344,7 +354,7 @@ export default function VendorSignupPage() {
               <span className="text-xs text-gray-500 font-medium">OR</span>
               <div className="flex-1 border-t border-gray-200" />
             </div>
-            <Link 
+            <Link
               href="/vendor-login"
               className="inline-flex items-center justify-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors text-sm font-medium group"
             >
@@ -355,5 +365,5 @@ export default function VendorSignupPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
