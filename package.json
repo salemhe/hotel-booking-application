@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
-    "@paystack/inline-js": "^2.22.2",
+    "@paystack/inline-js": "^2.22.3",
     "@radix-ui/react-avatar": "^1.1.3",
     "@radix-ui/react-checkbox": "^1.1.3",
     "@radix-ui/react-collapsible": "^1.1.2",
@@ -71,6 +71,7 @@
     "@types/dom-to-image": "^2.6.7",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
+    "@types/paystack__inline-js": "^1.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-easy-crop": "^2.0.0",
