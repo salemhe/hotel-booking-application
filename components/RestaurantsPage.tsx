@@ -96,7 +96,9 @@ export default function RestaurantPage({ id }: { id: string }) {
   const { toast } = useToast();
 
   const handleSelectionChange = (selected: string[]) => {
+
     setMeals(selected[0]);
+    
   };
 
   useEffect(() => {
@@ -221,54 +223,64 @@ export default function RestaurantPage({ id }: { id: string }) {
 
   const handleReservation = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically handle the reservation logic
-    console.log("Reservation:", { date, time, guests });
     setLoading(true);
-    try {
-      const response = await API.post(`/users/bookings/`, {
-        type: "restaurant",
-        vendor: data._id,
-        tableNumber: seats,
-        guests: guests,
-        menuId: meals,
-        checkIn: date,
-        checkOut: date ? new Date(new Date(date).getTime() + 2 * 60 * 60 * 1000) : null,
+  
+    // 1) Basic validation (now includes `meals`)
+    if (!meals || !seats || !guests || !date || !time) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a menu item, seats, guests, date & time",
+        variant: "destructive",
       });
-      console.log("Reservation response:", response);
+      setLoading(false);
+      return;
+    }
+  
+    try {
+      // 2) Format date/time
+      const formattedDate = format(date as Date, "yyyy-MM-dd");
+      const reservationDateTime = `${formattedDate}T${time}:00`;
+  
+      // 3) Build payload
+      const payload = {
+        type:                 "restaurant",
+        vendor:               data._id,
+        tableNumber:          Number(seats),
+        guests:               Number(guests),
+        Menuid:               meals,
+        reservationDateTime,   // optional, if supported
+      };
+  
+      console.log("Final payload:", payload);
+      const { data: res } = await API.post("/users/bookings", payload);
+  
+      // 4) Success!
       toast({
         title: "Reservation Confirmed!",
-        description: `Your table for ${guests} guests on ${
-          date ? format(date, "PPP") : "the selected date"
-        } at ${time} has been successfully booked. Your table number is ${
-          response.data.booking.tableNumber
-        }.`,
+        description: `Table ${res.booking.tableNumber} for ${guests} is booked.`,
       });
-      // Redirect to confirmation page
-      router.push(`/userDashboard/payment/${response.data.booking._id}`);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.error("Error submitting reservation:", error.response?.data);
-        toast({
-          title: "Error",
-          description:
-            "There was a problem processing your reservation. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
+      router.push(`/userDashboard/payment/${res.booking._id}`);
+    } catch (err) {
+      const axiosErr = err as AxiosError<{ message?: string }>;
+      toast({
+        title: "Error",
+        description: axiosErr.response?.data?.message
+                     ?? "Reservation failed. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mxauto py8 px4">
       <Button
         variant="ghost"
         onClick={() => router.push("/userDashboard/search")}
-        className="mb-4"
+        className="mb4"
       >
-        <ChevronLeft className="mr-2 h-4 w-4" /> Back to Restaurants
+        <ChevronLeft className="mr2 h4 w4" /> Back to Restaurants
       </Button>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -492,6 +504,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                       <ItemSelector
                         items={menu}
                         onSelectionChange={handleSelectionChange}
+                        // required
                       />
                     )}
                     {/* <div className="border p-2 rounded-lg">

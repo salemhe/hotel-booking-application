@@ -147,7 +147,7 @@ function Header() {
                     {loading ? "" : (profile?.businessName || "Business")}
                   </p>
                   <p className="text-sm font-medium">
-                    {/* {loading ? "Loading..." : `Hi, ${profile?.name || "Vendor"}`} */}
+                    {loading ? "Loading..." : `Hi, ${profile?.name || "Vendor"}`}
                   </p>
                   
                 </div>

@@ -1,6 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import PaystackPop from '@paystack/inline-js'
+interface PaystackResponse {
+  status: string;
+  reference: string;
+}
+
+interface PaystackPopInterface {
+  inlinePay: (data: {
+    key: string;
+    email: string;
+    amount: number;
+    currency: string;
+    callback: (response: PaystackResponse) => void;
+    onClose: () => void;
+  }) => void;
+}
+
+declare global {
+  interface Window {
+    PaystackPop: PaystackPopInterface;
+  }
+}
 import {
   ChevronRight,
   CreditCard,
@@ -60,12 +82,40 @@ export default function PaymentMethodSelection() {
   // Handle Paystack checkout
   const handlePaystackCheckout = () => {
     setIsRedirecting(true);
-    // TODO navigate to paystack checkout
-    setTimeout(() => {
-      alert("Redirecting to Paystack checkout...");
+  
+    // Check if the Paystack SDK is available
+    if (window.PaystackPop) {
+      const paystack = window.PaystackPop;
+  
+      const paymentData = {
+        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+        email: 'customer-email@example.com',
+        amount: Math.round(total * 100), // Amount in kobo
+        currency: 'NGN',
+        callback: (response: PaystackResponse) => {
+          if (response.status === 'success') {
+            alert(`Payment successful! Reference: ${response.reference}`);
+          } else {
+            alert('Payment failed');
+          }
+          setIsRedirecting(false);
+        },
+        onClose: () => {
+          alert('Payment window closed.');
+          setIsRedirecting(false);
+        },
+      };
+      
+  
+      // Start the Paystack payment process
+      paystack.inlinePay(paymentData);
+    } else {
+      console.error("Paystack SDK is not available.");
       setIsRedirecting(false);
-    }, 1500);
+    }
   };
+  
+  
 
   // Go back to payment selection
   const handleBack = () => {

@@ -81,7 +81,6 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
 export default function PaymentForm( {total}: {total: number}) {
   const [showCVV, setShowCVV] = useState(false);
   const [cardType, setCardType] = useState<keyof typeof CARD_TYPES>("default");

@@ -62,6 +62,7 @@ export default function ItemSelector({
                 key={item._id}
                 variant={selectedItems.includes(item) ? "default" : "outline"}
                 onClick={() => toggleSelection(item)}
+                
               >
                 {item.dishName || item.itemName || "Item"} - ₦
                 {item.price.toLocaleString() || "N/A"}
