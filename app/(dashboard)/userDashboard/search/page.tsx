@@ -99,7 +99,7 @@ export default function RestaurantDashboard() {
                 onClick={() =>
                   fetchRestaurants(searchQuery)
                 }
-              size="icon" className="absolute right-1 h-7">
+              className="absolute right-1 h-7 p-2">
                 <Search className="" />
               </Button>
             </div>

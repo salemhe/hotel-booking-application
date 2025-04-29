@@ -57,6 +57,8 @@ type restaurants = {
   email: string;
   phone: string;
   address: string;
+  location: string;
+  profileImage: string;
   services: string[];
 };
 
@@ -64,6 +66,7 @@ type Menu = {
   _id: string;
   vendor: string;
   dishName: string;
+  dishImage: string;
   description: string;
   price: number;
   category: string;
@@ -89,9 +92,9 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [menu, setMenu] = useState<Menu[] | null>(null);
+  const [restaurantMenu, setRestaurantMenu] = useState<Menu[] | null>(null);
   const router = useRouter();
-  const [data, setData] = useState<restaurants | null>(null);
+  const [restaurantData, setRestaurantData] = useState<restaurants | null>(null);
   const [errors, setErrors] = useState("");
   const { toast } = useToast();
 
@@ -115,7 +118,7 @@ export default function RestaurantPage({ id }: { id: string }) {
     });
   }, [api]);
 
-  const fetchData = async (id: string) => {
+  const fetchRestaurantData = async (id: string) => {
     try {
       const response = await API.get(`/vendors/`);
       return response.data.find(
@@ -145,17 +148,19 @@ export default function RestaurantPage({ id }: { id: string }) {
 
   useEffect(() => {
     const data = async () => {
-      const restaurant = await fetchData(id);
+      const restaurant = await fetchRestaurantData(id);
       const menu = await fetchMenu(id);
-      setData(restaurant);
+      setRestaurantData(restaurant);
       if (menu) {
-        setMenu(menu.menus);
+        setRestaurantMenu(menu.menus);
       }
+      console.log("menu", restaurantMenu);
+      console.log("restaurant", restaurantData);
     };
     data();
-  }, [id]);
+  }, [id, restaurantData, restaurantMenu]);
 
-  if (!data) {
+  if (!restaurantData) {
     return (
       <div className="container mx-auto py-8 px-4">
         {errors ? errors : <Loading />}
@@ -163,17 +168,17 @@ export default function RestaurantPage({ id }: { id: string }) {
     );
   }
 
-  if (!data || errors) {
+  if (!restaurantData || errors) {
     return <div className="container mx-auto py-8 px-4">Error: {errors}</div>;
   }
 
-  const menuItem = [
-    { name: "Main Course", value: "mainCourse" },
-    { name: "Dessert", value: "dessert" },
-    { name: "Appetizer", value: "appetizer" },
-    { name: "Lunch", value: "lunch" },
-    { name: "Drink", value: "drink" },
-  ];
+  // const menuItem = [
+  //   { name: "Main Course", value: "mainCourse" },
+  //   { name: "Dessert", value: "dessert" },
+  //   { name: "Appetizer", value: "appetizer" },
+  //   { name: "Lunch", value: "lunch" },
+  //   { name: "Drink", value: "drink" },
+  // ];
 
   // In a real application, you would fetch the restaurant data based on the ID
   const restaurant = {
@@ -245,7 +250,7 @@ export default function RestaurantPage({ id }: { id: string }) {
       // 3) Build payload
       const payload = {
         type:                 "restaurant",
-        vendor:               data._id,
+        vendor:               restaurantData._id,
         tableNumber:          Number(seats),
         guests:               Number(guests),
         menuId:               meals,
@@ -289,7 +294,7 @@ export default function RestaurantPage({ id }: { id: string }) {
           <Card>
             <CardHeader>
               <CardTitle className="text-3xl font-bold">
-                {data.businessName}
+                {restaurantData.businessName}
               </CardTitle>
               <CardDescription>
                 <div className="flex items-center space-x-2">
@@ -308,7 +313,8 @@ export default function RestaurantPage({ id }: { id: string }) {
             <CardContent>
               <Carousel className="w-full max-w-xs mx-auto" setApi={setApi}>
                 <CarouselContent>
-                  {restaurant.images.map((image, index) => (
+               
+                  {/* {restaurantData.images.map((image, index) => (
                     <CarouselItem key={index}>
                       <Image
                         src={image || "/placeholder.svg"}
@@ -318,7 +324,16 @@ export default function RestaurantPage({ id }: { id: string }) {
                         className="w-full rounded-lg"
                       />
                     </CarouselItem>
-                  ))}
+                  ))} */}
+                    <CarouselItem >
+                      <Image
+                        src={restaurantData.profileImage || "/hero-bg.jpg"}
+                        alt={`${restaurant.name}`}
+                        width={600}
+                        height={400}
+                        className="w-full rounded-lg"
+                      />
+                    </CarouselItem>
                 </CarouselContent>
                 <CarouselPrevious className="hidden sm:flex" />
                 <CarouselNext className="hidden sm:flex" />
@@ -332,11 +347,11 @@ export default function RestaurantPage({ id }: { id: string }) {
               <div className="mt-6 space-y-2">
                 <div className="flex items-center">
                   <MapPin className="h-5 w-5 text-gray-400 mr-2" />
-                  <p>{data.address}</p>
+                  <p>{restaurantData.address}{restaurantData.location}</p>
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-gray-400 mr-2" />
-                  <p>{data.phone}</p>
+                  <p>{restaurantData.phone}</p>
                 </div>
                 <div className="flex items-center">
                   <Globe className="h-5 w-5 text-gray-400 mr-2" />
@@ -360,42 +375,50 @@ export default function RestaurantPage({ id }: { id: string }) {
               <CardTitle>Menu</CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="mainCourse">
+              <Tabs defaultValue={restaurantMenu?.[0]?.category || ""} className="w-full">
                 <TabsList className="flex flex-wrap w-full h-auto">
-                  {menuItem.map((category, i) => (
-                    <TabsTrigger key={i} value={category.value}>
-                      {category.name}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                {menu && menu.length > 0 ? (
-                  <ScrollArea className="h-72 rounded-md">
-                    {menu.map((item) => (
-                      <TabsContent key={item._id} value={item.category}>
-                        <Card className="space-y-2">
-                          <CardContent className="flex flex-col w-full p-2">
-                            <div className="flex">
-                              <Image
-                                src={`https://hotel-booking-app-backend-30q1.onrender.com/uploads/${item.itemImage}` || "/hero-bg.jpg"}
-                                alt={item.itemName || item.dishName}
-                                width={100}
-                                height={100}
-                                className="rounded-md object-cover h-[100px] w-[100px]"
-                              />
-                              <div>
-                                <h2 className="font-semibold">{item.dishName || item.itemName}</h2>
-                                <span className="text-muted-foreground">₦{item.price.toLocaleString()}</span>
-                              </div>
-                            </div>
-                            <div className="w-full flex flex-col mt-2">
-                              <h3 className="font-semibold text-muted-foreground">Description:</h3>
-                              <p className=" break-words">{item.description}</p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
+                  {restaurantMenu &&
+                    [...new Set(restaurantMenu.map((item) => item.category))].map((category, i) => (
+                      <TabsTrigger key={i} value={category}>
+                        {category}
+                      </TabsTrigger>
                     ))}
-                  </ScrollArea>
+                </TabsList>
+
+                {restaurantMenu && restaurantMenu.length > 0 ? (
+                  [...new Set(restaurantMenu.map((item) => item.category))].map((category) => (
+                    <TabsContent key={category} value={category}>
+                      <ScrollArea className="h-72 rounded-md">
+                        {restaurantMenu
+                          .filter((item) => item.category === category)
+                          .map((i) => (
+                            <Card key={i._id} className="space-y-2 mb-3">
+                              <CardContent className="flex flex-col w-full p-2">
+                                <div className="flex gap-4">
+                                  <Image
+                                    src={i.itemImage || i.dishImage || "/hero-bg.jpg"}
+                                    alt={i.itemName || i.dishName}
+                                    width={100}
+                                    height={100}
+                                    className="rounded-md object-cover h-[100px] w-[100px]"
+                                  />
+                                  <div>
+                                    <h2 className="font-semibold">{i.dishName || i.itemName}</h2>
+                                    <span className="text-muted-foreground">
+                                      ₦{i.price.toLocaleString()}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="w-full flex flex-col mt-2">
+                                  <h3 className="font-semibold text-muted-foreground">Description:</h3>
+                                  <p className=" break-words">{i.description}</p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                      </ScrollArea>
+                    </TabsContent>
+                  ))
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8">
                     <FolderX size={150} />
@@ -406,6 +429,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                 )}
               </Tabs>
             </CardContent>
+
           </Card>
         </div>
 
@@ -501,9 +525,9 @@ export default function RestaurantPage({ id }: { id: string }) {
                   </div>
                   <div>
                     <Label htmlFor="meals">Select Menu Items</Label>
-                    {menu && (
+                    {restaurantMenu && (
                       <ItemSelector
-                        items={menu}
+                        items={restaurantMenu}
                         onSelectionChange={handleSelectionChange}
                         // required
                       />
