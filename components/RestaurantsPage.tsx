@@ -13,9 +13,12 @@ import {
   ChevronLeft,
   CalendarIcon,
   FolderX,
+  // Utensils
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -50,17 +53,19 @@ import { AxiosError } from "axios";
 import ItemSelector from "./ItemSelector";
 import { ScrollArea } from "./ui/scroll-area";
 
+import { AuthService } from "@/services/auth.services";
 type restaurants = {
   isVerified: boolean;
   _id: string;
   businessName: string;
+  name: string;
   email: string;
   phone: string;
   address: string;
   services: string[];
 };
 
-type Menu = {
+export type Menu = {
   _id: string;
   vendor: string;
   dishName: string;
@@ -83,23 +88,22 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [api, setApi] = useState<CarouselApi>();
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState("");
-  const [guests, setGuests] = useState("");
-  const [seats, setSeats] = useState("");
-  const [meals, setMeals] = useState("");
+  const [partySize, setPartySize] = useState("");
+  const [tableType, setTableType] = useState("");
+  const [meal, setMeal] = useState("");
+  const [specialRequests, setSpecialRequests] = useState("");
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [menu, setMenu] = useState<Menu[] | null>(null);
+  const [location, setLocation] = useState("");
   const router = useRouter();
   const [data, setData] = useState<restaurants | null>(null);
   const [errors, setErrors] = useState("");
   const { toast } = useToast();
-
+  const authUser = AuthService.getUser(); 
   const handleSelectionChange = (selected: string[]) => {
-
-    setMeals(selected[0]);
-
-    
+    setMeal(selected[0]);
   };
 
   useEffect(() => {
@@ -148,6 +152,9 @@ export default function RestaurantPage({ id }: { id: string }) {
       const restaurant = await fetchData(id);
       const menu = await fetchMenu(id);
       setData(restaurant);
+      if (restaurant) {
+        setLocation(restaurant.address);
+      }
       if (menu) {
         setMenu(menu.menus);
       }
@@ -175,50 +182,30 @@ export default function RestaurantPage({ id }: { id: string }) {
     { name: "Drink", value: "drink" },
   ];
 
-  // In a real application, you would fetch the restaurant data based on the ID
+  const tableTypes = [
+    { name: "2-seats", value: "2-seats" },
+    { name: "4-seats", value: "4-seats" },
+    { name: "6-seats", value: "6-seats" },
+    { name: "8-seats", value: "8-seats" },
+  ];
+
+  // Modify the restaurant object to include images
   const restaurant = {
     id,
-    name: "The Italian Place",
-    cuisine: "Italian",
+    name: data.businessName,
+    cuisine: "Restaurant",
     rating: 4.5,
     reviews: 328,
     priceRange: "₦₦",
-    address: "123 Main St, Anytown, USA",
-    phone: "(555) 123-4567",
+    address: data.address,
+    phone: data.phone,
     website: "https://example.com",
     hours: "Mon-Sat: 11am-10pm, Sun: 12pm-9pm",
-    description:
-      "Experience authentic Italian cuisine in a cozy, romantic atmosphere. Our chef brings the flavors of Italy to your plate with fresh, locally-sourced ingredients and traditional recipes.",
+    description: "Experience authentic cuisine in a cozy, romantic atmosphere. Our chef brings amazing flavors to your plate with fresh, locally-sourced ingredients and traditional recipes.",
     images: [
       "/hero-bg.jpg",
       "/hero-bg.jpg",
       "/hero-bg.jpg",
-      // "/placeholder.svg?height=400&width=600",
-      // "/placeholder.svg?height=400&width=600",
-      // "/placeholder.svg?height=400&width=600",
-    ],
-    menu: [
-      {
-        category: "Appetizers",
-        items: [
-          { name: "Bruschetta", price: 8.99 },
-          { name: "Caprese Salad", price: 10.99 },
-        ],
-      },
-      {
-        category: "Main Courses",
-        items: [
-          { name: "Spaghetti Carbonara", price: 15.99 },
-          { name: "Margherita Pizza", price: 13.99 },
-        ],
-      },
-      {
-        category: "Desserts",
-        items: [
-          { name: "Tiramisu", price: 7.99 },
-          { name: "Panna Cotta", price: 6.99 },
-        ],
-      },
     ],
   };
 
@@ -226,11 +213,11 @@ export default function RestaurantPage({ id }: { id: string }) {
     e.preventDefault();
     setLoading(true);
   
-    // 1) Basic validation (now includes `meals`)
-    if (!meals || !seats || !guests || !date || !time) {
+    // 1) Basic validation
+    if (!meal || !tableType || !partySize || !date || !time || !specialRequests) {
       toast({
         title: "Missing Information",
-        description: "Please select a menu item, seats, guests, date & time",
+        description: "Please fill in all required fields",
         variant: "destructive",
       });
       setLoading(false);
@@ -238,35 +225,96 @@ export default function RestaurantPage({ id }: { id: string }) {
     }
   
     try {
-      // 2) Format date/time
+      // 2) Format date
       const formattedDate = format(date as Date, "yyyy-MM-dd");
-      const reservationDateTime = `${formattedDate}T${time}:00`;
-  
-      // 3) Build payload
+      
+      // 3) Get selected menu item details
+      const selectedMenuItem = menu!.find((m) => m._id === meal);
+      
+      if (!selectedMenuItem) {
+        throw new Error("Selected menu item not found");
+      }
+      
+      // 4) Extract table number from tableType
+      const tableNumber = Number(tableType.replace(/\D/g, ''));
+      
+      // 5) Make API request - match payload exactly to documentation
       const payload = {
-        type:                 "restaurant",
-        vendor:               data._id,
-        tableNumber:          Number(seats),
-        guests:               Number(guests),
-        menuId:               meals,
-        date:                reservationDateTime,
+        vendorId: data._id,
+        businessName: data.businessName,
+        location: location,
+        partySize: Number(partySize),
+        menuId: meal,
+        tableNumber: tableNumber,
+        tableType: tableType,
+        meal: selectedMenuItem.dishName || selectedMenuItem.itemName,
+        pricePerTable: selectedMenuItem.price,
+        guests: Number(partySize),
+        totalPrice: selectedMenuItem.price,
+        specialRequest: specialRequests,
+        image: selectedMenuItem.itemImage || "/hero-bg.jpg",
+        date: formattedDate
+      };
+      
+      // Make sure the user is authenticated before making the request
+      if (!authUser) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to make a reservation",
+          variant: "destructive",
+        });
+        router.push('/login');
+        setLoading(false);
+        return;
+      }
+      
+      // Add authorization header
+      const response = await API.post("/users/bookings", payload);
+      const booking = response.data.booking;
+      
+      // 6) Create reservation details for payment page
+      const reservationDetails = {
+        bookingId: booking._id,
+        menuId: meal,
+        restaurantId: data._id,
+        restaurantName: data.businessName,
+        restaurantAddress: data.address,
+        date: formattedDate,
+        time,
+        guests: Number(partySize),
+        tableNumber: tableNumber,
+        menuItem: selectedMenuItem.dishName || selectedMenuItem.itemName,
+        menuPrice: selectedMenuItem.price,
+        specialRequests: specialRequests,
+        restaurantImage: "/hero-bg.jpg",
       };
   
-      console.log("Final payload:", payload);
-      const { data: res } = await API.post("/users/bookings", payload);
+      // 7) Store details for payment page
+      sessionStorage.setItem(
+        "pendingReservation",
+        JSON.stringify(reservationDetails)
+      );
   
-      // 4) Success!
       toast({
-        title: "Reservation Confirmed!",
-        description: `Table ${res.booking.tableNumber} for ${guests} is booked.`,
+        title: "Reservation Created!",
+        description: `Your table for ${partySize} is reserved. Proceeding to payment.`,
       });
-      router.push(`/userDashboard/payment/${res.booking._id}`);
+      
+      // 8) Redirect to payment page
+      router.push(`/userDashboard/payment/${booking._id}`);
+      
     } catch (err) {
-      const axiosErr = err as AxiosError<{ message?: string }>;
+      console.error("Reservation error:", err);
+      
+      let errorMessage = "Failed to create reservation. Please try again.";
+      
+      if (err instanceof AxiosError && err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+      
       toast({
-        title: "Error",
-        description: axiosErr.response?.data?.message
-                     ?? "Reservation failed. Please try again.",
+        title: "Reservation Error",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -420,6 +468,7 @@ export default function RestaurantPage({ id }: { id: string }) {
             <CardContent>
               <form onSubmit={handleReservation}>
                 <div className="space-y-4">
+                  {/* Date Input */}
                   <div>
                     <Label htmlFor="date">Date</Label>
                     <Popover>
@@ -446,6 +495,8 @@ export default function RestaurantPage({ id }: { id: string }) {
                       </PopoverContent>
                     </Popover>
                   </div>
+                  
+                  {/* Time Input */}
                   <div>
                     <Label htmlFor="time">Time</Label>
                     <Select value={time} onValueChange={setTime}>
@@ -469,9 +520,11 @@ export default function RestaurantPage({ id }: { id: string }) {
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {/* Party Size */}
                   <div>
-                    <Label htmlFor="guests">Number of Guests</Label>
-                    <Select value={guests} onValueChange={setGuests}>
+                    <Label htmlFor="partySize">Number of Guests</Label>
+                    <Select value={partySize} onValueChange={setPartySize}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select number of guests" />
                       </SelectTrigger>
@@ -484,54 +537,59 @@ export default function RestaurantPage({ id }: { id: string }) {
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {/* Table Type */}
                   <div>
-                    <Label htmlFor="seats">Number of Seats</Label>
-                    <Select value={seats} onValueChange={setSeats}>
+                    <Label htmlFor="tableType">Table Type</Label>
+                    <Select value={tableType} onValueChange={setTableType}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select number of Seats" />
+                        <SelectValue placeholder="Select table type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {["1", "2", "3", "4", "5", "6", "7", "8"].map((n) => (
-                          <SelectItem key={n} value={n}>
-                            {n} {n === "1" ? "seat" : "seats"}
+                        {tableTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {/* Meal Selection */}
                   <div>
-                    <Label htmlFor="meals">Select Menu Items</Label>
+                    <Label htmlFor="meal">Select Meal</Label>
                     {menu && (
                       <ItemSelector
                         items={menu}
                         onSelectionChange={handleSelectionChange}
-                        // required
                       />
                     )}
-                    {/* <div className="border p-2 rounded-lg">
-                      {menu?.map((item) => (
-                        <div
-                          key={item._id}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox
-                            id={item._id}
-                            checked={meals.includes(item._id)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setMeals([...meals, item._id]); // Add selected meal
-                              } else {
-                                setMeals(meals.filter((id) => id !== item._id)); // Remove unselected meal
-                              }
-                            }}
-                          />
-                          <label htmlFor={item._id} className="text-sm">
-                            {item.dishName}
-                          </label>
-                        </div>
-                      ))}
-                    </div> */}
                   </div>
+                  
+                  {/* Location (Optional field - can be edited) */}
+                  <div>
+                    <Label htmlFor="location">Location</Label>
+                    <Input 
+                      id="location" 
+                      value={location} 
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="Restaurant location"
+                    />
+                  </div>
+                  
+                  {/* Special Requests */}
+                  <div>
+                    <Label htmlFor="specialRequests">Special Requests</Label>
+                    <Textarea
+                      id="specialRequests"
+                      placeholder="Any special requests for your visit? (e.g., Anniversary celebration)"
+                      value={specialRequests}
+                      onChange={(e) => setSpecialRequests(e.target.value)}
+                      className="resize-none"
+                      rows={3}
+                    />
+                  </div>
+                  
                   <Button type="submit" className="w-full">
                     {loading ? "Loading..." : "Reserve Table"}
                   </Button>

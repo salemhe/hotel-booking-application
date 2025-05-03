@@ -1,7 +1,8 @@
+// components/BookingList.tsx
 "use client";
 
 import { QRCodeCanvas } from "qrcode.react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 import {
@@ -17,6 +18,7 @@ import {
   SearchXIcon,
   Download,
   ArrowUpRightFromSquare,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,157 +37,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import API from "@/utils/axios";
 import { AuthService } from "@/services/auth.services";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useRouter } from "next/navigation";
-
-export default function BookingList() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [location, setLocation] = useState("all");
-  const [tableType, setTableType] = useState("all");
-  const authUser = AuthService.getUser();
-
-  // Filter bookings based on search and filters
-  const filteredBookings = bookings.filter((booking) => {
-    if (
-      searchQuery &&
-      !booking.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ) {
-      return false;
-    }
-    if (location !== "all" && booking.location !== location) {
-      return false;
-    }
-    if (tableType !== "all" && booking.tableType !== tableType) {
-      return false;
-    }
-    return true;
-  });
-
-  return (
-    <div className="min-h-screen bg-zinc-50/40 dark:bg-zinc-900/40">
-      <div className="container mx-auto px-4 py-6 max-w-6xl">
-        {/* Header */}
-        <header className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold flex gap-2">
-              {authUser?.firstName || "loading..."} {authUser?.lastName || ""}
-            </h1>
-          </div>
-
-          {/* Search and Filters */}
-          <div className="flex flex-wrap gap-3 items-center">
-            <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search restaurant"
-                className="pl-9"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            <Select value={location} onValueChange={setLocation}>
-              <SelectTrigger className="w-[200px] bg-white dark:bg-zinc-900">
-                <SelectValue placeholder="Restaurant Location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                <SelectItem value="Victoria Island">Victoria Island</SelectItem>
-                <SelectItem value="Lekki">Lekki</SelectItem>
-                <SelectItem value="Banana Island">Banana Island</SelectItem>
-                <SelectItem value="Opebi">Opebi</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={tableType} onValueChange={setTableType}>
-              <SelectTrigger className="w-[200px] bg-white dark:bg-zinc-900">
-                <SelectValue placeholder="Table Selection" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Tables</SelectItem>
-                <SelectItem value="2-seats">2 Seats</SelectItem>
-                <SelectItem value="4-seats">4 Seats</SelectItem>
-                <SelectItem value="6-seats">6 Seats</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </header>
-
-        {/* Booking List */}
-        <main>
-          <h2 className="text-xl font-semibold mb-4">Booking List</h2>
-          <Tabs defaultValue="Current">
-            <div className="w-full flex justify-center mb-2">
-              <TabsList>
-                <TabsTrigger value="Current">Current</TabsTrigger>
-                <TabsTrigger value="Past">Past</TabsTrigger>
-              </TabsList>
-            </div>
-            <TabsContent value="Current">
-            {filteredBookings.filter((booking) => {
-                const today = new Date();
-                const bookingDate = new Date(booking.date);
-                return bookingDate > today;
-              }).length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredBookings
-                    .filter((booking) => {
-                      const today = new Date();
-                      const bookingDate = new Date(booking.date);
-                      return bookingDate > today;
-                    })
-                    .map((booking) => (
-                      <BookingCard key={booking.id} booking={booking} />
-                    ))}
-                </div>
-              ) : (
-                <div className="w-full py-[50] px-4 flex items-center justify-center">
-                  <div className="flex flex-col gap-8 items-center">
-                    <SearchXIcon className="size-[64]" />
-                    <p className="text-center">
-                      No Bookings to show yet, Start booking your affordable
-                      restaurants today.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </TabsContent>
-            <TabsContent value="Past">
-              {filteredBookings.filter((booking) => {
-                const today = new Date();
-                const bookingDate = new Date(booking.date);
-                return bookingDate < today;
-              }).length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredBookings
-                    .filter((booking) => {
-                      const today = new Date();
-                      const bookingDate = new Date(booking.date);
-                      return bookingDate < today;
-                    })
-                    .map((booking) => (
-                      <BookingCard key={booking.id} booking={booking} />
-                    ))}
-                </div>
-              ) : (
-                <div className="w-full py-[50] px-4 flex items-center justify-center">
-                  <div className="flex flex-col gap-8 items-center">
-                    <SearchXIcon className="size-[64]" />
-                    <p className="text-center">
-                      No Bookings to show yet, Start booking your affordable
-                      restaurants today.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </main>
-      </div>
-    </div>
-  );
-}
 
 interface Booking {
   id: string;
@@ -199,26 +54,261 @@ interface Booking {
   tableType: string;
   time: string;
   meal: string;
+  user: string | number;
 }
 
-function BookingCard({ booking }: { booking: Booking }) {
-  const [receipt, setReceipt] = useState<Booking | null>(null);
-  const router = useRouter();
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
+export default function BookingList() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [tableTypeFilter, setTableTypeFilter] = useState("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const handlePrint = (booking: Booking) => {
-    setReceipt(booking);
+  const authUser = AuthService.getUser();
+  const router = useRouter();
+
+  // Fetch bookings for the logged‑in user
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchBookings() {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await API.get<Booking[]>("/users/bookings", {
+          params: { userId: authUser?.id },
+        });
+        if (isMounted) {
+          setBookings(Array.isArray(response.data) ? response.data : []);
+        }
+      } catch (err) {
+        console.error("Error fetching bookings:", err);
+        if (isMounted) {
+          setError("Failed to load your bookings.");
+          setBookings([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    if (authUser?.id) fetchBookings();
+    else setIsLoading(false);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [authUser?.id]);
+
+  // Search + filter logic
+  const clearSearch = () => setSearchQuery("");
+  const filtered = bookings.filter((b) => {
+    const nameMatch =
+      !searchQuery ||
+      b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.meal.toLowerCase().includes(searchQuery.toLowerCase());
+    const locationMatch =
+      locationFilter === "all" || b.location === locationFilter;
+    const tableMatch =
+      tableTypeFilter === "all" || b.tableType === tableTypeFilter;
+    return nameMatch && locationMatch && tableMatch;
+  });
+
+  // Only show current user’s bookings
+  const userBookings = filtered.filter(
+    (b) => String(b.user) === String(authUser?.id)
+  );
+
+  // Split current vs past
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const current = userBookings.filter((b) => new Date(b.date) >= today);
+  const past = userBookings.filter((b) => new Date(b.date) < today);
+
+  // Cancel booking handler
+  const handleCancel = (id: string) => {
+    // TODO: await API.delete(`/users/bookings/${id}`);
+    setBookings((prev) => prev.filter((b) => b.id !== id));
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <div className="min-h-screen bg-zinc-50/40 dark:bg-zinc-900/40">
+      <div className="container mx-auto px-4 py-6 max-w-6xl">
+        {/* Header & Filters */}
+        <header className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold">
+              {authUser?.firstName || "Guest"} {authUser?.lastName || ""}
+            </h1>
+          </div>
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                className="pl-9 pr-10"
+                placeholder="Search restaurant or meal"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
+                >
+                  <SearchXIcon size={16} />
+                </button>
+              )}
+            </div>
+
+            <Select
+              value={locationFilter}
+              onValueChange={setLocationFilter}
+            >
+              <SelectTrigger className="w-[200px] bg-white dark:bg-zinc-900">
+                <SelectValue placeholder="Location" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Locations</SelectItem>
+                <SelectItem value="Victoria Island">
+                  Victoria Island
+                </SelectItem>
+                <SelectItem value="Lekki">Lekki</SelectItem>
+                <SelectItem value="Banana Island">Banana Island</SelectItem>
+                <SelectItem value="Opebi">Opebi</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={tableTypeFilter}
+              onValueChange={setTableTypeFilter}
+            >
+              <SelectTrigger className="w-[200px] bg-white dark:bg-zinc-900">
+                <SelectValue placeholder="Table Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Tables</SelectItem>
+                <SelectItem value="2-seats">2 Seats</SelectItem>
+                <SelectItem value="4-seats">4 Seats</SelectItem>
+                <SelectItem value="6-seats">6 Seats</SelectItem>
+                <SelectItem value="7-seats">7 Seats</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </header>
+
+        {/* Booking Tabs */}
+        <main>
+          <h2 className="text-xl font-semibold mb-4">Your Bookings</h2>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+              Loading...
+            </div>
+          ) : error ? (
+            <div className="text-center py-8">
+              <p className="mb-4 text-rose-600">{error}</p>
+            </div>
+          ) : userBookings.length === 0 ? (
+            <div className="text-center py-16">
+              <SearchXIcon className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+              <p className="mb-4">No bookings found.</p>
+              <Button onClick={() => router.push("/restaurants")}>
+                Browse Restaurants
+              </Button>
+            </div>
+          ) : (
+            <Tabs defaultValue="Current">
+              <TabsList className="mx-auto">
+                <TabsTrigger value="Current">
+                  Current
+                  {current.length > 0 && (
+                    <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">
+                      {current.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="Past">
+                  Past
+                  {past.length > 0 && (
+                    <span className="ml-2 bg-muted px-2 py-0.5 rounded-full text-xs">
+                      {past.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="Current" className="mt-6">
+                {current.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {current.map((b) => (
+                      <BookingCard
+                        key={b.id}
+                        booking={b}
+                        onCancel={handleCancel}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center">No upcoming bookings.</p>
+                )}
+              </TabsContent>
+
+              <TabsContent value="Past" className="mt-6">
+                {past.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {past.map((b) => (
+                      <BookingCard
+                        key={b.id}
+                        booking={b}
+                        isPast
+                        onCancel={handleCancel}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center">No past bookings.</p>
+                )}
+              </TabsContent>
+            </Tabs>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function BookingCard({
+  booking,
+  isPast = false,
+  onCancel,
+}: {
+  booking: Booking;
+  isPast?: boolean;
+  onCancel: (id: string) => void;
+}) {
+  const [receipt, setReceipt] = useState<Booking | null>(null);
+  const router = useRouter();
+
+  const fmtPrice = (n: number) =>
+    new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      maximumFractionDigits: 0,
+    }).format(n);
+
+  const fmtDate = (s: string) =>
+    new Date(s).toLocaleDateString(undefined);
+
+  return (
+    <Card
+      className={`overflow-hidden transition-shadow duration-300 ${
+        isPast ? "opacity-70" : "hover:shadow-lg"
+      }`}
+    >
       <div className="relative aspect-[4/3]">
         <Image
           src={booking.image || "/placeholder.svg"}
@@ -226,244 +316,198 @@ function BookingCard({ booking }: { booking: Booking }) {
           fill
           className="object-cover"
         />
+        {isPast && (
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+            <span className="bg-black/70 text-white px-3 py-1 rounded text-sm">
+              Past
+            </span>
+          </div>
+        )}
       </div>
       <CardContent className="p-4">
-        <div className="space-y-3">
-          <div>
-            <h3 className="text-lg font-semibold">{booking.name}</h3>
-            <p className="text-sm text-muted-foreground">{booking.location}</p>
+        <h3 className="text-lg font-semibold">{booking.name}</h3>
+        <p className="text-sm text-muted-foreground">
+          {booking.location}
+        </p>
+        <div className="mt-3 space-y-1 text-sm">
+          <div className="flex justify-between">
+            <span>Date</span>
+            <span>{fmtDate(booking.date)}</span>
           </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Date</span>
-              <span className="font-medium">{booking.date}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Seats</span>
-              <span className="font-medium">{booking.seats} seats</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Total Payment</span>
-              <span className="font-medium">
-                {formatPrice(booking.totalPayment)}
-              </span>
-            </div>
+          <div className="flex justify-between">
+            <span>Time</span>
+            <span>{booking.time}</span>
           </div>
+          <div className="flex justify-between">
+            <span>Seats</span>
+            <span>{booking.seats}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Meal</span>
+            <span>{booking.meal}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Total</span>
+            <span>{fmtPrice(booking.totalPayment)}</span>
+          </div>
+        </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      router.push(`/userDashboard/booking/${booking.id}`)
-                    }
-                    size="icon"
-                    className="h-8 w-8"
-                  >
-                    <ArrowUpRightFromSquare className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Enter</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      handlePrint(booking);
-                    }}
-                    size="icon"
-                    className="h-8 w-8"
-                  >
-                    <Printer className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Print</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+        <div className="flex justify-end gap-2 pt-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <Button
                   variant="outline"
                   size="icon"
-                  title="More"
-                  className="h-8 w-8"
+                  onClick={() =>
+                    router.push(`/userDashboard/booking/${booking.id}`)
+                  }
                 >
-                  <MoreVertical className="h-4 w-4" />
+                  <ArrowUpRightFromSquare className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View Details</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setReceipt(booking)}
+                >
+                  <Printer className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Print Receipt</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {!isPast && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <MoreVertical className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Edit Booking</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">
-                  Cancel Booking
+                <DropdownMenuItem
+                  onClick={() =>
+                    router.push(`/userDashboard/booking/edit/${booking.id}`)
+                  }
+                >
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => onCancel(booking.id)}
+                >
+                  Cancel
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          )}
         </div>
       </CardContent>
-      <Data receipt={receipt} setReceipt={setReceipt} />
+
+      {receipt && (
+        <ReceiptModal receipt={receipt} onClose={() => setReceipt(null)} />
+      )}
     </Card>
   );
 }
 
-const Data = ({
+function ReceiptModal({
   receipt,
-  setReceipt,
+  onClose,
 }: {
-  receipt: Booking | null;
-  setReceipt: (data: null) => void;
-}) => {
-  const receiptRef = useRef<HTMLDivElement>(null);
-  if (!receipt) return null;
+  receipt: Booking;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [busy, setBusy] = useState(false);
 
-  const downloadReceiptAsPDF = async () => {
-    if (!receiptRef.current) return;
+  const fmtPrice = (n: number) =>
+    new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      maximumFractionDigits: 0,
+    }).format(n);
 
-    const dataUrl = await domtoimage.toPng(receiptRef.current);
-    const pdf = new jsPDF("p", "pt", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
+  const fmtDate = (s: string) =>
+    new Date(s).toLocaleDateString(undefined);
 
-    pdf.addImage(dataUrl, "PNG", 10, 10, pdfWidth - 20, pdfHeight);
-    pdf.save(`${receipt.name}-Receipt.pdf`);
+  const download = async () => {
+    if (!ref.current) return;
+    setBusy(true);
+    try {
+      const dataUrl = await domtoimage.toPng(ref.current);
+      const pdf = new jsPDF("p", "pt", "a4");
+      const w = pdf.internal.pageSize.getWidth();
+      const h = pdf.internal.pageSize.getHeight();
+      pdf.addImage(dataUrl, "PNG", 10, 10, w - 20, h / 2);
+      pdf.save(`Receipt-${receipt.id}.pdf`);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to generate PDF");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center w-full bg-black/80 z-30">
-      <div className="bg-white rounded-2xl shadow-lg max-w-[320px] w-full receipt-safe">
-        <div className="p-6" ref={receiptRef}>
-          <h2 className="text-xl font-medium flex items-center gap-2 mb-4">
-            <span className="max-w-[150px] truncate block">{receipt.name}</span>
-            <span className="text-muted-foreground">Receipt</span>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-30 p-4">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-lg w-full max-w-md">
+        <div className="p-6" ref={ref}>
+          <h2 className="text-xl font-medium mb-4 flex justify-between">
+            <span className="truncate">{receipt.name}</span>
+            <span className="text-sm text-muted-foreground">Receipt</span>
           </h2>
 
-          <QRCodeCanvas
-            value={`https://hotel-booking-application-omega.vercel.app/userDashboard/booking/${
-              receipt.id || ""
-            }`}
-            size={200}
-            bgColor="#ffffff"
-            fgColor="#000000"
-            className="mx-auto"
-          />
-
-          <div className="flex flex-col py-4 gap-2 text-sm">
-            <p className="flex justify-between">
-              <span className="text-muted-foreground">Date:</span>
-              <span className="text-blue-900 font-medium">{receipt.date}</span>
-            </p>
-            <p className="flex justify-between">
-              <span className="text-muted-foreground">Time:</span>
-              <span className="text-blue-900 font-medium">{receipt.time}</span>
-            </p>
-            <p className="flex justify-between">
-              <span className="text-muted-foreground">Table:</span>
-              <span className="text-blue-900 font-medium">
-                {receipt.tableType}
-              </span>
-            </p>
-            <p className="flex justify-between">
-              <span className="text-muted-foreground">Meal:</span>
-              <span className="text-blue-900 font-medium">{receipt.meal}</span>
-            </p>
+          <div className="flex justify-center mb-4">
+            <QRCodeCanvas
+              value={`https://.../booking/${receipt.id}`}
+              size={200}
+            />
           </div>
+
+          <div className="border-t border-b py-4 space-y-2 text-sm">
+            {[
+              ["Booking ID", receipt.id.slice(0, 8) + "..."],
+              ["Date", fmtDate(receipt.date)],
+              ["Time", receipt.time],
+              ["Table", receipt.tableType],
+              ["Seats", receipt.seats.toString()],
+              ["Meal", receipt.meal],
+              ["Total", fmtPrice(receipt.totalPayment)],
+            ].map(([label, val]) => (
+              <div key={label} className="flex justify-between">
+                <span className="text-muted-foreground">{label}:</span>
+                <span>{val}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-4 text-xs text-center text-muted-foreground">
+            Thank you for your booking!
+          </p>
         </div>
 
         <div className="flex justify-between p-6 pt-4">
-          <Button onClick={() => setReceipt(null)} variant="outline">
-            Cancel
+          <Button variant="outline" onClick={onClose}>
+            Close
           </Button>
-          <Button onClick={downloadReceiptAsPDF}>
-            Download <Download className="ml-2" />
+          <Button onClick={download} disabled={busy}>
+            {busy ? "Generating..." : "Download"}
           </Button>
         </div>
       </div>
     </div>
   );
-};
-
-const bookings = [
-  {
-    id: "7t2gyuw7y7uhu72",
-    name: "Ocean Basket",
-    meal: "Rice and Chicken",
-    location: "Victoria Island",
-    image: "/hero-bg.jpg",
-    date: new Date().toISOString().split("T")[0], // Today's date
-    seats: 3,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "2-seats",
-    time: "19:00",
-  },
-  {
-    id: "bus6783uyeg73",
-    name: "Velvet Bar & Lounge",
-    meal: "Chicken Bucket",
-    location: "Lekki",
-    image: "/hero-bg.jpg",
-    date: new Date(new Date().setDate(new Date().getDate() - 2))
-      .toISOString()
-      .split("T")[0], // 2 days ago
-    seats: 6,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "2-seats",
-    time: "11:00",
-  },
-  {
-    id: "ukniweh78738ee",
-    name: "Shiro Lagos",
-    meal: "Eba & Ewedu Soup",
-    location: "Banana Island",
-    image: "/restaurant.jpg",
-    date: new Date(new Date().setDate(new Date().getDate() + 5))
-      .toISOString()
-      .split("T")[0], // 5 days from now
-    seats: 4,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "3-seats",
-    time: "14:00",
-  },
-  {
-    id: "heu38y22hbsi",
-    name: "Shiro Lagos",
-    meal: "Yam & Egg",
-    location: "Opebi",
-    image: "/hero-bg.jpg",
-    date: new Date(new Date().setDate(new Date().getDate() + 10))
-      .toISOString()
-      .split("T")[0], // 10 days from now
-    seats: 5,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "4-seats",
-    time: "15:00",
-  },
-  {
-    id: "38juwin2u92wu",
-    name: "Chicken Republic",
-    meal: "Rice & Chicken",
-    location: "Opebi",
-    image: "/chicken-republic.jpg",
-    date: new Date(new Date().setDate(new Date().getDate() + 10))
-      .toISOString()
-      .split("T")[0], // 10 days from now
-    seats: 7,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "7-seats",
-    time: "11:00",
-  },
-];
+}

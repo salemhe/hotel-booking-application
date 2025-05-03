@@ -23,6 +23,7 @@ const schema = z.object({
   cuisineType: z.string().min(1, "Cuisine type is required"),
   description: z.string().min(1, "Description is required"),
   itemImage: z.any().optional(),
+  itemName: z.any().optional(),
 });
 
 type BasicInfoProps = {
@@ -50,6 +51,7 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
       cuisineType: initialData.cuisineType ?? "",
       itemImage: initialData.itemImage ?? null, // Default to null for optional fields
       description: initialData.description ?? "",
+      itemName: "", 
     },
   });
 

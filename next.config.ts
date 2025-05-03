@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'res.cloudinary.com'
       },
+      {
+        protocol: 'http',
+        hostname:'http://localhost:5000/uploads/'
+      }
     ],
   },
 };

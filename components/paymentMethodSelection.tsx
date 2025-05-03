@@ -1,28 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import PaystackPop from '@paystack/inline-js'
-interface PaystackResponse {
-  status: string;
-  reference: string;
-}
-
-interface PaystackPopInterface {
-  inlinePay: (data: {
-    key: string;
-    email: string;
-    amount: number;
-    currency: string;
-    callback: (response: PaystackResponse) => void;
-    onClose: () => void;
-  }) => void;
-}
-
-declare global {
-  interface Window {
-    PaystackPop: PaystackPopInterface;
-  }
-}
+import { useState, useEffect } from "react";
+import {  useRouter } from "next/navigation";
+// import PaystackPop from '@paystack/inline-js';
 import {
   ChevronRight,
   CreditCard,
@@ -32,39 +12,85 @@ import {
   Users,
   ArrowLeft,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import PaymentForm from "@/components/paymentForm";
 import Image from "next/image";
 import { AuthService } from "@/services/userAuth.services";
 import { UserProfile } from "./Navigation";
+import { useToast } from "@/hooks/use-toast";
+import  API  from "@/utils/axios";
 
-// Restaurant details
-const RESTAURANT_INFO = {
-  name: "Chicken Republic",
-  address: "10, Ikorodu Road, Lagos",
-  image: "/hero-bg.jpg",
-  logo: "/hero-bg.jpg",
-};
+// Types for Paystack callback
+interface PaystackResponse {
+  status: string;
+  reference: string;
+}
 
-// Reservation details
-const RESERVATION_DETAILS = {
-  date: "Saturday, April 5, 2025",
-  time: "7:30 PM",
-  guests: 4,
-  table: "#12",
-  subtotal: 9200.0,
-  vatRate: 0.18,
-};
+interface PaystackPopConstructor {
+  newTransaction(config: {
+    key: string;
+    email: string;
+    amount: number;
+    currency: string;
+    callback: (response: PaystackResponse) => void;
+    metadata?: {
+      custom_fields: Array<{
+        display_name: string;
+        variable_name: string;
+        value: string;
+      }>;
+    };
+  } & {
+    onClose?: () => void;
+  }): void;
+}
+
+declare global {
+  interface Window {
+    PaystackPop: PaystackPopConstructor;
+  }
+}
+
+// Structure we saved in sessionStorage in RestaurantPage
+interface ReservationDetails {
+  bookingId: string;
+  restaurantId: string;
+  restaurantName: string;
+  restaurantAddress: string;
+  date: string;
+  time: string;
+  guests: number;
+  tableNumber: number;
+  menuId: string;
+  menuItem: string;
+  menuPrice: number;
+  restaurantImage?: string;
+  restaurantLogo?: string;
+}
 
 export default function PaymentMethodSelection() {
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-    string | null
-  >(null);
+  // const { bookingId } = useParams();
+  const router = useRouter();
   const profile = AuthService.getUser() as UserProfile;
-  const [isRedirecting, setIsRedirecting] = useState(false);
 
+  const [reservationDetails, setReservationDetails] = useState<ReservationDetails | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+  // Hydrate details from sessionStorage
+  useEffect(() => {
+    const stored = sessionStorage.getItem("pendingReservation");
+    if (stored) {
+      setReservationDetails(JSON.parse(stored));
+    } else {
+      setError("No reservation data found. Please start again.");
+    }
+    setLoading(false);
+  }, []);
+
+  // Format numbers for display
   function formatNumber(value: number): string {
     return value.toLocaleString("en-US", {
       minimumFractionDigits: 2,
@@ -72,146 +98,176 @@ export default function PaymentMethodSelection() {
     });
   }
 
-  // Calculate total
-  const subtotal = RESERVATION_DETAILS.subtotal;
-  const vat = subtotal * RESERVATION_DETAILS.vatRate;
-  const total = subtotal + vat;
-
-  // Handle payment method selection
+  // Payment handlers
   const handlePaymentMethodSelect = (method: string) => {
     setSelectedPaymentMethod(method);
   };
 
-  // Handle Paystack checkout
-  const handlePaystackCheckout = async () => {
-    setIsRedirecting(true);
-  
-    // Check if the Paystack SDK is available
-    if (PaystackPop) {
-      const paystack = new PaystackPop();
+// ... existing code ...
+
+const handlePaystackCheckout = async () => {
+  if (!reservationDetails || !profile?.email) return;
+  setIsRedirecting(true);
+
+  try {
+      // Call the server endpoint to initialize payment
+      const response = await API.post('/users/make-payment', {
+          email: profile.email,
+          amount: String(Math.round(total)), // Convert to string as per API docs
+          vendorId: reservationDetails.restaurantId
+      });
+
+      // Store the reference for verification
+      sessionStorage.setItem('paymentRef', response.data.data.ref);
+      
+      // Redirect to Paystack payment page
+      window.location.href = response.data.data.authorization_url;
+  } catch (error) {
+      console.error('Payment initialization failed:', error);
+      toast({
+          title: "Payment Error",
+          description: error instanceof Error ? error.message : "Could not initialize payment",
+          variant: "destructive"
+      });
+      setIsRedirecting(false);
+  }
+};
+// Update payment verification function
+useEffect(() => {
+  const verifyPayment = async () => {
+      const paymentRef = sessionStorage.getItem('paymentRef');
+      if (!paymentRef) return;
 
       try {
-        const paymentData = {
-          key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-          email: profile.email,
-          amount: Math.round(total * 100), // Amount in kobo
-          currency: 'NGN',
-          callback: (response: PaystackResponse) => {
-            if (response.status === 'success') {
-              alert(`Payment successful! Reference: ${response.reference}`);
-            } else {
-              alert('Payment failed');
-            }
-            setIsRedirecting(false);
-          },
-          onClose: () => {
-            alert('Payment window closed.');
-            setIsRedirecting(false);
-          },
-        };
-        paystack.newTransaction(paymentData);
-      } catch (error) {
-        console.error("Error initializing Paystack:", error);
-        setIsRedirecting(false);
-        return;
-      } finally {
-        setIsRedirecting(false);
-      }
-  
-      
-  
-      // Start the Paystack payment process
-      // paystack.inlinePay(paymentData);
-    } else {
-      console.error("Paystack SDK is not available.");
-      setIsRedirecting(false);
-    }
-  };
-  
-  
+          // Call the server endpoint to verify payment
+          const response = await API.post('/users/verify-payment', {
+              reference: paymentRef
+          });
+          
+          const paymentStatus = response.data;
+          
+          if (paymentStatus.status === 'success') {
+              // Update booking status based on the type
+              await API.patch(`/users/bookings/update/${reservationDetails?.bookingId}`, {
+                  type: 'restaurant',
+                  vendor: reservationDetails?.restaurantId,
+                  tableNumber: reservationDetails?.tableNumber,
+                  guests: reservationDetails?.guests
+              });
 
-  // Go back to payment selection
+              toast({
+                  title: "Payment Successful",
+                  description: "Your booking has been confirmed!",
+              });
+
+              router.push('/userDashboard/bookings');
+          }
+      } catch (error) {
+          console.error('Payment verification failed:', error);
+          toast({
+              title: "Verification Failed",
+              description: "Please contact support with your reference: " + paymentRef,
+              variant: "destructive"
+          });
+      } finally {
+          sessionStorage.removeItem('paymentRef');
+      }
+  };
+
+  verifyPayment();
+}, [reservationDetails]);
+
+
   const handleBack = () => {
     setSelectedPaymentMethod(null);
   };
 
+  if (loading) {
+    return <div className="flex items-center justify-center h-48"><span className="animate-spin h-8 w-8 border-2 border-gray-400 border-t-transparent rounded-full"/></div>;
+  }
+  if (error || !reservationDetails) {
+    return <div className="p-4 text-center text-red-600">{error}</div>;
+  }
+
+  const {
+    restaurantName,
+    restaurantAddress,
+    restaurantImage,
+    restaurantLogo,
+    date,
+    time,
+    guests,
+    tableNumber,
+    // menuId,
+    menuItem,
+    menuPrice,
+  } = reservationDetails;
+
+  // Calculate totals
+  const subtotal = menuPrice;
+  const vatRate = 0.18;
+  const vat = subtotal * vatRate;
+  const total = subtotal + vat;
+
   return (
     <div className="space-y-6">
-      {/* Restaurant header */}
+      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="h-16 w-16 rounded-full overflow-hidden bg-white p-1 shadow-md">
-          <Image
-            src={RESTAURANT_INFO.logo || "/placeholder.svg"}
-            alt={RESTAURANT_INFO.name}
-            width={64}
-            height={64}
-            className="w-full h-full object-cover rounded-full"
-          />
+          {restaurantLogo ? (
+            <Image src={restaurantLogo} alt={restaurantName} width={64} height={64} className="w-full h-full object-cover rounded-full" />
+          ) : null}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            {RESTAURANT_INFO.name}
-          </h1>
-          <p className="text-gray-600">{RESTAURANT_INFO.address}</p>
+          <h1 className="text-2xl font-bold text-gray-800">{restaurantName}</h1>
+          <p className="text-gray-600">{restaurantAddress}</p>
         </div>
       </div>
 
-      {/* Main content */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left column - Reservation details */}
-        <Card className="md:col-span-1 overflow-hidden shadow-lg rounded-lg">
-          <div className="h-48 overflow-hidden">
-            <Image
-              src={RESTAURANT_INFO.image || "/placeholder.svg"}
-              alt={RESTAURANT_INFO.name}
-              width={300}
-              height={200}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-            />
-          </div>
+        {/* Reservation summary */}
+        <Card className="overflow-hidden shadow-lg rounded-lg">
+          {restaurantImage && (
+            <div className="h-48 overflow-hidden">
+              <Image src={restaurantImage} alt={restaurantName} width={300} height={200} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" />
+            </div>
+          )}
           <CardContent className="p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              Reservation Details
-            </h2>
-
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Reservation Details</h2>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-primary" />
                 <div>
                   <p className="text-sm text-gray-500">Date</p>
-                  <p className="font-medium text-gray-800">
-                    {RESERVATION_DETAILS.date}
-                  </p>
+                  <p className="font-medium text-gray-800">{date}</p>
                 </div>
               </div>
-
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-primary" />
                 <div>
                   <p className="text-sm text-gray-500">Time</p>
-                  <p className="font-medium text-gray-800">
-                    {RESERVATION_DETAILS.time}
-                  </p>
+                  <p className="font-medium text-gray-800">{time}</p>
                 </div>
               </div>
-
               <div className="flex items-center gap-3">
                 <Users className="h-5 w-5 text-primary" />
                 <div>
                   <p className="text-sm text-gray-500">Guests</p>
-                  <p className="font-medium text-gray-800">
-                    {RESERVATION_DETAILS.guests} people
-                  </p>
+                  <p className="font-medium text-gray-800">{guests} {guests === 1 ? 'person' : 'people'}</p>
                 </div>
               </div>
-
               <div className="flex items-center gap-3">
                 <Utensils className="h-5 w-5 text-primary" />
                 <div>
                   <p className="text-sm text-gray-500">Table</p>
-                  <p className="font-medium text-gray-800">
-                    {RESERVATION_DETAILS.table}
-                  </p>
+                  <p className="font-medium text-gray-800">#{tableNumber}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Utensils className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="text-sm text-gray-500">Menu Item</p>
+                  <p className="font-medium text-gray-800">{menuItem}</p>
                 </div>
               </div>
             </div>
@@ -219,17 +275,11 @@ export default function PaymentMethodSelection() {
             <div className="mt-6 pt-4 border-t border-gray-200">
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-gray-500">Reservation fee</span>
-                <span className="font-medium text-gray-800">
-                  ₦ {formatNumber(subtotal)}
-                </span>
+                <span className="font-medium text-gray-800">₦ {formatNumber(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm mb-3">
-                <span className="text-gray-500">
-                  VAT ({(RESERVATION_DETAILS.vatRate * 100).toFixed(0)}%)
-                </span>
-                <span className="font-medium text-gray-800">
-                  ₦ {formatNumber(vat)}
-                </span>
+                <span className="text-gray-500">VAT ({(vatRate*100).toFixed(0)}%)</span>
+                <span className="font-medium text-gray-800">₦ {formatNumber(vat)}</span>
               </div>
               <div className="flex justify-between font-semibold text-lg text-gray-800">
                 <span>Total</span>
@@ -317,7 +367,7 @@ export default function PaymentMethodSelection() {
                     Card Payment
                   </h2>
                 </div>
-                <PaymentForm total={total} />
+                {/* <PaymentForm total={total} /> */}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-10">
@@ -363,9 +413,9 @@ export default function PaymentMethodSelection() {
       </div>
 
       {/* Footer */}
-      <div className="text-center text-sm text-gray-500 mt-4">
+      {/* <div className="text-center text-sm text-gray-500 mt-4">
         <p>© 2025 {RESTAURANT_INFO.name}. All rights reserved.</p>
-      </div>
+      </div> */}
     </div>
   );
 }

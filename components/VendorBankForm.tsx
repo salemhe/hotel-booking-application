@@ -118,6 +118,9 @@ export default function VendorBankForm() {
     }
   }
 
+  
+ 
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!accountName) {
       setError("Please verify your account details first");
@@ -125,16 +128,16 @@ export default function VendorBankForm() {
     }
     setIsLoading(true);
     setError(null);
-
+    // console.log(accountName)
     try {
-      const response = await API.patch("/vendors/save-payment", {
-        business_name: "Bookie",
-        bank_code: values.bankCode,
-        account_number: values.accountNumber,
-        percentage_charge: 15,
+     await API.patch("/vendors/save-payment", {
+        businessName: accountName,
+        bankCode: values.bankCode,
+        accountNumber: values.accountNumber,
+        percentageCharge: 15,
       });
       toast.success("Payment details saved successfully!");
-      console.log("Payment details saved:", response);
+      // console.log("Payment details saved:", response);
       revalidatePath("/vendorsDashboard/payment");
       router.push("/vendorsDashboard/payment");
     } catch (error) {

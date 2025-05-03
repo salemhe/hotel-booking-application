@@ -177,18 +177,20 @@ interface Reservation {
 }
 
 function ReservationCard({ reservation }: { reservation: Reservation }) {
+  console.log(reservation);
   return (
     <Link href={`/userDashboard/search/${reservation._id}`}>
       <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 border-zinc-200/80 dark:border-zinc-800 hover:scale-3d">
         <div className="relative h-44 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20" />
-          <Image
-            src={reservation.profileImage || "/dan-gold.jpg"}
+          {/* <Image
+            src={`/${reservation.profileImage}` || "/dan-gold.jpg"}
             alt={reservation.businessName || "Images"}
             width={300}
             height={200}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-"
-          />
+          /> */}
+          <img src={reservation.profileImage} alt={reservation.businessName || "Images"}  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-"/>
           <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
             <h3 className="text-white font-bold text-lg mb-1">
               {reservation.businessName}
