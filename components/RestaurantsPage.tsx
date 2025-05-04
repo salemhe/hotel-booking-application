@@ -330,7 +330,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                         src={restaurantData.profileImage || "/hero-bg.jpg"}
                         alt={`${restaurant.name}`}
                         width={600}
-                        height={500}
+                        height={400}
                         className="w-full rounded-lg"
                       />
                     </CarouselItem>
