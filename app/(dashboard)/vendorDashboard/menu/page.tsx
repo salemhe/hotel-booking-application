@@ -24,7 +24,7 @@ export default function VendorMenuPage() {
 
   const fetchMenu = async () => {
     try {
-      const menuResponse = await API.get(`/vendors/menus/${user?.profile.id}`);
+      const menuResponse = await API.get(`/vendors/menus?vendorId=${user?.profile.id}`);
       return menuResponse.data.menus;
     } catch (error) {
       console.log("menu fetch error", error)

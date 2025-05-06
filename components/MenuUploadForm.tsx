@@ -7,7 +7,7 @@ import { InventoryOrderSettings } from "./form-sections/InventoryOrderSettings";
 import { PricingAvailability } from "./form-sections/PricingAvailability";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"
-import axios from "axios";
+import API from "@/utils/axios";
 
 type MenuUploadFormProps = {
   formData: object;
@@ -40,10 +40,7 @@ export function MenuUploadForm({ formData, setFormData }: MenuUploadFormProps) {
 
     try {
       // Simulate API call
-      await axios.post("/vendors/create-menu", {
-        headers: { "Content-Type": "multipart/form-data", },
-        body: finalFormData
-      })
+      await API.post("/vendors/create-menu", finalFormData, {headers: { "Content-Type": "multipart/form-data", }})
 
       // Clear form data from localStorage after successful submission
       localStorage.removeItem("menuFormData");

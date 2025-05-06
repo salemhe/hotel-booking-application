@@ -18,7 +18,7 @@ import {
 import { setAuthToken } from "@/lib/axios-config";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import API from "@/utils/axios";
+import API from "@/utils/userAxios";
 import { AuthService } from "@/services/userAuth.services";
 
 
@@ -91,7 +91,9 @@ const UserLoginPage = () => {
         toast.error("An unknown error occurred");
       }
 
-      localStorage.removeItem("authToken");
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_user");
+      localStorage.removeItem("session_id");
       localStorage.removeItem("userId");
       localStorage.removeItem("tokenExp");
       setAuthToken(null);

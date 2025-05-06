@@ -1,5 +1,7 @@
 "use server";
 
+import API from "@/utils/axios";
+
 interface PaystackResponse {
   status: boolean;
   message: string;
@@ -97,3 +99,31 @@ export async function getBanks(): Promise<PaystackBank[]> {
     return [];
   }
 }
+
+// Fetch restaurants based on search query
+export const fetchRestaurants = async (query: string) => {
+  try {
+    const response = await API.get(`/users/restaurant-search?query=${encodeURIComponent(query)}`)
+    return response.data
+  } catch (error) {
+    console.error("Error fetching restaurants:", error);
+    return {
+      status: false,
+      message: error,
+    };
+  }
+}
+
+// Fetch menus 
+export const fetchMenus = async (vendorId?: string, cuisineType?: string, category?: string, dishName?: string,) => {
+  try {
+    const response = await API.get(`/vendors/menus?vendorId=${vendorId}&cuisineType=${cuisineType}&category=${category}&dishName=${dishName}`)
+    return response.data
+  } catch (error) {
+    return {
+      status: false,
+      message: error,
+    };
+  }
+}
+

@@ -13,12 +13,13 @@ type Menu = {
   description: string;
   price: number;
   category: string;
+  dishImage: string;
   itemImage: string;
   itemName: string;
 };
 
 interface ItemSelectorProps {
-  onSelectionChange: (selected: string[]) => void;
+  onSelectionChange: (selected: Menu[]) => void;
   items?: Menu[];
 }
 
@@ -30,7 +31,7 @@ export default function ItemSelector({
 
   // Update parent whenever selection changes
   useEffect(() => {
-    onSelectionChange(selectedItems.map((item) => item._id));
+    onSelectionChange(selectedItems);
   }, [selectedItems, onSelectionChange]);
 
   const toggleSelection = (item: Menu) => {
