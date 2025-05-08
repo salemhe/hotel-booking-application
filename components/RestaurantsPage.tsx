@@ -152,34 +152,23 @@ export default function RestaurantPage({ id }: { id: string }) {
   };
 
   useEffect(() => {
-    const data = async () => {
+    const fetchData = async () => {
       const restaurant = await fetchRestaurantData(id);
-      const menu = await fetchMenu(id);
-<<<<<<< HEAD
-      setData(restaurant);
+      const menuData = await fetchMenu(id);
+      
       if (restaurant) {
+        setRestaurantData(restaurant);
         setLocation(restaurant.address);
       }
-=======
-      setRestaurantData(restaurant);
->>>>>>> 1ff5c4a27f4cbeee34e8179c4c121f4c85f9f1b6
-      if (menu) {
-        setRestaurantMenu(menu.menus);
+      
+      if (menuData) {
+        setRestaurantMenu(menuData.menus);
+        setMenu(menuData.menus);
       }
-      console.log("menu", restaurantMenu);
-      console.log("restaurant", restaurantData);
     };
-    data();
-  }, [id, restaurantData, restaurantMenu]);
-
-  if (!restaurantData) {
-    return (
-      <div className="container mx-auto py-8 px-4">
-        {errors ? errors : <Loading />}
-      </div>
-    );
-  }
-
+    
+    fetchData();
+  }, [id]); 
   if (!restaurantData || errors) {
     return <div className="container mx-auto py-8 px-4">Error: {errors}</div>;
   }
@@ -202,13 +191,13 @@ export default function RestaurantPage({ id }: { id: string }) {
   // Modify the restaurant object to include images
   const restaurant = {
     id,
-    name: data.businessName,
+    name: restaurantData.businessName,
     cuisine: "Restaurant",
     rating: 4.5,
     reviews: 328,
     priceRange: "₦₦",
-    address: data.address,
-    phone: data.phone,
+    address: restaurantData.address,
+    phone: restaurantData.phone,
     website: "https://example.com",
     hours: "Mon-Sat: 11am-10pm, Sun: 12pm-9pm",
     description: "Experience authentic cuisine in a cozy, romantic atmosphere. Our chef brings amazing flavors to your plate with fresh, locally-sourced ingredients and traditional recipes.",
@@ -250,7 +239,6 @@ export default function RestaurantPage({ id }: { id: string }) {
       
       // 5) Make API request - match payload exactly to documentation
       const payload = {
-<<<<<<< HEAD
         vendorId: data._id,
         businessName: data.businessName,
         location: location,
@@ -298,14 +286,6 @@ export default function RestaurantPage({ id }: { id: string }) {
         menuPrice: selectedMenuItem.price,
         specialRequests: specialRequests,
         restaurantImage: "/hero-bg.jpg",
-=======
-        type:                 "restaurant",
-        vendor:               restaurantData._id,
-        tableNumber:          Number(seats),
-        guests:               Number(guests),
-        menuId:               meals,
-        date:                reservationDateTime,
->>>>>>> 1ff5c4a27f4cbeee34e8179c4c121f4c85f9f1b6
       };
   
       // 7) Store details for payment page
@@ -595,13 +575,8 @@ export default function RestaurantPage({ id }: { id: string }) {
                   
                   {/* Meal Selection */}
                   <div>
-<<<<<<< HEAD
                     <Label htmlFor="meal">Select Meal</Label>
                     {menu && (
-=======
-                    <Label htmlFor="meals">Select Menu Items</Label>
-                    {restaurantMenu && (
->>>>>>> 1ff5c4a27f4cbeee34e8179c4c121f4c85f9f1b6
                       <ItemSelector
                         items={restaurantMenu}
                         onSelectionChange={handleSelectionChange}

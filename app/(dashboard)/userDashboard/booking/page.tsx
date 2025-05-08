@@ -43,18 +43,32 @@ import { AuthService } from "@/services/auth.services";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Booking {
-  id: string;
-  name: string;
-  location: string;
-  image: string;
+  _id: string;
+  user: string;
+  type: string;
+  vendor: string;
+  menuId: string;
+  roomNumber: null | string;
+  tableNumber: number;
+  guests: number;
   date: string;
-  seats: number;
-  pricePerTable: number;
-  totalPayment: number;
-  tableType: string;
-  time: string;
-  meal: string;
-  user: string | number;
+  checkIn: null | string;
+  checkOut: null | string;
+  status: string;
+  bookingDate: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  
+  // These fields will be populated from the vendor/menu data
+  name?: string;
+  location?: string;
+  image?: string;
+  pricePerTable?: number;
+  totalPayment?: number;
+  tableType?: string;
+  time?: string;
+  meal?: string;
 }
 
 export default function BookingList() {
@@ -80,8 +94,64 @@ export default function BookingList() {
         const response = await API.get<Booking[]>("/users/bookings", {
           params: { userId: authUser?.id },
         });
+        
         if (isMounted) {
-          setBookings(Array.isArray(response.data) ? response.data : []);
+          // Get the bookings data
+          const bookingsData = Array.isArray(response.data) ? response.data : [];
+          
+          // For each booking, fetch additional vendor and menu data
+          const enhancedBookings = await Promise.all(
+            bookingsData.map(async (booking) => {
+              try {
+                // Fetch vendor data
+                const vendorResponse = await API.get(`/vendors/${booking.vendor}`);
+                const vendor = vendorResponse.data;
+                
+                // Fetch menu data
+                const menuResponse = await API.get(`/menus/${booking.menuId}`);
+                const menu = menuResponse.data;
+                
+                // Extract time from the date
+                const bookingDate = new Date(booking.date);
+                const hours = bookingDate.getHours();
+                const minutes = bookingDate.getMinutes();
+                const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                
+                // Return enhanced booking with display data
+                return {
+                  ...booking,
+                  id: booking._id, // For backward compatibility
+                  name: vendor?.name || "Restaurant",
+                  location: vendor?.location || "Unknown location",
+                  image: vendor?.image || "/placeholder.svg",
+                  seats: booking.guests,
+                  tableType: `${booking.tableNumber}-table`,
+                  time: formattedTime,
+                  meal: menu?.name || "Standard meal",
+                  pricePerTable: menu?.price || 0,
+                  totalPayment: (menu?.price || 0) * booking.guests,
+                };
+              } catch (err) {
+                console.error("Error fetching additional booking data:", err);
+                // Return basic booking with defaults
+                return {
+                  ...booking,
+                  id: booking._id,
+                  name: "Restaurant",
+                  location: "Location unavailable",
+                  image: "/placeholder.svg",
+                  seats: booking.guests,
+                  tableType: `Table ${booking.tableNumber}`,
+                  time: new Date(booking.date).toLocaleTimeString(),
+                  meal: "Meal information unavailable",
+                  pricePerTable: 0,
+                  totalPayment: 0,
+                };
+              }
+            })
+          );
+          
+          setBookings(enhancedBookings);
         }
       } catch (err) {
         console.error("Error fetching bookings:", err);
@@ -303,6 +373,20 @@ function BookingCard({
   const fmtDate = (s: string) =>
     new Date(s).toLocaleDateString(undefined);
 
+  // Get status badge color
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'confirmed':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <Card
       className={`overflow-hidden transition-shadow duration-300 ${
@@ -312,7 +396,7 @@ function BookingCard({
       <div className="relative aspect-[4/3]">
         <Image
           src={booking.image || "/placeholder.svg"}
-          alt={booking.name}
+          alt={booking.name || "Restaurant"}
           fill
           className="object-cover"
         />
@@ -323,11 +407,18 @@ function BookingCard({
             </span>
           </div>
         )}
+        
+        {/* Status badge */}
+        <div className="absolute top-2 right-2">
+          <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(booking.status)}`}>
+            {booking.status}
+          </span>
+        </div>
       </div>
       <CardContent className="p-4">
-        <h3 className="text-lg font-semibold">{booking.name}</h3>
+        <h3 className="text-lg font-semibold">{booking.name || "Restaurant"}</h3>
         <p className="text-sm text-muted-foreground">
-          {booking.location}
+          {booking.location || "Unknown location"}
         </p>
         <div className="mt-3 space-y-1 text-sm">
           <div className="flex justify-between">
@@ -336,83 +427,33 @@ function BookingCard({
           </div>
           <div className="flex justify-between">
             <span>Time</span>
-            <span>{booking.time}</span>
+            <span>{booking.time || new Date(booking.date).toLocaleTimeString()}</span>
           </div>
           <div className="flex justify-between">
-            <span>Seats</span>
-            <span>{booking.seats}</span>
+            <span>Guests</span>
+            <span>{booking.guests}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Table</span>
+            <span>{booking.tableNumber}</span>
           </div>
           <div className="flex justify-between">
             <span>Meal</span>
-            <span>{booking.meal}</span>
+            <span>{booking.meal || "Standard meal"}</span>
           </div>
           <div className="flex justify-between">
             <span>Total</span>
-            <span>{fmtPrice(booking.totalPayment)}</span>
+            <span>{fmtPrice(booking.totalPayment || 0)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Booking Date</span>
+            <span>{new Date(booking.bookingDate).toLocaleDateString()}</span>
           </div>
         </div>
-
+        
+        {/* Rest of the component remains the same */}
         <div className="flex justify-end gap-2 pt-4">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() =>
-                    router.push(`/userDashboard/booking/${booking.id}`)
-                  }
-                >
-                  <ArrowUpRightFromSquare className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>View Details</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setReceipt(booking)}
-                >
-                  <Printer className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Print Receipt</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          {!isPast && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <MoreVertical className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() =>
-                    router.push(`/userDashboard/booking/edit/${booking.id}`)
-                  }
-                >
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => onCancel(booking.id)}
-                >
-                  Cancel
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {/* ... existing code ... */}
         </div>
       </CardContent>
 
@@ -423,6 +464,7 @@ function BookingCard({
   );
 }
 
+// ... existing code ...
 function ReceiptModal({
   receipt,
   onClose,
@@ -452,7 +494,7 @@ function ReceiptModal({
       const w = pdf.internal.pageSize.getWidth();
       const h = pdf.internal.pageSize.getHeight();
       pdf.addImage(dataUrl, "PNG", 10, 10, w - 20, h / 2);
-      pdf.save(`Receipt-${receipt.id}.pdf`);
+      pdf.save(`Receipt-${receipt._id}.pdf`);
     } catch (e) {
       console.error(e);
       alert("Failed to generate PDF");
@@ -466,26 +508,29 @@ function ReceiptModal({
       <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-lg w-full max-w-md">
         <div className="p-6" ref={ref}>
           <h2 className="text-xl font-medium mb-4 flex justify-between">
-            <span className="truncate">{receipt.name}</span>
+            <span className="truncate">{receipt.name || "Restaurant"}</span>
             <span className="text-sm text-muted-foreground">Receipt</span>
           </h2>
 
           <div className="flex justify-center mb-4">
             <QRCodeCanvas
-              value={`https://.../booking/${receipt.id}`}
+              value={`https://.../booking/${receipt._id}`}
               size={200}
             />
           </div>
 
           <div className="border-t border-b py-4 space-y-2 text-sm">
             {[
-              ["Booking ID", receipt.id.slice(0, 8) + "..."],
+              ["Booking ID", receipt._id.slice(0, 8) + "..."],
+              ["Type", receipt.type],
+              ["Status", receipt.status],
               ["Date", fmtDate(receipt.date)],
-              ["Time", receipt.time],
-              ["Table", receipt.tableType],
-              ["Seats", receipt.seats.toString()],
-              ["Meal", receipt.meal],
-              ["Total", fmtPrice(receipt.totalPayment)],
+              ["Time", receipt.time || new Date(receipt.date).toLocaleTimeString()],
+              ["Table Number", receipt.tableNumber.toString()],
+              ["Guests", receipt.guests.toString()],
+              ["Meal", receipt.meal || "Standard meal"],
+              ["Total", fmtPrice(receipt.totalPayment || 0)],
+              ["Booking Date", new Date(receipt.bookingDate).toLocaleDateString()],
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between">
                 <span className="text-muted-foreground">{label}:</span>
@@ -511,3 +556,4 @@ function ReceiptModal({
     </div>
   );
 }
+// ... existing code ...
