@@ -6,19 +6,16 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   MapPin,
-  Clock,
+  // Clock,
   Phone,
-  Globe,
-  Star,
+  // Globe,
+  // Star,
   ChevronLeft,
   CalendarIcon,
   FolderX,
-  // Utensils
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -42,23 +39,22 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "./ui/calendar";
-import API from "@/utils/axios";
+import API from "@/utils/userAxios";
 import { AxiosError } from "axios";
 import ItemSelector from "./ItemSelector";
 import { ScrollArea } from "./ui/scroll-area";
+import { Input } from "./ui/input";
 
-import { AuthService } from "@/services/auth.services";
 type restaurants = {
   isVerified: boolean;
   _id: string;
   businessName: string;
-  name: string;
   email: string;
   phone: string;
   address: string;
@@ -67,7 +63,7 @@ type restaurants = {
   services: string[];
 };
 
-export type Menu = {
+type Menu = {
   _id: string;
   vendor: string;
   dishName: string;
@@ -91,23 +87,57 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [api, setApi] = useState<CarouselApi>();
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState("");
+  const [guests, setGuests] = useState("");
+  const [seats, setSeats] = useState("");
   const [partySize, setPartySize] = useState("");
+  const [specialRequest, setSpecialRequest] = useState("");
+  const [image, setImage] = useState<File>();
   const [tableType, setTableType] = useState("");
-  const [meal, setMeal] = useState("");
-  const [specialRequests, setSpecialRequests] = useState("");
+  const [imagePreview, setImagePreview] = useState("");
+  const [meals, setMeals] = useState("");
+  const [mealId, setMealId] = useState("");
+  const [menu, setMenu] = useState<Menu[] | null>(null);
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [menu, setMenu] = useState<Menu[] | null>(null);
-  const [location, setLocation] = useState("");
   const [restaurantMenu, setRestaurantMenu] = useState<Menu[] | null>(null);
   const router = useRouter();
-  const [restaurantData, setRestaurantData] = useState<restaurants | null>(null);
+  const [restaurantData, setRestaurantData] = useState<restaurants | null>(
+    null
+  );
   const [errors, setErrors] = useState("");
   const { toast } = useToast();
-  const authUser = AuthService.getUser(); 
-  const handleSelectionChange = (selected: string[]) => {
-    setMeal(selected[0]);
+
+  const required = <span className="text-red-500">*</span>
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Ensure file is a JPG
+    if (file.type !== "image/jpeg") {
+      alert("Only JPG images are allowed.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setImage(file);
+  };
+
+  const handleSelectionChange = (selected: Menu[]) => {
+    setMenu(selected)
+    if (selected && selected.length > 0) {
+      setMeals(selected[0].dishName);
+      setMealId(selected[0]._id);
+    } else {
+      setMeals('');
+      setMealId('');
+    }
   };
 
   useEffect(() => {
@@ -144,183 +174,114 @@ export default function RestaurantPage({ id }: { id: string }) {
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log("fetch error", error.message);
-        setErrors(error.message);
+        if (error.response?.status === 404) {
+          setRestaurantMenu(null);
+        } else {
+          console.log("fetch error", error.message);
+          setErrors(error.message);
+        }
       }
       return null;
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const data = async () => {
       const restaurant = await fetchRestaurantData(id);
-      const menuData = await fetchMenu(id);
-      
-      if (restaurant) {
-        setRestaurantData(restaurant);
-        setLocation(restaurant.address);
+      const menu = await fetchMenu(id);
+      setRestaurantData(restaurant);
+      if (menu) {
+        setRestaurantMenu(menu.menus);
       }
-      
-      if (menuData) {
-        setRestaurantMenu(menuData.menus);
-        setMenu(menuData.menus);
-      }
+      console.log("menu", restaurantMenu);
+      console.log("restaurant", restaurantData);
     };
-    
-    fetchData();
-  }, [id]); 
+    data();
+  }, []);
+
+  if (!restaurantData) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        {errors ? errors : <Loading />}
+      </div>
+    );
+  }
+
   if (!restaurantData || errors) {
     return <div className="container mx-auto py-8 px-4">Error: {errors}</div>;
   }
 
-  // const menuItem = [
-  //   { name: "Main Course", value: "mainCourse" },
-  //   { name: "Dessert", value: "dessert" },
-  //   { name: "Appetizer", value: "appetizer" },
-  //   { name: "Lunch", value: "lunch" },
-  //   { name: "Drink", value: "drink" },
-  // ];
-
-  const tableTypes = [
-    { name: "2-seats", value: "2-seats" },
-    { name: "4-seats", value: "4-seats" },
-    { name: "6-seats", value: "6-seats" },
-    { name: "8-seats", value: "8-seats" },
+  const menuItem = [
+    { name: "Main Course", value: "mainCourse" },
+    { name: "Dessert", value: "dessert" },
+    { name: "Appetizer", value: "appetizer" },
+    { name: "Lunch", value: "lunch" },
+    { name: "Drink", value: "drink" },
   ];
-
-  // Modify the restaurant object to include images
-  const restaurant = {
-    id,
-    name: restaurantData.businessName,
-    cuisine: "Restaurant",
-    rating: 4.5,
-    reviews: 328,
-    priceRange: "₦₦",
-    address: restaurantData.address,
-    phone: restaurantData.phone,
-    website: "https://example.com",
-    hours: "Mon-Sat: 11am-10pm, Sun: 12pm-9pm",
-    description: "Experience authentic cuisine in a cozy, romantic atmosphere. Our chef brings amazing flavors to your plate with fresh, locally-sourced ingredients and traditional recipes.",
-    images: [
-      "/hero-bg.jpg",
-      "/hero-bg.jpg",
-      "/hero-bg.jpg",
-    ],
-  };
 
   const handleReservation = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-  
-    // 1) Basic validation
-    if (!meal || !tableType || !partySize || !date || !time || !specialRequests) {
+
+    // 1) Basic validation (now includes `meals`)
+    if (!meals || !mealId || !partySize || !tableType || !seats || !date) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields",
+        description: "Please select a menu item, seats, Party Size, TableType, date",
         variant: "destructive",
       });
       setLoading(false);
       return;
     }
-  
+
     try {
-      // 2) Format date
+      // 2) Format date/time
       const formattedDate = format(date as Date, "yyyy-MM-dd");
-      
-      // 3) Get selected menu item details
-      const selectedMenuItem = menu!.find((m) => m._id === meal);
-      
-      if (!selectedMenuItem) {
-        throw new Error("Selected menu item not found");
-      }
-      
-      // 4) Extract table number from tableType
-      const tableNumber = Number(tableType.replace(/\D/g, ''));
-      
-      // 5) Make API request - match payload exactly to documentation
+      const reservationDateTime = `${formattedDate}T${time}:00`;
+
+      // 3) Build payload
       const payload = {
-        vendorId: data._id,
-        businessName: data.businessName,
-        location: location,
+        type: "restaurant",
+        vendorId: restaurantData._id,
+        businessName: restaurantData.businessName,
+        location: restaurantData.address,
         partySize: Number(partySize),
-        menuId: meal,
-        tableNumber: tableNumber,
-        tableType: tableType,
-        meal: selectedMenuItem.dishName || selectedMenuItem.itemName,
-        pricePerTable: selectedMenuItem.price,
-        guests: Number(partySize),
-        totalPrice: selectedMenuItem.price,
-        specialRequest: specialRequests,
-        image: selectedMenuItem.itemImage || "/hero-bg.jpg",
-        date: formattedDate
+        menuId: mealId,
+        tableNumber: Number(seats),
+        tableType,
+        meal: meals,
+        pricePerTable: Number(seats) * (menu ? menu[0].price : 1),
+        guests: Number(guests),
+        totalPrice: Number(guests) * (menu ? menu[0].price : 1),
+        specialRequest,
+        image,
+        date: reservationDateTime,
       };
+
+      console.log("Final payload:", payload);
+      const { data: res } = await API.post("/users/bookings", payload);
       
-      // Make sure the user is authenticated before making the request
-      if (!authUser) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to make a reservation",
-          variant: "destructive",
-        });
-        router.push('/login');
-        setLoading(false);
-        return;
-      }
-      
-      // Add authorization header
-      const response = await API.post("/users/bookings", payload);
-      const booking = response.data.booking;
-      
-      // 6) Create reservation details for payment page
-      const reservationDetails = {
-        bookingId: booking._id,
-        menuId: meal,
-        restaurantId: data._id,
-        restaurantName: data.businessName,
-        restaurantAddress: data.address,
-        date: formattedDate,
-        time,
-        guests: Number(partySize),
-        tableNumber: tableNumber,
-        menuItem: selectedMenuItem.dishName || selectedMenuItem.itemName,
-        menuPrice: selectedMenuItem.price,
-        specialRequests: specialRequests,
-        restaurantImage: "/hero-bg.jpg",
-      };
-  
-      // 7) Store details for payment page
-      sessionStorage.setItem(
-        "pendingReservation",
-        JSON.stringify(reservationDetails)
-      );
-  
+
+      // 4) Success!
       toast({
-        title: "Reservation Created!",
-        description: `Your table for ${partySize} is reserved. Proceeding to payment.`,
+        title: "Reservation Confirmed!",
+        description: `Table ${res.booking.tableNumber} for ${guests} is booked.`,
       });
-      
-      // 8) Redirect to payment page
-      router.push(`/userDashboard/payment/${booking._id}`);
-      
+      router.push(`/userDashboard/payment/${res.booking._id}`);
     } catch (err) {
-      console.error("Reservation error:", err);
-      
-      let errorMessage = "Failed to create reservation. Please try again.";
-      
-      if (err instanceof AxiosError && err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      }
-      
+      const axiosErr = err as AxiosError<{ message?: string }>;
       toast({
-        title: "Reservation Error",
-        description: errorMessage,
+        title: "Error",
+        description:
+          axiosErr.response?.data?.message ??
+          "Reservation failed. Please try again.",
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="container mx-auto py-8 px-4">
       <Button
@@ -338,7 +299,7 @@ export default function RestaurantPage({ id }: { id: string }) {
               <CardTitle className="text-3xl font-bold">
                 {restaurantData.businessName}
               </CardTitle>
-              <CardDescription>
+              {/* <CardDescription>
                 <div className="flex items-center space-x-2">
                   <Badge variant="secondary">{restaurant.cuisine}</Badge>
                   <Badge variant="secondary">{restaurant.priceRange}</Badge>
@@ -350,32 +311,20 @@ export default function RestaurantPage({ id }: { id: string }) {
                     </span>
                   </div>
                 </div>
-              </CardDescription>
+              </CardDescription> */}
             </CardHeader>
             <CardContent>
               <Carousel className="w-full max-w-xs mx-auto" setApi={setApi}>
                 <CarouselContent>
-               
-                  {/* {restaurantData.images.map((image, index) => (
-                    <CarouselItem key={index}>
-                      <Image
-                        src={image || "/placeholder.svg"}
-                        alt={`${restaurant.name} - Image ${index + 1}`}
-                        width={600}
-                        height={400}
-                        className="w-full rounded-lg"
-                      />
-                    </CarouselItem>
-                  ))} */}
-                    <CarouselItem >
-                      <Image
-                        src={restaurantData.profileImage || "/hero-bg.jpg"}
-                        alt={`${restaurant.name}`}
-                        width={600}
-                        height={400}
-                        className="w-full rounded-lg"
-                      />
-                    </CarouselItem>
+                  <CarouselItem>
+                    <Image
+                      src={restaurantData.profileImage || "/hero-bg.jpg"}
+                      alt={`${restaurantData.businessName || "Business Name"}`}
+                      width={600}
+                      height={400}
+                      className="w-full rounded-lg"
+                    />
+                  </CarouselItem>
                 </CarouselContent>
                 <CarouselPrevious className="hidden sm:flex" />
                 <CarouselNext className="hidden sm:flex" />
@@ -384,18 +333,21 @@ export default function RestaurantPage({ id }: { id: string }) {
                 Image {current} of {count}
               </div>
 
-              <p className="mt-4 text-gray-600">{restaurant.description}</p>
+              {/* <p className="mt-4 text-gray-600">{restaurant.description}</p> */}
 
               <div className="mt-6 space-y-2">
                 <div className="flex items-center">
                   <MapPin className="h-5 w-5 text-gray-400 mr-2" />
-                  <p>{restaurantData.address}{restaurantData.location}</p>
+                  <p>
+                    {restaurantData.address}
+                    {restaurantData.location}
+                  </p>
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-gray-400 mr-2" />
                   <p>{restaurantData.phone}</p>
                 </div>
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Globe className="h-5 w-5 text-gray-400 mr-2" />
                   <a
                     href={restaurant.website}
@@ -407,7 +359,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                 <div className="flex items-center">
                   <Clock className="h-5 w-5 text-gray-400 mr-2" />
                   <p>{restaurant.hours}</p>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
@@ -417,50 +369,66 @@ export default function RestaurantPage({ id }: { id: string }) {
               <CardTitle>Menu</CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue={restaurantMenu?.[0]?.category || ""} className="w-full">
+              <Tabs
+                defaultValue={menuItem?.[0]?.value || ""}
+                className="w-full"
+              >
                 <TabsList className="flex flex-wrap w-full h-auto">
-                  {restaurantMenu &&
-                    [...new Set(restaurantMenu.map((item) => item.category))].map((category, i) => (
-                      <TabsTrigger key={i} value={category}>
-                        {category}
-                      </TabsTrigger>
-                    ))}
+                  {menuItem &&
+                    [...new Set(menuItem.map((item) => item))].map(
+                      (category, i) => (
+                        <TabsTrigger key={i} value={category.value}>
+                          {category.name}
+                        </TabsTrigger>
+                      )
+                    )}
                 </TabsList>
 
                 {restaurantMenu && restaurantMenu.length > 0 ? (
-                  [...new Set(restaurantMenu.map((item) => item.category))].map((category) => (
-                    <TabsContent key={category} value={category}>
-                      <ScrollArea className="h-72 rounded-md">
-                        {restaurantMenu
-                          .filter((item) => item.category === category)
-                          .map((i) => (
-                            <Card key={i._id} className="space-y-2 mb-3">
-                              <CardContent className="flex flex-col w-full p-2">
-                                <div className="flex gap-4">
-                                  <Image
-                                    src={i.itemImage || i.dishImage || "/hero-bg.jpg"}
-                                    alt={i.itemName || i.dishName}
-                                    width={100}
-                                    height={100}
-                                    className="rounded-md object-cover h-[100px] w-[100px]"
-                                  />
-                                  <div>
-                                    <h2 className="font-semibold">{i.dishName || i.itemName}</h2>
-                                    <span className="text-muted-foreground">
-                                      ₦{i.price.toLocaleString()}
-                                    </span>
+                  [...new Set(restaurantMenu.map((item) => item.category))].map(
+                    (category) => (
+                      <TabsContent key={category} value={category}>
+                        <ScrollArea className="h-72 rounded-md">
+                          {restaurantMenu
+                            .filter((item) => item.category === category)
+                            .map((i) => (
+                              <Card key={i._id} className="space-y-2 mb-3">
+                                <CardContent className="flex flex-col w-full p-2">
+                                  <div className="flex gap-4">
+                                    <Image
+                                      src={`https://hotel-booking-app-backend-30q1.onrender.com/uploads/${
+                                        i.itemImage ||
+                                        i.dishImage ||
+                                        "/hero-bg.jpg"}`}
+                                      alt={i.itemName || i.dishName}
+                                      width={100}
+                                      height={100}
+                                      className="rounded-md object-cover h-[100px] w-[100px]"
+                                    />
+                                    <div>
+                                      <h2 className="font-semibold">
+                                        {i.dishName || i.itemName}
+                                      </h2>
+                                      <span className="text-muted-foreground">
+                                        ₦{i.price.toLocaleString()}
+                                      </span>
+                                    </div>
                                   </div>
-                                </div>
-                                <div className="w-full flex flex-col mt-2">
-                                  <h3 className="font-semibold text-muted-foreground">Description:</h3>
-                                  <p className=" break-words">{i.description}</p>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                      </ScrollArea>
-                    </TabsContent>
-                  ))
+                                  <div className="w-full flex flex-col mt-2">
+                                    <h3 className="font-semibold text-muted-foreground">
+                                      Description:
+                                    </h3>
+                                    <p className=" break-words">
+                                      {i.description}
+                                    </p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                        </ScrollArea>
+                      </TabsContent>
+                    )
+                  )
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8">
                     <FolderX size={150} />
@@ -471,7 +439,6 @@ export default function RestaurantPage({ id }: { id: string }) {
                 )}
               </Tabs>
             </CardContent>
-
           </Card>
         </div>
 
@@ -481,14 +448,14 @@ export default function RestaurantPage({ id }: { id: string }) {
               <CardTitle>Make a Reservation</CardTitle>
               <CardDescription>
                 Book your table now to avoid disappointment!
+                <p className="text-xs text-gray-500">{required} required</p>
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleReservation}>
                 <div className="space-y-4">
-                  {/* Date Input */}
                   <div>
-                    <Label htmlFor="date">Date</Label>
+                    <Label htmlFor="date">Date</Label> {required}
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -513,10 +480,8 @@ export default function RestaurantPage({ id }: { id: string }) {
                       </PopoverContent>
                     </Popover>
                   </div>
-                  
-                  {/* Time Input */}
                   <div>
-                    <Label htmlFor="time">Time</Label>
+                    <Label htmlFor="time">Time</Label> {required}
                     <Select value={time} onValueChange={setTime}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a time" />
@@ -538,11 +503,9 @@ export default function RestaurantPage({ id }: { id: string }) {
                       </SelectContent>
                     </Select>
                   </div>
-                  
-                  {/* Party Size */}
                   <div>
-                    <Label htmlFor="partySize">Number of Guests</Label>
-                    <Select value={partySize} onValueChange={setPartySize}>
+                    <Label htmlFor="guests">Number of Guests</Label> {required}
+                    <Select value={guests} onValueChange={setGuests}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select number of guests" />
                       </SelectTrigger>
@@ -555,59 +518,139 @@ export default function RestaurantPage({ id }: { id: string }) {
                       </SelectContent>
                     </Select>
                   </div>
-                  
-                  {/* Table Type */}
                   <div>
-                    <Label htmlFor="tableType">Table Type</Label>
-                    <Select value={tableType} onValueChange={setTableType}>
+                    <Label htmlFor="guests">Party Size</Label> {required}
+                    <Select value={partySize} onValueChange={setPartySize}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select table type" />
+                        <SelectValue placeholder="Select number of Party Size" />
                       </SelectTrigger>
                       <SelectContent>
-                        {tableTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.name}
+                        {[
+                          "1",
+                          "2",
+                          "3",
+                          "4",
+                          "5",
+                          "6",
+                          "7",
+                          "8",
+                          "9",
+                          "10",
+                        ].map((n) => (
+                          <SelectItem key={n} value={n}>
+                            {n} {n === "1" ? "guest" : "guests"}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
-                  
-                  {/* Meal Selection */}
                   <div>
-                    <Label htmlFor="meal">Select Meal</Label>
-                    {menu && (
+                    <Label htmlFor="seats">Number of Seats</Label> {required}
+                    <Select value={seats} onValueChange={setSeats}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select number of Seats" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["1", "2", "3", "4", "5", "6", "7", "8"].map((n) => (
+                          <SelectItem key={n} value={n}>
+                            {n} {n === "1" ? "seat" : "seats"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="time">Table type</Label> {required}
+                    <Select value={tableType} onValueChange={setTableType}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Table type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["Round Table", "Square Table"].map((t) => (
+                          <SelectItem key={t} value={t}>
+                            {t}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="time">Special Request</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter Special Request"
+                      value={specialRequest}
+                      onChange={(e) => setSpecialRequest(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="image">Image Upload</Label>
+                    <div
+                      className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
+                      onClick={() =>
+                        document.getElementById("image-upload")?.click()
+                      }
+                    >
+                      <div className="space-y-1 text-center">
+                        {imagePreview ? (
+                          <Image
+                            src={imagePreview || "/dan-gold.jpg"}
+                            alt="Preview"
+                            width={200}
+                            height={200}
+                            className="mx-auto h-32 w-32 object-cover rounded-md"
+                          />
+                        ) : (
+                          <svg
+                            className="mx-auto h-12 w-12 text-gray-400"
+                            stroke="currentColor"
+                            fill="none"
+                            viewBox="0 0 48 48"
+                            aria-hidden="true"
+                          >
+                            <path
+                              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                        <div className="flex text-sm text-gray-600">
+                          <label
+                            htmlFor="image-upload"
+                            className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-hidden focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                          >
+                            <span>
+                              {imagePreview
+                                ? "Change image"
+                                : "Upload an image"}
+                            </span>
+                            <input
+                              id="image-upload"
+                              name="image-upload"
+                              type="file"
+                              className="sr-only"
+                              onChange={handleImageUpload}
+                              accept="image/*"
+                            />
+                          </label>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          PNG, JPG, GIF up to 2MB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="meals">Select Menu Items</Label> {required}
+                    {restaurantMenu && (
                       <ItemSelector
                         items={restaurantMenu}
                         onSelectionChange={handleSelectionChange}
                       />
                     )}
                   </div>
-                  
-                  {/* Location (Optional field - can be edited) */}
-                  <div>
-                    <Label htmlFor="location">Location</Label>
-                    <Input 
-                      id="location" 
-                      value={location} 
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Restaurant location"
-                    />
-                  </div>
-                  
-                  {/* Special Requests */}
-                  <div>
-                    <Label htmlFor="specialRequests">Special Requests</Label>
-                    <Textarea
-                      id="specialRequests"
-                      placeholder="Any special requests for your visit? (e.g., Anniversary celebration)"
-                      value={specialRequests}
-                      onChange={(e) => setSpecialRequests(e.target.value)}
-                      className="resize-none"
-                      rows={3}
-                    />
-                  </div>
-                  
                   <Button type="submit" className="w-full">
                     {loading ? "Loading..." : "Reserve Table"}
                   </Button>

@@ -42,7 +42,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { Restaurant } from "@/types/restaurant";
 // import { searchRestaurants } from "@/app/actions";
-import API from "@/utils/axios";
+import API from "@/utils/userAxios";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 
