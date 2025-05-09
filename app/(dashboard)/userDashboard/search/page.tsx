@@ -120,14 +120,28 @@ export default function Home() {
       setInitialLoad(false);
       setLoading(true);
       try {
-        const data = await API.get(
-          `/users/restaurant-search?query=${encodeURIComponent(query)}`
-        );
-        const food = await API.get(`/vendors/menus?dishName=${query}`);
-        console.log("Response from API:", food.data); // Log the response data
-        setFoods(food.data.menus || []);
-        setRestaurants(data.data.data || []);
-
+        const [restaurantRes, foodRes] = await Promise.allSettled([
+          API.get(`/users/restaurant-search?query=${encodeURIComponent(query)}`),
+          API.get(`/vendors/menus?dishName=${query}`)
+        ]);
+      
+        if (restaurantRes.status === 'fulfilled') {
+          setRestaurants(restaurantRes.value.data.data || []);
+        } else if (restaurantRes.reason instanceof AxiosError && restaurantRes.reason.response?.status === 404) {
+          setRestaurants([]);
+        } else {
+          throw restaurantRes.reason;
+        }
+      
+        if (foodRes.status === 'fulfilled') {
+          console.log("Response from API:", foodRes.value.data);
+          setFoods(foodRes.value.data.menus || []);
+        } else if (foodRes.reason instanceof AxiosError && foodRes.reason.response?.status === 404) {
+          setFoods([]);
+        } else {
+          throw foodRes.reason;
+        }
+      
         // Save to recent searches
         if (query.trim() !== "") {
           const updatedSearches = [
@@ -135,23 +149,18 @@ export default function Home() {
             ...recentSearches.filter((s) => s !== query),
           ].slice(0, 5);
           setRecentSearches(updatedSearches);
-          localStorage.setItem(
-            "recentSearches",
-            JSON.stringify(updatedSearches)
-          );
+          localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
         }
       } catch (error) {
         if (error instanceof AxiosError) {
           if (error.response?.status === 404) {
-            setRestaurants([]);
-            setFoods([]);
             toast({
               title: "No results found",
               description: "Try a different search term.",
               variant: "destructive",
             });
           } else {
-            console.error("Error searching restaurants:", error);
+            console.error("Unexpected error:", error);
             toast({
               title: "Error",
               description: error.message,
@@ -162,6 +171,7 @@ export default function Home() {
       } finally {
         setLoading(false);
       }
+      
     },
     [recentSearches, toast]
   );

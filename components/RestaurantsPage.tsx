@@ -50,6 +50,7 @@ import { AxiosError } from "axios";
 import ItemSelector from "./ItemSelector";
 import { ScrollArea } from "./ui/scroll-area";
 import { Input } from "./ui/input";
+import { AuthService } from "@/services/userAuth.services";
 
 type restaurants = {
   isVerified: boolean;
@@ -94,7 +95,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   const [image, setImage] = useState<File>();
   const [tableType, setTableType] = useState("");
   const [imagePreview, setImagePreview] = useState("");
-  const [meals, setMeals] = useState("");
+  const [meals, setMeals] = useState<string[]>([""]);
   const [mealId, setMealId] = useState("");
   const [menu, setMenu] = useState<Menu[] | null>(null);
   const [current, setCurrent] = useState(0);
@@ -107,6 +108,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   );
   const [errors, setErrors] = useState("");
   const { toast } = useToast();
+  const authUser = AuthService.getUser();
 
   const required = <span className="text-red-500">*</span>
 
@@ -129,13 +131,13 @@ export default function RestaurantPage({ id }: { id: string }) {
     setImage(file);
   };
 
-  const handleSelectionChange = (selected: Menu[]) => {
+  const handleSelectionChange = (selected: Menu[], foods: string[]) => {
     setMenu(selected)
     if (selected && selected.length > 0) {
-      setMeals(selected[0].dishName);
+      setMeals(foods);
       setMealId(selected[0]._id);
     } else {
-      setMeals('');
+      setMeals(['']);
       setMealId('');
     }
   };
@@ -243,13 +245,15 @@ export default function RestaurantPage({ id }: { id: string }) {
       const payload = {
         type: "restaurant",
         vendorId: restaurantData._id,
+        customerName: `${authUser?.firstName} ${authUser?.lastName}`,
+        customerEmail: authUser?.email,
         businessName: restaurantData.businessName,
         location: restaurantData.address,
         partySize: Number(partySize),
         menuId: mealId,
         tableNumber: Number(seats),
         tableType,
-        meal: meals,
+        meals,
         pricePerTable: Number(seats) * (menu ? menu[0].price : 1),
         guests: Number(guests),
         totalPrice: Number(guests) * (menu ? menu[0].price : 1),
