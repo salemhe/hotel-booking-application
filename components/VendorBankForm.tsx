@@ -128,10 +128,10 @@ export default function VendorBankForm() {
 
     try {
       const response = await API.patch("/vendors/save-payment", {
-        business_name: "Bookie",
-        bank_code: values.bankCode,
-        account_number: values.accountNumber,
-        percentage_charge: 15,
+        businessName: "Bookie",
+        bankCode: values.bankCode,
+        accountNumber: values.accountNumber,
+        percentageCharge: 15,
       });
       toast.success("Payment details saved successfully!");
       console.log("Payment details saved:", response);
