@@ -19,7 +19,7 @@ type Menu = {
 };
 
 interface ItemSelectorProps {
-  onSelectionChange: (selected: Menu[]) => void;
+  onSelectionChange: (selected: Menu[], foods: string[]) => void;
   items?: Menu[];
 }
 
@@ -31,8 +31,11 @@ export default function ItemSelector({
 
   // Update parent whenever selection changes
   useEffect(() => {
-    onSelectionChange(selectedItems);
-  }, [selectedItems, onSelectionChange]);
+    const foodNames = selectedItems.map((item) => {
+      return item.dishName || item.itemName || "Item";
+    });
+    onSelectionChange(selectedItems, foodNames);
+  }, [selectedItems]);
 
   const toggleSelection = (item: Menu) => {
     setSelectedItems(
