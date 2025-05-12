@@ -33,7 +33,7 @@ import { useRouter } from "next/navigation";
 import API from "@/utils/axios";
 import { AxiosError } from "axios";
 import { revalidatePath } from "next/cache";
-
+import { AuthService } from "@/services/auth.services";
 // Form validation schema
 const formSchema = z.object({
   accountNumber: z
@@ -57,6 +57,7 @@ export default function VendorBankForm() {
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const user = AuthService.getUser();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -128,9 +129,10 @@ export default function VendorBankForm() {
     }
     setIsLoading(true);
     setError(null);
-    // console.log(accountName)
+    console.log(user?.id)
     try {
      await API.patch("/vendors/save-payment", {
+        vendorId: user?.id,
         businessName: accountName,
         bankCode: values.bankCode,
         accountNumber: values.accountNumber,
