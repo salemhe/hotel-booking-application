@@ -42,7 +42,7 @@ const Withdraw = () => {
         </Button>
       </div>
       {isWithdrawalModalOpen && (
-        <WithdrawalModal setSuccessModalOpen={setSuccessModalOpen} setIsWithdrawalModalOpen={setIsWithdrawalModalOpen} />
+        <WithdrawalModal balance={0} setSuccessModalOpen={setSuccessModalOpen} setIsWithdrawalModalOpen={setIsWithdrawalModalOpen} />
       )}
       {successModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -54,7 +54,11 @@ const Withdraw = () => {
               Your withdrawal request has been successfully submitted.
             </p>
             <button
-              onClick={() => setSuccessModalOpen(false)}
+              onClick={() => {
+                setSuccessModalOpen(false)
+                toast.success("Withdrawal request submitted successfully.");
+                router.refresh()
+              }}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
             >
               <X className="w-5 h-5" />

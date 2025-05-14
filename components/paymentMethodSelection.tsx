@@ -41,6 +41,7 @@ import { AuthService } from "@/services/userAuth.services";
 import { UserProfile } from "./Navigation";
 import { AxiosError } from "axios";
 import API from "@/utils/userAxios";
+import { useRouter } from "next/navigation";
 
 // Restaurant details
 const RESTAURANT_INFO = {
@@ -66,6 +67,7 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
   >(null);
   const profile = AuthService.getUser() as UserProfile;
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const router = useRouter();
   const [booking, setBooking] = useState<{
     totalPrice: number;
     businessName: string;
@@ -74,7 +76,7 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
     guests: number;
     tableType: string;
     vendorId: string;
-  } | null>({
+  }>({
     totalPrice: 0,
     businessName: "",
     location: "",
@@ -84,7 +86,15 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
     vendorId: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-
+  const [vendor, setVendor] = useState<{
+    paymentDetails: {
+      paystackSubAccount: string;
+    };
+  }>({
+    paymentDetails: {
+      paystackSubAccount: "",
+    },
+  })
   function formatNumber(value: number): string {
     return value.toLocaleString("en-US", {
       minimumFractionDigits: 2,
@@ -111,6 +121,8 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
     try {
       const bookings = await API.get(`/users/bookings?bookingId=${id}`);
       setBooking(bookings.data[0]);
+      const vendor = await API.get(`/vendors?vendorId=${bookings?.data[0].vendorId}`);
+      setVendor(vendor.data[0]);
     } catch (error) {
       if (error instanceof AxiosError)
         console.error(
@@ -146,17 +158,46 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
       const popup = new Paystack();
 
       try {
-        const vendor = await API.get(
-          `/vendors?vendorId=${booking?.vendorId}`);
-          console.log("Vendor data:", vendor.data[0]);
         const paymentData = {
           key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
           email: profile.email,
           amount: Math.round((booking?.totalPrice || total) * 100), // Amount in kobo
           currency: "NGN",
-          subaccountCode: vendor.data[0].paymentDetails.paystackSubAccount, // TODO add real subaccount code
-          onSuccess: (transaction: PaystackResponse) => {
-              alert(`Payment successful! Reference: ${transaction.reference}`);
+          subaccountCode: vendor.paymentDetails.paystackSubAccount,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          metadata: {
+            vendorId: booking?.vendorId,
+            bookingId: id,
+            custom_fields: [
+              {
+                display_name: "Vendor ID",
+                variable_name: "vendorId",
+                value: booking?.vendorId,
+              },
+              {
+                display_name: "Booking ID",
+                variable_name: "bookingId",
+                value: id,
+              },
+            ],
+          },
+          onSuccess: async (transaction: PaystackResponse) => {
+            try {
+              const response = await API.post("/users/verify-payment", {
+                reference: transaction.reference,
+              });
+
+              if (response.data.status === "success") {
+                alert("Payment verified successfully!");
+                router.push(`/userDashboard/payment/${id}/success`);
+              } else {
+                alert("Payment verification failed. Please contact support.");
+              }
+            } catch (error) {
+              console.error("Error verifying payment:", error);
+              alert("Payment verification failed. Please try again.");
+            }
           },
           onClose: () => {
             alert("Payment window closed.");

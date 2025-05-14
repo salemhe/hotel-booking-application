@@ -1,7 +1,7 @@
 "use client";
 
 import { QRCodeCanvas } from "qrcode.react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 import {
@@ -38,18 +38,44 @@ import Image from "next/image";
 import { AuthService } from "@/services/auth.services";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
+import API from "@/utils/userAxios";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("all");
   const [tableType, setTableType] = useState("all");
   const authUser = AuthService.getUser();
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchBooking = async () => {
+    setIsLoading(true);
+    try {
+      const bookings = await API.get(`/users/bookings`);
+      setBookings(bookings.data);
+      console.log(bookings.data);
+    } catch (error) {
+      if (error instanceof AxiosError)
+        console.error(
+          "Error fetching booking:",
+          error.response?.data || error.message
+        );
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBooking();
+  }, []);
 
   // Filter bookings based on search and filters
   const filteredBookings = bookings.filter((booking) => {
     if (
       searchQuery &&
-      !booking.name.toLowerCase().includes(searchQuery.toLowerCase())
+      !booking.businessName.toLowerCase().includes(searchQuery.toLowerCase())
     ) {
       return false;
     }
@@ -61,6 +87,14 @@ export default function BookingList() {
     }
     return true;
   });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50/40 dark:bg-zinc-900/40">
@@ -123,7 +157,7 @@ export default function BookingList() {
               </TabsList>
             </div>
             <TabsContent value="Current">
-            {filteredBookings.filter((booking) => {
+              {filteredBookings.filter((booking) => {
                 const today = new Date();
                 const bookingDate = new Date(booking.date);
                 return bookingDate > today;
@@ -136,7 +170,7 @@ export default function BookingList() {
                       return bookingDate > today;
                     })
                     .map((booking) => (
-                      <BookingCard key={booking.id} booking={booking} />
+                      <BookingCard key={booking._id} booking={booking} />
                     ))}
                 </div>
               ) : (
@@ -165,7 +199,7 @@ export default function BookingList() {
                       return bookingDate < today;
                     })
                     .map((booking) => (
-                      <BookingCard key={booking.id} booking={booking} />
+                      <BookingCard key={booking._id} booking={booking} />
                     ))}
                 </div>
               ) : (
@@ -188,17 +222,24 @@ export default function BookingList() {
 }
 
 interface Booking {
-  id: string;
-  name: string;
+  _id: string;
+  businessName: string;
+  date: string;
+  bookingDate: string;
+  guests: number;
+  meals: string[];
+  menuId: string;
+  partySize: number;
+  specialRequest: string;
+  status: string;
+  tableNumber: number;
+  tableType: string;
   location: string;
   image: string;
-  date: string;
-  seats: number;
   pricePerTable: number;
-  totalPayment: number;
-  tableType: string;
-  time: string;
-  meal: string;
+  totalPrice: number;
+  userId: string;
+  vendorId: string;
 }
 
 function BookingCard({ booking }: { booking: Booking }) {
@@ -221,32 +262,50 @@ function BookingCard({ booking }: { booking: Booking }) {
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative aspect-[4/3]">
         <Image
-          src={booking.image || "/placeholder.svg"}
-          alt={booking.name}
+          src={`https://hotel-booking-app-backend-30q1.onrender.com/uploads/${booking.image}` || "/dan-gold.jpg"}
+          alt={booking.businessName}
           fill
           className="object-cover"
+        />
+        <div
+          className={`absolute top-2 right-2 size-3 rounded-full ${
+            booking.status === "confirmed"
+              ? "bg-green-500"
+              : booking.status === "cancelled"
+              ? "bg-red-500"
+              : "bg-orange-500"
+          }`}
         />
       </div>
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h3 className="text-lg font-semibold">{booking.name}</h3>
+            <h3 className="text-lg font-semibold">{booking.businessName}</h3>
             <p className="text-sm text-muted-foreground">{booking.location}</p>
           </div>
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Date</span>
-              <span className="font-medium">{booking.date}</span>
+              <span className="font-medium">
+                {" "}
+                {new Date(booking.bookingDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true,
+                })}
+              </span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Seats</span>
-              <span className="font-medium">{booking.seats} seats</span>
+              <span className="font-medium">{booking.tableNumber} seats</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Total Payment</span>
               <span className="font-medium">
-                {formatPrice(booking.totalPayment)}
+                {formatPrice(booking.totalPrice)}
               </span>
             </div>
           </div>
@@ -258,7 +317,7 @@ function BookingCard({ booking }: { booking: Booking }) {
                   <Button
                     variant="outline"
                     onClick={() =>
-                      router.push(`/userDashboard/booking/${booking.id}`)
+                      router.push(`/userDashboard/booking/${booking._id}`)
                     }
                     size="icon"
                     className="h-8 w-8"
@@ -335,7 +394,9 @@ const Data = ({
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
     pdf.addImage(dataUrl, "PNG", 10, 10, pdfWidth - 20, pdfHeight);
-    pdf.save(`${receipt.name}-Receipt.pdf`);
+    pdf.save(
+      `${receipt.meals.join(" & ")}-${receipt.businessName}-Receipt.pdf`
+    );
   };
 
   return (
@@ -343,13 +404,15 @@ const Data = ({
       <div className="bg-white rounded-2xl shadow-lg max-w-[320px] w-full receipt-safe">
         <div className="p-6" ref={receiptRef}>
           <h2 className="text-xl font-medium flex items-center gap-2 mb-4">
-            <span className="max-w-[150px] truncate block">{receipt.name}</span>
+            <span className="max-w-[150px] truncate block">
+              {receipt.businessName}
+            </span>
             <span className="text-muted-foreground">Receipt</span>
           </h2>
 
           <QRCodeCanvas
             value={`https://hotel-booking-application-omega.vercel.app/userDashboard/booking/${
-              receipt.id || ""
+              receipt._id || ""
             }`}
             size={200}
             bgColor="#ffffff"
@@ -360,21 +423,33 @@ const Data = ({
           <div className="flex flex-col py-4 gap-2 text-sm">
             <p className="flex justify-between">
               <span className="text-muted-foreground">Date:</span>
-              <span className="text-blue-900 font-medium">{receipt.date}</span>
+              <span className="text-blue-900 font-medium">
+                {new Date(receipt.bookingDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true,
+                })}
+              </span>
             </p>
             <p className="flex justify-between">
-              <span className="text-muted-foreground">Time:</span>
-              <span className="text-blue-900 font-medium">{receipt.time}</span>
+              <span className="text-muted-foreground">Status:</span>
+              <span className="text-blue-900 font-medium">
+                {receipt.status}
+              </span>
             </p>
             <p className="flex justify-between">
-              <span className="text-muted-foreground">Table:</span>
+              <span className="text-muted-foreground">Table Type:</span>
               <span className="text-blue-900 font-medium">
                 {receipt.tableType}
               </span>
             </p>
             <p className="flex justify-between">
               <span className="text-muted-foreground">Meal:</span>
-              <span className="text-blue-900 font-medium">{receipt.meal}</span>
+              <span className="text-blue-900 font-medium">
+                {receipt.meals.join()}
+              </span>
             </p>
           </div>
         </div>
@@ -392,78 +467,78 @@ const Data = ({
   );
 };
 
-const bookings = [
-  {
-    id: "7t2gyuw7y7uhu72",
-    name: "Ocean Basket",
-    meal: "Rice and Chicken",
-    location: "Victoria Island",
-    image: "/hero-bg.jpg",
-    date: new Date().toISOString().split("T")[0], // Today's date
-    seats: 3,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "2-seats",
-    time: "19:00",
-  },
-  {
-    id: "bus6783uyeg73",
-    name: "Velvet Bar & Lounge",
-    meal: "Chicken Bucket",
-    location: "Lekki",
-    image: "/hero-bg.jpg",
-    date: new Date(new Date().setDate(new Date().getDate() - 2))
-      .toISOString()
-      .split("T")[0], // 2 days ago
-    seats: 6,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "2-seats",
-    time: "11:00",
-  },
-  {
-    id: "ukniweh78738ee",
-    name: "Shiro Lagos",
-    meal: "Eba & Ewedu Soup",
-    location: "Banana Island",
-    image: "/restaurant.jpg",
-    date: new Date(new Date().setDate(new Date().getDate() + 5))
-      .toISOString()
-      .split("T")[0], // 5 days from now
-    seats: 4,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "3-seats",
-    time: "14:00",
-  },
-  {
-    id: "heu38y22hbsi",
-    name: "Shiro Lagos",
-    meal: "Yam & Egg",
-    location: "Opebi",
-    image: "/hero-bg.jpg",
-    date: new Date(new Date().setDate(new Date().getDate() + 10))
-      .toISOString()
-      .split("T")[0], // 10 days from now
-    seats: 5,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "4-seats",
-    time: "15:00",
-  },
-  {
-    id: "38juwin2u92wu",
-    name: "Chicken Republic",
-    meal: "Rice & Chicken",
-    location: "Opebi",
-    image: "/chicken-republic.jpg",
-    date: new Date(new Date().setDate(new Date().getDate() + 10))
-      .toISOString()
-      .split("T")[0], // 10 days from now
-    seats: 7,
-    pricePerTable: 80000,
-    totalPayment: 80000,
-    tableType: "7-seats",
-    time: "11:00",
-  },
-];
+// const bookings = [
+//   {
+//     id: "7t2gyuw7y7uhu72",
+//     name: "Ocean Basket",
+//     meal: "Rice and Chicken",
+//     location: "Victoria Island",
+//     image: "/hero-bg.jpg",
+//     date: new Date().toISOString().split("T")[0], // Today's date
+//     seats: 3,
+//     pricePerTable: 80000,
+//     totalPayment: 80000,
+//     tableType: "2-seats",
+//     time: "19:00",
+//   },
+//   {
+//     id: "bus6783uyeg73",
+//     name: "Velvet Bar & Lounge",
+//     meal: "Chicken Bucket",
+//     location: "Lekki",
+//     image: "/hero-bg.jpg",
+//     date: new Date(new Date().setDate(new Date().getDate() - 2))
+//       .toISOString()
+//       .split("T")[0], // 2 days ago
+//     seats: 6,
+//     pricePerTable: 80000,
+//     totalPayment: 80000,
+//     tableType: "2-seats",
+//     time: "11:00",
+//   },
+//   {
+//     id: "ukniweh78738ee",
+//     name: "Shiro Lagos",
+//     meal: "Eba & Ewedu Soup",
+//     location: "Banana Island",
+//     image: "/restaurant.jpg",
+//     date: new Date(new Date().setDate(new Date().getDate() + 5))
+//       .toISOString()
+//       .split("T")[0], // 5 days from now
+//     seats: 4,
+//     pricePerTable: 80000,
+//     totalPayment: 80000,
+//     tableType: "3-seats",
+//     time: "14:00",
+//   },
+//   {
+//     id: "heu38y22hbsi",
+//     name: "Shiro Lagos",
+//     meal: "Yam & Egg",
+//     location: "Opebi",
+//     image: "/hero-bg.jpg",
+//     date: new Date(new Date().setDate(new Date().getDate() + 10))
+//       .toISOString()
+//       .split("T")[0], // 10 days from now
+//     seats: 5,
+//     pricePerTable: 80000,
+//     totalPayment: 80000,
+//     tableType: "4-seats",
+//     time: "15:00",
+//   },
+//   {
+//     id: "38juwin2u92wu",
+//     name: "Chicken Republic",
+//     meal: "Rice & Chicken",
+//     location: "Opebi",
+//     image: "/chicken-republic.jpg",
+//     date: new Date(new Date().setDate(new Date().getDate() + 10))
+//       .toISOString()
+//       .split("T")[0], // 10 days from now
+//     seats: 7,
+//     pricePerTable: 80000,
+//     totalPayment: 80000,
+//     tableType: "7-seats",
+//     time: "11:00",
+//   },
+// ];

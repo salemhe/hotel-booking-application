@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import API from "@/utils/axios";
 import { AxiosError } from "axios";
 import { revalidatePath } from "next/cache";
+import { AuthService } from "@/services/auth.services";
 
 // Form validation schema
 const formSchema = z.object({
@@ -125,10 +126,11 @@ export default function VendorBankForm() {
     }
     setIsLoading(true);
     setError(null);
+            const businessName = AuthService.getUser()?.profile.businessName
 
     try {
       const response = await API.patch("/vendors/save-payment", {
-        businessName: "Bookie",
+        businessName,
         bankCode: values.bankCode,
         accountNumber: values.accountNumber,
         percentageCharge: 15,
