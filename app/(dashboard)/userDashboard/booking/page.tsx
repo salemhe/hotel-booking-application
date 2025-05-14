@@ -35,11 +35,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { AuthService } from "@/services/auth.services";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import API from "@/utils/userAxios";
+import { AuthService } from "@/services/userAuth.services";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");
