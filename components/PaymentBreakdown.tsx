@@ -19,6 +19,7 @@ import {
 import { ChevronLeft, ChevronRight, Frown, RefreshCcwIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import API from "@/utils/axios";
+import { AuthService } from "@/services/auth.services";
 
 interface PaymentType {
   _id: string;
@@ -37,6 +38,7 @@ export function PaymentBreakdown() {
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [payments, setPayments] = useState<PaymentType[]>([]);
   const [loading, setLoading] = useState(true);
+  const user = AuthService.getUser()
 
   const sortBookings = (bookings: PaymentType[]): PaymentType[] => {
     return [...bookings].sort((a, b) => {
@@ -92,7 +94,7 @@ export function PaymentBreakdown() {
     setLoading(true);
     try {
       // const data = await fetchPaymentBreakdown();
-      const res = await API.get("/vendors/transactions");
+      const res = await API.get(`/vendors/transactions?vendorId=${user?.id}`);
       const data = res.data.transactions;
 
       setPayments((data as PaymentType[]).filter((e: PaymentType) => e.type === "payment"))

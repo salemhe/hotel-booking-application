@@ -1,9 +1,8 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const SuccessPage = ({ id }: { id: string }) => {
-  const router = useRouter();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh]">
@@ -41,18 +40,18 @@ const SuccessPage = ({ id }: { id: string }) => {
         Your booking has been confirmed. Thank you for choosing us!
       </p>
       <div className="flex gap-4">
-        <button
+        <Link
           className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-          onClick={() => router.push("/userDashboard/search")}
+          href="/userDashboard/search"
         >
           Search More Restaurants
-        </button>
-        <button
+        </Link>
+        <Link
           className="px-6 py-2 bg-white border border-green-600 text-green-700 rounded hover:bg-green-50 transition"
-          onClick={() => router.push(`userDashboard/booking/${id}`)}
+          href={`userDashboard/booking/${id}`}
         >
           View Booking Details
-        </button>
+        </Link>
       </div>
     </div>
   );
