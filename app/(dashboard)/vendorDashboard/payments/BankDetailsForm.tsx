@@ -28,7 +28,7 @@ const BankDetailsForm = () => {
     fetchBankDetails();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
 
     if (!accountNumber || !bankName || !accountName) {

@@ -37,7 +37,7 @@ export default function VendorLoginPage() {
       // }
       const response = await AuthService.login(email, password);
 
-      toast.success(`Welcome back, ${response.profile.name}!`);
+      toast.success(`Welcome back, ${response.profile.businessName}!`);
       router.push("/vendorDashboard"); // TODO replace with onboarding page
     } catch (error) {
       console.error("Submit error:", error);

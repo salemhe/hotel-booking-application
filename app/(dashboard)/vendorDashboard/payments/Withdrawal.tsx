@@ -1,12 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 const Withdrawals = () => {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState<{
+    createdAt: string;
+    amount: number;
+    status: string;
+    id: string;
+  }[]>([]);
 
   // Fetch withdrawal history on mount
   useEffect(() => {
@@ -23,7 +28,7 @@ const Withdrawals = () => {
     fetchHistory();
   }, []);
 
-  const handleWithdraw = async (e) => {
+  const handleWithdraw = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     if (!amount || Number(amount) <= 0) {
       toast.error("Enter a valid amount.");
@@ -40,9 +45,11 @@ const Withdrawals = () => {
       setAmount("");
     } catch (error) {
       console.error(error);
-      toast.error(
-        error.response?.data?.message || "Withdrawal request failed."
-      );
+      if (error instanceof AxiosError) {
+        toast.error(
+          error.response?.data?.message || "Withdrawal request failed."
+        );
+      }
     } finally {
       setLoading(false);
     }

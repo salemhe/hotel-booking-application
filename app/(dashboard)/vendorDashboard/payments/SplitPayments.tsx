@@ -24,7 +24,7 @@ const SplitPayments = () => {
     fetchSplitConfig();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     if (platformPercentage + vendorPercentage !== 100) {
       toast.error("Total split must equal 100%");
