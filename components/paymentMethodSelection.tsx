@@ -86,15 +86,6 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
     vendorId: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [vendor, setVendor] = useState<{
-    paymentDetails: {
-      paystackSubAccount: string;
-    };
-  }>({
-    paymentDetails: {
-      paystackSubAccount: "",
-    },
-  })
   function formatNumber(value: number): string {
     return value.toLocaleString("en-US", {
       minimumFractionDigits: 2,
@@ -121,8 +112,6 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
     try {
       const bookings = await API.get(`/users/bookings?bookingId=${id}`);
       setBooking(bookings.data[0]);
-      const vendor = await API.get(`/vendors?vendorId=${bookings?.data[0].vendorId}`);
-      setVendor(vendor.data[0]);
     } catch (error) {
       if (error instanceof AxiosError)
         console.error(
@@ -140,8 +129,8 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
   }, [id]);
 
   // Calculate total
-  const subtotal = RESERVATION_DETAILS.subtotal;
-  const vat = subtotal * RESERVATION_DETAILS.vatRate;
+  const subtotal = booking.totalPrice;
+  const vat = subtotal * 0.115;
   const total = subtotal + vat;
 
   // Handle payment method selection
@@ -161,14 +150,12 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
         const paymentData = {
           key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
           email: profile.email,
-          amount: Math.round((booking?.totalPrice || total) * 100), // Amount in kobo
+          amount: total * 100, 
           currency: "NGN",
-          subaccountCode: vendor.paymentDetails.paystackSubAccount,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
           metadata: {
             vendorId: booking?.vendorId,
             bookingId: id,
+            userId: profile.id,
             custom_fields: [
               {
                 display_name: "Vendor ID",
@@ -330,16 +317,16 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
                     </div>
                     <div className="flex justify-between text-sm mb-3">
                       <span className="text-gray-500">
-                        VAT ({(0).toFixed(0)}%)
+                        VAT ({(11.5).toFixed(1)}%)
                       </span>
                       <span className="font-medium text-gray-800">
-                        ₦ {formatNumber(0)}
+                        ₦ {formatNumber(vat)}
                       </span>
                     </div>
                     <div className="flex justify-between font-semibold text-lg text-gray-800">
                       <span>Total</span>
                       <span>
-                        ₦ {formatNumber(booking?.totalPrice || total)}
+                        ₦ {formatNumber(total)}
                       </span>
                     </div>
                   </div>

@@ -55,7 +55,7 @@ interface PaymentDetalsProps {
   recipientCode: string;
 }
 
-interface AuthUser {
+export interface AuthUser {
   email: string;
   role: string;
   token?: string;

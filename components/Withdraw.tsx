@@ -1,20 +1,36 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import WithdrawalModal from "./WithdrawalModal";
 import { useRouter } from "next/navigation";
 import { Wallet, X } from "lucide-react";
 import { AuthService } from "@/services/auth.services";
+import API from "@/utils/axios";
 
-const user = AuthService.getUser()
+const user = AuthService.getUser();
 
 const Withdraw = () => {
   const router = useRouter();
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [balance, setBalance] = useState();
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const response = await API.get("/vendors/balance");
+        setBalance(response.data.balance);
+      } catch (error) {
+        console.error(error);
+        alert("something went wrong");
+      }
+    };
+    fetchBalance();
+  }, []);
   const handleWithdraw = () => {
-    if (!user?.profile.recipientCode) {
+    console.log("Payment details", user?.profile.paymentDetails)
+    if (!user?.profile.paymentDetails.recipientCode) {
       toast.error("Please add your bank information to withdraw funds.");
       router.push("/vendorDashboard/setting/payments");
       return;
@@ -28,7 +44,9 @@ const Withdraw = () => {
           <h2 className="text-lg font-semibold text-gray-900">
             Available Balance
           </h2>
-          <p className="text-3xl font-bold text-green-600">₦0</p>
+          <p className="text-3xl font-bold text-green-600">
+            {balance! > -1 ? `₦${balance}` : "N/A"}
+          </p>
         </div>
         <Button
           onClick={handleWithdraw}
@@ -39,7 +57,11 @@ const Withdraw = () => {
         </Button>
       </div>
       {isWithdrawalModalOpen && (
-        <WithdrawalModal balance={0} setSuccessModalOpen={setSuccessModalOpen} setIsWithdrawalModalOpen={setIsWithdrawalModalOpen} />
+        <WithdrawalModal
+          balance={balance}
+          setSuccessModalOpen={setSuccessModalOpen}
+          setIsWithdrawalModalOpen={setIsWithdrawalModalOpen}
+        />
       )}
       {successModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -52,9 +74,9 @@ const Withdraw = () => {
             </p>
             <button
               onClick={() => {
-                setSuccessModalOpen(false)
+                setSuccessModalOpen(false);
                 toast.success("Withdrawal request submitted successfully.");
-                router.refresh()
+                router.refresh();
               }}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
             >

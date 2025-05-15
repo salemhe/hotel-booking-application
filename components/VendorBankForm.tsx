@@ -33,7 +33,7 @@ import { useRouter } from "next/navigation";
 import API from "@/utils/axios";
 import { AxiosError } from "axios";
 import { revalidatePath } from "next/cache";
-import { AuthService } from "@/services/auth.services";
+import { AuthService, AuthUser } from "@/services/auth.services";
 
 // Form validation schema
 const formSchema = z.object({
@@ -59,11 +59,16 @@ export default function VendorBankForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  const user = AuthService.getUser() as AuthUser;
+  if (!user) {
+    router.push("/vendor-login")
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      accountNumber: "",
-      bankCode: "",
+      accountNumber: user?.profile.paymentDetails.accountNumber || "",
+      bankCode: user?.profile.paymentDetails.bankCode || "",
     },
   });
 
@@ -135,6 +140,15 @@ export default function VendorBankForm() {
         accountNumber: values.accountNumber,
         percentageCharge: 15,
       });
+      // Update user profile in local storage with new payment details
+      const updatedUser = {
+        ...user,
+        profile: {
+          ...user.profile,
+          paymentDetails: response.data.data,
+        },
+      };
+      AuthService.setUser(updatedUser);
       toast.success("Payment details saved successfully!");
       console.log("Payment details saved:", response);
       revalidatePath("/vendorsDashboard/payment");

@@ -15,7 +15,9 @@ export default function WithdrawalModal({
     const [amount, setAmount] = useState("");
     const [isLoading, setIsLoading] = useState(false); // Loading state
     // const balance = 1000000; // Example balance
-    const minimumWithdrawal = 1000;
+    const minimumWithdrawal = 50;
+
+    const fee = parseFloat(amount.replace(/[^0-9.]/g, "")) > 5000 ? 25 : 10;
 
     const isWithdrawDisabled =
         amount === "" ||
@@ -123,16 +125,16 @@ export default function WithdrawalModal({
 
                         <div className="bg-gray-50 rounded-xl p-4 mb-6">
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600">Withdrawal Fee (12%):</span>
+                                <span className="text-gray-600">Withdrawal Fee:</span>
                                 <span className="font-medium">
-                                    ₦{((parseFloat(amount.replace(/[^0-9.]/g, "")) || 0) * 0.12).toLocaleString()}
+                                    ₦{fee.toLocaleString()}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-600">You&apos;ll Receive:</span>
                                 <span className="font-medium">
                                     ₦{(
-                                        (parseFloat(amount.replace(/[^0-9.]/g, "")) || 0) * 0.88
+                                        (parseFloat(amount.replace(/[^0-9.]/g, "")) || 0)
                                     ).toLocaleString()}
                                 </span>
                             </div>

@@ -8,7 +8,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { delay } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import {
   Select,
@@ -19,69 +18,16 @@ import {
 } from "./ui/select";
 import { ChevronLeft, ChevronRight, Frown, RefreshCcwIcon } from "lucide-react";
 import { Button } from "./ui/button";
-
-
-async function fetchPaymentBreakdown() {
-  await delay(2000); // Simulate network delay
-  return [
-    {
-      id: "1eneu7",
-      userPaidAmount: 12000,
-      adminCut: 1000,
-      vendorEarnings: 1100,
-      status: "Completed",
-      date: "10/06/2025",
-    },
-    {
-      id: "2wnsu3",
-      userPaidAmount: 12000,
-      adminCut: 1000,
-      vendorEarnings: 1150,
-      status: "Canceled",
-      date: "10/06/2025",
-    },
-    {
-      id: "33wju3",
-      userPaidAmount: 12000,
-      adminCut: 1000,
-      vendorEarnings: 1100,
-      status: "Completed",
-      date: "10/06/2025",
-    },
-    {
-      id: "422bwu7",
-      userPaidAmount: 12000,
-      adminCut: 1000,
-      vendorEarnings: 1100,
-      status: "Pending",
-      date: "03/06/2025",
-    },
-    {
-      id: "5h7322",
-      userPaidAmount: 12000,
-      adminCut: 1000,
-      vendorEarnings: 1100,
-      status: "Completed",
-      date: "03/04/2025",
-    },
-    {
-      id: "6h7322",
-      userPaidAmount: 12000,
-      adminCut: 1000,
-      vendorEarnings: 1100,
-      status: "Completed",
-      date: "02/06/2025",
-    },
-  ];
-}
+import API from "@/utils/axios";
 
 interface PaymentType {
-  id: string;
-  userPaidAmount: number;
-  adminCut: number;
-  vendorEarnings: number;
+  _id: string;
+  totalAmount: number;
+  type: string;
+  commision: number;
+  amount: number;
   status: string;
-  date: string;
+  createdAt: string;
 }
 
 export function PaymentBreakdown() {
@@ -96,13 +42,17 @@ export function PaymentBreakdown() {
     return [...bookings].sort((a, b) => {
       switch (sortBy) {
         case "newest":
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
         case "oldest":
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         case "highest":
-          return (b.vendorEarnings || 0) - (a.vendorEarnings || 0);
+          return (b.amount || 0) - (a.amount || 0);
         case "lowest":
-          return (a.vendorEarnings || 0) - (b.vendorEarnings || 0);
+          return (a.amount || 0) - (b.amount || 0);
         default:
           return 0;
       }
@@ -141,9 +91,11 @@ export function PaymentBreakdown() {
   const fetchRestaurants = async () => {
     setLoading(true);
     try {
-      const data = await fetchPaymentBreakdown();
+      // const data = await fetchPaymentBreakdown();
+      const res = await API.get("/vendors/transactions");
+      const data = res.data.transactions;
 
-      setPayments(data);
+      setPayments((data as PaymentType[]).filter((e: PaymentType) => e.type === "payment"))
     } catch (error) {
       console.error("Error fetching restaurant data:", error);
     } finally {
@@ -202,9 +154,9 @@ export function PaymentBreakdown() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All">All</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Canceled">Canceled</SelectItem>
+                  <SelectItem value="success">Completed</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="canceled">Canceled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -252,30 +204,37 @@ export function PaymentBreakdown() {
               ) : (
                 <>
                   {currentPayments?.map((item) => (
-                    <TableRow key={item.id}>
+                    <TableRow key={item._id}>
                       <TableCell className="font-medium">
-                        {formatPaymentId(item.id)}
+                        {formatPaymentId(item._id)}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
-                        {new Date(item.date).toLocaleDateString("en-US", {
+                        {new Date(item.createdAt).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                           year: "2-digit",
                         })}
                       </TableCell>
                       <TableCell>
-                        ₦{item.userPaidAmount.toLocaleString()}
+                        {item.totalAmount
+                          ? `₦${item.totalAmount.toLocaleString()}`
+                          : "N/A"}
                       </TableCell>
-                      <TableCell>₦{item.adminCut.toLocaleString()}</TableCell>
+                      <TableCell>
+                        {" "}
+                        {item.commision
+                          ? `₦${item.commision.toLocaleString()}`
+                          : "N/A"}
+                      </TableCell>
                       <TableCell className="font-medium text-green-500">
-                        ₦{item.vendorEarnings.toLocaleString()}
+                        ₦{item.amount.toLocaleString()}
                       </TableCell>
                       <TableCell>
                         <span
                           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            item.status === "Completed"
+                            item.status === "success"
                               ? "bg-green-100 text-green-800"
-                              : item.status === "Pending"
+                              : item.status === "pending"
                               ? "bg-yellow-100 text-yellow-800"
                               : "bg-red-100 text-red-800"
                           }`}
