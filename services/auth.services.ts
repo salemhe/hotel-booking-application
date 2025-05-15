@@ -69,6 +69,7 @@ interface AuthUser {
     profileImage: string;
     phone: number;
     paymentDetails: PaymentDetalsProps;
+    recipientCode: string;
   };
 }
 

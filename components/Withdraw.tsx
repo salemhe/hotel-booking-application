@@ -5,21 +5,18 @@ import { toast } from "sonner";
 import WithdrawalModal from "./WithdrawalModal";
 import { useRouter } from "next/navigation";
 import { Wallet, X } from "lucide-react";
+import { AuthService } from "@/services/auth.services";
 
-const user = {
-  account_number: 1234567890,
-  bank_name: null,
-  account_name: null,
-};
+const user = AuthService.getUser()
 
 const Withdraw = () => {
   const router = useRouter();
   const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const handleWidthdraw = () => {
-    if (!user.account_number) {
+  const handleWithdraw = () => {
+    if (!user?.profile.recipientCode) {
       toast.error("Please add your bank information to withdraw funds.");
-      router.push("/vendorDashboard/setting/bank-details");
+      router.push("/vendorDashboard/setting/payments");
       return;
     }
     setIsWithdrawalModalOpen(true);
@@ -34,7 +31,7 @@ const Withdraw = () => {
           <p className="text-3xl font-bold text-green-600">₦0</p>
         </div>
         <Button
-          onClick={handleWidthdraw}
+          onClick={handleWithdraw}
           className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 cursor-pointer transition-all duration-300 ring-blue-700 ring-offset-2 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
         >
           <Wallet className="w-4 h-4 mr-2" />
