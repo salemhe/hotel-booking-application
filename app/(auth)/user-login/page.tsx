@@ -1,12 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, Loader2, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
 import {
   Card,
   CardContent,
@@ -14,89 +13,34 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
-import { setAuthToken } from "@/lib/axios-config";
+} from "@/app/components/ui/card";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import API from "@/utils/userAxios";
-import { AuthService } from "@/services/userAuth.services";
-
-
-interface DecodedToken {
-  id?: string;
-  exp?: number;
-  iat?: number;
-}
+import { AuthService } from "@/lib/api/services/userAuth.service";
 
 const UserLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const extractUserId = (decodedToken: DecodedToken): string => {
-    const userId = decodedToken.id;
-    if (!userId) throw new Error("Unable to extract user ID from token");
-    return userId;
-  };
 
-  // const storeAuthInfo = (token: string, decodedToken: DecodedToken) => {
-  //   localStorage.setItem("authToken", token);
-  //   const userId = extractUserId(decodedToken);
-  //   localStorage.setItem("userId", userId);
-  //   if (decodedToken.exp) {
-  //     localStorage.setItem("tokenExp", (decodedToken.exp * 1000).toString());
-  //   }
-  //   setAuthToken(token);
-  // };
-
-  const validateToken = (decodedToken: DecodedToken): boolean => {
-    if (!decodedToken.id || !decodedToken.exp) return false;
-    return decodedToken.exp * 1000 > Date.now() + 5000;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { data } = await API.post("/users/login", { email, password });
-      if (!data.token) throw new Error("No token received");
-
-      const decodedToken = jwtDecode(data.token);
-      if (!validateToken(decodedToken)) throw new Error("Invalid token");
-
-      const userId = extractUserId(decodedToken);
-      AuthService.setToken(data.token);
-      const response = await API.get(`/users/profile/${userId}`);
-      const user = response.data;
-      AuthService.setUser({
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-        profileImage: user.profileImage,
-        profile: user.profile,
-      });
+      const { data } = await AuthService.login(email, password)
+      await AuthService.setToken(data.token)
 
       toast.success("Welcome back!");
-      router.push("/userDashboard/search");
+      router.push(redirectTo);
     } catch (error: unknown) {
-      if (error instanceof AxiosError) {
+      if (error instanceof AxiosError)
         toast.error(error.response?.data?.message || "Login failed");
-      } else if (error instanceof Error) {
-        toast.error(error.message || "Login failed");
-      } else {
-        toast.error("An unknown error occurred");
-      }
-
-      localStorage.removeItem("auth_token");
-      localStorage.removeItem("auth_user");
-      localStorage.removeItem("session_id");
-      localStorage.removeItem("userId");
-      localStorage.removeItem("tokenExp");
-      setAuthToken(null);
     } finally {
       setLoading(false);
     }

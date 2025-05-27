@@ -1,16 +1,16 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
+} from "@/app/components/ui/card";
 import {
   Store,
   Mail,
@@ -23,7 +23,7 @@ import {
   GitBranch,
 } from "lucide-react";
 import Link from "next/link";
-import { AuthService } from "@/services/auth.services";
+import { AuthService } from "@/lib/api/services/auth.service";
 import { toast } from "sonner";
 
 export default function VendorSignupPage() {

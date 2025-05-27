@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react"
-// import Layout from "@/components/layout"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+// import Layout from "@/app/components/layout"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 
 export default function Favorites() {
   const favorites = [

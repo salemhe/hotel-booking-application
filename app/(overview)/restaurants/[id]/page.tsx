@@ -1,4 +1,4 @@
-import RestaurantPage from "@/components/RestaurantsPage";
+import RestaurantPage from "@/app/components/RestaurantsPage";
 import React from "react";
 import { Suspense } from "react";
 

@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, ReactElement, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
-import axios from "axios";
 import {
   Search,
   Trash2,
@@ -9,9 +8,9 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Edit,
   X,
   Check,
+  Edit,
 } from "lucide-react";
 
 import {
@@ -21,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/app/components/ui/table";
 
 import {
   Select,
@@ -29,16 +28,17 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/app/components/ui/select";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/app/components/ui/dropdown-menu";
 
-import { AuthService } from "@/services/auth.services";
+import { AuthService } from "@/lib/api/services/auth.service";
+import API from "@/lib/api/axios";
 
 // Define types
 interface Booking {
@@ -87,27 +87,10 @@ export default function AdminDashboard(): ReactElement {
     null
   );
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [token, setToken] = useState<string | null>(null);
-  const user = AuthService.getUser()
+  const user = AuthService.getUser();
 
   const BASE_URL: string =
     "https://hotel-booking-app-backend-30q1.onrender.com";
-
-  // Fetch token on mount
-  useEffect(() => {
-    const getToken = async () => {
-      try {
-        const authToken = AuthService.getToken();
-        setToken(authToken);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Authentication failed");
-      }
-    };
-
-    if (isMounted) {
-      getToken();
-    }
-  }, [isMounted]);
 
   // Fetch bookings from API
   const fetchBookings = useCallback(
@@ -116,12 +99,12 @@ export default function AdminDashboard(): ReactElement {
         setLoading(true);
 
         // Only proceed if component is mounted and we have a token
-        if (!isMounted || !token) {
+        if (!isMounted || !user?.token) {
           return;
         }
 
         // Build the query URL based on parameters
-        let queryUrl = `${BASE_URL}/api/users/bookings`;
+        let queryUrl = `/users/bookings`;
         const queryParams = [];
 
         if (type && type !== "all") {
@@ -136,12 +119,7 @@ export default function AdminDashboard(): ReactElement {
           queryUrl += `?${queryParams.join("&")}`;
         }
 
-        const response = await axios.get<Booking[]>(queryUrl, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await API.get<Booking[]>(queryUrl);
 
         setBookings(response.data);
         setError(null);
@@ -156,7 +134,7 @@ export default function AdminDashboard(): ReactElement {
         setLoading(false);
       }
     },
-    [isMounted, token, BASE_URL]
+    [isMounted, BASE_URL]
   );
 
   // Set mounted state
@@ -170,10 +148,10 @@ export default function AdminDashboard(): ReactElement {
 
   // Fetch bookings after token is available
   useEffect(() => {
-    if (isMounted && token) {
+    if (isMounted) {
       fetchBookings(typeFilter !== "all" ? typeFilter : undefined, user?.id);
     }
-  }, [typeFilter, isMounted, token, fetchBookings]);
+  }, [typeFilter, isMounted, fetchBookings]);
 
   // Show notification helper
   const showNotification = useCallback(
@@ -210,13 +188,13 @@ export default function AdminDashboard(): ReactElement {
 
   // Setup WebSocket connection for real-time updates
   useEffect(() => {
-    if (!isMounted || !token) {
+    if (!isMounted) {
       return;
     }
 
     try {
       const socket: Socket = io(BASE_URL, {
-        auth: { token },
+        auth: { token: user?.token },
         query: { role: "admin" },
         reconnectionAttempts: 3,
         timeout: 5000,
@@ -283,19 +261,15 @@ export default function AdminDashboard(): ReactElement {
     } catch (err) {
       console.error("Socket error:", err);
     }
-  }, [isMounted, showNotification, token]);
+  }, [isMounted, showNotification]);
 
   // Deletion handler
   const handleDeleteBooking = async (id: string): Promise<void> => {
-    if (!isMounted || !token) return;
+    if (!isMounted) return;
 
     if (showConfirmDelete === id) {
       try {
-        await axios.delete(`${BASE_URL}/api/bookings/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await API.delete(`/bookings/${id}`);
 
         setBookings((prevBookings) =>
           prevBookings.filter((booking) => booking._id !== id)
@@ -331,16 +305,11 @@ export default function AdminDashboard(): ReactElement {
     setEditForm({});
   };
 
-  const handleEditSave = async (id: string): Promise<void> => {
-    if (!isMounted || !token) return;
+  const confirmBooking = async (id: string): Promise<void> => {
+    if (!isMounted) return;
 
     try {
-      await axios.put(`${BASE_URL}/api/bookings/${id}`, editForm, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      await API.patch(`/vendors/bookings/confirm/${id}`);
 
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
@@ -348,7 +317,7 @@ export default function AdminDashboard(): ReactElement {
         )
       );
 
-      showNotification("Booking successfully updated", "success");
+      showNotification("Booking successfully Confirmed", "success");
     } catch (err) {
       console.error("Failed to update booking:", err);
       showNotification("Failed to update booking. Please try again.", "error");
@@ -466,27 +435,7 @@ export default function AdminDashboard(): ReactElement {
       </div>
     );
   }
-  // Loading state or unauthorized state
-  if (!token) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-6 flex flex-col items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-          <h2 className="text-xl font-bold text-red-600 mb-4">
-            Authentication Error
-          </h2>
-          <p className="text-gray-700 mb-6">
-            Unable to authenticate. Please log in again.
-          </p>
-          <button
-            onClick={() => (window.location.href = "/login")}
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
+
   return (
     <div className="min-h-screen w-full bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto w-full">
@@ -639,59 +588,25 @@ export default function AdminDashboard(): ReactElement {
                       </TableCell>
                       <TableCell>{booking.customerName}</TableCell>
                       <TableCell>{booking.customerEmail}</TableCell>
-                      <TableCell>{booking.meals && booking.meals.length > 0 ? booking.meals.join(", ") : "N/A"}</TableCell>
+                      <TableCell>
+                        {booking.meals && booking.meals.length > 0
+                          ? booking.meals.join(", ")
+                          : "N/A"}
+                      </TableCell>
                       <TableCell>{booking.partySize}</TableCell>
                       <TableCell>{booking.specialRequest}</TableCell>
                       <TableCell>{booking.tableType}</TableCell>
                       <TableCell>
-                        {editingBooking === booking._id ? (
-                          <input
-                            type="number"
-                            min="1"
-                            className="w-16 p-1 border border-gray-300 rounded"
-                            value={
-                              booking.type === "hotel"
-                                ? editForm.roomNumber ||
-                                  booking.roomNumber ||
-                                  ""
-                                : editForm.tableNumber ||
-                                  booking.tableNumber ||
-                                  ""
-                            }
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value);
-                              if (booking.type === "hotel") {
-                                setEditForm({ ...editForm, roomNumber: value });
-                              } else {
-                                setEditForm({
-                                  ...editForm,
-                                  tableNumber: value,
-                                });
-                              }
-                            }}
-                          />
-                        ) : booking.type === "hotel" ? (
+                        {booking.type === "hotel" ? (
                           `Room ${booking.roomNumber}`
                         ) : (
                           `Table ${booking.tableNumber}`
                         )}
                       </TableCell>
                       <TableCell>
-                        {editingBooking === booking._id ? (
-                          <input
-                            type="number"
-                            min="1"
-                            max="20"
-                            className="w-16 p-1 border border-gray-300 rounded"
-                            value={editForm.guests || booking.guests || ""}
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value);
-                              setEditForm({ ...editForm, guests: value });
-                            }}
-                          />
-                        ) : (
+                        {
                           booking.guests
-                        )}
+}
                       </TableCell>
                       <TableCell>
                         {editingBooking === booking._id ? (
@@ -700,9 +615,6 @@ export default function AdminDashboard(): ReactElement {
                             onValueChange={(
                               value:
                                 | "confirmed"
-                                | "pending"
-                                | "cancelled"
-                                | "completed"
                             ) => setEditForm({ ...editForm, status: value })}
                           >
                             <SelectTrigger>
@@ -713,12 +625,6 @@ export default function AdminDashboard(): ReactElement {
                                 Confirmed
                               </SelectItem>
                               <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="cancelled">
-                                Cancelled
-                              </SelectItem>
-                              <SelectItem value="completed">
-                                Completed
-                              </SelectItem>
                             </SelectContent>
                           </Select>
                         ) : (
@@ -736,7 +642,7 @@ export default function AdminDashboard(): ReactElement {
                         {editingBooking === booking._id ? (
                           <div className="flex space-x-2">
                             <button
-                              onClick={() => handleEditSave(booking._id)}
+                              onClick={() => confirmBooking(booking._id)}
                               className="text-green-600 hover:text-green-800"
                               aria-label="Save changes"
                             >
@@ -774,7 +680,7 @@ export default function AdminDashboard(): ReactElement {
                               className="text-blue-600 hover:text-blue-800"
                               aria-label="Edit booking"
                             >
-                              <Edit className="h-5 w-5" />
+                              <Edit />
                             </button>
                             <button
                               onClick={() => setShowConfirmDelete(booking._id)}
@@ -791,7 +697,7 @@ export default function AdminDashboard(): ReactElement {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={8}
+                      colSpan={13}
                       className="text-center text-sm text-gray-500"
                     >
                       No bookings found

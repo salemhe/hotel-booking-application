@@ -4,18 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Search,
-  Coffee,
-  Pizza,
-  Fish,
-  Soup,
-  Beef,
-  Salad,
-  IceCream,
-  Cookie,
   Gift,
-  ThumbsUp,
-  Timer,
-  Sparkles,
   ArrowRight,
   Utensils,
   Star,
@@ -25,9 +14,9 @@ import {
   CheckCircle2,
   CircleDot,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Badge } from "@/app/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -35,183 +24,18 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
+} from "@/app/components/ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "@/app/components/ui/carousel";
 import Image from "next/image";
+import { cuisineTypes, deals, features, restaurants, testimonials } from "@/utils/constant";
 
 export default function LandingPage() {
-
-  const cuisineTypes = [
-    { name: "Italian", icon: Pizza },
-    { name: "Seafood", icon: Fish },
-    { name: "Asian", icon: Soup },
-    { name: "Steakhouse", icon: Beef },
-    { name: "Café", icon: Coffee },
-    { name: "Vegetarian", icon: Salad },
-    { name: "Desserts", icon: IceCream },
-    { name: "Bakery", icon: Cookie },
-  ];
-
-  const features = [
-    {
-      icon: Timer,
-      title: "Quick Booking",
-      description: "Reserve your table in seconds",
-      color: "text-blue-600 bg-blue-100",
-    },
-    {
-      icon: Gift,
-      title: "Special Offers",
-      description: "Exclusive deals and discounts",
-      color: "text-green-600 bg-green-100",
-    },
-    {
-      icon: ThumbsUp,
-      title: "Verified Reviews",
-      description: "Real feedback from diners",
-      color: "text-purple-600 bg-purple-100",
-    },
-    {
-      icon: Sparkles,
-      title: "Premium Experience",
-      description: "Curated dining selections",
-      color: "text-orange-600 bg-orange-100",
-    },
-  ];
-
-  const restaurants = [
-    {
-      name: "Chicken Republic",
-      image: "/chicken-republic.jpg",
-      location: "Ikeja City Mall, Ikeja, Lagos",
-      cuisine: "Nigerian Fast Food",
-    },
-    {
-      name: "KFC Nigeria",
-      image: "/KFC.png",
-      location: "Admiralty Way, Lekki Phase 1, Lagos",
-      cuisine: "American Fried Chicken",
-    },
-    {
-      name: "The Place Restaurant",
-      image: "/the-place.jpg",
-      location: "Circle Mall, Lekki, Lagos",
-      cuisine: "Nigerian Quick Service",
-    },
-    {
-      name: "Domino's Pizza Nigeria",
-      image: "/dominos.webp",
-      location: "Akin Adesola Street, Victoria Island, Lagos",
-      cuisine: "Pizza & Fast Casual",
-    },
-  ];
-  
-  const deals = [
-    {
-      title: "Weekend Brunch Special",
-      description: "Complimentary mimosa with any brunch entrée",
-      restaurant: "Sunrise Café",
-      discount: "20% OFF",
-      validUntil: "Weekends Only",
-      image: "/hero-bg.jpg",
-    },
-    {
-      title: "Date Night Package",
-      description: "4-course dinner for two with wine pairing",
-      restaurant: "La Romance",
-      discount: "Save $50",
-      validUntil: "Tuesday-Thursday",
-      image: "/hero-bg.jpg",
-    },
-    {
-      title: "Happy Hour Delights",
-      description: "Half-price appetizers and craft cocktails",
-      restaurant: "Urban Lounge",
-      discount: "50% OFF",
-      validUntil: "4PM-7PM Daily",
-      image: "/hero-bg.jpg",
-    },
-    {
-      title: "Weekend Brunch Special",
-      description: "Complimentary mimosa with any brunch entrée",
-      restaurant: "Sunrise Café",
-      discount: "20% OFF",
-      validUntil: "Weekends Only",
-      image: "/hero-bg.jpg",
-    },
-    {
-      title: "Date Night Package",
-      description: "4-course dinner for two with wine pairing",
-      restaurant: "La Romance",
-      discount: "Save $50",
-      validUntil: "Tuesday-Thursday",
-      image: "/hero-bg.jpg",
-    },
-    {
-      title: "Happy Hour Delights",
-      description: "Half-price appetizers and craft cocktails",
-      restaurant: "Urban Lounge",
-      discount: "50% OFF",
-      validUntil: "4PM-7PM Daily",
-      image: "/hero-bg.jpg",
-    },
-  ];
-
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Food Enthusiast",
-      image: "/hero-bg.jpg",
-      comment:
-        "The best restaurant booking platform I've ever used. So easy and reliable!",
-      rating: 5,
-    },
-    {
-      name: "Michael Chen",
-      role: "Food Blogger",
-      image: "/hero-bg.jpg",
-      comment:
-        "Game-changer for restaurant reservations. Love the instant confirmation!",
-      rating: 5,
-    },
-    {
-      name: "Emma Davis",
-      role: "Restaurant Owner",
-      image: "/hero-bg.jpg",
-      comment:
-        "Increased our bookings by 40%. The platform is a must-have for restaurants.",
-      rating: 5,
-    },
-    {
-      name: "Alex Thompson",
-      role: "Regular Diner",
-      image: "/hero-bg.jpg",
-      comment:
-        "Never had a bad experience. The recommendations are always spot-on!",
-      rating: 5,
-    },
-    {
-      name: "Lisa Wang",
-      role: "Food Critic",
-      image: "/hero-bg.jpg",
-      comment:
-        "Finally, a platform that understands what diners and restaurants need.",
-      rating: 5,
-    },
-    {
-      name: "David Miller",
-      role: "Chef",
-      image: "/hero-bg.jpg",
-      comment: "The attention to detail and customer service is exceptional.",
-      rating: 5,
-    },
-  ];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -256,116 +80,6 @@ export default function LandingPage() {
                 <Button asChild className="rounded-full h-[50px]" variant='outline' size='lg'>
                   <Link href="/vendors-landing-page">Join as a Restaurant</Link>
                 </Button>
-                {/* <Button>Join as a Restaurant</Button> */}
-                {/* <Card className="bg-white/95 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Location</label>
-                      <Select value={location} onValueChange={setLocation}>
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select City" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {cities.map((city) => (
-                            <SelectItem
-                              key={city.name}
-                              value={city.name.toLowerCase()}
-                            >
-                              {city.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Cuisine</label>
-                      <Select value={cuisine} onValueChange={setCuisine}>
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select Cuisine" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {cuisineTypes.map((cuisine) => (
-                            <SelectItem
-                              key={cuisine.name}
-                              value={cuisine.name.toLowerCase()}
-                            >
-                              {cuisine.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Guests</label>
-                      <Select value={guests} onValueChange={setGuests}>
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Number of Guests" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                            <SelectItem key={num} value={num.toString()}>
-                              {num} {num === 1 ? "Guest" : "Guests"}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Date</label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !date && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? format(date, "PPP") : "Pick a date"}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={setDate}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Time</label>
-                      <Select value={time} onValueChange={setTime}>
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select time" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 24 }, (_, i) => {
-                            const hour = i.toString().padStart(2, "0");
-                            return (
-                              <SelectItem key={hour} value={`${hour}:00`}>
-                                {`${hour}:00`}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleSubmit}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Search className="mr-2 h-4 w-4" />
-                    Find a Table
-                  </Button>
-                </CardContent>
-              </Card> */}
               </motion.div>
             </div>
             <motion.div

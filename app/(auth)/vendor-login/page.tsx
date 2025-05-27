@@ -2,9 +2,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,9 +12,9 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
+} from "@/app/components/ui/card";
 import { Store, Mail, Lock, ArrowRight } from "lucide-react";
-import { AuthService } from "@/services/auth.services";
+import { AuthService } from "@/lib/api/services/auth.service";
 import { toast } from "sonner";
 
 export default function VendorLoginPage() {

@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/app/components/ui/tooltip";
 import {
   Search,
   Printer,
@@ -18,28 +18,28 @@ import {
   Download,
   ArrowUpRightFromSquare,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/app/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Card, CardContent } from "@/components/ui/card";
+} from "@/app/components/ui/dropdown-menu";
+import { Card, CardContent } from "@/app/components/ui/card";
 import Image from "next/image";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
-import API from "@/utils/userAxios";
-import { AuthService } from "@/services/userAuth.services";
+import API from "@/lib/api/userAxios";
+import { AuthService } from "@/lib/api/services/userAuth.service";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");

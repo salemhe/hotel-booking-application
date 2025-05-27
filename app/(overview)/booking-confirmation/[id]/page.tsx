@@ -1,6 +1,6 @@
 import { CheckCircle, ChevronLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/app/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { redirect } from "next/navigation"
 
 export default async function BookingConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
