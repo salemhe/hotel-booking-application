@@ -180,6 +180,8 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
             vendorId: booking?.vendorId,
             bookingId: id,
             userId: user?.id,
+            amount: subtotal,
+            total,
             custom_fields: [
               {
                 display_name: "Vendor ID",
