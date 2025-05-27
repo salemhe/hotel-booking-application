@@ -32,7 +32,7 @@ const Withdraw = () => {
     console.log("Payment details", user?.profile.paymentDetails)
     if (!user?.profile.paymentDetails.recipientCode) {
       toast.error("Please add your bank information to withdraw funds.");
-      router.push("/vendorDashboard/setting/payments");
+      // router.push("/vendorDashboard/setting/payments");
       return;
     }
     setIsWithdrawalModalOpen(true);
