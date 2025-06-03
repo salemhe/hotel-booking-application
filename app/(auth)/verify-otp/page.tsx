@@ -138,13 +138,13 @@ import { Label } from "@/app/components/ui/label";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
 import { api } from "@/lib/axios-config";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { Loader2 } from "lucide-react";
 
 // fallback loader component
 const Loading = () => {
@@ -170,6 +170,7 @@ function OTPVerificationComponent() {
   const [email, setEmail] = useState("");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Get email from query params
@@ -185,6 +186,7 @@ function OTPVerificationComponent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setLoading(true);
       await api.post("/users/verify-otp", { email, otp });
 
       // Show success toast
@@ -202,6 +204,8 @@ function OTPVerificationComponent() {
       } else {
         toast.error("An unknown error occurred");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -233,7 +237,7 @@ function OTPVerificationComponent() {
 
         {/* Message Box */}
         <div className="bg-[#d3f0e1] text-sm text-gray-800 px-4 py-3 mx-4 rounded-md mb-2">
-          We've sent a verification code to your email address – <b>{email}</b>
+          We&apos;ve sent a verification code to your email address – <b>{email}</b>
         </div>
 
         <CardContent>
@@ -256,7 +260,11 @@ function OTPVerificationComponent() {
                 type="submit"
                 className="mt-4 w-full bg-[#0a596d] text-white rounded-md hover:bg-[#117a8b]"
               >
-                Submit
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </div>
           </form>
