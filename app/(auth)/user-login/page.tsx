@@ -21,7 +21,6 @@
 // import API from "@/utils/userAxios";
 // import { AuthService } from "@/services/userAuth.services";
 
-
 // interface DecodedToken {
 //   id?: string;
 //   exp?: number;
@@ -108,7 +107,7 @@
 //         <Card className="border rounded-lg shadow-md bg-white">
 //           <CardHeader className="space-y-3 pb-6 md:pb-8 px-6 sm:px-8">
 //             <CardTitle className="text-2xl sm:text-3xl font-light text-center text-[#222]">
-//               Welcome back 
+//               Welcome back
 //             </CardTitle>
 //             <CardDescription className="text-center text-[#6d727b] text-sm sm:text-base">
 //               Enter your credentials to access your account
@@ -210,12 +209,19 @@
 
 // export default UserLoginPage;
 
-
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Lock, Loader2, ArrowRight, AlertCircle } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Loader2,
+  ArrowRight,
+  AlertCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
@@ -240,8 +246,7 @@ const UserLoginPage = () => {
   const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -265,13 +270,13 @@ const UserLoginPage = () => {
     setLoading(true);
 
     try {
-      const { data } = await AuthService.login(email, password)
-      await AuthService.setToken(data.token)
+      const { data } = await AuthService.login(email, password);
+      await AuthService.setToken(data.token);
 
       toast.success("Welcome back!");
       router.push(redirectTo);
     } catch (error: unknown) {
-      if (error instanceof AxiosError)
+      if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");
       } else if (error instanceof Error) {
         toast.error(error.message || "Login failed");
@@ -280,7 +285,6 @@ const UserLoginPage = () => {
       }
 
       localStorage.clear();
-      setAuthToken(null);
     } finally {
       setLoading(false);
     }
@@ -301,11 +305,17 @@ const UserLoginPage = () => {
           <CardContent className="px-6 sm:px-8">
             <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
               <div className="space-y-1">
-                <Label htmlFor="email" className="text-sm font-light text-[#6d727b]">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-light text-[#6d727b]"
+                >
                   Email address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3.5 h-4 w-4 text-[#8a8f9a]" strokeWidth={1.25} />
+                  <Mail
+                    className="absolute left-3 top-3.5 h-4 w-4 text-[#8a8f9a]"
+                    strokeWidth={1.25}
+                  />
                   <Input
                     id="email"
                     type="email"
@@ -324,19 +334,40 @@ const UserLoginPage = () => {
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="password" className="text-sm font-light text-[#6d727b]">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-light text-[#6d727b]"
+                >
                   Password
                 </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3.5 h-4 w-4 text-[#8a8f9a]" strokeWidth={1.25} />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your secure password"
-                    className="pl-10 h-10 sm:h-12 rounded-md  border-gray-100 bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8] focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                <div>
+                  <div className="relative flex items-center">
+                    <Lock
+                      className="absolute left-3 h-4 w-4 text-[#8a8f9a]"
+                      strokeWidth={1.25}
+                    />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your secure password"
+                      className="px-10 h-10 sm:h-12 rounded-md  border-gray-100 bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8] focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    {showPassword ? (
+                      <Eye
+                        className="absolute right-3 h-4 w-4 text-[#8a8f9a] cursor-pointer"
+                        onClick={() => setShowPassword(false)}
+                        strokeWidth={1.25}
+                      />
+                    ) : (
+                      <EyeOff
+                        className="absolute right-3 h-4 w-4 text-[#8a8f9a] cursor-pointer"
+                        onClick={() => setShowPassword(true)}
+                        strokeWidth={1.25}
+                      />
+                    )}
+                  </div>
                   {passwordError && (
                     <div className="flex items-center gap-1 text-red-500 text-xs font-light mt-1">
                       <AlertCircle className="w-4 h-4" />
@@ -371,7 +402,9 @@ const UserLoginPage = () => {
           <CardFooter className="flex flex-col space-y-5 sm:space-y-6 pb-6 sm:pb-8 px-6 sm:px-8">
             <div className="flex items-center gap-3 w-full">
               <div className="flex-1 border-t border-gray-300" />
-              <span className="text-xs sm:text-sm text-[#6d727b] font-light">OR</span>
+              <span className="text-xs sm:text-sm text-[#6d727b] font-light">
+                OR
+              </span>
               <div className="flex-1 border-t border-gray-300" />
             </div>
             <Link
