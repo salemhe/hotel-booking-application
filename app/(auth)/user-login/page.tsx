@@ -452,13 +452,10 @@ const UserLoginPage = () => {
     try {
       const { data } = await AuthService.login(email, password);
       await AuthService.setToken(data.token);
-      const { data } = await AuthService.login(email, password);
-      await AuthService.setToken(data.token);
 
       toast.success("Welcome back!");
       router.push(redirectTo);
     } catch (error: unknown) {
-      if (error instanceof AxiosError) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");
       } else if (error instanceof Error) {
