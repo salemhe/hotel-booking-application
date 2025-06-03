@@ -1,4 +1,3 @@
-// components/BookingList.tsx
 "use client";
 
 import { QRCodeCanvas } from "qrcode.react";
@@ -19,6 +18,9 @@ import {
   Download,
   ArrowUpRightFromSquare,
   Loader2,
+  X,
+  Edit,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,16 +43,29 @@ import { useRouter } from "next/navigation";
 import API from "@/utils/axios";
 import { AuthService } from "@/services/auth.services";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 interface Booking {
   _id: string;
   user: string;
   type: string;
   vendor: string;
+  vendorId?: string;
   menuId: string;
-  roomNumber: null | string;
+  roomNumber: null | number;
   tableNumber: number;
+  tableType?: string;
   guests: number;
+  partySize?: number;
   date: string;
   checkIn: null | string;
   checkOut: null | string;
@@ -60,15 +75,19 @@ interface Booking {
   updatedAt: string;
   __v: number;
   
-  // These fields will be populated from the vendor/menu data
-  name?: string;
+  // Additional fields from API
+  businessName?: string;
   location?: string;
+  meals?: string[];
+  meal?: string;
   image?: string;
   pricePerTable?: number;
-  totalPayment?: number;
-  tableType?: string;
+  totalPrice?: number;
+  specialRequest?: string;
+  
+  // Display fields
+  name?: string;
   time?: string;
-  meal?: string;
 }
 
 export default function BookingList() {
@@ -78,100 +97,67 @@ export default function BookingList() {
   const [isLoading, setIsLoading] = useState(true);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [bookingToEdit, setBookingToEdit] = useState<Booking | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    tableNumber: 0,
+    guests: 0,
+  });
 
   const authUser = AuthService.getUser();
   const router = useRouter();
+  const { toast } = useToast();
 
-  // Fetch bookings for the logged‑in user
-  useEffect(() => {
-    let isMounted = true;
+  // Fetch bookings
+  const fetchBookings = async () => {
+    setIsLoading(true);
+    setError(null);
 
-    async function fetchBookings() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await API.get<Booking[]>("/users/bookings", {
-          params: { userId: authUser?.id },
+    try {
+      // Using userId query parameter to get user's bookings
+      const response = await API.get("/users/bookings", {
+        params: { userId: authUser?.id },
+      });
+      
+      // Process the bookings data to ensure we have all the display fields
+      const bookingsData = Array.isArray(response.data) ? response.data : [];
+      
+      // Process each booking to ensure it has proper display properties
+      const processedBookings = bookingsData.map((booking) => {
+        const bookingDate = new Date(booking.date);
+        const formattedTime = bookingDate.toLocaleTimeString([], { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
         });
         
-        if (isMounted) {
-          // Get the bookings data
-          const bookingsData = Array.isArray(response.data) ? response.data : [];
-          
-          // For each booking, fetch additional vendor and menu data
-          const enhancedBookings = await Promise.all(
-            bookingsData.map(async (booking) => {
-              try {
-                // Fetch vendor data
-                const vendorResponse = await API.get(`/vendors/${booking.vendor}`);
-                const vendor = vendorResponse.data;
-                
-                // Fetch menu data
-                const menuResponse = await API.get(`/menus/${booking.menuId}`);
-                const menu = menuResponse.data;
-                
-                // Extract time from the date
-                const bookingDate = new Date(booking.date);
-                const hours = bookingDate.getHours();
-                const minutes = bookingDate.getMinutes();
-                const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-                
-                // Return enhanced booking with display data
-                return {
-                  ...booking,
-                  id: booking._id, // For backward compatibility
-                  name: vendor?.name || "Restaurant",
-                  location: vendor?.location || "Unknown location",
-                  image: vendor?.image || "/placeholder.svg",
-                  seats: booking.guests,
-                  tableType: `${booking.tableNumber}-table`,
-                  time: formattedTime,
-                  meal: menu?.name || "Standard meal",
-                  pricePerTable: menu?.price || 0,
-                  totalPayment: (menu?.price || 0) * booking.guests,
-                };
-              } catch (err) {
-                console.error("Error fetching additional booking data:", err);
-                // Return basic booking with defaults
-                return {
-                  ...booking,
-                  id: booking._id,
-                  name: "Restaurant",
-                  location: "Location unavailable",
-                  image: "/placeholder.svg",
-                  seats: booking.guests,
-                  tableType: `Table ${booking.tableNumber}`,
-                  time: new Date(booking.date).toLocaleTimeString(),
-                  meal: "Meal information unavailable",
-                  pricePerTable: 0,
-                  totalPayment: 0,
-                };
-              }
-            })
-          );
-          
-          setBookings(enhancedBookings);
-        }
-      } catch (err) {
-        console.error("Error fetching bookings:", err);
-        if (isMounted) {
-          setError("Failed to load your bookings.");
-          setBookings([]);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
+        return {
+          ...booking,
+          // If businessName exists, use it as name, otherwise use a default
+          name: booking.businessName || "Restaurant",
+          // Extract time from the date string
+          time: formattedTime,
+          // For backward compatibility
+          meal: booking.meals?.[0] || booking.meal || "Standard meal",
+        };
+      });
+      
+      setBookings(processedBookings);
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+      setError("Failed to load your bookings. Please try again.");
+      setBookings([]);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
+  useEffect(() => {
     if (authUser?.id) fetchBookings();
     else setIsLoading(false);
-
-    return () => {
-      isMounted = false;
-    };
   }, [authUser?.id]);
 
   // Search + filter logic
@@ -179,30 +165,117 @@ export default function BookingList() {
   const filtered = bookings.filter((b) => {
     const nameMatch =
       !searchQuery ||
-      b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.meal.toLowerCase().includes(searchQuery.toLowerCase());
+      (b.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (b.meal?.toLowerCase() || "").includes(searchQuery.toLowerCase());
     const locationMatch =
       locationFilter === "all" || b.location === locationFilter;
     const tableMatch =
-      tableTypeFilter === "all" || b.tableType === tableTypeFilter;
+      tableTypeFilter === "all" || 
+      b.tableType === tableTypeFilter || 
+      `${b.tableNumber}-seats` === tableTypeFilter;
     return nameMatch && locationMatch && tableMatch;
   });
-
-  // Only show current user’s bookings
-  const userBookings = filtered.filter(
-    (b) => String(b.user) === String(authUser?.id)
-  );
 
   // Split current vs past
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const current = userBookings.filter((b) => new Date(b.date) >= today);
-  const past = userBookings.filter((b) => new Date(b.date) < today);
+  const current = filtered.filter((b) => new Date(b.date) >= today);
+  const past = filtered.filter((b) => new Date(b.date) < today);
 
-  // Cancel booking handler
-  const handleCancel = (id: string) => {
-    // TODO: await API.delete(`/users/bookings/${id}`);
-    setBookings((prev) => prev.filter((b) => b.id !== id));
+  // Handle cancellation
+  const openCancelDialog = (id: string) => {
+    setBookingToCancel(id);
+    setShowCancelDialog(true);
+  };
+
+  const handleCancelBooking = async () => {
+    if (!bookingToCancel) return;
+  
+    setIsCancelling(true);
+    try {
+      const response = await API.patch(`/users/bookings/cancel/${bookingToCancel}`);
+  
+      // Log the cancellation response
+      console.log("Cancellation Response:", response.data);
+  
+      // Use the response data (e.g., message or booking details)
+      const { message, booking } = response.data;
+  
+      // Update the bookings list with the updated booking
+      setBookings((prevBookings) =>
+        prevBookings.map((bookingItem) =>
+          bookingItem._id === bookingToCancel
+            ? { ...bookingItem, status: booking.status } // Use updated status from response
+            : bookingItem
+        )
+      );
+  
+      toast({
+        title: "Booking Cancelled",
+        description: message || "Your booking has been successfully cancelled.",
+      });
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      toast({
+        title: "Cancellation Failed",
+        description: "There was an error cancelling your booking. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCancelling(false);
+      setShowCancelDialog(false);
+      setBookingToCancel(null);
+    }
+  };
+
+  // Handle editing
+  const openEditDialog = (booking: Booking) => {
+    setBookingToEdit(booking);
+    setEditFormData({
+      tableNumber: booking.tableNumber,
+      guests: booking.guests,
+    });
+    setShowEditDialog(true);
+  };
+
+  const handleUpdateBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bookingToEdit) return;
+    
+    try {
+      const payload = {
+        type: bookingToEdit.type,
+        vendor: bookingToEdit.vendor || bookingToEdit.vendorId,
+        tableNumber: editFormData.tableNumber,
+        guests: editFormData.guests,
+      };
+      
+      const response = await API.patch(`/users/bookings/update/${bookingToEdit._id}`, payload);
+      
+      // Update the bookings list with the updated booking
+      setBookings(prevBookings => 
+        prevBookings.map(booking => 
+          booking._id === bookingToEdit._id 
+            ? { ...booking, ...response.data.booking } 
+            : booking
+        )
+      );
+      
+      toast({
+        title: "Booking Updated",
+        description: "Your booking has been successfully updated.",
+      });
+      
+      setShowEditDialog(false);
+      setBookingToEdit(null);
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      toast({
+        title: "Update Failed",
+        description: "There was an error updating your booking. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -214,6 +287,9 @@ export default function BookingList() {
             <h1 className="text-2xl font-bold">
               {authUser?.firstName || "Guest"} {authUser?.lastName || ""}
             </h1>
+            <Button onClick={fetchBookings} variant="outline" size="sm">
+              Refresh
+            </Button>
           </div>
           <div className="flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[200px]">
@@ -243,12 +319,12 @@ export default function BookingList() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Locations</SelectItem>
-                <SelectItem value="Victoria Island">
-                  Victoria Island
-                </SelectItem>
-                <SelectItem value="Lekki">Lekki</SelectItem>
-                <SelectItem value="Banana Island">Banana Island</SelectItem>
-                <SelectItem value="Opebi">Opebi</SelectItem>
+                {/* Extract unique locations from bookings */}
+                {[...new Set(bookings.map(b => b.location).filter(Boolean))].map(location => (
+                  <SelectItem key={location} value={location || ""}>
+                    {location}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -264,7 +340,7 @@ export default function BookingList() {
                 <SelectItem value="2-seats">2 Seats</SelectItem>
                 <SelectItem value="4-seats">4 Seats</SelectItem>
                 <SelectItem value="6-seats">6 Seats</SelectItem>
-                <SelectItem value="7-seats">7 Seats</SelectItem>
+                <SelectItem value="8-seats">8 Seats</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -281,12 +357,13 @@ export default function BookingList() {
           ) : error ? (
             <div className="text-center py-8">
               <p className="mb-4 text-rose-600">{error}</p>
+              <Button onClick={fetchBookings}>Try Again</Button>
             </div>
-          ) : userBookings.length === 0 ? (
+          ) : filtered.length === 0 ? (
             <div className="text-center py-16">
               <SearchXIcon className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
               <p className="mb-4">No bookings found.</p>
-              <Button onClick={() => router.push("/restaurants")}>
+              <Button onClick={() => router.push("/userDashboard/search")}>
                 Browse Restaurants
               </Button>
             </div>
@@ -314,39 +391,152 @@ export default function BookingList() {
               <TabsContent value="Current" className="mt-6">
                 {current.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {current.map((b) => (
+                    {current.map((booking) => (
                       <BookingCard
-                        key={b.id}
-                        booking={b}
-                        onCancel={handleCancel}
+                        key={booking._id}
+                        booking={booking}
+                        onCancel={openCancelDialog}
+                        onEdit={openEditDialog}
                       />
                     ))}
                   </div>
                 ) : (
-                  <p className="text-center">No upcoming bookings.</p>
+                  <p className="text-center py-8">No upcoming bookings.</p>
                 )}
               </TabsContent>
 
               <TabsContent value="Past" className="mt-6">
                 {past.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {past.map((b) => (
+                    {past.map((booking) => (
                       <BookingCard
-                        key={b.id}
-                        booking={b}
+                        key={booking._id}
+                        booking={booking}
                         isPast
-                        onCancel={handleCancel}
+                        onCancel={openCancelDialog}
+                        onEdit={openEditDialog}
                       />
                     ))}
                   </div>
                 ) : (
-                  <p className="text-center">No past bookings.</p>
+                  <p className="text-center py-8">No past bookings.</p>
                 )}
               </TabsContent>
             </Tabs>
           )}
         </main>
       </div>
+
+      {/* Cancel Booking Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-500" />
+              Cancel Booking
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel this booking? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCancelDialog(false)}
+              disabled={isCancelling}
+            >
+              Keep Booking
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleCancelBooking}
+              disabled={isCancelling}
+            >
+              {isCancelling ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cancelling...
+                </>
+              ) : (
+                "Yes, Cancel Booking"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Booking Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Booking</DialogTitle>
+            <DialogDescription>
+              Make changes to your booking details below.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleUpdateBooking}>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label htmlFor="tableNumber" className="text-sm font-medium">
+                  Table Number
+                </label>
+                <Select
+                  value={editFormData.tableNumber.toString()}
+                  onValueChange={(value) => setEditFormData({
+                    ...editFormData,
+                    tableNumber: parseInt(value)
+                  })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a table number" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        Table {num}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="guests" className="text-sm font-medium">
+                  Number of Guests
+                </label>
+                <Select
+                  value={editFormData.guests.toString()}
+                  onValueChange={(value) => setEditFormData({
+                    ...editFormData,
+                    guests: parseInt(value)
+                  })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select number of guests" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num} {num === 1 ? 'Guest' : 'Guests'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" type="button" onClick={() => setShowEditDialog(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">
+                Update Booking
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -355,10 +545,12 @@ function BookingCard({
   booking,
   isPast = false,
   onCancel,
+  onEdit,
 }: {
   booking: Booking;
   isPast?: boolean;
   onCancel: (id: string) => void;
+  onEdit: (booking: Booking) => void;
 }) {
   const [receipt, setReceipt] = useState<Booking | null>(null);
   const router = useRouter();
@@ -368,14 +560,14 @@ function BookingCard({
       style: "currency",
       currency: "NGN",
       maximumFractionDigits: 0,
-    }).format(n);
+    }).format(n || 0);
 
   const fmtDate = (s: string) =>
     new Date(s).toLocaleDateString(undefined);
 
   // Get status badge color
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'confirmed':
         return 'bg-green-100 text-green-800';
       case 'pending':
@@ -390,12 +582,12 @@ function BookingCard({
   return (
     <Card
       className={`overflow-hidden transition-shadow duration-300 ${
-        isPast ? "opacity-70" : "hover:shadow-lg"
+        isPast || booking.status?.toLowerCase() === 'cancelled' ? "opacity-70" : "hover:shadow-lg"
       }`}
     >
       <div className="relative aspect-[4/3]">
         <Image
-          src={booking.image || "/placeholder.svg"}
+          src={booking.image || "/hero-bg.jpg"}
           alt={booking.name || "Restaurant"}
           fill
           className="object-cover"
@@ -411,7 +603,7 @@ function BookingCard({
         {/* Status badge */}
         <div className="absolute top-2 right-2">
           <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(booking.status)}`}>
-            {booking.status}
+            {booking.status || "Pending"}
           </span>
         </div>
       </div>
@@ -439,11 +631,11 @@ function BookingCard({
           </div>
           <div className="flex justify-between">
             <span>Meal</span>
-            <span>{booking.meal || "Standard meal"}</span>
+            <span>{booking.meal || booking.meals?.[0] || "Standard meal"}</span>
           </div>
           <div className="flex justify-between">
             <span>Total</span>
-            <span>{fmtPrice(booking.totalPayment || 0)}</span>
+            <span>{fmtPrice(booking.totalPrice || booking.pricePerTable || 0)}</span>
           </div>
           <div className="flex justify-between">
             <span>Booking Date</span>
@@ -451,9 +643,36 @@ function BookingCard({
           </div>
         </div>
         
-        {/* Rest of the component remains the same */}
         <div className="flex justify-end gap-2 pt-4">
-          {/* ... existing code ... */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setReceipt(booking)}>
+                <Printer className="mr-2 h-4 w-4" />
+                View Receipt
+              </DropdownMenuItem>
+              
+              {!isPast && booking.status?.toLowerCase() !== 'cancelled' && (
+                <>
+                  <DropdownMenuItem onClick={() => onEdit(booking)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit Booking
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => onCancel(booking._id)}
+                    className="text-red-600"
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Cancel Booking
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardContent>
 
@@ -464,7 +683,6 @@ function BookingCard({
   );
 }
 
-// ... existing code ...
 function ReceiptModal({
   receipt,
   onClose,
@@ -480,7 +698,7 @@ function ReceiptModal({
       style: "currency",
       currency: "NGN",
       maximumFractionDigits: 0,
-    }).format(n);
+    }).format(n || 0);
 
   const fmtDate = (s: string) =>
     new Date(s).toLocaleDateString(undefined);
@@ -508,7 +726,7 @@ function ReceiptModal({
       <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-lg w-full max-w-md">
         <div className="p-6" ref={ref}>
           <h2 className="text-xl font-medium mb-4 flex justify-between">
-            <span className="truncate">{receipt.name || "Restaurant"}</span>
+            <span className="truncate">{receipt.name || receipt.businessName || "Restaurant"}</span>
             <span className="text-sm text-muted-foreground">Receipt</span>
           </h2>
 
@@ -528,8 +746,8 @@ function ReceiptModal({
               ["Time", receipt.time || new Date(receipt.date).toLocaleTimeString()],
               ["Table Number", receipt.tableNumber.toString()],
               ["Guests", receipt.guests.toString()],
-              ["Meal", receipt.meal || "Standard meal"],
-              ["Total", fmtPrice(receipt.totalPayment || 0)],
+              ["Meal", receipt.meal || receipt.meals?.[0] || "Standard meal"],
+              ["Total", fmtPrice(receipt.totalPrice || receipt.pricePerTable || 0)],
               ["Booking Date", new Date(receipt.bookingDate).toLocaleDateString()],
             ].map(([label, val]) => (
               <div key={label} className="flex justify-between">
@@ -556,4 +774,3 @@ function ReceiptModal({
     </div>
   );
 }
-// ... existing code ...

@@ -224,7 +224,7 @@ export default function RestaurantPage({ id }: { id: string }) {
   const handleReservation = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+  
     // 1) Basic validation (now includes `meals`)
     if (!meals || !mealId || !partySize || !tableType || !seats || !date) {
       toast({
@@ -235,12 +235,15 @@ export default function RestaurantPage({ id }: { id: string }) {
       setLoading(false);
       return;
     }
-
+  
     try {
       // 2) Format date/time
       const formattedDate = format(date as Date, "yyyy-MM-dd");
       const reservationDateTime = `${formattedDate}T${time}:00`;
-
+      
+      // Get the image from the selected menu item
+      const menuImage = menu && menu.length > 0 ? menu[0].itemImage || menu[0].dishImage : "";
+  
       // 3) Build payload
       const payload = {
         type: "restaurant",
@@ -258,14 +261,14 @@ export default function RestaurantPage({ id }: { id: string }) {
         guests: Number(guests),
         totalPrice: Number(guests) * (menu ? menu[0].price : 1),
         specialRequest,
-        image,
+        image: menuImage, // Use the menu item's image instead of the uploaded file
         date: reservationDateTime,
       };
-
+  
       console.log("Final payload:", payload);
       const { data: res } = await API.post("/users/bookings", payload);
       
-
+  
       // 4) Success!
       toast({
         title: "Reservation Confirmed!",
@@ -587,7 +590,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                       onChange={(e) => setSpecialRequest(e.target.value)}
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <Label htmlFor="image">Image Upload</Label>
                     <div
                       className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
@@ -645,7 +648,7 @@ export default function RestaurantPage({ id }: { id: string }) {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div>
                     <Label htmlFor="meals">Select Menu Items</Label> {required}
                     {restaurantMenu && (
