@@ -103,53 +103,61 @@ const UserLoginPage = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4 sm:p-6 md:p-8">
+     <div className="min-h-[100dvh] bg-white flex items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
-        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-xs">
-          <CardHeader className="space-y-3 pb-6 md:pb-8 px-4 sm:px-6 md:px-8">
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-center bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Welcome back
+        <Card className="border rounded-lg shadow-md bg-white">
+          <CardHeader className="space-y-3 pb-6 md:pb-8 px-6 sm:px-8">
+            <CardTitle className="text-2xl sm:text-3xl font-light text-center text-[#222]">
+              Welcome back 
             </CardTitle>
-            <CardDescription className="text-center text-gray-600 text-sm sm:text-base">
+            <CardDescription className="text-center text-[#6d727b] text-sm sm:text-base">
               Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
-          <CardContent className="px-4 sm:px-6 md:px-8">
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              <div className="space-y-2">
+          <CardContent className="px-6 sm:px-8">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              <div className="space-y-1">
                 <Label
                   htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-light text-[#6d727b]"
                 >
                   Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
+                  <Mail
+                    className="absolute left-3 top-3.5 h-4 w-4 stroke-[1.25] text-[#8a8f9a]"
+                    strokeWidth={1.25}
+                  />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="name@example.com"
-                    className="pl-10 h-10 sm:h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 bg-white/60"
+                    placeholder="Enter your email address"
+                    className="pl-10 h-10 sm:h-12 rounded-md border border-gray-300 bg-white text-[#6d727b] placeholder-[#a0a3a8]
+                    focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label
                   htmlFor="password"
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-light text-[#6d727b]"
                 >
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
+                  <Lock
+                    className="absolute left-3 top-3.5 h-4 w-4 stroke-[1.25] text-[#8a8f9a]"
+                    strokeWidth={1.25}
+                  />
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
-                    className="pl-10 h-10 sm:h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 bg-white/60"
+                    placeholder="Enter your secure password"
+                    className="pl-10 h-10 sm:h-12 rounded-md border border-gray-300 bg-white text-[#6d727b] placeholder-[#a0a3a8]
+                    focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -157,19 +165,19 @@ const UserLoginPage = () => {
                 </div>
                 <Link
                   href="/forgot-password"
-                  className="text-xs sm:text-sm text-gray-600 hover:text-blue-600 transition-colors inline-flex items-center gap-1 mt-1"
+                  className="text-xs sm:text-sm text-[#6d727b] hover:text-[#0a646d] transition-colors inline-flex items-center gap-1 mt-1"
                 >
                   Forgot your password?
                 </Link>
               </div>
               <Button
                 type="submit"
-                className="w-full h-10 sm:h-12 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm sm:text-base font-medium shadow-md hover:shadow-lg transition-all duration-200"
+                className="w-full h-10 sm:h-12 rounded-md bg-[#0a646d] text-white text-sm sm:text-base font-light shadow-md hover:shadow-lg hover:bg-[#127a87] transition-colors duration-300"
                 disabled={loading}
               >
                 {loading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white" />
                     Signing in...
                   </>
                 ) : (
@@ -178,20 +186,20 @@ const UserLoginPage = () => {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4 sm:space-y-6 pb-6 sm:pb-8 px-4 sm:px-6 md:px-8">
+          <CardFooter className="flex flex-col space-y-5 sm:space-y-6 pb-6 sm:pb-8 px-6 sm:px-8">
             <div className="flex items-center gap-3 w-full">
-              <div className="flex-1 border-t border-gray-200" />
-              <span className="text-xs sm:text-sm text-gray-500 font-medium">
+              <div className="flex-1 border-t border-gray-300" />
+              <span className="text-xs sm:text-sm text-[#6d727b] font-light">
                 OR
               </span>
-              <div className="flex-1 border-t border-gray-200" />
+              <div className="flex-1 border-t border-gray-300" />
             </div>
             <Link
               href="/user-signup"
-              className="inline-flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 transition-colors text-sm sm:text-base font-medium group"
+              className="inline-flex items-center justify-center gap-2 text-[#0a646d] hover:text-[#094c52] transition-colors text-sm sm:text-base font-light group"
             >
               Create a new account
-              <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="h-4 w-4 stroke-[1.25] group-hover:translate-x-1 transition-transform stroke-[#0a646d]" />
             </Link>
           </CardFooter>
         </Card>
@@ -201,3 +209,5 @@ const UserLoginPage = () => {
 };
 
 export default UserLoginPage;
+
+
