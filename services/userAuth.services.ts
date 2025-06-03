@@ -1,4 +1,5 @@
 // src/services/userAuth.services.ts
+"use client";
 import { jwtDecode } from "jwt-decode";
 import { api, setAuthToken } from "@/lib/axios-config";
 import { SessionService } from "./session.services";
@@ -7,25 +8,25 @@ interface LoginResponse {
   message: string;
   token: string;
   user: {
-      firstName: string;
-      lastName: string;
-      email: string;
-      password: string;
-      profileImage: string;
-      _id: string;
-      createdAt: string;
-      updatedAt: string;
-      __v: 0;
-  }
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    profileImage: string;
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: 0;
+  };
 }
 
 export interface UserProfile {
   email: string;
-  id: string,
-  firstName: string,
-  lastName: string,
-  phone: string,
-  profileImage: string,
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  profileImage: string;
   profile?: {
     id: string;
     name: string;
@@ -50,18 +51,29 @@ export class AuthService {
   private static AUTH_TOKEN_KEY = "auth_token";
 
   static setToken(token: string) {
-    this.token = token;
-    localStorage.setItem(this.AUTH_TOKEN_KEY, token);
-    setAuthToken(token);
-  }
-  
-  static getToken(): string | null {
-    if (!this.token) {
-      this.token = localStorage.getItem(this.AUTH_TOKEN_KEY);
+    if (typeof window !== "undefined") {
+      this.token = token
+      // Set both cookie and localStorage
+      document.cookie = `auth_token=${token}; path=/; max-age=86400`;
+      localStorage.setItem(this.AUTH_TOKEN_KEY, token);
+      setAuthToken(token);
     }
-    return this.token;
   }
-  
+
+  static getToken(): string | null {
+    if (typeof window !== "undefined") {
+      if (!this.token) {
+        const cookieToken = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("auth_token="))
+          ?.split("=")[1];
+        this.token = cookieToken || localStorage.getItem(this.AUTH_TOKEN_KEY);
+      }
+      return this.token;
+    }
+    return null;
+  }
+
   static getUser(): UserProfile | null {
     if (typeof window !== "undefined") {
       const userStr = localStorage.getItem(this.USER_KEY);
@@ -75,7 +87,7 @@ export class AuthService {
       localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     }
   }
-  
+
   static clearAuth() {
     this.token = null;
     this.user = null;
@@ -84,12 +96,12 @@ export class AuthService {
     localStorage.removeItem(this.USER_KEY);
     setAuthToken(null);
   }
-  
+
   static isAuthenticated(): boolean {
     const token = this.getToken();
     return !!token && this.validateToken(token);
   }
-  
+
   static validateToken(token: string): boolean {
     try {
       const decodedToken = jwtDecode<DecodedToken>(token);
@@ -99,7 +111,7 @@ export class AuthService {
       return false;
     }
   }
-  
+
   static extractUserId(token: string): string | null {
     try {
       const decodedToken = jwtDecode<DecodedToken>(token);
@@ -108,11 +120,11 @@ export class AuthService {
       return null;
     }
   }
-  
+
   static async createSession(token: string) {
     const userId = this.extractUserId(token);
     if (!userId) throw new Error("Unable to extract user ID from token");
-   
+
     const expiresAt = new Date();
     const decodedToken = jwtDecode<DecodedToken>(token);
     if (decodedToken.exp) {
@@ -121,18 +133,18 @@ export class AuthService {
       // Default expiration: 24 hours
       expiresAt.setHours(expiresAt.getHours() + 24);
     }
-   
+
     const session = await SessionService.createSession(
-      userId, 
-      token, 
+      userId,
+      token,
       expiresAt.toISOString()
     );
-    
+
     localStorage.setItem(this.SESSION_ID_KEY, userId);
     console.log("Session created:", session);
     return session;
   }
- 
+
   static async logout(): Promise<void> {
     try {
       const token = this.getToken();
@@ -146,16 +158,19 @@ export class AuthService {
       this.clearAuth();
     }
   }
-  
+
   static async login(email: string, password: string): Promise<UserProfile> {
     console.log("Login function called with email:", email);
-  
+
     try {
-      const res = await api.post<LoginResponse>("users/login", { email, password });
+      const res = await api.post<LoginResponse>("users/login", {
+        email,
+        password,
+      });
       console.log("API login response:", res.data);
-  
+
       if (!res.data.token) throw new Error("No token received from API");
-  
+
       this.setToken(res.data.token);
       const userProfile: UserProfile = {
         id: res.data.user._id,
@@ -166,15 +181,14 @@ export class AuthService {
         profileImage: res.data.user?.profileImage,
       };
       this.setUser(userProfile);
-  
+
       return userProfile;
     } catch (error) {
       console.error("AuthService login error:", error);
       throw error;
     }
   }
-  
-  
+
   static async validateSession(): Promise<boolean> {
     try {
       console.log("Validating session...");
@@ -183,29 +197,29 @@ export class AuthService {
         console.log("No token found.");
         return false;
       }
-  
+
       if (!this.validateToken(token)) {
         console.log("Token validation failed.");
         return false;
       }
-  
+
       const userId = this.extractUserId(token);
       if (!userId) {
         console.log("Failed to extract user ID.");
         return false;
       }
-  
+
       console.log(`Checking session for user ${userId}`);
       const session = await SessionService.getSession(userId);
-  
+
       console.log("Session data:", session);
-  
+
       if (SessionService.isSessionExpired(session.expiresAt)) {
         console.log("Session expired.");
         this.clearAuth();
         return false;
       }
-  
+
       return true;
     } catch (error) {
       console.log("Session validation failed:", error);
@@ -213,14 +227,14 @@ export class AuthService {
       return false;
     }
   }
-  
+
   static async checkSession(): Promise<boolean> {
     try {
       const sessionId = localStorage.getItem(this.SESSION_ID_KEY);
       if (!sessionId) return false;
 
       const session = await SessionService.getSession(sessionId);
-      
+
       if (SessionService.isSessionExpired(session.expiresAt)) {
         this.clearAuth();
         return false;
@@ -234,7 +248,7 @@ export class AuthService {
           if (userId) {
             const response = await api.get(`users/profile/${userId}`);
             const userData = response.data;
-            
+
             const userProfile: UserProfile = {
               id: userData.id || userData._id,
               firstName: userData.firstName,
@@ -242,9 +256,9 @@ export class AuthService {
               email: userData.email,
               phone: userData.phone || "",
               profileImage: userData.profileImage || "",
-              profile: userData.profile
+              profile: userData.profile,
             };
-            
+
             this.setUser(userProfile);
           }
         }

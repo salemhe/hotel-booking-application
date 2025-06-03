@@ -1,22 +1,27 @@
 "use client";
 import { useState } from "react";
 import { Wallet, X } from "lucide-react";
+import API from "@/utils/userAxios";
 
 export default function WithdrawalModal({
+    balance,
     setIsWithdrawalModalOpen,
     setSuccessModalOpen,
 }: {
+    balance?: number;
     setIsWithdrawalModalOpen: (isOpen: boolean) => void;
     setSuccessModalOpen: (isOpen: boolean) => void;
 }) {
     const [amount, setAmount] = useState("");
     const [isLoading, setIsLoading] = useState(false); // Loading state
-    const balance = 1000000; // Example balance
-    const minimumWithdrawal = 1000;
+    // const balance = 1000000; // Example balance
+    const minimumWithdrawal = 50;
+
+    const fee = parseFloat(amount.replace(/[^0-9.]/g, "")) > 5000 ? 25 : 10;
 
     const isWithdrawDisabled =
         amount === "" ||
-        parseFloat(amount.replace(/[^0-9.]/g, "")) > balance ||
+        parseFloat(amount.replace(/[^0-9.]/g, "")) > balance! ||
         parseFloat(amount.replace(/[^0-9.]/g, "")) < minimumWithdrawal;
 
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,14 +29,26 @@ export default function WithdrawalModal({
         setAmount(inputValue ? `₦${parseInt(inputValue).toLocaleString()}` : "");
     };
 
-    const handleWithdraw = () => {
+    const handleWithdraw = async () => {
         if (!isWithdrawDisabled) {
             setIsLoading(true); // Set loading state to true
-            setTimeout(() => {
-                setIsLoading(false); // Simulate loading completion
-                setIsWithdrawalModalOpen(false);
-                setSuccessModalOpen(true);
-            }, 2000); // Simulate a 2-second delay
+            try {
+                // Simulate API call or withdrawal logic
+                const response = await API.post("/vendors/withdraw", {
+                    amount: parseFloat(amount.replace(/[^0-9.]/g, "")),
+                })
+                if (response.status === 200) {
+                    // Handle successful withdrawal
+                    setSuccessModalOpen(true); // Open success modal on success
+                    console.log("Withdrawal successful:", response.data);
+                    setAmount(""); // Reset amount input
+                }
+                setIsWithdrawalModalOpen(false); // Close withdrawal modal
+            } catch (error) {
+                console.error("Withdrawal failed:", error); // Handle error
+            } finally {
+                setIsLoading(false); // Reset loading state
+            }
         }
     };
 
@@ -65,7 +82,7 @@ export default function WithdrawalModal({
 
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-600 mb-2">
-                                Amount
+                                Amounts
                             </label>
                             <div className="relative">
                                 <input
@@ -77,7 +94,7 @@ export default function WithdrawalModal({
                                 />
                                 <div className="absolute right-4 top-3 px-3 py-1 bg-gray-50 rounded-lg">
                                     <p className="text-sm font-medium text-gray-600">
-                                        Balance: ₦{balance.toLocaleString()}
+                                        Balance: ₦{balance?.toLocaleString() || "N/A"}
                                     </p>
                                 </div>
                             </div>
@@ -108,16 +125,16 @@ export default function WithdrawalModal({
 
                         <div className="bg-gray-50 rounded-xl p-4 mb-6">
                             <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600">Withdrawal Fee (12%):</span>
+                                <span className="text-gray-600">Withdrawal Fee:</span>
                                 <span className="font-medium">
-                                    ₦{((parseFloat(amount.replace(/[^0-9.]/g, "")) || 0) * 0.12).toLocaleString()}
+                                    ₦{fee.toLocaleString()}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-600">You&apos;ll Receive:</span>
                                 <span className="font-medium">
                                     ₦{(
-                                        (parseFloat(amount.replace(/[^0-9.]/g, "")) || 0) * 0.88
+                                        (parseFloat(amount.replace(/[^0-9.]/g, "")) || 0)
                                     ).toLocaleString()}
                                 </span>
                             </div>

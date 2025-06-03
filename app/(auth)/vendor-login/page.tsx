@@ -37,17 +37,8 @@ export default function VendorLoginPage() {
       // }
       const response = await AuthService.login(email, password);
 
-      toast.success(`Welcome back, ${response.profile.name}!`);
-
-      // Add a delay before redirect
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const role = AuthService.getUserRole();
-      if (role === "super-admin") {
-        router.push("/vendorDashboard");
-      } else {
-        router.push("/vendorDashboard");
-      }
+      toast.success(`Welcome back, ${response.profile.businessName}!`);
+      router.push("/vendorDashboard"); // TODO replace with onboarding page
     } catch (error) {
       console.error("Submit error:", error);
       toast.error(

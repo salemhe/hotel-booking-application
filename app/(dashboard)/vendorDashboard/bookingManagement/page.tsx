@@ -88,6 +88,7 @@ export default function AdminDashboard(): ReactElement {
   );
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null);
+  const user = AuthService.getUser()
 
   const BASE_URL: string =
     "https://hotel-booking-app-backend-30q1.onrender.com";
@@ -170,7 +171,7 @@ export default function AdminDashboard(): ReactElement {
   // Fetch bookings after token is available
   useEffect(() => {
     if (isMounted && token) {
-      fetchBookings(typeFilter !== "all" ? typeFilter : undefined);
+      fetchBookings(typeFilter !== "all" ? typeFilter : undefined, user?.id);
     }
   }, [typeFilter, isMounted, token, fetchBookings]);
 
@@ -359,7 +360,7 @@ export default function AdminDashboard(): ReactElement {
 
   // Refresh data handler
   const handleRefreshData = (): void => {
-    fetchBookings(typeFilter !== "all" ? typeFilter : undefined);
+    fetchBookings(typeFilter !== "all" ? typeFilter : undefined, user?.id);
   };
 
   // Reset filters
