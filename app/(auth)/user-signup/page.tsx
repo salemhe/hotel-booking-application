@@ -102,7 +102,7 @@ export default function UserSignupPage() {
                     required
                     onChange={handleChange}
                     placeholder={formatLabel(field)}
-                    className="pl-10 h-10 sm:h-12 rounded-md border border-gray-300 bg-white text-[#6d727b] placeholder-[#a0a3a8]
+                    className="pl-10 h-10 sm:h-12 rounded-md border-gray-100 bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8]
                     focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
                   />
                 </div>
@@ -132,7 +132,7 @@ export default function UserSignupPage() {
                       ? "Enter your phone number"
                       : "Enter your secure password"
                   }
-                  className="pl-10 h-10 sm:h-12 rounded-md border border-gray-300 bg-white text-[#6d727b] placeholder-[#a0a3a8]
+                  className="pl-10 h-10 sm:h-12 rounded-md border-gray-100 bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8]
                 focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
                 />
               </div>
