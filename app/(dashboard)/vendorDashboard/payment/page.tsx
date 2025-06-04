@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import { PaymentStats } from "@/components/PaymentStats";
-import { PaymentBreakdown } from "@/components/PaymentBreakdown";
-import { Button } from "@/components/ui/button";
+import { PaymentStats } from "@/app/components/PaymentStats";
+import { PaymentBreakdown } from "@/app/components/PaymentBreakdown";
+import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
-import Withdraw from "@/components/Withdraw";
+import Withdraw from "@/app/components/Withdraw";
 
 export default function Payment() {
   return (

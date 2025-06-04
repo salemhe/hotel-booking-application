@@ -7,10 +7,10 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios-config';
-import { AuthService } from '@/services/auth.services';
+import { AuthService } from '@/lib/api/services/auth.service';
 import { ChevronDown, LogOut, X, Menu } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
+import { Button } from "@/app/components/ui/button"
 
 export interface VendorProfile {
   _id: string

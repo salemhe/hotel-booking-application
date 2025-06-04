@@ -1,6 +1,6 @@
-import Header from "@/components/headers/AdminHeader";
-import { AppSidebar } from "@/components/sidebars/AdminSidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import Header from "@/app/components/headers/AdminHeader";
+import { AppSidebar } from "@/app/components/sidebars/AdminSidebar";
+import { SidebarInset, SidebarProvider } from "@/app/components/ui/sidebar";
 
 
 export default function OwnerDasboardLayout({

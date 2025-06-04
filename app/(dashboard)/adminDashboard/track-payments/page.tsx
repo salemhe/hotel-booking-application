@@ -1,4 +1,4 @@
-import TrackPayments from "@/components/TrackPayments";
+import TrackPayments from "@/app/components/TrackPayments";
 import { Suspense } from "react";
 
 export default function Payment() {

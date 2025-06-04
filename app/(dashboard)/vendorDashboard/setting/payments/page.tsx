@@ -1,4 +1,4 @@
-import VendorBankForm from "@/components/VendorBankForm"
+import VendorBankForm from "@/app/components/VendorBankForm"
 
 export default function Home() {
   return (

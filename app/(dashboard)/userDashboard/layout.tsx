@@ -1,9 +1,9 @@
-import Header from "@/components/headers/UserHeader";
-import { AppSidebar } from "@/components/sidebars/UserSidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/toaster";
-import SessionManager from "@/components/UserSessionManager";
-// import AuthGuard from "@/components/AuthGuard";
+import Header from "@/app/components/headers/UserHeader";
+import { AppSidebar } from "@/app/components/sidebars/UserSidebar";
+import { SidebarInset, SidebarProvider } from "@/app/components/ui/sidebar";
+import { Toaster } from "@/app/components/ui/toaster";
+import SessionManager from "@/app/components/UserSessionManager";
+// import AuthGuard from "@/app/components/AuthGuard";
 export default function UserDashboardLayout({
   children,
 }: Readonly<{
