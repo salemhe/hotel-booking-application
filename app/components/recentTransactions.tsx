@@ -10,7 +10,11 @@ import { MdError } from "react-icons/md";
 
 export function RecentTransactions() {
   const [loading, setLoading] = useState(false);
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<{
+    id: string;
+    user: string;
+    amount: number;
+  }[] | null>(null);
   useEffect(() => {
     const fetchTransactions = async () => {
       const data = await getTransactions();

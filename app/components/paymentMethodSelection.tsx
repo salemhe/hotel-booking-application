@@ -7,22 +7,22 @@ interface PaystackResponse {
   reference: string;
 }
 
-interface PaystackPopInterface {
-  inlinePay: (data: {
-    key: string;
-    email: string;
-    amount: number;
-    currency: string;
-    callback: (response: PaystackResponse) => void;
-    onClose: () => void;
-  }) => void;
-}
+// interface PaystackPopInterface {
+//   inlinePay: (data: {
+//     key: string;
+//     email: string;
+//     amount: number;
+//     currency: string;
+//     callback: (response: PaystackResponse) => void;
+//     onClose: () => void;
+//   }) => void;
+// }
 
-declare global {
-  interface Window {
-    PaystackPop: PaystackPopInterface;
-  }
-}
+// declare global {
+//   interface Window {
+//     PaystackPop: PaystackPopInterface;
+//   }
+// }
 import {
   ChevronRight,
   CreditCard,

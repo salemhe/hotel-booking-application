@@ -39,13 +39,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/ta
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import API from "@/lib/api/userAxios";
-import { AuthService } from "@/lib/api/services/userAuth.service";
+import { AuthService, UserProfile } from "@/lib/api/services/userAuth.service";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("all");
   const [tableType, setTableType] = useState("all");
-  const authUser = AuthService.getUser();
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -68,7 +68,12 @@ export default function BookingList() {
   };
 
   useEffect(() => {
-    fetchBooking();
+    (async () => {
+      const id = await AuthService.getId();
+      const authUser = await AuthService.getUser(id!);
+      setUser(authUser);
+      await fetchBooking();
+    })();
   }, []);
 
   // Filter bookings based on search and filters
@@ -103,7 +108,7 @@ export default function BookingList() {
         <header className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold flex gap-2">
-              {authUser?.firstName || "loading..."} {authUser?.lastName || ""}
+              {user?.firstName || "loading..."} {user?.lastName || ""}
             </h1>
           </div>
 

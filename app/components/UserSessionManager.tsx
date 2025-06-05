@@ -11,7 +11,7 @@ const SessionManager = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const isValid = AuthService.isAuthenticated();
+        const isValid = await AuthService.isAuthenticated();
         setIsAuthenticated(isValid);
 
         if (!isValid) {
