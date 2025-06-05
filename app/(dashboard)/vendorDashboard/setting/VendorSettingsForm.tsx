@@ -1,10 +1,10 @@
 "use client";
 
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 export default function VendorSettingsForm() {
   const [formData, setFormData] = useState({
@@ -23,7 +23,7 @@ export default function VendorSettingsForm() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFormData((prev) => ({ ...prev, images: Array.from(e.target.files) }));
+      setFormData((prev) => ({ ...prev, images: Array.from(e.target.files as FileList) }));
     }
   };
 
@@ -43,9 +43,11 @@ export default function VendorSettingsForm() {
         method: "POST",
         body: form,
       });
-      const data = await res.json();
-      alert("Restaurant info updated successfully!");
+      await res.json();
+      toast.success("Restaurant info updated successfully!");
     } catch (error) {
+      console.error(error)
+      toast.error("Failed to upload data")
       alert("Error uploading data");
     }
   };
