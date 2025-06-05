@@ -1,3 +1,20 @@
+"use client";
+import React from "react";
+import VendorSettingsForm from "./VendorSettingsForm"; // adjust path if needed
+
+export default function Page() {
+  return (
+    <div className="p-6 space-y-8">
+      <h2 className="text-2xl font-bold">Restaurant Settings</h2>
+
+     
+      {/* Your form */}
+      <VendorSettingsForm />
+    </div>
+  );
+}
+
+
 // "use client";
 
 // import { useState, useRef, useEffect } from "react";
