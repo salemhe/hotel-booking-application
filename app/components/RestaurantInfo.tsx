@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
+import RestaurantOverview from "./RestaurantOverview";
+import { Restaurant } from "../lib/types/restaurant";
 
-const RestaurantInfo = () => {
+const RestaurantInfo = ({ data }: { data: Restaurant}) => {
   const [activeTab, setActiveTab] = useState<
     "overview" | "menu" | "available" | "reviews"
   >("overview");
@@ -46,7 +48,7 @@ const RestaurantInfo = () => {
         </div>
       </div>
       <div className="mt-8">
-        {activeTab === "overview" && <p>Overview</p>}
+        {activeTab === "overview" && <RestaurantOverview address={data.address} />}
         {activeTab === "menu" && <p>Menu</p>}
         {activeTab === "available" && <p>Available</p>}
         {activeTab === "reviews" && <p>Reviews</p>}

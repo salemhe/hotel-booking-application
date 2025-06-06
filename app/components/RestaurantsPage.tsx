@@ -6,6 +6,7 @@ import BookingForm from "./BookingForm";
 import MapComponent from "./MapComponent";
 import Link from "next/link";
 import API from "@/app/lib/api/userServerAxios";
+import { Restaurant } from "../lib/types/restaurant";
 
 const images = [
   {
@@ -35,15 +36,8 @@ const images = [
   },
 ];
 
-interface RestaurantType {
-  businessName: string;
-  phone: number;
-  email: string;
-  address: string;
-}
-
 const fetchRestaurant = async (id: string): Promise<{
-  data: RestaurantType[]
+  data: Restaurant[]
 }> => {
   try {
     // Example fetch, replace with actual API call
@@ -112,7 +106,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
             </div>
           </div>
           <div className="col-span-2">
-            <RestaurantInfo />
+            <RestaurantInfo data={restaurant} />
           </div>
         </div>
         <div className="space-y-8">
