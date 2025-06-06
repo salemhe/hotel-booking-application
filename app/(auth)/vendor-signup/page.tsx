@@ -23,7 +23,7 @@ import {
   GitBranch,
 } from "lucide-react";
 import Link from "next/link";
-import { AuthService } from "@/lib/api/services/auth.service";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 
 export default function VendorSignupPage() {

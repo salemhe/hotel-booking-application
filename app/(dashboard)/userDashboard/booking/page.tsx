@@ -38,8 +38,8 @@ import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
-import API from "@/lib/api/userAxios";
-import { AuthService, UserProfile } from "@/lib/api/services/userAuth.service";
+import API from "@/app/lib/api/userAxios";
+import { AuthService, UserProfile } from "@/app/lib/api/services/userAuth.service";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");

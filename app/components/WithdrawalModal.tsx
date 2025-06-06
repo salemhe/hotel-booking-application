@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Wallet, X } from "lucide-react";
-import API from "@/lib/api/userAxios";
+import API from "@/app/lib/api/userAxios";
 
 export default function WithdrawalModal({
     balance,

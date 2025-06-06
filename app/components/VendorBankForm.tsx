@@ -26,14 +26,14 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Alert, AlertDescription } from "@/app/components/ui/alert";
 // import { verifyBankAccount, getBanks } from "@/lib/action"
-import { getBanks, verifyBankAccount } from "@/lib/action";
+import { getBanks, verifyBankAccount } from "@/app/lib/action";
 import { BankCombobox } from "./BankComboBox";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import API from "@/lib/api/axios";
+import API from "@/app/lib/api/axios";
 import { AxiosError } from "axios";
 import { revalidatePath } from "next/cache";
-import { AuthService, AuthUser } from "@/lib/api/services/auth.service";
+import { AuthService, AuthUser } from "@/app/lib/api/services/auth.service";
 
 // Form validation schema
 const formSchema = z.object({

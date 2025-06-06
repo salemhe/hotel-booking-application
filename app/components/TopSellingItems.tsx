@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { delay } from "@/lib/utils"
+import { delay } from "@/app/lib/utils"
 
 async function fetchTopSellingItems() {
   await delay(2000) // Simulate network delay

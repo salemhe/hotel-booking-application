@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import API from "../axios";
 import { SessionService } from "./session.service";
 import { DecodedToken } from "./userAuth.service";
-import { getFrontendUrl } from "@/lib/config";
+import { getFrontendUrl } from "@/app/lib/config";
 interface LoginResponse {
   message: string;
   profile: {

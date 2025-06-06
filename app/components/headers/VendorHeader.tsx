@@ -8,9 +8,9 @@ import { getTimeBasedGreeting } from "./timeGreeting"
 import { useRouter } from 'next/navigation'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
-import { AuthService } from "@/lib/api/services/auth.service"
+import { AuthService } from "@/app/lib/api/services/auth.service"
 // import { api } from '@/lib/axios-config'
-import API from '@/lib/api/axios'
+import API from '@/app/lib/api/axios'
 
 export interface VendorProfile {
   _id: string

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AuthService } from "./services/userAuth.service";
+import { cookies } from "next/headers";
 
 const NEXT_PUBLIC_BASE_URL =
   "https://hotel-booking-app-backend-30q1.onrender.com/api/";
@@ -11,7 +11,8 @@ const API = axios.create({
 
 // Attach token dynamically
 API.interceptors.request.use(async (config) => {
-  const token = await AuthService.getToken();
+  const cookieStore = await cookies()
+  const token = cookieStore.get("user-token")?.value || null;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
     API.defaults.headers.common["x-api-secret"] = "diys684iyu2hpre87u386";

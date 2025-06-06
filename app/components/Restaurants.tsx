@@ -40,9 +40,9 @@ import {
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 import { Badge } from "@/app/components/ui/badge";
-import type { Restaurant } from "@/lib/types/restaurant";
+import type { Restaurant } from "@/app/lib/types/restaurant";
 // import { searchRestaurants } from "@/app/actions";
-import API from "@/lib/api/userAxios";
+import API from "@/app/lib/api/userAxios";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 

@@ -1,8 +1,8 @@
 // src/services/userAuth.services.ts
 import { jwtDecode } from "jwt-decode";
-import { api } from "@/lib/axios-config";
+import { api } from "@/app/lib/axios-config";
 import { SessionService } from "./session.service";
-import { getFrontendUrl } from "@/lib/config";
+import { getFrontendUrl } from "@/app/lib/config";
 import API from "../userAxios";
 
 interface LoginResponse {

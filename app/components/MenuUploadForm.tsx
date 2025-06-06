@@ -7,7 +7,7 @@ import { InventoryOrderSettings } from "./form-sections/InventoryOrderSettings";
 import { PricingAvailability } from "./form-sections/PricingAvailability";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner"
-import API from "@/lib/api/axios";
+import API from "@/app/lib/api/axios";
 
 type MenuUploadFormProps = {
   formData: object;

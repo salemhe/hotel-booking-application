@@ -1,5 +1,5 @@
 // src/services/session.services.ts
-import { api } from "@/lib/axios-config";
+import { api } from "@/app/lib/axios-config";
 
 export interface Session {
   _id: string;

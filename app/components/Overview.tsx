@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { delay } from "@/lib/utils";
+import { delay } from "@/app/lib/utils";
 import Chart from "./chart";
 
 async function fetchOverviewData() {

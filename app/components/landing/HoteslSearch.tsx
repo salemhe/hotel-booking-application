@@ -16,7 +16,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 
 export function HotelSearch() {
   const router = useRouter();

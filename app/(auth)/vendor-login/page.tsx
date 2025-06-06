@@ -14,7 +14,7 @@ import {
   CardFooter,
 } from "@/app/components/ui/card";
 import { Store, Mail, Lock, ArrowRight } from "lucide-react";
-import { AuthService } from "@/lib/api/services/auth.service";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 
 export default function VendorLoginPage() {

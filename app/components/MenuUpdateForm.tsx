@@ -6,7 +6,7 @@ import { PortionCustomization } from "./form-sections/PortionCustomization";
 import { InventoryOrderSettings } from "./form-sections/InventoryOrderSettings";
 import { PricingAvailability } from "./form-sections/PricingAvailability";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/axios-config";
+import { api } from "@/app/lib/axios-config";
 import { toast } from "sonner";
 
 type MenuUploadFormProps = {

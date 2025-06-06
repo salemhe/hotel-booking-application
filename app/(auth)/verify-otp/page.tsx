@@ -141,7 +141,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { api } from "@/lib/axios-config";
+import { api } from "@/app/lib/axios-config";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { Loader2 } from "lucide-react";

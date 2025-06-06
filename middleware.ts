@@ -1,7 +1,7 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { DecodedToken } from "./lib/api/services/userAuth.service";
+import { DecodedToken } from "./app/lib/api/services/userAuth.service";
 import { jwtDecode } from "jwt-decode";
 
 export function middleware(request: NextRequest) {

@@ -412,7 +412,7 @@ import {
 } from "@/app/components/ui/card";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import { AuthService } from "@/lib/api/services/userAuth.service";
+import { AuthService } from "@/app/lib/api/services/userAuth.service";
 import Loading from "@/app/components/loading";
 
 const UserLoginPage = () => {

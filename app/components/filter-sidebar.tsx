@@ -8,7 +8,7 @@ import { Label } from "@/app/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group"
 import { Slider } from "@/app/components/ui/slider"
 import { Switch } from "@/app/components/ui/switch"
-import { cn } from "@/lib/utils"
+import { cn } from "@/app/lib/utils"
 
 // Sample data for filters
 const cuisineTypes = [

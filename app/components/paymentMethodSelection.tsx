@@ -37,10 +37,10 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import PaymentForm from "@/app/components/paymentForm";
 import Image from "next/image";
-import { AuthService } from "@/lib/api/services/userAuth.service";
+import { AuthService } from "@/app/lib/api/services/userAuth.service";
 import { UserProfile } from "./Navigation";
 import { AxiosError } from "axios";
-import API from "@/lib/api/userAxios";
+import API from "@/app/lib/api/userAxios";
 import { useRouter } from "next/navigation";
 
 // Restaurant details

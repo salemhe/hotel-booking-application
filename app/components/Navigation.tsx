@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 // import AccountTypeModal from "./AccountTypeModal";
-import { AuthService } from "@/lib/api/services/userAuth.service";
+import { AuthService } from "@/app/lib/api/services/userAuth.service";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
 export interface UserProfile {

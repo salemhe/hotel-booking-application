@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { delay } from "@/lib/utils"
+import { delay } from "@/app/lib/utils"
 
 async function fetchRecentOrders() {
   await delay(2000) // Simulate network delay

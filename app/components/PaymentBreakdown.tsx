@@ -18,8 +18,8 @@ import {
 } from "./ui/select";
 import { ChevronLeft, ChevronRight, Frown, RefreshCcwIcon } from "lucide-react";
 import { Button } from "./ui/button";
-import API from "@/lib/api/axios";
-import { AuthService } from "@/lib/api/services/auth.service";
+import API from "@/app/lib/api/axios";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 
 interface PaymentType {
   _id: string;

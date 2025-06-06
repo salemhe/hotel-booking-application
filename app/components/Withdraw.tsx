@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import WithdrawalModal from "./WithdrawalModal";
 import { useRouter } from "next/navigation";
 import { Wallet, X } from "lucide-react";
-import { AuthService } from "@/lib/api/services/auth.service";
-import API from "@/lib/api/axios";
+import { AuthService } from "@/app/lib/api/services/auth.service";
+import API from "@/app/lib/api/axios";
 
 const user = AuthService.getUser();
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Star, MapPin, Heart } from "lucide-react";
 import { Badge } from "@/app/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn } from "@/app/lib/utils";
 import Link from "next/link";
 
 // Helper function to format price

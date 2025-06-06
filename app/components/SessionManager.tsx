@@ -2,7 +2,7 @@
 "use client"
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthService } from '@/lib/api/services/auth.service';
+import { AuthService } from '@/app/lib/api/services/auth.service';
 
 export default function SessionManager({ children }: { children: React.ReactNode }) {
   const router = useRouter();

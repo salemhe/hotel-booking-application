@@ -37,8 +37,8 @@ import {
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 
-import { AuthService } from "@/lib/api/services/auth.service";
-import API from "@/lib/api/axios";
+import { AuthService } from "@/app/lib/api/services/auth.service";
+import API from "@/app/lib/api/axios";
 
 // Define types
 interface Booking {

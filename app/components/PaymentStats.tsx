@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { delay } from "@/lib/utils";
+import { delay } from "@/app/lib/utils";
 import { CheckCircle2, CircleDollarSign, LucideChartColumnIncreasing } from "lucide-react";
 
 async function fetchPaymentStats() {

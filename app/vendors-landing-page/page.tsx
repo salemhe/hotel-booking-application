@@ -6,8 +6,8 @@ import {
   MenuSquare, Utensils, Tags, Bell,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/axios-config';
-import { AuthService } from '@/lib/api/services/auth.service';
+import { api } from '@/app/lib/axios-config';
+import { AuthService } from '@/app/lib/api/services/auth.service';
 import { ChevronDown, LogOut, X, Menu } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
 import { Button } from "@/app/components/ui/button"
