@@ -119,7 +119,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
           <div className="rounded-2xl bg-[#E7F0F0] border border-[#E5E7EB] p-2">
             <MapComponent address={restaurant.address} />
           </div>
-          <div className="max-w-sm w-full p-4 rounded-2xl bg-white shadow space-y-4 text-sm text-gray-800">
+          <div className="max-w-sm w-full p-4 rounded-2xl bg-white space-y-4 text-sm text-gray-800">
             <div>
               <h3 className="font-semibold text-gray-900 mb-1">Location</h3>
               <div className="flex items-start gap-2">

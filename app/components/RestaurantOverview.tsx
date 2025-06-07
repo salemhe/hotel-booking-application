@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronUp, Clock } from "lucide-react";
+import { ChevronDown, ChevronUp, CircleDollarSign, Clock, MapPin } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 
 const RestaurantOverview = ({ address }: {address: string}) => {
@@ -20,53 +20,53 @@ const RestaurantOverview = ({ address }: {address: string}) => {
   return (
     <div className="space-y-6 text-sm md:text-base">
       <div className="flex flex-wrap gap-4">
-        <div className="bg-green-100 px-4 py-2 rounded-xl border border-[#72E94E] flex items-center gap-4">
+        <div className="bg-[#E8FFE1] px-4 py-2 rounded-xl border border-[#72E94E] flex items-center gap-4">
           <div>
             <Clock className="text-[#068D33]" />
           </div>
           <div className="space-y-1">
-            <p className="text-green-800 text-xs">Opening Hours</p>
+            <p className="text-xs">Opening Hours</p>
             <p className="font-semibold text-sm">12:00 PM - 11:00 PM Daily</p>
           </div>
         </div>
-        <div className="bg-green-100 px-4 py-2 rounded-xl border border-[#72E94E] flex items-center gap-4">
+        <div className="bg-[#C8FAFF] px-4 py-2 rounded-xl border border-[#49EDFF] flex items-center gap-4">
           <div>
-            <Clock className="text-[#068D33]" />
+            <MapPin className="text-[#028C9B]" />
           </div>
           <div className="space-y-1">
-            <p className="text-green-800 text-xs">Location</p>
+            <p className="text-xs">Location</p>
             <p className="font-semibold text-sm">
               {address}
             </p>
           </div>
         </div>
-        <div className="bg-green-100 px-4 py-2 rounded-xl border border-[#72E94E] flex items-center gap-4">
+        <div className="bg-[#FFEFE1] px-4 py-2 rounded-xl border border-[#FFB778] flex items-center gap-4">
           <div>
-            <Clock className="text-[#068D33]" />
+            <Clock className="text-[#B76115]" />
           </div>
           <div className="space-y-1">
-            <p className="text-green-800 text-xs">Cuisine</p>
+            <p className="text-xs">Cuisine</p>
             <p className="font-semibold text-sm">
               Middle Eastern, Turkish, Mediterranean
             </p>
           </div>
         </div>
-        <div className="bg-green-100 px-4 py-2 rounded-xl border border-[#72E94E] flex items-center gap-4">
+        <div className="bg-[#EBE1FF] px-4 py-2 rounded-xl border border-[#C0A1FF] flex items-center gap-4">
           <div>
-            <Clock className="text-[#068D33]" />
+            <CircleDollarSign className="text-[#6729E5]" />
           </div>
           <div className="space-y-1">
-            <p className="text-green-800 text-xs">Price Range</p>
+            <p className="text-xs">Price Range</p>
             <p className="font-semibold text-sm">From ₦20,000</p>
           </div>
         </div>
       </div>
       <div>
-        <h2 className="text-lg font-semibold mb-2">About this Place</h2>
+        <h2 className="text-lg font-semibold mb-2 ml-3">About this Place</h2>
         <div
           ref={contentRef}
           className={cn(
-            "transition-all overflow-hidden",
+            "transition-all overflow-hidden ml-3",
             showMore ? "max-h-[1000px]" : "max-h-[100px]"
           )}
         >

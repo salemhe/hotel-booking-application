@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import RestaurantOverview from "./RestaurantOverview";
 import { Restaurant } from "../lib/types/restaurant";
+import RestaurantMenu from "./RestaurantMenu";
+import RestauranAvalableSlot from "./RestaurantAvailableSlot";
 
 const RestaurantInfo = ({ data }: { data: Restaurant}) => {
   const [activeTab, setActiveTab] = useState<
@@ -49,8 +51,8 @@ const RestaurantInfo = ({ data }: { data: Restaurant}) => {
       </div>
       <div className="mt-8">
         {activeTab === "overview" && <RestaurantOverview address={data.address} />}
-        {activeTab === "menu" && <p>Menu</p>}
-        {activeTab === "available" && <p>Available</p>}
+        {activeTab === "menu" && <RestaurantMenu />}
+        {activeTab === "available" && <RestauranAvalableSlot />}
         {activeTab === "reviews" && <p>Reviews</p>}
       </div>
     </div>
