@@ -11,7 +11,7 @@ export default function RestauranAvalableSlot() {
   ];
   return (
     <div className="flex flex-col font-[var(--font-inter)] gap-6">
-      <div className="bg-[#E8FFE1] px-4 py-2 rounded-xl border w-fit border-[#72E94E] flex items-center gap-4">
+      <div className="bg-[#E8FFE1] p-3 rounded-xl border w-fit border-[#72E94E] flex items-center gap-4">
         <div>
           <Clock className="text-[#068D33]" />
         </div>
@@ -30,11 +30,11 @@ export default function RestauranAvalableSlot() {
             <button
               key={slot}
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all duration-200 bg-white border-[#0A6C6D] text-[#0A6C6D] hover:bg-slate-50 hover:border-[#0A6C6D]
+                flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all duration-200 bg-white border-[#0A6C6D] text-[#0A6C6D] hover:bg-slate-50 hover:border-[#0A6C6D]
               `}
             >
               <Calendar className="size-4" />
-              <span className="font-medium">{slot}</span>
+              <span className="font-medium text-sm">{slot}</span>
             </button>
           ))}
         </div>

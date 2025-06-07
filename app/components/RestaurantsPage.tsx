@@ -40,11 +40,20 @@ const fetchRestaurant = async (id: string): Promise<{
   data: Restaurant[]
 }> => {
   try {
-    // Example fetch, replace with actual API call
     const response = await API.get(`/vendors?vendorId=${id}`);
     const data = await response.data;
+    // const data = [
+    //   {
+    //     businessName: "Kapadoccia",
+    //     _id: "12",
+    //     name: "Wisdom",
+    //     email: "wisetega007@gmail",
+    //     phone: "12345678990",
+    //     address: "ademola street",
+    //     profileImage: ""
+    //   }
+    // ]
     return { data };
-    // return { data: { name: "Sample Restaurant" } };
   } catch (error) {
     console.error(error)
     // Handle error and return a default value or rethrow
@@ -98,8 +107,8 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex gap-1">
-                  <Star className="fill-yellow-400 text-transparent font-bold" />{" "}
+                <div className="flex gap-1 items-center text-xs">
+                  <Star className="fill-[#F0AE02] text-transparent font-bold h-4" />{" "}
                   4.8 <span className="text-[#6B7280]">(1,000 views)</span>
                 </div>
               </div>
@@ -116,7 +125,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
             </h2>
             <BookingForm />
           </div>
-          <div className="rounded-2xl bg-[#E7F0F0] border border-[#E5E7EB] p-2">
+          <div className="rounded-2xl bg-[#E7F0F0] border border-[#E5E7EB] p-1">
             <MapComponent address={restaurant.address} />
           </div>
           <div className="max-w-sm w-full p-4 rounded-2xl bg-white space-y-4 text-sm text-gray-800">

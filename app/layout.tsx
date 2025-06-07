@@ -3,18 +3,11 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
-import { Inter } from "next/font/google";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-dm-sans",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -32,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${dmSans.variable} ${inter.variable} antialiased`}>
+      <body className={`${dmSans.variable} antialiased`}>
         <ErrorBoundary>
           {children}
           <Toaster />

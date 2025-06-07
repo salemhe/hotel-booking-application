@@ -39,9 +39,9 @@ const RestaurantInfo = ({ data }: { data: Restaurant}) => {
             <button
               key={i}
               onClick={() => setActiveTab(tab.tab)}
-              className={`p-2 w-max cursor-pointer font-semibold text-[#606368] ${
-                activeTab === tab.tab &&
-                "border-b-2 border-green-800 text-green-800"
+              className={`p-2 w-max cursor-pointer font-semibold ${
+                activeTab === tab.tab ?
+                "border-b-2 text-[#0A6C6D] border-[#0A6C6D]" : "text-[#606368]"
               }`}
             >
               {tab.name}
