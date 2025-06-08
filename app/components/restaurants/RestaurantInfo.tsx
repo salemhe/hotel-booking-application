@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import RestaurantOverview from "./RestaurantOverview";
-import { Restaurant } from "../lib/types/restaurant";
+import { Restaurant } from "../../lib/types/restaurant";
 import RestaurantMenu from "./RestaurantMenu";
 import RestauranAvalableSlot from "./RestaurantAvailableSlot";
 
@@ -33,13 +33,13 @@ const RestaurantInfo = ({ data }: { data: Restaurant}) => {
   ];
   return (
     <div>
-      <div className="border-gray-100 border-b  overflow-auto w-full">
+      <div className="border-[#E5E7EB] border-b  overflow-auto w-full">
         <div className="w-max flex-nowrap flex">
           {tabs.map((tab, i) => (
             <button
               key={i}
               onClick={() => setActiveTab(tab.tab)}
-              className={`p-2 w-max cursor-pointer font-semibold ${
+              className={`p-3 w-max cursor-pointer font-semibold ${
                 activeTab === tab.tab ?
                 "border-b-2 text-[#0A6C6D] border-[#0A6C6D]" : "text-[#606368]"
               }`}

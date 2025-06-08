@@ -1,43 +1,48 @@
-import Image from "next/image";
-import { Button } from "./ui/button";
-import { Heart, Mail, MapPin, Phone, Share2Icon, Star } from "lucide-react";
+import { Mail, MapPin, Phone, Star } from "lucide-react";
 import RestaurantInfo from "./RestaurantInfo";
-import BookingForm from "./BookingForm";
-import MapComponent from "./MapComponent";
+import BookingForm from "../BookingForm";
+import MapComponent from "../MapComponent";
 import Link from "next/link";
 import API from "@/app/lib/api/userServerAxios";
-import { Restaurant } from "../lib/types/restaurant";
+import { Restaurant } from "../../lib/types/restaurant";
+import RestaurantImages from "./RestaurantImages";
+import RestaurantSaveCopy from "./RestaurantSaveCopy";
 
 const images = [
   {
     image: "/blue-origin.png",
     name: "Blue Origin",
-    style: "row-span-5 col-span-2",
+  },
+  {
+    image: "/hero-bg.png",
+    name: "Blue Origin",
+  },
+  {
+    image: "/dominos.webp",
+    name: "Blue Origin",
   },
   {
     image: "/blue-origin.png",
     name: "Blue Origin",
-    style: "row-span-2",
   },
   {
     image: "/blue-origin.png",
     name: "Blue Origin",
-    style: "row-span-3",
   },
   {
     image: "/blue-origin.png",
     name: "Blue Origin",
-    style: "row-span-3",
   },
   {
     image: "/blue-origin.png",
     name: "Blue Origin",
-    style: "row-span-2",
   },
 ];
 
-const fetchRestaurant = async (id: string): Promise<{
-  data: Restaurant[]
+const fetchRestaurant = async (
+  id: string
+): Promise<{
+  data: Restaurant[];
 }> => {
   try {
     const response = await API.get(`/vendors?vendorId=${id}`);
@@ -49,42 +54,31 @@ const fetchRestaurant = async (id: string): Promise<{
     //     name: "Wisdom",
     //     email: "wisetega007@gmail",
     //     phone: "12345678990",
-    //     address: "ademola street",
-    //     profileImage: ""
-    //   }
-    // ]
+    //     address: "16, Idowu Taylor Street, Victoria Island 101241 Nigeria",
+    //     profileImage: "",
+    //   },
+    // ];
     return { data };
   } catch (error) {
-    console.error(error)
+    console.error(error);
     // Handle error and return a default value or rethrow
     return { data: [] };
   }
-}
+};
 
 const RestaurantsPage = async ({ id }: { id: string }) => {
-  const data = await fetchRestaurant(id)
-  const restaurant = data.data[0]
+  const data = await fetchRestaurant(id);
+  const restaurant = data.data[0];
   return (
     <main className="mx-auto py-8 px-4 max-w-7xl sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row gap-8 w-full">
         <div className="w-full space-y-8">
           <div className="col-span-2">
             <div className="w-full space-y-6">
-              <div className="grid md:grid-flow-col gap-2 w-full rounded-xl overflow-clip h-[300px] md:h-[400px] relative">
-                <Button className="cursor-pointer absolute bottom-3 right-2 z-10 bg-white text-black rounded-2xl hover:bg-gray-50">
-                  See more photos
-                </Button>
-                {images.map((image, i) => (
-                  <div key={i} className={`relative ${image.style}`}>
-                    <Image
-                      src={image.image}
-                      className="object-cover cursor-pointer"
-                      alt={image.name}
-                      fill
-                    />
-                  </div>
-                ))}
-              </div>
+              <RestaurantImages
+                images={images}
+                name={restaurant.businessName}
+              />
               <div className="space-y-2">
                 <div className="flex flex-col md:flex-row md:justify-between md:items-cente w-full gap-4">
                   <div className="flex gap-2 items-center">
@@ -96,16 +90,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
                       Opened
                     </span>
                   </div>
-                  <div className="flex gap-4">
-                    <Button variant="outline" className="rounded-xl">
-                      <Share2Icon />
-                      Share
-                    </Button>
-                    <Button variant="outline" className="rounded-xl">
-                      <Heart />
-                      Save
-                    </Button>
-                  </div>
+                  <RestaurantSaveCopy id={id} />
                 </div>
                 <div className="flex gap-1 items-center text-xs">
                   <Star className="fill-[#F0AE02] text-transparent font-bold h-4" />{" "}
@@ -133,9 +118,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
               <h3 className="font-semibold text-gray-900 mb-1">Location</h3>
               <div className="flex items-start gap-2">
                 <MapPin className="w-5 h-5 text-black mt-1" />
-                <p>
-                  {restaurant.address}
-                </p>
+                <p>{restaurant.address}</p>
               </div>
             </div>
 
