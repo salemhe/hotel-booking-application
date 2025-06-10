@@ -1,7 +1,7 @@
 'use client';
 
-import PaymentForm from '@/app/components/PaymentForm';
 import MealSelectionSummary from '@/app/components/MealSelectionSummary';
+import PaymentForm from '@/app/components/paymentForm';
 
 export default function PaymentPage() {
   return (
@@ -26,7 +26,7 @@ export default function PaymentPage() {
         </div>
 
         <div className="mb-6">
-          <PaymentForm />
+          <PaymentForm total={1} />
         </div>
 
         <div>
