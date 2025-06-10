@@ -32,7 +32,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import API from "@/app/lib/api/axios";
 import { AxiosError } from "axios";
-import { revalidatePath } from "next/cache";
 import { AuthService, AuthUser } from "@/app/lib/api/services/auth.service";
 
 // Form validation schema
@@ -151,8 +150,8 @@ export default function VendorBankForm() {
       AuthService.setUser(updatedUser);
       toast.success("Payment details saved successfully!");
       console.log("Payment details saved:", response);
-      revalidatePath("/vendorsDashboard/payment");
-      router.push("/vendorsDashboard/payment");
+      router.replace("/vendorsDashboard/payment");
+      // router.push("/vendorsDashboard/payment");
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error("Error saving payment details:", error);
