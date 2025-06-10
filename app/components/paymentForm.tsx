@@ -494,3 +494,25 @@ export default function PaymentForm( {total}: {total: number}) {
     </>
   );
 }
+
+//SimplePaymentForm
+export function SimplePaymentForm() {
+  return (
+    <form className="space-y-4">
+      <input className="input w-full p-2 border rounded" placeholder="Name on card" />
+      <input className="input w-full p-2 border rounded" placeholder="Card number" />
+      <div className="flex gap-4">
+        <input className="input w-1/2 p-2 border rounded" placeholder="MM/YY" />
+        <input className="input w-1/2 p-2 border rounded" placeholder="CVV" />
+      </div>
+      <input className="input w-full p-2 border rounded" placeholder="Email for receipt" />
+      <div className="flex items-center gap-2 text-sm">
+        <input type="checkbox" />
+        <label>Save card for future use</label>
+      </div>
+      <button type="submit" className="w-full bg-primary text-white py-2 rounded-md">
+        Pay ₦42,000 now
+      </button>
+    </form>
+  );
+}
