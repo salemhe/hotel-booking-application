@@ -1,10 +1,13 @@
-import BookingsPage from '@/app/components/bookings/BookingsPage'
-import React from 'react'
+import BookingsPage from "@/app/components/bookings/BookingsPage";
+import { BookingsProvider } from "@/app/contexts/BookingsContext";
+import React from "react";
 
-const page = () => {
+const page = async () => {
   return (
-    <BookingsPage />
-  )
-}
+    <BookingsProvider>
+      <BookingsPage />
+    </BookingsProvider>
+  );
+};
 
-export default page
+export default page;
