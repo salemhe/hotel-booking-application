@@ -12,18 +12,21 @@ import BookingsCard from "./BookingsCard";
 
 const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
   const { activeType, setActiveType } = useBookings();
-  const [datas, setDatas] = useState<{
-    name: string;
-    type: string;
-    status: string;
-    location: string;
-    guests: number;
-    rooms: number;
-    startTime: string;
-    endTime: string;
-    image: string;
-}[]>()
+  const [datas, setDatas] = useState<
+    {
+      name: string;
+      type: string;
+      status: string;
+      location: string;
+      guests: number;
+      rooms: number;
+      startTime: string;
+      endTime: string;
+      image: string;
+    }[]
+  >();
   const [isLoading, setIsLoading] = useState(false);
+  const [metLoading, setMetLoading] = useState(false);
   const [activeItem, setActiveItem] = useState("");
   const [data, setData] = useState<{
     upcomingBookings: number;
@@ -35,7 +38,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     pastBookings: 8,
     upcomingReservations: 3,
     pastReservations: 6,
-  }); 
+  });
 
   useEffect(() => {
     fetchMetrics();
@@ -177,10 +180,19 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
   ];
 
   const fetchMetrics = async () => {
-        const upcomingBookings = bookings.filter(c => c.status === "Upcoming" && c.type === "Hotel")
-    const pastBookings = bookings.filter(c => c.status === "Past" && c.type === "Hotel")
-    const upcomingReservations = bookings.filter(c => c.status === "Upcoming" && c.type === "Restaurant")
-    const pastReservations = bookings.filter(c => c.status === "Past" && c.type === "Restaurant")
+    setMetLoading(true)
+    const upcomingBookings = bookings.filter(
+      (c) => c.status === "Upcoming" && c.type === "Hotel"
+    );
+    const pastBookings = bookings.filter(
+      (c) => c.status === "Past" && c.type === "Hotel"
+    );
+    const upcomingReservations = bookings.filter(
+      (c) => c.status === "Upcoming" && c.type === "Restaurant"
+    );
+    const pastReservations = bookings.filter(
+      (c) => c.status === "Past" && c.type === "Restaurant"
+    );
     const data = new Promise<{
       upcomingBookings: number;
       pastBookings: number;
@@ -194,30 +206,72 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
           upcomingReservations: upcomingReservations.length,
           pastReservations: pastReservations.length,
         });
-      }, 5000);
+      }, 500);
     });
     setData(await data);
+    setMetLoading(false)
   };
 
   const fetchData = async () => {
-    setIsLoading(true)
-        const upcomingBookings = bookings.filter(c => c.status === "Upcoming" && c.type === "Hotel")
-    const pastBookings = bookings.filter(c => c.status === "Past" && c.type === "Hotel")
-    const upcomingReservations = bookings.filter(c => c.status === "Upcoming" && c.type === "Restaurant")
-    const pastReservations = bookings.filter(c => c.status === "Past" && c.type === "Restaurant")
-    
-    const data = (activeType === "upcoming" && type === "bookings") ? upcomingBookings : (activeType === "past" && type === "bookings") ? pastBookings : (activeType === "upcoming" && type ==="reservations") ? upcomingReservations : pastReservations
-    setDatas(data)
-    setIsLoading(false)
-  }
+    setIsLoading(true);
+    const upcomingBookings = bookings.filter(
+      (c) => c.status === "Upcoming" && c.type === "Hotel"
+    );
+    const pastBookings = bookings.filter(
+      (c) => c.status === "Past" && c.type === "Hotel"
+    );
+    const upcomingReservations = bookings.filter(
+      (c) => c.status === "Upcoming" && c.type === "Restaurant"
+    );
+    const pastReservations = bookings.filter(
+      (c) => c.status === "Past" && c.type === "Restaurant"
+    );
+
+    const data = new Promise<
+      {
+        name: string;
+        type: string;
+        status: string;
+        location: string;
+        guests: number;
+        rooms: number;
+        startTime: string;
+        endTime: string;
+        image: string;
+      }[]
+    >((resolve) => {
+      setTimeout(() => {
+        const items =
+          activeType === "upcoming" && type === "bookings"
+            ? upcomingBookings
+            : activeType === "past" && type === "bookings"
+            ? pastBookings
+            : activeType === "upcoming" && type === "reservations"
+            ? upcomingReservations
+            : pastReservations;
+        resolve(items);
+      }, 1000);
+    });
+    setDatas(await data);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [type, activeType])
+    fetchData();
+  }, [type, activeType]);
+
+  if (metLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <span className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0A6C6D]" />
+        <span className="ml-4 text-[#0A6C6D] font-medium">Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 w-full">
-      <div className="flex flex-col-reverse sm:flex-row justify-between items-center flex-wrap gap-4 px-4 pt-2 sm:pb-0 bg-white border rounded-t-2xl border-[#E5E7EB]">
+      <div className="flex flex-col-reverse sm:flex-row justify-between items-center flex-wrap gap-4 px-4 pt-2 sm:pt-0 sm:pb-0 bg-white border rounded-t-2xl border-[#E5E7EB]">
         <div className="flex gap-6 items-center">
           {tab.map((tab, i) => (
             <button
@@ -265,14 +319,18 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
         </div>
       </div>
       {isLoading ? (
-        <div>Loading...</div>
-      ) : datas &&
-(
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {datas.map((booking, i) => (
-          <BookingsCard key={i} data={booking} />
-        ))}
+      <div className="flex justify-center items-center h-64">
+        <span className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0A6C6D]" />
+        <span className="ml-4 text-[#0A6C6D] font-medium">Loading...</span>
       </div>
+      ) : (
+        datas && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {datas.map((booking, i) => (
+              <BookingsCard key={i} data={booking} />
+            ))}
+          </div>
+        )
       )}
     </div>
   );
