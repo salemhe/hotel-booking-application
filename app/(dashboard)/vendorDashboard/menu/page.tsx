@@ -1,8 +1,8 @@
 "use client";
-import MenuItem from "@/components/MenuItem";
-import { MenuPopup } from "@/components/MenuPopup";
-import { AuthService } from "@/services/auth.services";
-import API from "@/utils/axios";
+import MenuItem from "@/app/components/MenuItem";
+import { MenuPopup } from "@/app/components/MenuPopup";
+import { AuthService } from "@/app/lib/api/services/auth.service";
+import API from "@/app/lib/api/axios";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";

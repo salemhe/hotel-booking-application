@@ -1,39 +1,22 @@
-import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
-import "../globals.css";
-// import { AuthProvider } from "@/contexts/AuthContext";
-import { Toaster } from "sonner";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import Navigation from "@/app/components/Navigation";
+import Footer from "@/app/components/Footer";
+import { Inter } from "next/font/google";
 
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-dm-sans",
-});
 
-export const metadata: Metadata = {
-  title: "Brand - Restaurant and Hotel Booking",
-  description: "Book your favorite restaurants and hotels with ease",
-};
+const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({
+export default function layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className={`${dmSans.variable} antialiased`}>
-          {/* <AuthProvider> */}
-            <div className="flex flex-col min-h-screen">
-              <Navigation />
-              <main className="grow">{children}</main>
-              <Footer />
-            </div>
-            <Toaster />
-          {/* </AuthProvider> */}
-      </body>
-    </html>
+    <div className={`flex flex-col ${inter.className} min-h-screen bg-[#F9FAFB]`}>
+      <Navigation />
+      <main className="grow">{children}</main>
+      <Footer />
+    </div>
   );
 }

@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import { DashboardStats } from "@/components/DashboardStats";
-import { Overview } from "@/components/Overview";
-import { RecentOrders } from "@/components/RecentOrders";
-import { TopSellingItems } from "@/components/TopSellingItems";
-import {MenuCard}  from "@/components/MenuCard";
+import { DashboardStats } from "@/app/components/DashboardStats";
+import { Overview } from "@/app/components/Overview";
+import { RecentOrders } from "@/app/components/RecentOrders";
+import { TopSellingItems } from "@/app/components/TopSellingItems";
+import {MenuCard}  from "@/app/components/MenuCard";
 
 export default function DashboardPage() {
   return (

@@ -1,4 +1,4 @@
-import PaymentMethodSelection from "@/components/paymentMethodSelection"
+import PaymentMethodSelection from "@/app/components/paymentMethodSelection"
 
 export default async function Home({
   params,

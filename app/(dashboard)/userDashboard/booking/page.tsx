@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/app/components/ui/tooltip";
 import {
   Search,
   Printer,
@@ -18,34 +18,34 @@ import {
   Download,
   ArrowUpRightFromSquare,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/app/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Card, CardContent } from "@/components/ui/card";
+} from "@/app/components/ui/dropdown-menu";
+import { Card, CardContent } from "@/app/components/ui/card";
 import Image from "next/image";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
-import API from "@/utils/userAxios";
-import { AuthService } from "@/services/userAuth.services";
+import API from "@/app/lib/api/userAxios";
+import { AuthService, UserProfile } from "@/app/lib/api/services/userAuth.service";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("all");
   const [tableType, setTableType] = useState("all");
-  const authUser = AuthService.getUser();
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -68,7 +68,12 @@ export default function BookingList() {
   };
 
   useEffect(() => {
-    fetchBooking();
+    (async () => {
+      const id = await AuthService.getId();
+      const authUser = await AuthService.getUser(id!);
+      setUser(authUser);
+      await fetchBooking();
+    })();
   }, []);
 
   // Filter bookings based on search and filters
@@ -103,7 +108,7 @@ export default function BookingList() {
         <header className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold flex gap-2">
-              {authUser?.firstName || "loading..."} {authUser?.lastName || ""}
+              {user?.firstName || "loading..."} {user?.lastName || ""}
             </h1>
           </div>
 

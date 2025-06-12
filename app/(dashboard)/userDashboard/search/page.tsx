@@ -2,15 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Search, MapPin, Filter, ChevronDown } from "lucide-react";
-import RestaurantCard, { RestaurantType } from "@/components/restaurant-card";
-import FilterSidebar from "@/components/filter-sidebar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import RestaurantCard, { RestaurantType } from "@/app/components/restaurant-card";
+import FilterSidebar from "@/app/components/filter-sidebar";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import API from "@/utils/userAxios";
+import API from "@/app/lib/api/userAxios";
 import { AxiosError } from "axios";
-import Link from "next/link";
-import Image from "next/image";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,16 +22,6 @@ export default function Home() {
   const [favorites, setFavorites] = useState([""]);
   const [recentSearches, setRecentSearches] = useState([""]);
   const [initailLoad, setInitialLoad] = useState(true);
-  const [foods, setFoods] = useState<
-    {
-      _id: string;
-      vendor: string;
-      dishName: string;
-      dishImage: string;
-      cuisineType: string;
-      price: number;
-    }[]
-  >([]);
 
   const { toast } = useToast();
 
@@ -115,14 +103,29 @@ export default function Home() {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
+  useEffect(() => {
+    // Initial search to load featured restaurants
+    const initialSearch = async () => {
+      setInitialLoad(true);
+      try {
+        await searchRestaurants("");
+      } catch (error) {
+        console.error("Error during initial search:", error);
+      } finally {
+        setInitialLoad(false);
+      }
+    };
+
+    initialSearch();
+  }, [])
+
   const searchRestaurants = useCallback(
     async (query: string) => {
       setInitialLoad(false);
       setLoading(true);
       try {
-        const [restaurantRes, foodRes] = await Promise.allSettled([
+        const [restaurantRes] = await Promise.allSettled([
           API.get(`/users/restaurant-search?query=${encodeURIComponent(query)}`),
-          API.get(`/vendors/menus?dishName=${query}`)
         ]);
       
         if (restaurantRes.status === 'fulfilled') {
@@ -132,16 +135,6 @@ export default function Home() {
         } else {
           throw restaurantRes.reason;
         }
-      
-        if (foodRes.status === 'fulfilled') {
-          console.log("Response from API:", foodRes.value.data);
-          setFoods(foodRes.value.data.menus || []);
-        } else if (foodRes.reason instanceof AxiosError && foodRes.reason.response?.status === 404) {
-          setFoods([]);
-        } else {
-          throw foodRes.reason;
-        }
-      
         // Save to recent searches
         if (query.trim() !== "") {
           const updatedSearches = [
@@ -422,46 +415,6 @@ export default function Home() {
               </div>
             </div>
           </>
-        )}
-
-        {foods.length > 0 && (
-          <div className="my-8 px-4 py-6 bg-white rounded-xl">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-8">
-              {foods.map((food) => (
-                <Link
-                  href={`/userDashboard/search/${food.vendor}`}
-                  key={food._id}
-                  className="relative group overflow-visible z-10"
-                >
-                  {/* Image Circle with Fancy Effects */}
-                  <div className="w-[110px] h-[110px] mx-auto relative z-10">
-                    <Image
-                      src={food.dishImage || "/dan-gold.jpg"}
-                      alt={food.dishName || "Food"}
-                      fill
-                      className="object-cover rounded-full shadow-xl border-4 border-white transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-
-                  {/* Floating Details */}
-                  <div className="text-center mt-6">
-                    <h3 className="text-base font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors duration-300">
-                      {food.dishName}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1 italic capitalize">
-                      {food.cuisineType || "Cuisine not listed"}
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-green-600">
-                      ₦{food.price?.toLocaleString() || "N/A"}
-                    </p>
-                  </div>
-
-                  {/* Floating Hover Aura */}
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[120px] h-[120px] bg-gradient-to-br from-indigo-300/30 to-pink-300/30 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition duration-500 z-0" />
-                </Link>
-              ))}
-            </div>
-          </div>
         )}
 
         <div className="mt-4">

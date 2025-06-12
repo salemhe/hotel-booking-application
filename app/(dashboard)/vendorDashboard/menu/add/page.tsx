@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { MenuUploadForm } from "@/components/MenuUploadForm";
+import { MenuUploadForm } from "@/app/components/MenuUploadForm";
 
 export default function AddMenuButton() {
   const [formData, setFormData] = useState({});

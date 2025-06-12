@@ -1,7 +1,7 @@
 "use client"
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { api, setAuthToken } from "@/lib/axios-config"
+import { api, setAuthToken } from "@/app/lib/axios-config"
 
 export const useAuthCheck = () => {
   const router = useRouter()
