@@ -2,26 +2,25 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, LogOut, ChevronDown, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// import { api, setAuthToken } from "@/lib/axios-config";
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-// import AccountTypeModal from "./AccountTypeModal";
+  import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+  } from "@/components/ui/dropdown-menu";
 import { AuthService } from "@/services/userAuth.services";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-
+import SearchSection, { SearchSectionTwo } from "./SearchSection";
 export interface UserProfile {
   id: string;
   email: string;
@@ -32,6 +31,14 @@ export interface UserProfile {
 
 const Navigation = () => {
   const router = useRouter();
+  
+  const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+  const [isSearchPage, setIsSearchPage] = useState(pathname?.startsWith('/search'));
+
+  useEffect(() => {
+    setIsSearchPage(pathname?.startsWith('/search'));
+  }, [pathname]);
 
   // Auth state management
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -39,40 +46,27 @@ const Navigation = () => {
   const isLoggedIn = AuthService.isAuthenticated() && profile?.firstName;
 
   const navItems = [
-    { name: "Restaurants", href: "/userDashboard/search" },
-    { name: "About Us", href: "/about" },
-    { name: "Contact", href: "/contact" },
-    { name: "Vendor", href: "/vendors-landing-page" },
+    { name: "Home", href: "/home" },
+    // { name: "Restaurants", href: "/userDashboard/search" },
+    { name: "Bookings / Reservations", href: "/userDashboard/booking" },
+    { name: "Offers", href: "#" },
   ];
 
   useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
     const fetchUserData = async () => {
-      // try {
-      //   let token = localStorage.getItem("auth_token");
-      //   let userId = localStorage.getItem("user_id");
-
-      //   if (!token || !userId ) {
-      //     const sessionResponse = await api.get("/sessions/user");
-      //     token = sessionResponse.data.token;
-      //     userId = sessionResponse.data.userId;
-      //     const expiresAt = sessionResponse.data.expiresAt;
-
-      //     if (new Date(expiresAt) < new Date()) {
-      //       return;
-      //     }
-
-      //     if (token && userId) {
-      //       localStorage.setItem("auth_token", token);
-      //       localStorage.setItem("user_id", userId);
-      //     }
-      //   }
-
-      //   setAuthToken(token);
-      //   const profileResponse = await api.get(`/users/profile/${userId}`);
-      // } catch (error) {
-      //   console.error("Session Fetch Error:", error);
-      //   setProfile(null);
-      // }
       setProfile(AuthService.getUser());
       setLoading(false);
     };
@@ -97,43 +91,77 @@ const Navigation = () => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="flex items-center gap-2 p-2 hover:bg-transparent group"
+            <div
+              className="flex items-center bg-transparent w-24 h-14 p-2 rounded-[36px]
+                         outline-1 outline-offset-[-1px] outline-gray-200 gap-2 cursor-pointer"
             >
-              <Avatar>
+              <Avatar className="w-10 h-10">
                 <AvatarFallback>
-                  {profile.firstName.charAt(0).toUpperCase()}
-                  {profile.lastName.charAt(0).toUpperCase()}
+                  {profile.firstName[0].toUpperCase()}
+                  {profile.lastName[0].toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {/* <div className="hidden md:block text-left">
-                <p className="text-sm font-medium">
-                  Hi, {profile.firstName}
-                  {profile.lastName}
-                </p>
-                <p className="text-xs text-muted-foreground">User</p>
-              </div> */}
-              <div className="w-8 h-8 rounded-ful flex items-center justify-center">
-                <ChevronDown
-                  className="group-hover:translate-y-0.5 transition-all"
-                  size={16}
-                />
-              </div>
-            </Button>
+              <ChevronDown size={18} className="text-gray-600" />
+            </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuItem asChild>
-              <Link href="/userDashboard/search">Dashboard</Link>
+    
+          <DropdownMenuContent align="end" className="w-72 bg-gray-50 rounded-2xl">
+            {/* Header */}
+            <div className="flex items-center px-4 py-4">
+              <Avatar className="w-10 h-10 mr-3">
+                <AvatarFallback>
+                  {profile.firstName[0].toUpperCase()}
+                  {profile.lastName[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-semibold text-gray-900">
+                  Hi, {profile.firstName} {profile.lastName}
+                </p>
+                <p className="text-xs text-gray-500">{profile.email}</p>
+              </div>
+            </div>
+    
+            <DropdownMenuSeparator />
+    
+            {/* Primary links */}
+                <DropdownMenuItem asChild className="  px-4 py-2">
+                  <Link href="/messages">Messages</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="  px-4 py-2">
+                  <Link href="/userDashboard/booking">Bookings/Reservation</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="  px-4 py-2" >
+                  <Link href="/wishlist">Wishlist</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="  px-4 py-2">
+                  <Link href="/payments">Payments/Transaction</Link>
+                </DropdownMenuItem>
+    
+            <DropdownMenuSeparator />
+    
+            {/* Secondary links */}
+            <DropdownMenuItem asChild className="  px-4 py-2">
+              <Link href="/account">Account</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+            <DropdownMenuItem asChild className="  px-4 py-2">
+              <Link href="/help">Help Center</Link>
+            </DropdownMenuItem>
+    
+            <DropdownMenuSeparator />
+    
+            {/* Sign out */}
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="px-4 py-2 text-red-600 hover:bg-red-50"
+            >
+              Sign Out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
     }
+    
 
     return (
       <>
@@ -156,14 +184,6 @@ const Navigation = () => {
         {isLoggedIn && profile ? (
           <>
             <div className="flex items-center px-4">
-              {/* <div className="bg-gray-500 w-10 h-10 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">
-                  {
-                    // profile.profile.name?.charAt(0).toUpperCase() ||
-                    profile.firstName?.charAt(0).toUpperCase() || "U"
-                  }
-                </span>
-              </div> */}
               <Avatar>
                 <AvatarFallback>
                   {profile.firstName.charAt(0).toUpperCase()}
@@ -172,11 +192,7 @@ const Navigation = () => {
               </Avatar>
               <div className="ml-3">
                 <div className="text-sm font-medium text-gray-800">
-                  {
-                    // profile.profile.name ||
-                    profile.firstName
-                  }
-                  {/* {profile.lastName} */}
+                  {profile.firstName}
                 </div>
                 <div className="text-xs font-medium text-gray-500">
                   {profile.email}
@@ -226,63 +242,56 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className={`fixed top-0 z-90 w-full transition-all duration-300 ${scrolled || isSearchPage ? 'bg-white border-b' : 'bg-transparent'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between h-16 items-center">
           <div className="flex">
             <div className="shrink-0 flex items-center">
               <Link href="/" className="flex items-center space-x-2">
                 <ChefHat className="h-8 w-8 text-blue-600" />
-                <span className="text-2xl font-bold bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                  Bookie
+                <span className={`text-2xl font-bold ${scrolled || isSearchPage ? 'text-gray-900' : 'text-[#F9FAFB]'}`}>
+                  Bookies
                 </span>
               </Link>
             </div>
           </div>
-          <div className="hidden md:ml-6 md:flex sm:space-x-4">
-            {navItems.map((item) => (
-              <Link
+          {
+            !isSearchPage ? (
+              <div className="hidden md:ml-6 md:flex sm:space-x-8">
+            {navItems.map((item) =>{
+              const isActive = 
+              item.href === "/" 
+                ? pathname === "/" 
+                : pathname?.startsWith(item.href);
+              return (
+                <Link
                 key={item.name}
                 href={item.href}
-                className="text-muted-foreground text-sm hover:text-gray-700 font-medium"
+                className={`${scrolled || isSearchPage ? 'text-gray-700' : 'text-[#F9FAFB]'} 
+                  text-[1rem] hover:text-blue-500 font-bold px-3 py-2 transition-colors
+                  relative group`}
               >
                 {item.name}
+                <span 
+                  className={`absolute h-0.5 w-0 bg-blue-500 left-1/2 -translate-x-1/2 bottom-0 rounded-full
+                  ${isActive ? 'w-[24px] h-2' : 'group-hover:w-[24px] h-2'} transition-all duration-300`} 
+                />
               </Link>
-            ))}
+            )})}
           </div>
+            ) : (
+              <>
+                <SearchSectionTwo />
+              </>
+            )
+          }
           <div className="hidden md:ml-6 md:flex sm:items-center space-x-4">
-            {/* <p
-              className= "border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-               onClick={() => {
-                setIsAccountTypeModalOpen(true);
-                setAuth("login");
-              }}
-            >
-              Login
-            </p>
-          <p
-              className= "border-transparent cursor-pointer text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-               onClick={() => {
-                setIsAccountTypeModalOpen(true);
-                setAuth("signup");
-              }}
-            >
-              Create Account
-            </p> */}
-            {/* {isLoggedIn && (
-              <Button variant="ghost" size="icon">
-                <BellDot className="h-5 w-5" />
-              </Button>
-            )} */}
-            {/* <Button variant="ghost" size="icon">
-              <ShoppingCart className="h-5 w-5" />
-            </Button> */}
             {renderAuthButtons()}
           </div>
           <div className="md:hidden flex items-center">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-500">
+                <Button variant="ghost" size="icon" className={`${scrolled || isSearchPage ? 'text-gray-700' : 'text-white'}`}>
                   <span className="sr-only">Open main menu</span>
                   <Menu className="h-6 w-6" aria-hidden="true" />
                 </Button>
@@ -310,11 +319,6 @@ const Navigation = () => {
           </div>
         </div>
       </div>
-      {/* <AccountTypeModal
-        auth={auth}
-        isOpen={isAccountTypeModalOpen}
-        onClose={() => setIsAccountTypeModalOpen(false)}
-      /> */}
     </nav>
   );
 };

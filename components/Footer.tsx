@@ -1,129 +1,114 @@
-import Link from "next/link"
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, ChefHat } from "lucide-react"
+import Link from "next/link";
+import { FiPhone, FiMail, FiMapPin } from "react-icons/fi";
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div>
-              <Link href="/" className="flex items-center space-x-2 mb-4">
-                <ChefHat className="h-8 w-8 text-blue-600" />
-                <span className="text-2xl font-bold bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                  Bookie
-                </span>
-              </Link>
-              <p className="text-gray-600">
-                Making restaurant reservations simple and enjoyable
-              </p>
-              <div className="flex space-x-4 mt-4">
-                <Link href="#" className="text-gray-400 hover:text-blue-600">
-                  <Facebook className="h-6 w-6" />
-                </Link>
-                <Link href="#" className="text-gray-400 hover:text-blue-600">
-                  <Twitter className="h-6 w-6" />
-                </Link>
-                <Link href="#" className="text-gray-400 hover:text-blue-600">
-                  <Instagram className="h-6 w-6" />
-                </Link>
-                <Link href="#" className="text-gray-400 hover:text-blue-600">
-                  <Linkedin className="h-6 w-6" />
-                </Link>
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/about"
-                    className="text-gray-600 hover:text-blue-600"
-                  >
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/careers"
-                    className="text-gray-600 hover:text-blue-600"
-                  >
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/contact"
-                    className="text-gray-600 hover:text-blue-600"
-                  >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/help"
-                    className="text-gray-600 hover:text-blue-600"
-                  >
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/privacy"
-                    className="text-gray-600 hover:text-blue-600"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/terms"
-                    className="text-gray-600 hover:text-blue-600"
-                  >
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/faq"
-                    className="text-gray-600 hover:text-blue-600"
-                  >
-                    FAQs
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Contact</h3>
-              <ul className="space-y-2">
-                <li className="flex items-center text-gray-600">
-                  <Mail className="h-5 w-5 mr-2" />
-                  contact@bookie.com
-                </li>
-                <li className="flex items-center text-gray-600">
-                  <Phone className="h-5 w-5 mr-2" />
-                  (555) 123-4567
-                </li>
-                <li className="flex items-center text-gray-600">
-                  <MapPin className="h-5 w-5 mr-2" />
-                  123 Booking Street
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-12 pt-8 border-t text-center">
-            <p className="text-gray-600">
-              &copy; {new Date().getFullYear()} Bookie. All rights reserved.
+    <footer className="bg-slate-200 py-12">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Top grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          
+          {/* Brand & tagline */}
+          <div>
+            <Link href="/" className="flex items-center space-x-3 mb-4">
+              {/* small blue dot */}
+              <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
+              <span className="text-gray-900 text-xl font-bold leading-relaxed">
+                Bookies
+              </span>
+            </Link>
+            <p className="text-gray-900 text-base font-normal leading-normal">
+              Making restaurant reservations simple and enjoyable
             </p>
           </div>
+          
+          {/* Explore */}
+          <div>
+            <h3 className="text-lg font-semibold leading-snug mb-4">Explore</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>
+                <Link href="/restaurants" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal  text-gray-900 text-base font-normal leading-normal">
+                  Restaurants
+                </Link>
+              </li>
+              <li>
+                <Link href="/hotels" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+                  Hotels
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/top-restaurants"
+                  className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal"
+                >
+                  Top Restaurants
+                </Link>
+              </li>
+            </ul>
+          </div>
+          
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold leading-snug mb-4">
+              Quick Links
+            </h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>
+                <Link href="/about" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+                  About us
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/faqs" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+                  FAQs
+                </Link>
+              </li>
+              <li>
+                <Link href="/help" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+                  Help center
+                </Link>
+              </li>
+            </ul>
+          </div>
+          
+          {/* Contact */}
+          <div>
+            <h3 className="text-lg font-semibold leading-snug mb-4">Contact</h3>
+            <ul className="space-y-2 hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+              <li className="flex items-start">
+                <FiPhone className="mt-1 mr-2" /> +23412345678
+              </li>
+              <li className="flex items-center">
+                <FiMail className="mr-2" /> Kapadoccia@gmail.com
+              </li>
+              <li className="flex items-start">
+                <FiMapPin className="mt-1 mr-2" /> 16, Idowu Taylor Street,
+                Victoria Island 101241 Nigeria
+              </li>
+            </ul>
+          </div>
         </div>
-      </footer>
-  )
-}
 
-export default Footer
+        {/* Bottom bar */}
+        <div className="mt-12 border-t border-slate-300 pt-8 flex flex-col md:flex-row justify-between items-center ">
+          <p className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">© 2025 Bookies. All Rights Reserved</p>
+          <div className="flex space-x-6 mt-4 md:mt-0 ">
+            <Link href="/privacy" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+              Terms of Service
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
 
+export default Footer;
