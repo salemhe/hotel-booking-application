@@ -93,7 +93,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
                   <RestaurantSaveCopy id={id} />
                 </div>
                 <div className="flex gap-1 items-center text-xs">
-                  <Star className="fill-[#F0AE02] text-transparent font-bold h-4" />{" "}
+                  <Star className="fill-[#F0AE02] text-[#F0AE02] h-4" />{" "}
                   4.8 <span className="text-[#6B7280]">(1,000 views)</span>
                 </div>
               </div>
@@ -108,7 +108,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
             <h2 className="text-[#111827] font-semibold text-xl">
               Reserve your Table
             </h2>
-            <BookingForm />
+            <BookingForm id={id} />
           </div>
           <div className="rounded-2xl bg-[#E7F0F0] border border-[#E5E7EB] p-1">
             <MapComponent address={restaurant.address} />

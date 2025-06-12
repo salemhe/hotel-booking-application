@@ -18,15 +18,25 @@ import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
-const BookingForm = () => {
+const BookingForm = ({ id }: { id: string }) => {
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>("");
   const [request, setRequest] = useState<string>("");
   const [guests, setGuests] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const params = new URLSearchParams({
+      date: date ? date.toISOString() : "",
+      time,
+      guests,
+      specialRequest: request,
+    });
+    router.push(`/restaurants/${id}/reservations?${params.toString()}`);
     e.preventDefault();
     setIsLoading(true);
     try {
@@ -65,7 +75,7 @@ const BookingForm = () => {
               <Label htmlFor="date" className="text-black">
                 Date
               </Label>
-              {date ? format(date, "PPP") : "Select date"}
+              {date ? format(date, "do MMM, yyyy") : "Select date"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
