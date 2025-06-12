@@ -22,7 +22,7 @@ import {
 // import AccountTypeModal from "./AccountTypeModal";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import SearchSection, { SearchSectionTwo } from "./SearchSection";
+import  { SearchSectionTwo } from "./SearchSection";
 export interface UserProfile {
   id: string;
   email: string;

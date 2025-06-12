@@ -1,6 +1,7 @@
 // TimeDropdown.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import {  FiChevronDown } from 'react-icons/fi';
+import { useRouter } from 'next/navigation';
 
 interface TimeDropdownProps {
   selectedTime: string | null;
@@ -13,7 +14,7 @@ export const TimeDropdown: React.FC<TimeDropdownProps> = ({
 }) => {
   const [show, setShow] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   // close when clicking outside
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
@@ -57,8 +58,8 @@ export const TimeDropdown: React.FC<TimeDropdownProps> = ({
             {slots.map((t) => (
               <button
                 key={t}
-                onClick={() => { onChange(t); setShow(false); }}
-                className={`px-2 py-2 text-sm rounded-lg border self-stretch 
+                onClick={() => { onChange(t); setShow(false); router.push(`/search?time=${t}`)}}
+                className={`px-1 cursor-pointer py-2 text-sm rounded-lg border self-stretch 
                   ${
                     t === selectedTime
                       ? 'bg-teal-700 border-teal-700 text-white'

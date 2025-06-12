@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Star, Heart } from 'lucide-react';
 import rest from "@/public/restaurant.jpg";
+import { useSearchParams } from 'next/navigation';
 interface Restaurant {
   id: number;
   name: string;
@@ -17,7 +18,9 @@ interface Restaurant {
 const SearchResults = () => {
   const [selectedCuisine, setSelectedCuisine] = useState('International');
   const [priceRange, setPriceRange] = useState([10000, 70000]);
-
+  const searchParams = useSearchParams();
+  const time = searchParams.get('time');
+  console.log(time);
   // Sample restaurant data
   const restaurants: Restaurant[] = [
     {
@@ -175,13 +178,14 @@ const SearchResults = () => {
                     </button>
                   </div>
                   <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                    <Star className="w-4 h-4 text-yellow-400" />
-                      <h3 className="font-semibold text-gray-900">{restaurant.name}</h3>
+                    <div className="flex flex-col  mb-2">
+                      
                       <div className="flex items-center">
+                      <Star className="w-4 h-4 text-yellow-400" />
                         <span className="ml-1 text-sm font-medium">{restaurant.rating}</span>
                         <span className="text-xs text-gray-500 ml-1">({restaurant.reviews})</span>
                       </div>
+                      <h3 className="font-semibold text-gray-900">{restaurant.name}</h3>
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{restaurant.cuisine}</p>
                     <p className="text-xs text-gray-500">{restaurant.location}</p>

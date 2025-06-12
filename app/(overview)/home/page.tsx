@@ -322,8 +322,8 @@ import React, { useState } from 'react';
 // export default RestaurantBooking;
 
 // import Header from "@/components/Header";
-import SearchSection from "@/components/SearchSection";
-import TableGrid, { TableGridTwo } from "@/components/TableGrid";
+import  SearchSection  from "@/app/components/SearchSection";
+import TableGrid, { TableGridTwo } from "@/app/components/TableGrid";
 
 const tabs = [
   {
