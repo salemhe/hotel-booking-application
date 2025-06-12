@@ -2,8 +2,8 @@ import React, { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { FiStar, FiHeart, FiChevronRight, FiChevronsDown } from "react-icons/fi";
 import rest from "@/public/restaurant.jpg";
-import { Button } from "./ui/button";
-import discount from "@/public/sale_fill.svg"
+import { Button } from "@/app/components/ui/button";
+import discount from "@/public/sale_fill.svg";
 
 interface Restaurant {
   id: number;

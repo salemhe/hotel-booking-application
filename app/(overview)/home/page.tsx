@@ -1,6 +1,5 @@
 "use client"
 import React, { useState } from 'react';
-import { Search, MapPin, Calendar, Users, Star, Clock, Heart, Info } from 'lucide-react';
 
 // const RestaurantBooking = () => {
 //   const [selectedDate, setSelectedDate] = useState('');
