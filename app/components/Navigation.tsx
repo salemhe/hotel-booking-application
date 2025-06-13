@@ -140,7 +140,7 @@ const Navigation = () => {
                   <Link href="/messages">Messages</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="  px-4 py-2">
-                  <Link href="/userDashboard/booking">Bookings/Reservation</Link>
+                  <Link href="/bookings">Bookings/Reservation</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="  px-4 py-2" >
                   <Link href="/wishlist">Wishlist</Link>
@@ -211,17 +211,6 @@ const Navigation = () => {
               </div>
             </div>
             <div className="mt-3 space-y-1 w-full">
-              <SheetClose
-                className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
-                asChild
-              >
-                <Link
-                  href="/search"
-                  className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
-                >
-                  Dashboard
-                </Link>
-              </SheetClose>
               <SheetClose
                 className="w-full text-left hover:bg-accent hover:text-red-600 px-4 py-2 text-sm text-red-600 flex items-center"
                 onClick={handleLogout}

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // const RestaurantBooking = () => {
 //   const [selectedDate, setSelectedDate] = useState('');
@@ -337,6 +337,18 @@ const tabs = [
 ]
 export default function Home() {
   const [activeTab, setActiveTab] = useState("restaurants");
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    localStorage.setItem("activeTab", tab);
+  }
+
+  useEffect(() => {
+    const tab = localStorage.getItem("activeTab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [activeTab]);
   return (
     <main className="min-h-screen bg-white">
       {/* <Header /> */}
@@ -373,7 +385,7 @@ export default function Home() {
 
             <div className="flex justify-center items-center gap-4">
               {tabs.map((tab) => (
-                <button key={tab.value} className={`px-4 py-2 rounded-[36px] cursor-pointer text-sm  font-medium leading-none ${activeTab === tab.value ? "bg-slate-200  text-gray-900" : "bg-transparent  text-gray-50 "}`} onClick={() => setActiveTab(tab.value)}>
+                <button key={tab.value} className={`px-4 py-2 rounded-[36px] cursor-pointer text-sm  font-medium leading-none ${activeTab === tab.value ? "bg-slate-200  text-gray-900" : "bg-transparent  text-gray-50 "}`} onClick={() => handleTabChange(tab.value)}>
                   {tab.name}
                 </button>
               ))}
