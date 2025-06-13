@@ -22,12 +22,14 @@ import {
 } from "react-icons/fi";
 import { TimeDropdown } from "./TimeDropdown";
 import { GuestDropdown } from "./GuestsDroppdown";
+import { useRouter } from "next/navigation";
 
 const SearchSection = ({ activeTab }: { activeTab: string }) => {
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<string | null>(null);
+  const router = useRouter();
   return (
-    <div className="bg-white z-50 sm:absolute top-12 w-[90%] mx-auto left-0 right-0 rounded-2xl sm:rounded-full shadow-lg p-4 sm:p-2 justify-center mb-8">
+    <div className="bg-white z-50 sm:absolute top-15 w-[90%] mx-auto left-0 right-0 rounded-2xl sm:rounded-full shadow-lg p-4 sm:p-2 justify-center mb-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Restaurant/Cuisine */}
         <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0  pl-3 w">
@@ -74,6 +76,10 @@ const SearchSection = ({ activeTab }: { activeTab: string }) => {
         {/* Search button */}
         <div className="flex items-center justify-center sm:justify-end w-full">
           <button
+            onClick={() => {
+              router.push("/search");
+              console.log("search button clicked");
+            }}
             className={`flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-3 transition ${
               activeTab === "restaurants"
                 ? "bg-gradient-to-b from-[#0A6C6D] to-[#08577C] hover:from-[#084F4F] hover:to-[#064E5C] text-white rounded-full px-6 py-3 transition"

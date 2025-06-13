@@ -4,6 +4,7 @@ import { FiStar, FiHeart, FiChevronRight, FiChevronsDown } from "react-icons/fi"
 import rest from "@/public/restaurant.jpg";
 import { Button } from "./ui/button";
 import discount from "@/public/sale_fill.svg"
+import { useRouter } from "next/navigation";
 
 interface Restaurant {
   id: number;
@@ -61,7 +62,7 @@ const DUMMY_HOTEL_DATA: Hotel[] = Array.from({ length: 8 }, (_, i) => ({
 const TableGrid = ({ title }: TableGridProps) => {
   const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
   const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
-
+  const router = useRouter();
   const getImagesForRestaurant = (restaurant: Restaurant) => {
     return Array(4).fill(restaurant.image);
   };
@@ -127,7 +128,10 @@ const TableGrid = ({ title }: TableGridProps) => {
           return (
             <div
               key={restaurant.id}
-              className="h-80 px-2 pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
+              onClick={() => {
+                router.push(`/restaurants/${restaurant.id}`);
+              }}
+              className="h-80 px-2 cursor-pointer pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
             >
               {/* image + overlays */}
               <div 
@@ -228,7 +232,7 @@ export default TableGrid;
 export const TableGridTwo = ({ title }: TableGridProps) => {
   const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
   const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
-
+  const router = useRouter();
   const getImagesForRestaurant = (restaurant: Restaurant) => {
     return Array(4).fill(restaurant.image);
   };
@@ -294,6 +298,9 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
           return (
             <div
               key={restaurant.id}
+              onClick={() => {
+                router.push("/restaurants");
+              }}
               className="h-80 px-2 pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
             >
               {/* image + overlays */}

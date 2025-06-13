@@ -15,7 +15,7 @@ export default function layout({
   return (
     <div className={`flex flex-col ${inter.className} min-h-screen bg-[#F9FAFB]`}>
       <Navigation />
-      <main className="grow">{children}</main>
+      <main className="grow ">{children}</main>
       <Footer />
     </div>
   );
