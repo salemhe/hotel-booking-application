@@ -6,10 +6,11 @@ import { Button } from "./ui/button";
 import discount from "@/public/sale_fill.svg"
 import { useRouter } from "next/navigation";
 
-interface Restaurant {
-  id: number;
+export interface Restaurant {
+  _id?: string;
+  id?: number;
   name: string;
-  image: string;
+  image?: string;
   rating: number;
   reviews?: number;
   cuisine: string;
@@ -17,8 +18,9 @@ interface Restaurant {
   badge?: string;
 }
 
-  interface Hotel {
-  id: number;
+interface Hotel {
+  _id?: string;
+  id?: number;
   name: string;
   image: string;
   rating: number;
@@ -67,7 +69,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
   const getImagesForRestaurant = (restaurant: Restaurant) => {
     return Array(4).fill(restaurant.image);
   };
-
+  console.log(restaurants, "restaurants");
   const handleMouseEnter = (restaurantId: number) => {
     // Clear any existing reset timeout for this card
     if (resetTimeouts[restaurantId]) {
@@ -124,22 +126,23 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {restaurants.map((restaurant) => {
           const images = getImagesForRestaurant(restaurant);
-          const currentIndex = currentIndices[restaurant.id] || 0;
+          const currentIndex = currentIndices[restaurant?.id || 0] ;
 
           return (
             <div
               key={restaurant.id}
               onClick={() => {
-                router.push(`/restaurants/${restaurant.id}`);
+                console.log(restaurant._id, "id" );
+                router.push(`/restaurants/${restaurant._id}`);
               }}
               className="h-80 px-2 cursor-pointer pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
             >
               {/* image + overlays */}
               <div 
                 className="relative h-52 w-full"
-                onMouseEnter={() => handleMouseEnter(restaurant.id)}
-                onMouseMove={(e) => handleMouseMove(e, restaurant.id)}
-                onMouseLeave={() => handleMouseLeave(restaurant.id)}
+                onMouseEnter={() => handleMouseEnter(restaurant?.id || 0)}
+                onMouseMove={(e) => handleMouseMove(e, restaurant?.id || 0)}
+                onMouseLeave={() => handleMouseLeave(restaurant?.id || 0)}
               >
                 <div className="relative h-full w-full overflow-hidden rounded-xl">
                   {images.map((image, index) => (
@@ -294,7 +297,7 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {DUMMY_HOTEL_DATA.map((restaurant: Hotel) => {
           const images = getImagesForRestaurant(restaurant);
-          const currentIndex = currentIndices[restaurant.id] || 0;
+          const currentIndex = currentIndices[restaurant.id || 0] ;
 
           return (
             <div
@@ -307,9 +310,9 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
               {/* image + overlays */}
               <div 
                 className="relative h-52 w-full"
-                onMouseEnter={() => handleMouseEnter(restaurant.id)}
-                onMouseMove={(e) => handleMouseMove(e, restaurant.id)}
-                onMouseLeave={() => handleMouseLeave(restaurant.id)}
+                onMouseEnter={() => handleMouseEnter(restaurant.id || 0)}
+                onMouseMove={(e) => handleMouseMove(e, restaurant.id || 0)}
+                onMouseLeave={() => handleMouseLeave(restaurant.id || 0)}
               >
                 <div className="relative h-full w-full overflow-hidden rounded-xl">
                   {images.map((image, index) => (

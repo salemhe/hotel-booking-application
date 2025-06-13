@@ -1,14 +1,15 @@
 // src/services/VendorService.ts
 import API from '../axios';
 
-interface VendorParams {
-  businessName?: string;
-  businessType?: string;
-  branch?: string;
-}
+// interface VendorParams {
+//   businessName?: string;
+//   businessType?: string;
+//   branch?: string;
+// }
 
 export interface Vendor {
-  id: string;
+  id?:number;
+  _id: string;
   businessName: string;
   businessType: string;
   branch: string;
@@ -16,15 +17,23 @@ export interface Vendor {
   email: string;
   phone: string;
   services: string[];
+  image?: string;
+  description?: string;
+  rating?: number;
+  reviews?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  featured?: boolean;
+  location?: string;
 }
 
 export class VendorService {
   /**
    * Get vendors with optional filtering
    */
-  static async getVendors(params: VendorParams = {}): Promise<Vendor[]> {
+  static async getVendors(): Promise<Vendor[]> {
     try {
-      const response = await API.get<Vendor[]>('/vendors', { params });
+      const response = await API.get('/vendors');
       return response.data;
     } catch (error) {
       console.error('Error fetching vendors:', error);
@@ -32,3 +41,6 @@ export class VendorService {
     }
   }
 }
+
+
+// In your VendorService, make sure the endpoint is correct
