@@ -212,9 +212,7 @@ export default function Home() {
 
       {activeTab === "restaurants" ? (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <TableGrid title="Popular Searches" />
-          <TableGrid title="In High Demand" />
-          <TableGrid title="Your History" />
+         
           
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
@@ -242,6 +240,10 @@ export default function Home() {
               <p className="text-gray-600">No restaurants found</p>
             </div>
           )}
+
+          <TableGrid title="Popular Searches" />
+          <TableGrid title="In High Demand" />
+          <TableGrid title="Your History" />
         </div>
       ) : (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
