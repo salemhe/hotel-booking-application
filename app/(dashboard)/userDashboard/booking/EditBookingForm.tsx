@@ -5,42 +5,44 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Calendar, Clock, Users, Utensils } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from "@/components/ui/form";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card";
+import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+
 import { 
   Popover, 
   PopoverContent, 
   PopoverTrigger 
-} from "@/components/ui/popover";
-import { BookingService } from "@/services/booking.services";
+} from "@/app/components/ui/popover";
 import { format } from "date-fns";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Calendar as CalendarComponent } from "@/app/components/ui/calendar";
+import { BookingResponse, BookingService } from "@/app/lib/api/services/bookings.service";
 
-export default function EditBookingForm({ bookingId }) {
+type updateData = {
+  type?: string;
+  vendor?: string;
+  guests?: number;
+  roomNumber?: number | null;
+  checkIn?: Date;
+  checkOut?: Date;
+  tableNumber?: number | null;
+};
+
+export default function EditBookingForm({ bookingId }: { bookingId: string }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [booking, setBooking] = useState(null);
-  const [formData, setFormData] = useState({
+  const [booking, setBooking] = useState<BookingResponse | null>(null);
+  const [formData, setFormData] = useState<{
+    guests: number;
+    checkIn: Date | undefined;
+    checkOut: Date | undefined;
+    tableNumber: number | null;
+    roomNumber: number | null;
+  }>({
     guests: 0,
-    checkIn: null,
-    checkOut: null,
+    checkIn: undefined,
+    checkOut: undefined,
     tableNumber: null,
     roomNumber: null,
   });
@@ -56,25 +58,44 @@ export default function EditBookingForm({ bookingId }) {
         
         // Since we don't have that endpoint in the documentation,
         // we could get all bookings and filter, or mock the data for now
-        const data = {
+        const data: BookingResponse = {
           _id: bookingId,
-          type: "restaurant", // or "hotel"
+          id: {
+            _id: bookingId,
+            user: "user123",
+            type: "restaurant",
+            vendor: "vendor123",
+            menuId: "menu123",
+            roomNumber: null,
+            tableNumber: 5,
+            guests: 4,
+            checkIn: new Date(),
+            checkOut: new Date(Date.now() + 86400000),
+            status: "Pending",
+            bookingDate: new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            __v: 0
+          },
+          type: "restaurant",
+          user: "user123",
           vendor: "vendor123",
           tableNumber: 5,
           roomNumber: null,
           guests: 4,
-          checkIn: new Date().toISOString(),
-          checkOut: new Date(Date.now() + 86400000).toISOString(), // +1 day
-          status: "Pending"
+          checkIn: new Date(),
+          checkOut: new Date(Date.now() + 86400000),
+          status: "Pending",
+          bookingDate: new Date().toISOString()
         };
         
-        setBooking(data);
+        setBooking(data as BookingResponse);
         setFormData({
-          guests: data.guests || 0,
-          checkIn: data.checkIn ? new Date(data.checkIn) : null,
-          checkOut: data.checkOut ? new Date(data.checkOut) : null,
-          tableNumber: data.tableNumber || null,
-          roomNumber: data.roomNumber || null,
+          guests: data.guests ?? 0,
+          checkIn: data.checkIn ?? undefined,
+          checkOut: data.checkOut ?? undefined,
+          tableNumber: data.tableNumber ?? null,
+          roomNumber: data.roomNumber ?? null,
         });
       } catch (error) {
         console.error("Error fetching booking:", error);
@@ -87,14 +108,14 @@ export default function EditBookingForm({ bookingId }) {
     fetchBooking();
   }, [bookingId]);
 
-  const handleFormChange = (field, value) => {
+  const handleFormChange = (field: string, value: string | number | null | undefined) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!booking) return;
@@ -103,7 +124,7 @@ export default function EditBookingForm({ bookingId }) {
       setIsLoading(true);
       
       // Prepare the update data based on booking type
-      const updateData = {
+      const updateData: updateData = {
         type: booking.type,
         vendor: booking.vendor,
         guests: formData.guests,
@@ -111,14 +132,16 @@ export default function EditBookingForm({ bookingId }) {
       
       if (booking.type === 'hotel') {
         updateData.roomNumber = formData.roomNumber;
-        updateData.checkIn = formData.checkIn.toISOString();
-        updateData.checkOut = formData.checkOut.toISOString();
+        updateData.checkIn = formData.checkIn;
+        updateData.checkOut = formData.checkOut ? formData.checkOut : undefined;
       } else if (booking.type === 'restaurant') {
-        updateData.tableNumber = formData.tableNumber;
+        updateData.tableNumber = formData.tableNumber || undefined;
       }
       
-      await BookingService.updateBooking(bookingId, updateData);
-      
+      await BookingService.updateBooking(bookingId, {
+        ...updateData,
+        booking: booking.id // Add required booking property
+      });
       toast.success("Booking updated successfully");
       router.push(`/userDashboard/booking/${bookingId}`);
     } catch (error) {
@@ -176,7 +199,7 @@ export default function EditBookingForm({ bookingId }) {
             </div>
             
             {/* Type-specific Fields */}
-            {booking.type === 'restaurant' && (
+            {(booking as { type: string }).type === 'restaurant' && (
               <div className="space-y-4">
                 <div className="flex items-start">
                   <Utensils className="h-5 w-5 mr-3 text-primary mt-2" />
@@ -186,7 +209,7 @@ export default function EditBookingForm({ bookingId }) {
                       id="tableNumber"
                       type="number"
                       min="1"
-                      value={formData.tableNumber}
+                      value={formData?.tableNumber || ""}
                       onChange={(e) => handleFormChange('tableNumber', parseInt(e.target.value))}
                       className="mt-1"
                     />
@@ -195,7 +218,7 @@ export default function EditBookingForm({ bookingId }) {
               </div>
             )}
             
-            {booking.type === 'hotel' && (
+            {(booking as { type: string }).type === 'hotel' && (
               <>
                 <div className="space-y-4">
                   <div className="flex items-start">
@@ -206,7 +229,7 @@ export default function EditBookingForm({ bookingId }) {
                         id="roomNumber"
                         type="number"
                         min="1"
-                        value={formData.roomNumber}
+                        value={formData?.roomNumber || ""}
                         onChange={(e) => handleFormChange('roomNumber', parseInt(e.target.value))}
                         className="mt-1"
                       />
@@ -231,8 +254,8 @@ export default function EditBookingForm({ bookingId }) {
                         <PopoverContent className="w-auto p-0">
                           <CalendarComponent
                             mode="single"
-                            selected={formData.checkIn}
-                            onSelect={(date) => handleFormChange('checkIn', date)}
+                            selected={formData.checkIn || undefined}
+                            onSelect={(date) => handleFormChange('checkIn', date?.toISOString())}
                             initialFocus
                           />
                         </PopoverContent>
@@ -258,8 +281,8 @@ export default function EditBookingForm({ bookingId }) {
                         <PopoverContent className="w-auto p-0">
                           <CalendarComponent
                             mode="single"
-                            selected={formData.checkOut}
-                            onSelect={(date) => handleFormChange('checkOut', date)}
+                            selected={formData.checkOut || undefined}
+                            onSelect={(date) => handleFormChange('checkOut', date?.toISOString())}
                             disabled={(date) => date < (formData.checkIn || new Date())}
                             initialFocus
                           />

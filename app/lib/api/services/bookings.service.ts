@@ -1,15 +1,16 @@
-// src/services/booking.services.js
-import API from '@/utils/axios';
+import API from "../axios";
+
 
 export interface BookingResponse {
+  id: { _id: string; user: string; type: string; vendor: string; menuId: string; roomNumber: number | null; tableNumber: number | null; guests: number | null; checkIn: Date; checkOut: Date; status: string; bookingDate: Date; createdAt: Date; updatedAt: Date; __v: 0; };
    _id: string,
       user: string,
       type: string,
       vendor: string,
       roomNumber: number |  null,
       tableNumber: number | null,
-      checkIn: Date,
-      checkOut: Date,
+      checkIn: Date | undefined,
+      checkOut: Date | undefined,
       status: string,
       bookingDate: string
       
