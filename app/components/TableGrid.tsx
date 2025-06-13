@@ -58,7 +58,7 @@ const DUMMY_HOTEL_DATA: Hotel[] = Array.from({ length: 8 }, (_, i) => ({
   discount: 10,
 }));
 
-const TableGrid = ({ title, activeTab }: TableGridProps) => {
+const TableGrid = ({ title }: TableGridProps) => {
   const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
   const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
 
@@ -225,7 +225,7 @@ const TableGrid = ({ title, activeTab }: TableGridProps) => {
 export default TableGrid;
 
 
-export const TableGridTwo = ({ title, activeTab }: TableGridProps) => {
+export const TableGridTwo = ({ title }: TableGridProps) => {
   const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
   const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
 

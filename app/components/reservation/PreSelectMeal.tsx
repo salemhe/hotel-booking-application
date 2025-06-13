@@ -10,7 +10,7 @@ import { Textarea } from "@/app/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import ReservationHeader from "./ReservationHeader";
 
-interface MenuItem {
+export interface MenuItem {
   id: string;
   name: string;
   description: string;
