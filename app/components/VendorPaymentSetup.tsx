@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { paymentService } from '@/services/paymentService';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/app/components/ui/use-toast';
+import { paymentService } from '../lib/api/services/paymentService';
 
 export function VendorPaymentSetup() {
     const [formData, setFormData] = useState({
@@ -16,7 +16,7 @@ export function VendorPaymentSetup() {
         setIsLoading(true);
 
         try {
-            const result = await paymentService.saveVendorPaymentDetails(formData);
+            await paymentService.saveVendorPaymentDetails(formData);
             toast({
                 title: "Success",
                 description: "Payment details saved successfully",

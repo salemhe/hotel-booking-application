@@ -1,41 +1,39 @@
-import API from "../axios";
+// src/services/booking.services.js
+// import API from "@/utils/axios";
 
+import API from "../userServerAxios";
 
 export interface BookingResponse {
-  id: { _id: string; user: string; type: string; vendor: string; menuId: string; roomNumber: number | null; tableNumber: number | null; guests: number | null; checkIn: Date; checkOut: Date; status: string; bookingDate: Date; createdAt: Date; updatedAt: Date; __v: 0; };
-   _id: string,
-      user: string,
-      type: string,
-      vendor: string,
-      roomNumber: number |  null,
-      tableNumber: number | null,
-      checkIn: Date | undefined,
-      checkOut: Date | undefined,
-      status: string,
-      bookingDate: string
-      
-  guests:number;
+  _id: string;
+  user: string;
+  type: string;
+  vendor: string;
+  roomNumber: number | null;
+  tableNumber: number | null;
+  checkIn: Date;
+  checkOut: Date;
+  status: string;
+  bookingDate: string;
+
+  guests: number;
 }
 
 export interface BookingData {
-   "booking":{
-      "_id":string,
-      "user":string,
-      "type":string,
-      "vendor":string,
-      "menuId":string,
-      "roomNumber":number | null,
-      "tableNumber":number | null,
-      "guests":number | null,
-      "checkIn":Date,
-      "checkOut":Date,
-      "status":string,
-      "bookingDate":Date,
-      "createdAt":Date,
-      "updatedAt":Date,
-      "__v":0
-    }
-  
+    _id: string;
+    user: string;
+    type: string;
+    vendor: string;
+    menuId: string;
+    roomNumber: number | null;
+    tableNumber: number | null;
+    guests: number | null;
+    checkIn: Date | null;
+    checkOut: Date | null;
+    status: string;
+    bookingDate?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
+    __v?: 0;
 }
 
 export class BookingService {
@@ -50,11 +48,13 @@ export class BookingService {
   static async getBookings(params = {}) {
     try {
       const queryString = new URLSearchParams(params).toString();
-      const endpoint = queryString ? `users/bookings?${queryString}` : 'users/bookings';
+      const endpoint = queryString
+        ? `users/bookings?${queryString}`
+        : "users/bookings";
       const response = await API.get(endpoint);
       return response.data;
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      console.error("Error fetching bookings:", error);
       throw error;
     }
   }
@@ -64,15 +64,17 @@ export class BookingService {
    * @param {string} bookingId - ID of the booking to cancel
    * @returns {Promise} - Promise with updated booking data
    */
-static async cancelBooking(bookingId: BookingResponse['_id']) {
-   try {
-      const response = await API.patch<BookingResponse>(`users/bookings/cancel/${bookingId}`);
+  static async cancelBooking(bookingId: BookingResponse["_id"]) {
+    try {
+      const response = await API.patch<BookingResponse>(
+        `users/bookings/cancel/${bookingId}`
+      );
       return response.data;
-   } catch (error) {
-      console.error('Error canceling booking:', error);
+    } catch (error) {
+      console.error("Error canceling booking:", error);
       throw error;
-   }
-}
+    }
+  }
 
   /**
    * Update a booking by ID
@@ -80,12 +82,18 @@ static async cancelBooking(bookingId: BookingResponse['_id']) {
    * @param {Object} bookingData - Updated booking data
    * @returns {Promise} - Promise with updated booking data
    */
-  static async updateBooking(bookingId: BookingResponse['_id'], bookingData: BookingData) {
+  static async updateBooking(
+    bookingId: BookingResponse["_id"],
+    bookingData: BookingData
+  ) {
     try {
-      const response = await API.patch(`users/bookings/update/${bookingId}`, bookingData);
+      const response = await API.patch(
+        `users/bookings/update/${bookingId}`,
+        bookingData
+      );
       return response.data;
     } catch (error) {
-      console.error('Error updating booking:', error);
+      console.error("Error updating booking:", error);
       throw error;
     }
   }
