@@ -11,7 +11,7 @@ interface Restaurant {
   name: string;
   image: string;
   rating: number;
-  reviews: number;
+  reviews?: number;
   cuisine: string;
   location: string;
   badge?: string;
@@ -33,6 +33,7 @@ interface Restaurant {
 interface TableGridProps {
   title: string;
   activeTab?: string;
+  restaurants?: Restaurant[];
 }
 
 const DUMMY_DATA: Restaurant[] = Array.from({ length: 8 }, (_, i) => ({
@@ -59,7 +60,7 @@ const DUMMY_HOTEL_DATA: Hotel[] = Array.from({ length: 8 }, (_, i) => ({
   discount: 10,
 }));
 
-const TableGrid = ({ title }: TableGridProps) => {
+const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
   const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
   const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
   const router = useRouter();
@@ -121,7 +122,7 @@ const TableGrid = ({ title }: TableGridProps) => {
       </Button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {DUMMY_DATA.map((restaurant) => {
+        {restaurants.map((restaurant) => {
           const images = getImagesForRestaurant(restaurant);
           const currentIndex = currentIndices[restaurant.id] || 0;
 
@@ -198,7 +199,7 @@ const TableGrid = ({ title }: TableGridProps) => {
                       {restaurant.rating.toFixed(1)}
                     </span>
                     <span className="text-sm text-gray-500 ml-1">
-                      ({restaurant.reviews.toLocaleString()} reviews)
+                      ({restaurant?.reviews?.toLocaleString()} reviews)
                     </span>
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900">
