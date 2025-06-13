@@ -12,7 +12,7 @@ const BookingsPage = () => {
    const { setActiveTab, activeTab } = useBookings();
 
   return (
-    <div className="max-w-7xl px-4 sm:px-8 flex flex-col gap-8 mb-8 mx-auto w-full mt-6">
+    <div className="max-w-7xl px-4 sm:px-8 flex flex-col gap-8 mb-8 mx-auto w-full mt-6 sm:mt-28">
       <div className="flex justify-center w-full">
         <div className="flex bg-white border border-[#E5E7EB] p-2 rounded-full">
           {tabs.map((tab, i) => (
