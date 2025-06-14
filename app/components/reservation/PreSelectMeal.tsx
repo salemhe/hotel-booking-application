@@ -9,6 +9,7 @@ import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import ReservationHeader from "./ReservationHeader";
+import { useRouter } from "next/navigation";
 // import { useRouter } from "next/navigation";
 
 export interface MenuItem {
@@ -74,6 +75,7 @@ export default function PreSelectMeal() {
   ]);
   const [visibleCount, setVisibleCount] = useState(3);
   const menuFiltered = menuItems.filter((a) => a.categories === activeTab);
+  const router = useRouter()
 
   const tabs = [
     {
@@ -149,6 +151,10 @@ export default function PreSelectMeal() {
       0
     );
   };
+
+  const handleClick =() => {
+    router.push("/confirmation")
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -446,10 +452,10 @@ export default function PreSelectMeal() {
       </div>
       <div className="w-full bg-white border-t border-[#E5E7EB]">
         <div className="flex flex-col sm:flex-row justify-between gap-2 items-center max-w-4xl mx-auto p-4">
-          <Button variant="ghost" className="text-teal-600">
+          <Button onClick={handleClick}  variant="ghost" className="text-teal-600">
             Skip for now
           </Button>
-          <Button className="bg-teal-600 hover:bg-teal-700 px-8 w-full max-w-xs">
+          <Button onClick={handleClick} className="bg-teal-600 hover:bg-teal-700 px-8 w-full max-w-xs">
             Confirm Meal Selection
           </Button>
         </div>
