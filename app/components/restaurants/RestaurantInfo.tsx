@@ -50,8 +50,8 @@ const RestaurantInfo = ({ data }: { data: Restaurant}) => {
         </div>
       </div>
       <div className="mt-8">
-        {activeTab === "overview" && <RestaurantOverview address={data.address} />}
-        {activeTab === "menu" && <RestaurantMenu />}
+        {activeTab === "overview" && <RestaurantOverview address={data.address} openingTime={data.openingTime} closingTime={data.closingTime} cuisines={data.cuisines} desc={data.businessDescription} />}
+        {activeTab === "menu" && <RestaurantMenu id={data._id} />}
         {activeTab === "available" && <RestauranAvalableSlot />}
         {activeTab === "reviews" && <p>Reviews</p>}
       </div>

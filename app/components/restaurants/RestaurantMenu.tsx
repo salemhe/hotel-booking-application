@@ -1,7 +1,10 @@
 "use client";
 
+import { Menu } from "@/app/lib/types/restaurant";
 import { ChevronDown } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { LoadingSpinner } from "../loading-spinner";
+import API from "@/app/lib/api/userAxios";
 type CategoryFilterProps = {
   categories: string[];
   activeCategory: string;
@@ -53,75 +56,43 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({ type, name, price }) => {
   );
 };
 
-export default function MenuPage() {
+export default function MenuPage({ id }: { id: string }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [itemsToShow, setItemsToShow] = useState(3);
+  const [menuItems, setMenuItems] = useState<Menu[]>();
+  const [isLoading, setIsLoading] = useState(false);
   const LOAD_MORE_STEP = 3;
 
-  const menuItems = [
-    {
-      id: 1,
-      category: "Main Course",
-      name: "Grilled Lamb Kofta with Couscous",
-      price: 15000,
-    },
-    {
-      id: 2,
-      category: "Desserts",
-      name: "Turkish Delight Trio",
-      price: 3500,
-    },
-    {
-      id: 3,
-      category: "Drinks",
-      name: "Pomegranate Fizz",
-      price: 3000,
-    },
-    {
-      id: 4,
-      category: "Main Course",
-      name: "Spicy Chicken Tagine",
-      price: 16000,
-    },
-    {
-      id: 5,
-      category: "Appetizers",
-      name: "Hummus with Pita Bread",
-      price: 4000,
-    },
-    {
-      id: 6,
-      category: "Desserts",
-      name: "Baklava Assortment",
-      price: 5000,
-    },
-    {
-      id: 7,
-      category: "Main Course",
-      name: "Vegetable Couscous",
-      price: 14000,
-    },
-    {
-      id: 8,
-      category: "Drinks",
-      name: "Mint Lemonade",
-      price: 2500,
-    },
-  ];
+  const fetchMenus = async () => {
+    setIsLoading(true);
+    try {
+      const response = await API.get(`/vendors/menus?vendorId=${id}`);
+      const menu = response.data.menus
+      setMenuItems(menu)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const categories = ["All", "Main Course", "Appetizers", "Desserts", "Drinks"];
+  useEffect(() => {
+    fetchMenus();
+  }, []);
+
+  const categories = ["All", "Main Course", "Appetizer", "Dessert", "Drinks"];
   const filteredItems =
     activeCategory === "All"
       ? menuItems
-      : menuItems.filter((item) => item.category === activeCategory);
+      : menuItems?.filter((item) => item.category === activeCategory);
 
-  const displayedItems = filteredItems.slice(0, itemsToShow);
+  const displayedItems = filteredItems?.slice(0, itemsToShow);
 
-  const hasMore = filteredItems.length > itemsToShow;
+  const hasMore = (filteredItems ? filteredItems.length : 0) > itemsToShow;
 
   const handleShowMore = () => {
     setItemsToShow((prev) =>
-      Math.min(prev + LOAD_MORE_STEP, filteredItems.length)
+      Math.min(prev + LOAD_MORE_STEP, filteredItems ? filteredItems.length : 0)
     );
   };
   interface HandleCategoryChange {
@@ -142,28 +113,38 @@ export default function MenuPage() {
           onCategoryChange={handleCategoryChange}
         />
       </div>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+            {displayedItems && displayedItems.length > 0 ? displayedItems?.map((item) => (
+              <MenuItemCard
+                key={item._id}
+                type={item.category}
+                name={item.dishName}
+                price={item.price}
+              />
+            )) : (
+              <div>Sorry, no available Menu for this Category</div>
+            )}
+          </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-        {displayedItems.map((item) => (
-          <MenuItemCard
-            key={item.id}
-            type={item.category}
-            name={item.name}
-            price={item.price}
-          />
-        ))}
-      </div>
-
-      {hasMore && (
-        <div className="mt-8">
-          <button
-            onClick={handleShowMore}
-            className="text-[#0A6C6D] hover:underline text-sm cursor-pointer flex items-center gap-2"
-          >
-            Show more <ChevronDown className="
-            h-4 w-4" />
-          </button>
-        </div>
+          {hasMore && (
+            <div className="mt-8">
+              <button
+                onClick={handleShowMore}
+                className="text-[#0A6C6D] hover:underline text-sm cursor-pointer flex items-center gap-2"
+              >
+                Show more{" "}
+                <ChevronDown
+                  className="
+            h-4 w-4"
+                />
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

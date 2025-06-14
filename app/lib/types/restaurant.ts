@@ -6,6 +6,12 @@ export type Restaurant = {
   email: string;
   phone: string;
   address: string;
+  openingTime: string;
+  closingTime: string;
+  cuisines: string[];
+  availableSlots: string[];
+  rating: number;
+  reviews: number;
   // branch: string;
   // role: string;
   profileImage: string;
@@ -15,7 +21,10 @@ export type Restaurant = {
   businessType: string;
   branch: string;
   role: string;
-  profileImages: string[];
+  profileImages: {
+    id: string;
+    url: string;
+  }[];
   services: string[];
 
   paymentDetails: {
@@ -30,3 +39,14 @@ export type Restaurant = {
   isVerified: boolean;
   createdAt: string;
 };
+
+export type Menu = {
+  _id: string;
+  vendor: string;
+  addOns: string[];
+  availabilityStatus: boolean;
+  category: "Appetizer" | "Main Course" | "Dessert" | "Drinks";
+  cuisineType: string;
+  price: number;
+  dishName: string;
+}

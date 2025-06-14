@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 
-const RestaurantOverview = ({ address }: { address: string }) => {
+const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc }: { address: string; openingTime: string; closingTime: string; cuisines: string[]; desc: string; }) => {
   const [showMore, setShowMore] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -17,9 +17,6 @@ const RestaurantOverview = ({ address }: { address: string }) => {
       setIsOverflowing(contentRef.current.scrollHeight > 100);
     }
   }, []);
-
-  const about =
-    "Kapadoccia Restaurant is a fine-dining destination inspired by the magical caves and textures of Cappadocia, Turkey. Located in the heart of Abuja, Nigeria, the restaurant offers an immersive dining experience with cave-like interiors, ambient lighting, and an exotic fusion menu that blends Middle Eastern, Mediterranean, and African flavors.    It’s ideal for romantic dinners, group celebrations, and culinary explorers looking for a unique atmosphere and gourmet cuisine.";
 
   return (
     <div className="space-y-6 text-sm md:text-base">
@@ -41,7 +38,7 @@ const RestaurantOverview = ({ address }: { address: string }) => {
           </div>
           <div className="space-y-1">
             <p className="text-xs">Opening Hours</p>
-            <p className="font-semibold text-sm">12:00 PM - 11:00 PM Daily</p>
+            <p className="font-semibold text-sm">{openingTime} - {closingTime} Daily</p>
           </div>
         </div>
         <div className="bg-[#C8FAFF] p-3 rounded-xl border border-[#49EDFF] flex items-center gap-4">
@@ -86,7 +83,7 @@ const RestaurantOverview = ({ address }: { address: string }) => {
           <div className="space-y-1">
             <p className="text-xs">Cuisine</p>
             <p className="font-semibold text-sm">
-              Middle Eastern, Turkish, Mediterranean
+              {cuisines.join(", ")}
             </p>
           </div>
         </div>
@@ -123,7 +120,7 @@ const RestaurantOverview = ({ address }: { address: string }) => {
           )}
         >
           <p className="text-gray-700 text-sm leading-relaxed">
-            {about.split("  ").map((part, idx, arr) => (
+            {desc.split("  ").map((part, idx, arr) => (
               <span key={idx}>
                 {part}
                 {idx < arr.length - 1 && <br />}

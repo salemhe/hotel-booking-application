@@ -8,36 +8,36 @@ import { Restaurant } from "../../lib/types/restaurant";
 import RestaurantImages from "./RestaurantImages";
 import RestaurantSaveCopy from "./RestaurantSaveCopy";
 
-const images = [
-  {
-    image: "/blue-origin.png",
-    name: "Blue Origin",
-  },
-  {
-    image: "/hero-bg.png",
-    name: "Blue Origin",
-  },
-  {
-    image: "/dominos.webp",
-    name: "Blue Origin",
-  },
-  {
-    image: "/blue-origin.png",
-    name: "Blue Origin",
-  },
-  {
-    image: "/blue-origin.png",
-    name: "Blue Origin",
-  },
-  {
-    image: "/blue-origin.png",
-    name: "Blue Origin",
-  },
-  {
-    image: "/blue-origin.png",
-    name: "Blue Origin",
-  },
-];
+// const images = [
+//   {
+//     image: "/blue-origin.png",
+//     name: "Blue Origin",
+//   },
+//   {
+//     image: "/hero-bg.png",
+//     name: "Blue Origin",
+//   },
+//   {
+//     image: "/dominos.webp",
+//     name: "Blue Origin",
+//   },
+//   {
+//     image: "/blue-origin.png",
+//     name: "Blue Origin",
+//   },
+//   {
+//     image: "/blue-origin.png",
+//     name: "Blue Origin",
+//   },
+//   {
+//     image: "/blue-origin.png",
+//     name: "Blue Origin",
+//   },
+//   {
+//     image: "/blue-origin.png",
+//     name: "Blue Origin",
+//   },
+// ];
 
 const fetchRestaurant = async (
   id: string
@@ -76,7 +76,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
           <div className="col-span-2">
             <div className="w-full space-y-6">
               <RestaurantImages
-                images={images}
+                images={restaurant.profileImages}
                 name={restaurant.businessName}
               />
               <div className="space-y-2">
@@ -94,7 +94,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
                 </div>
                 <div className="flex gap-1 items-center text-xs">
                   <Star className="fill-[#F0AE02] text-[#F0AE02] h-4" />{" "}
-                  4.8 <span className="text-[#6B7280]">(1,000 views)</span>
+                  {restaurant.rating} <span className="text-[#6B7280]">({restaurant.reviews.toLocaleString()} reviews)</span>
                 </div>
               </div>
             </div>
