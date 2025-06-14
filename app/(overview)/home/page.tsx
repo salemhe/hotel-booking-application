@@ -140,7 +140,9 @@ export default function Home() {
     _id: apiRestaurant._id,
     name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
     image: apiRestaurant.profileImages?.[0] || apiRestaurant.image || '/placeholder.jpg',
-    profileImages: apiRestaurant.profileImages || [],
+    profileImages: Array.isArray(apiRestaurant.profileImages) 
+      ? apiRestaurant.profileImages.map(img => ({ url: String(img) }))
+      : [],
     rating: apiRestaurant.rating || 4.5,
     reviews: apiRestaurant.reviews?.length || 0,
     cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
