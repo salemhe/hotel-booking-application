@@ -86,8 +86,32 @@ export default function Home() {
   // Convert vendors to restaurant format with better error handling
   const convertVendorsToRestaurants = (vendors: Vendor[]): ApiRestaurant[] => {
     return vendors.map((vendor, index) => {
-      console.log(vendor._id);
+      console.log('Vendor data:', {
+        id: vendor._id,
+        profileImages: vendor.profileImages,
+        image: vendor.image
+      });
+      
       try {
+        // Ensure profileImages are valid URLs or relative paths
+        const sanitizedProfileImages = vendor.profileImages?.map(imgOrString => {
+          // if it’s a string, use it; otherwise assume it’s { url: string }
+          const url = typeof imgOrString === 'string'
+            ? imgOrString
+            : (imgOrString as { url?: string }).url || '';
+    
+          // only accept http or /-prefixed URLs
+          return (url.startsWith('http') || url.startsWith('/'))
+            ? url
+            : '/placeholder.jpg';
+        }) || [];
+
+        // Ensure main image is a valid URL or relative path
+        const mainImage = sanitizedProfileImages[0]
+        || (typeof vendor.image === 'string' && (vendor.image.startsWith('http') || vendor.image.startsWith('/'))
+            ? vendor.image
+            : '/placeholder.jpg');
+
         return {
           _id: vendor._id || `vendor-${index + 1}`,
           name: vendor.businessName || 'Unknown Business',
@@ -98,8 +122,8 @@ export default function Home() {
           email: vendor.email || '',
           phone: vendor.phone || '',
           services: vendor.services || [],
-          image: vendor.profileImages?.[0] || '/placeholder.jpg',  // Use first image as main image
-          profileImages: vendor.profileImages || [],  // Add all profile images
+          image:           mainImage,
+          profileImages:   sanitizedProfileImages,
           description: vendor.description || '',
           rating: typeof vendor.rating === 'number' ? vendor.rating : 4.5,
           reviews: vendor.reviews || [],
@@ -136,19 +160,28 @@ export default function Home() {
     });
   };
   
-  const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => ({
-    _id: apiRestaurant._id,
-    name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
-    image: apiRestaurant.profileImages?.[0] || apiRestaurant.image || '/placeholder.jpg',
-    profileImages: Array.isArray(apiRestaurant.profileImages) 
-      ? apiRestaurant.profileImages.map(img => ({ url: String(img) }))
-      : [],
-    rating: apiRestaurant.rating || 4.5,
-    reviews: apiRestaurant.reviews?.length || 0,
-    cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
-    location: apiRestaurant.location || apiRestaurant.address || 'Location Unknown',
-    badge: apiRestaurant.featured ? 'Featured' : undefined
-  });
+  const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => {
+    console.log('Converting to TableGrid format:', {
+      image: apiRestaurant.image,
+      profileImages: apiRestaurant.profileImages
+    });
+    
+    return {
+      _id: apiRestaurant._id,
+      name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
+      image: apiRestaurant.image || '/placeholder.jpg',
+      profileImages: apiRestaurant?.profileImages?.map(img => ({ 
+        url: typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) 
+          ? img 
+          : '/placeholder.jpg'
+      })),
+      rating: apiRestaurant.rating || 4.5,
+      reviews: apiRestaurant.reviews?.length || 0,
+      cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
+      location: apiRestaurant.location || apiRestaurant.address || 'Location Unknown',
+      badge: apiRestaurant.featured ? 'Featured' : undefined
+    };
+  };
 
   if (!mounted) {
     return (
