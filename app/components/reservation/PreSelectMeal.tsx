@@ -150,7 +150,7 @@ export default function PreSelectMeal() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen mt-[265px] bg-gray-50">
       {/* Header */}
       <ReservationHeader title="Pre-Select your Meal" index={2} />
       <div className="bg-gray-100  w-full">

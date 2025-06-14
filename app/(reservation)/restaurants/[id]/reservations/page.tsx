@@ -19,7 +19,7 @@ const searchQuery = {
     specialRequest: specialRequest ?? ""
 }
 
-  return <div>{page === 1 ? <PreSelectMeal /> : <ReservationDetails searchQuery={searchQuery} />}</div>;
+  return <div className="mt-[265px]">{page === 1 ? <PreSelectMeal /> : <ReservationDetails searchQuery={searchQuery} />}</div>;
 };
 
 export default Page;

@@ -29,6 +29,7 @@ interface ApiRestaurant {
   phone: string;
   services: string[];
   image?: string;
+  profileImages?: string[];
   description?: string;
   rating?: number;
   reviews?: string[];
@@ -97,7 +98,8 @@ export default function Home() {
           email: vendor.email || '',
           phone: vendor.phone || '',
           services: vendor.services || [],
-          image: vendor.image || '/placeholder.jpg',
+          image: vendor.profileImages?.[0] || '/placeholder.jpg',  // Use first image as main image
+          profileImages: vendor.profileImages || [],  // Add all profile images
           description: vendor.description || '',
           rating: typeof vendor.rating === 'number' ? vendor.rating : 4.5,
           reviews: vendor.reviews || [],
@@ -109,7 +111,6 @@ export default function Home() {
         };
       } catch (error) {
         console.error('Error converting vendor to restaurant:', vendor, error);
-        // Return a minimal valid ApiRestaurant object in case of error
         return {
           _id: String(index + 1),
           name: 'Error loading restaurant',
@@ -121,6 +122,7 @@ export default function Home() {
           phone: '',
           services: [],
           image: '/placeholder.jpg',
+          profileImages: [],
           description: '',
           rating: 0,
           reviews: [],
@@ -137,7 +139,8 @@ export default function Home() {
   const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => ({
     _id: apiRestaurant._id,
     name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
-    image: apiRestaurant.image || '/placeholder.jpg',
+    image: apiRestaurant.profileImages?.[0] || apiRestaurant.image || '/placeholder.jpg',
+    profileImages: apiRestaurant.profileImages || [],
     rating: apiRestaurant.rating || 4.5,
     reviews: apiRestaurant.reviews?.length || 0,
     cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
