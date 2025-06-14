@@ -1,14 +1,13 @@
 import { Calendar } from "lucide-react";
 import React from "react";
 
-export default function RestauranAvalableSlot() {
-  const reservationSlots = [
-    "01:00 PM",
-    "03:00 PM",
-    "05:00 PM",
-    "07:00 PM",
-    "09:00 PM",
-  ];
+export default function RestauranAvalableSlot({
+  openingTime, closingTime, availableSlots
+}: {
+  openingTime: string;
+  closingTime: string;
+  availableSlots: string[];
+}) {
   return (
     <div className="flex flex-col font-[var(--font-inter)] gap-6">
         <div className="bg-[#E8FFE1] p-3 rounded-xl border border-[#72E94E] flex sm:w-fit items-center gap-4">
@@ -28,7 +27,7 @@ export default function RestauranAvalableSlot() {
           </div>
           <div className="space-y-1">
             <p className="text-xs">Opening Hours</p>
-            <p className="font-semibold text-sm">12:00 PM - 11:00 PM Daily</p>
+            <p className="font-semibold text-sm">{openingTime} - {closingTime} Daily</p>
           </div>
         </div>
       <div className="max-w-4xl w-full">
@@ -37,7 +36,7 @@ export default function RestauranAvalableSlot() {
         </h2>
 
         <div className="flex flex-wrap gap-4">
-          {reservationSlots.map((slot) => (
+          {availableSlots.map((slot) => (
             <button
               key={slot}
               className={`

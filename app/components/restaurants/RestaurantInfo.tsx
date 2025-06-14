@@ -52,7 +52,7 @@ const RestaurantInfo = ({ data }: { data: Restaurant}) => {
       <div className="mt-8">
         {activeTab === "overview" && <RestaurantOverview address={data.address} openingTime={data.openingTime} closingTime={data.closingTime} cuisines={data.cuisines} desc={data.businessDescription} />}
         {activeTab === "menu" && <RestaurantMenu id={data._id} />}
-        {activeTab === "available" && <RestauranAvalableSlot />}
+        {activeTab === "available" && <RestauranAvalableSlot openingTime={data.openingTime} closingTime={data.closingTime} availableSlots={data.availableSlots} />}
         {activeTab === "reviews" && <p>Reviews</p>}
       </div>
     </div>

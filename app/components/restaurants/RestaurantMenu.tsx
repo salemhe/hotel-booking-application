@@ -114,7 +114,11 @@ export default function MenuPage({ id }: { id: string }) {
         />
       </div>
       {isLoading ? (
+        <div className="h-28 w-full flex flex-col items-center justify-center">
+
         <LoadingSpinner />
+        Loading...
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">

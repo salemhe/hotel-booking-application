@@ -64,7 +64,7 @@ const RestaurantImages = ({
       {showImageModal && (
         <div
           className={cn(
-            "fixed inset-0 z-50 flex items-center justify-center p-2 h-screen w-full sm:p-4 backdrop-blur-sm bg-black/80"
+            "fixed inset-0 z-90 flex items-center justify-center p-2 h-screen w-full sm:p-4 backdrop-blur-sm bg-black/80"
           )}
         >
           <button
