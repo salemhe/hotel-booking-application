@@ -11,7 +11,7 @@ export interface Restaurant {
   id?: number;
   name: string;
   image?: string;
-  profileImages?: string[];
+  profileImages?: { url: string }[];
   rating: number;
   reviews?: number;
   cuisine: string;
@@ -71,7 +71,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
 
   const getImagesForRestaurant = (restaurant: Restaurant) => {
     if (restaurant.profileImages && restaurant.profileImages.length > 1) {
-      return restaurant.profileImages;
+      return restaurant.profileImages.map(image => image.url);
     }
     // Only return single image if there's only one or no profile images
     return restaurant.image ? [restaurant.image] : ['/placeholder.jpg'];
@@ -138,7 +138,6 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
       Object.values(resetTimeouts).forEach(timeout => clearTimeout(timeout));
     };
   }, [resetTimeouts]);
-
   return (
     <div className="mb-[92px]">
       <Button variant="outline" className="flex justify-between items-center mb-6 text-gray-900 text-sm font-medium leading-none">
@@ -154,6 +153,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
           const multipleImages = hasMultipleImages(restaurant);
           const hovering = isHovering[restaurantId];
 
+          console.log(images, "images");
           return (
             <div
               key={restaurantId}
@@ -378,7 +378,7 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
                   {images.map((image, index) => (
                     <Image
                       key={index}
-                      src={image}
+                      src={typeof image === 'string' ? image : image.url}
                       alt={restaurant.name}
                       layout="fill"
                       objectFit="cover"
