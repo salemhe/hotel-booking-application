@@ -18,6 +18,7 @@ export interface Vendor {
   phone: string;
   services: string[];
   image?: string;
+  profileImages?: string[];
   description?: string;
   rating?: number;
   reviews?: string[];

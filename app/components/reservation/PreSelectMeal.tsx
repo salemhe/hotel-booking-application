@@ -9,6 +9,7 @@ import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import ReservationHeader from "./ReservationHeader";
+// import { useRouter } from "next/navigation";
 
 export interface MenuItem {
   id: string;
@@ -96,7 +97,7 @@ export default function PreSelectMeal() {
       value: "drinks",
     },
   ];
-
+  // const router = useRouter();
   const handleQuantityChange = (id: string, change: number, type?: string) => {
     setMenuItems(
       menuItems.map((item) => {

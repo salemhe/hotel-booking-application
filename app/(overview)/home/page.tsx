@@ -29,6 +29,7 @@ interface ApiRestaurant {
   phone: string;
   services: string[];
   image?: string;
+  profileImages?: string[];
   description?: string;
   rating?: number;
   reviews?: string[];
@@ -85,8 +86,32 @@ export default function Home() {
   // Convert vendors to restaurant format with better error handling
   const convertVendorsToRestaurants = (vendors: Vendor[]): ApiRestaurant[] => {
     return vendors.map((vendor, index) => {
-      console.log(vendor._id);
+      console.log('Vendor data:', {
+        id: vendor._id,
+        profileImages: vendor.profileImages,
+        image: vendor.image
+      });
+      
       try {
+        // Ensure profileImages are valid URLs or relative paths
+        const sanitizedProfileImages = vendor.profileImages?.map(imgOrString => {
+          // if it’s a string, use it; otherwise assume it’s { url: string }
+          const url = typeof imgOrString === 'string'
+            ? imgOrString
+            : (imgOrString as { url?: string }).url || '';
+    
+          // only accept http or /-prefixed URLs
+          return (url.startsWith('http') || url.startsWith('/'))
+            ? url
+            : '/placeholder.jpg';
+        }) || [];
+
+        // Ensure main image is a valid URL or relative path
+        const mainImage = sanitizedProfileImages[0]
+        || (typeof vendor.image === 'string' && (vendor.image.startsWith('http') || vendor.image.startsWith('/'))
+            ? vendor.image
+            : '/placeholder.jpg');
+
         return {
           _id: vendor._id || `vendor-${index + 1}`,
           name: vendor.businessName || 'Unknown Business',
@@ -97,7 +122,8 @@ export default function Home() {
           email: vendor.email || '',
           phone: vendor.phone || '',
           services: vendor.services || [],
-          image: vendor.image || '/placeholder.jpg',
+          image:           mainImage,
+          profileImages:   sanitizedProfileImages,
           description: vendor.description || '',
           rating: typeof vendor.rating === 'number' ? vendor.rating : 4.5,
           reviews: vendor.reviews || [],
@@ -109,7 +135,6 @@ export default function Home() {
         };
       } catch (error) {
         console.error('Error converting vendor to restaurant:', vendor, error);
-        // Return a minimal valid ApiRestaurant object in case of error
         return {
           _id: String(index + 1),
           name: 'Error loading restaurant',
@@ -121,6 +146,7 @@ export default function Home() {
           phone: '',
           services: [],
           image: '/placeholder.jpg',
+          profileImages: [],
           description: '',
           rating: 0,
           reviews: [],
@@ -134,16 +160,28 @@ export default function Home() {
     });
   };
   
-  const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => ({
-    _id: apiRestaurant._id,
-    name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
-    image: apiRestaurant.image || '/placeholder.jpg',
-    rating: apiRestaurant.rating || 4.5,
-    reviews: apiRestaurant.reviews?.length || 0,
-    cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
-    location: apiRestaurant.location || apiRestaurant.address || 'Location Unknown',
-    badge: apiRestaurant.featured ? 'Featured' : undefined
-  });
+  const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => {
+    console.log('Converting to TableGrid format:', {
+      image: apiRestaurant.image,
+      profileImages: apiRestaurant.profileImages
+    });
+    
+    return {
+      _id: apiRestaurant._id,
+      name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
+      image: apiRestaurant.image || '/placeholder.jpg',
+      profileImages: apiRestaurant?.profileImages?.map(img => ({ 
+        url: typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) 
+          ? img 
+          : '/placeholder.jpg'
+      })),
+      rating: apiRestaurant.rating || 4.5,
+      reviews: apiRestaurant.reviews?.length || 0,
+      cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
+      location: apiRestaurant.location || apiRestaurant.address || 'Location Unknown',
+      badge: apiRestaurant.featured ? 'Featured' : undefined
+    };
+  };
 
   if (!mounted) {
     return (
@@ -212,9 +250,7 @@ export default function Home() {
 
       {activeTab === "restaurants" ? (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <TableGrid title="Popular Searches" />
-          <TableGrid title="In High Demand" />
-          <TableGrid title="Your History" />
+         
           
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
@@ -242,6 +278,10 @@ export default function Home() {
               <p className="text-gray-600">No restaurants found</p>
             </div>
           )}
+
+          <TableGrid title="Popular Searches" />
+          <TableGrid title="In High Demand" />
+          <TableGrid title="Your History" />
         </div>
       ) : (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">

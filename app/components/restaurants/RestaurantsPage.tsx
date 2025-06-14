@@ -70,7 +70,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
   const data = await fetchRestaurant(id);
   const restaurant = data.data[0];
   return (
-    <main className="mx-auto py-8 px-4 max-w-7xl sm:px-6 lg:px-8">
+    <main className="mx-auto mt-[85px] py-8 px-4 max-w-7xl sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row gap-8 w-full">
         <div className="w-full space-y-8">
           <div className="col-span-2">
