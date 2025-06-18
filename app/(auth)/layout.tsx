@@ -9,7 +9,10 @@ const layout = ({
   return (
     <div>
       <Navigation />
+      <div className="mt-[60px]">
+
       {children}
+      </div>
     </div>
   );
 };

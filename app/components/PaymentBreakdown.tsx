@@ -194,7 +194,7 @@ export function PaymentBreakdown() {
             <TableBody>
               {currentPayments.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5}>
+                  <TableCell colSpan={6}>
                     <div className="flex flex-col items-center justify-center text-center py-10">
                       <Frown className="h-12 w-12 text-muted-foreground mb-4" />
                       <p className="text-muted-foreground">

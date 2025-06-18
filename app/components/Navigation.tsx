@@ -36,11 +36,9 @@ const Navigation = () => {
   
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [isHomePage, setIsHomePage] = useState(pathname?.startsWith('/home'));
   const [isSearchPage, setIsSearchPage] = useState(pathname?.startsWith('/search'));
 
   useEffect(() => {
-    setIsHomePage(pathname?.startsWith('/home'));
     setIsSearchPage(pathname?.startsWith('/search'));
   }, [pathname]);
 
@@ -51,7 +49,7 @@ const Navigation = () => {
   const navItems = [
     { name: "Home", href: "/home" },
     // { name: "Restaurants", href: "/userDashboard/search" },
-    { name: "Bookings / Reservations", href: "/bookings" },
+    { name: "Bookings / Reservations", href: "/userDashboard/booking" },
     { name: "Offers", href: "#" },
   ];
 
@@ -140,7 +138,7 @@ const Navigation = () => {
                   <Link href="/messages">Messages</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="  px-4 py-2">
-                  <Link href="/bookings">Bookings/Reservation</Link>
+                  <Link href="/userDashboard/booking">Bookings/Reservation</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="  px-4 py-2" >
                   <Link href="/wishlist">Wishlist</Link>
@@ -212,6 +210,17 @@ const Navigation = () => {
             </div>
             <div className="mt-3 space-y-1 w-full">
               <SheetClose
+                className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
+                asChild
+              >
+                <Link
+                  href="/userDashboard/search"
+                  className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
+                >
+                  Dashboard
+                </Link>
+              </SheetClose>
+              <SheetClose
                 className="w-full text-left hover:bg-accent hover:text-red-600 px-4 py-2 text-sm text-red-600 flex items-center"
                 onClick={handleLogout}
               >
@@ -242,32 +251,32 @@ const Navigation = () => {
   };
 
   return (
-    <nav className={`fixed top-0 z-90 w-full transition-all duration-300 ${scrolled || !isHomePage ? 'bg-[#F9FAFB] ' : 'bg-transparent'}`}>
+    <nav className={`fixed top-0 z-90 w-full transition-all duration-300 ${scrolled || isSearchPage ? 'bg-white border-b' : 'bg-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between h-16 items-center">
           <div className="flex">
             <div className="shrink-0 flex items-center">
-              <Link href="/home" className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center space-x-2">
                 <ChefHat className="h-8 w-8 text-blue-600" />
-                <span className={`text-2xl font-bold ${scrolled || !isHomePage ? 'text-gray-900' : 'text-[#F9FAFB]'}`}>
+                <span className={`text-2xl font-bold ${scrolled || isSearchPage ? 'text-gray-900' : 'text-[#F9FAFB]'}`}>
                   Bookies
                 </span>
               </Link>
             </div>
           </div>
           {
-           !isSearchPage ? (
+            !isSearchPage ? (
               <div className="hidden md:ml-6 md:flex sm:space-x-8">
             {navItems.map((item) =>{
               const isActive = 
-              item.href === "/home" 
-                ? pathname === "/home" 
+              item.href === "/" 
+                ? pathname === "/" 
                 : pathname?.startsWith(item.href);
               return (
                 <Link
                 key={item.name}
                 href={item.href}
-                className={`${scrolled || !isHomePage ? 'text-gray-700' : 'text-[#F9FAFB]'} 
+                className={`${scrolled || isSearchPage ? 'text-gray-700' : 'text-[#F9FAFB]'} 
                   text-[1rem] hover:text-blue-500 font-bold px-3 py-2 transition-colors
                   relative group`}
               >
