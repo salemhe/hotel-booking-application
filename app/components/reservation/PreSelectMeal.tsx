@@ -153,7 +153,7 @@ export default function PreSelectMeal() {
   };
 
   const handleClick =() => {
-    router.push("/confirmation")
+    router.push("/completed")
   }
 
   return (
