@@ -35,16 +35,13 @@ export interface UserProfile {
 }
 
 interface RegisterData {
-  name: string;
   businessName: string;
   businessType: string;
   email: string;
   phone: string;
   address: string;
-  branch?: string;
   password: string;
   role: string;
-  services: string[];
 }
 
 interface PaymentDetalsProps {
@@ -93,16 +90,13 @@ export class AuthService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: data.name,
           businessName: data.businessName,
           businessType: data.businessType,
           email: data.email,
           phone: data.phone,
           address: data.address,
-          branch: data.branch || "",
           password: data.password,
           role: data.role,
-          services: data.services,
         }),
       });
 
