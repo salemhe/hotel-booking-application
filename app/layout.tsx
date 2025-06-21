@@ -2,13 +2,10 @@ import ErrorBoundary from "@/app/components/Errorboundary";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
+// import { DM_Sans } from "next/font/google";
 
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-dm-sans",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
@@ -25,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${dmSans.variable} antialiased`}>
+      <body className={` ${inter.className} antialiased`}>
         <ErrorBoundary>
           {children}
           <Toaster />

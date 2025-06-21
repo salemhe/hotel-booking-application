@@ -17,7 +17,7 @@ export default function ConfirmationPage() {
       <div className="max-w-2xl mx-auto">
         {/* Success Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#37703F] rounded-full flex items-center justify-center">
             <Check className="w-6 h-6 text-white" />
           </div>
         </div>
@@ -82,14 +82,14 @@ export default function ConfirmationPage() {
             <div className="border-t pt-6">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-semibold text-gray-900">Amount paid</span>
-                <span className="text-lg font-semibold text-gray-900">₦42,000</span>
+                <span className="text-lg font-semibold text-[#37703F]">₦42,000</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center">
+                <div className="w-5 h-5 bg-[#37703F] rounded-full flex items-center justify-center">
                   <Check className="w-3 h-3 text-white" />
                 </div>
-                <span className="font-medium text-green-600">Paid</span>
+                <span className="font-medium text-[#37703F]">Paid</span>
                 <span className="text-gray-600 text-sm">• Payment made at 8:00 am, May 28, 2025</span>
               </div>
             </div>
@@ -97,29 +97,29 @@ export default function ConfirmationPage() {
         </Card>
 
         {/* Info Cards - Changed to green background */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
+        <div className="bg-[#E9EBF3] border border-[#B9C2DB] rounded-lg p-4 mb-8">
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-              <p className="text-green-800 text-sm">
+              <Mail className="w-5 h-5 text-[#0A6C6D] mt-0.5 flex-shrink-0" />
+              <p className=" text-sm">
                 You will receive a confirmation email with your reservation and meal details
               </p>
             </div>
 
             <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-              <p className="text-green-800 text-sm">Please, arrive 10 mins early</p>
+              <Clock className="w-5 h-5 text-[#0A6C6D] mt-0.5 flex-shrink-0" />
+              <p className=" text-sm">Please, arrive 10 mins early</p>
             </div>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <Button variant="outline" className="flex-1 h-10 text-sm font-medium px-6 border-gray-300">
+          <Button variant="outline" className="flex-1 h-10 text-sm font-medium rounded-xl px-6 border-gray-300">
             Get Direction
           </Button>
           <Button
-            className="flex-1 h-10 text-sm font-medium px-6 bg-teal-700 hover:bg-teal-800"
+            className="flex-1 h-10 text-sm font-medium px-6 rounded-xl bg-[#0A6C6D] hover:bg-teal-800"
             onClick={handleDoneClick}
           >
             Done
