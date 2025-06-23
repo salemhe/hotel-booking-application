@@ -77,7 +77,7 @@ const SearchSection = ({ activeTab }: { activeTab: string }) => {
         <div className="flex items-center justify-center sm:justify-end w-full">
           <button
             onClick={() => {
-              router.push("/search");
+              router.push(`/search?date=${date ? format(date, "yyyy-MM-dd") : ""}&time=${time || ""}`);
               console.log("search button clicked");
             }}
             className={`flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-3 transition ${
