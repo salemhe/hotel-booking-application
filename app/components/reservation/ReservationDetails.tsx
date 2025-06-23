@@ -72,7 +72,7 @@ export default function ReservationDetails({
   };
 
   return (
-    <div className="min-h-screen mt-[65px] bg-gray-50">
+    <div className="min-h-screen mb-[65px] bg-gray-50">
       <ReservationHeader title="Reservation Details" index={1} />
 
       <div className="max-w-4xl mx-auto  px-4 py-15 space-y-6">

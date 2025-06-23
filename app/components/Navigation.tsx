@@ -49,7 +49,7 @@ const Navigation = () => {
   const navItems = [
     { name: "Home", href: "/home" },
     // { name: "Restaurants", href: "/userDashboard/search" },
-    { name: "Bookings / Reservations", href: "/userDashboard/booking" },
+    { name: "Bookings / Reservations", href: "/bookings" },
     { name: "Offers", href: "#" },
   ];
 
@@ -138,7 +138,7 @@ const Navigation = () => {
                   <Link href="/messages">Messages</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="  px-4 py-2">
-                  <Link href="/userDashboard/booking">Bookings/Reservation</Link>
+                  <Link href="/bookings">Bookings/Reservation</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="  px-4 py-2" >
                   <Link href="/wishlist">Wishlist</Link>

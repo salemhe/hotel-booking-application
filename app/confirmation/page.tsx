@@ -14,20 +14,22 @@ export default function ConfirmationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-6 md:py-8">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Success Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-12 h-12 bg-[#37703F] rounded-full flex items-center justify-center">
-            <Check className="w-6 h-6 text-white" />
+          <div className="w-16 h-16 bg-[#37703F1A] rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-[#37703F] rounded-full flex items-center justify-center">
+              <Check className="w-6 h-6 text-white" />
+            </div>
           </div>
         </div>
 
         {/* Main Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">
+          <h1 className="text-[22px] font-bold text-[#111827] mb-2">
             Your reservation is confirmed & your meal has been paid
           </h1>
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600">
             Your pre-selected meals have been confirmed for your upcoming reservation
           </p>
         </div>

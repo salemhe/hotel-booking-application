@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeft, Banknote, AlertTriangle } from "lucide-react";
+import { Banknote, AlertTriangle } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { useRouter } from "next/navigation";
+import ReservationHeader from "../../components/reservation/ReservationHeader";
 
 export default function PrePaymentPage() {
   const router = useRouter();
@@ -13,17 +14,9 @@ export default function PrePaymentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-6 md:px-6 md:py-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
-            <span className="font-medium text-gray-900">Payment</span>
-          </div>
-          <div className="text-sm text-gray-600">Step 3 of 4</div>
-        </div>
-
+    <div className="min-h-screen bg-gray-50 ">
+      <ReservationHeader title="Reservation Details" index={3} />
+      <div className="max-w-4xl px-4 py-6 md:px-6 md:py-8 mx-auto">
         {/* Main Heading */}
         <div className="text-center mb-8">
           <h1 className="text-xl font-semibold text-gray-900 mb-2">
