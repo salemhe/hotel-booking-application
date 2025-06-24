@@ -1,505 +1,293 @@
-"use client";
+"use client"
+import React, { useEffect, useState } from 'react';
+import { VendorService, Vendor } from '@/app/lib/api/services/vendors';
+import SearchSection from "@/app/components/SearchSection";
+import TableGrid, { TableGridTwo, Restaurant } from "@/app/components/TableGrid";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
-import {
-  Search,
-  Gift,
-  ArrowRight,
-  Utensils,
-  Star,
-  CalendarIcon,
-  ChefHat,
-  Book,
-  CheckCircle2,
-  CircleDot,
-} from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/app/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/app/components/ui/carousel";
-import Image from "next/image";
-import { cuisineTypes, deals, features, restaurants, testimonials } from "@/utils/constant";
+const tabs = [
+  {
+    name: "Restaurants",
+    value: "restaurants"
+  },
+  {
+    name: "Hotels", 
+    value: "hotels"
+  },
+]
 
-export default function LandingPage() {
+interface ApiRestaurant {
+  _id: string;
+  name: string;
+  cuisine: string;
+  badge?: string;
+  id?:number;
+  businessName: string;
+  businessType: string;
+  branch: string;
+  address: string;
+  email: string;
+  phone: string;
+  services: string[];
+  image?: string;
+  profileImages?: string[];
+  description?: string;
+  rating?: number;
+  reviews?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  featured?: boolean;
+  location?: string;
+}
+
+export default function Home() {
+  const [activeTab, setActiveTab] = useState("restaurants");
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Handle client-side mounting to prevent hydration issues
+  useEffect(() => {
+    setMounted(true);
+    // Load saved tab from localStorage only on client side
+    const savedTab = localStorage.getItem("activeTab");
+    if (savedTab && (savedTab === "restaurants" || savedTab === "hotels")) {
+      setActiveTab(savedTab);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchVendors = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await VendorService.getVendors();
+        setVendors(data);
+      } catch (err) {
+        console.error('Error fetching vendors:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch vendors');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (mounted) {
+      fetchVendors();
+    }
+  }, [mounted]);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    if (mounted) {
+      localStorage.setItem("activeTab", tab);
+    }
+  }
+
+  // Convert vendors to restaurant format with better error handling
+  const convertVendorsToRestaurants = (vendors: Vendor[]): ApiRestaurant[] => {
+    return vendors.map((vendor, index) => {
+      console.log('Vendor data:', {
+        id: vendor._id,
+        profileImages: vendor.profileImages,
+        image: vendor.image
+      });
+      
+      try {
+        // Ensure profileImages are valid URLs or relative paths
+        const sanitizedProfileImages = vendor.profileImages?.map(imgOrString => {
+          // if it’s a string, use it; otherwise assume it’s { url: string }
+          const url = typeof imgOrString === 'string'
+            ? imgOrString
+            : (imgOrString as { url?: string }).url || '';
+    
+          // only accept http or /-prefixed URLs
+          return (url.startsWith('http') || url.startsWith('/'))
+            ? url
+            : '/placeholder.jpg';
+        }) || [];
+
+        // Ensure main image is a valid URL or relative path
+        const mainImage = sanitizedProfileImages[0]
+        || (typeof vendor.image === 'string' && (vendor.image.startsWith('http') || vendor.image.startsWith('/'))
+            ? vendor.image
+            : '/placeholder.jpg');
+
+        return {
+          _id: vendor._id || `vendor-${index + 1}`,
+          name: vendor.businessName || 'Unknown Business',
+          businessName: vendor.businessName || 'Unknown Business',
+          businessType: vendor.businessType || 'Various',
+          branch: vendor.branch || '',
+          address: vendor.address || '',
+          email: vendor.email || '',
+          phone: vendor.phone || '',
+          services: vendor.services || [],
+          image:           mainImage,
+          profileImages:   sanitizedProfileImages,
+          description: vendor.description || '',
+          rating: typeof vendor.rating === 'number' ? vendor.rating : 4.5,
+          reviews: vendor.reviews || [],
+          createdAt: vendor.createdAt || new Date().toISOString(),
+          updatedAt: vendor.updatedAt || new Date().toISOString(),
+          featured: vendor.featured || false,
+          location: vendor.address || 'Location not specified',
+          cuisine: vendor.businessType || 'Various',
+        };
+      } catch (error) {
+        console.error('Error converting vendor to restaurant:', vendor, error);
+        return {
+          _id: String(index + 1),
+          name: 'Error loading restaurant',
+          businessName: 'Error loading restaurant',
+          businessType: 'Unknown',
+          branch: '',
+          address: 'Unknown',
+          email: '',
+          phone: '',
+          services: [],
+          image: '/placeholder.jpg',
+          profileImages: [],
+          description: '',
+          rating: 0,
+          reviews: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          featured: false,
+          location: 'Unknown',
+          cuisine: 'Unknown',
+        };
+      }
+    });
+  };
+  
+  const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => {
+    console.log('Converting to TableGrid format:', {
+      image: apiRestaurant.image,
+      profileImages: apiRestaurant.profileImages
+    });
+    
+    return {
+      _id: apiRestaurant._id,
+      name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
+      image: apiRestaurant.image || '/placeholder.jpg',
+      profileImages: apiRestaurant?.profileImages?.map(img => ({ 
+        url: typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) 
+          ? img 
+          : '/placeholder.jpg'
+      })),
+      rating: apiRestaurant.rating || 4.5,
+      reviews: apiRestaurant.reviews?.length || 0,
+      cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
+      location: apiRestaurant.location || apiRestaurant.address || 'Location Unknown',
+      badge: apiRestaurant.featured ? 'Featured' : undefined
+    };
+  };
+
+  if (!mounted) {
+    return (
+      <main className="min-h-screen bg-white">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-700"></div>
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Header Section */}
-
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative py-16 md:py-24 min-h-[600px] flex items-center justify-center overflow-hidden">
-          {/* <div className="absolute inset-0">
-            <Image
-              src="/hero-bg.jpg"
-              alt="Fine dining ambiance"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-linear-to-r from-blue-900/90 to-green-900/90" />
-          </div> */}
-          <div className="max-w-[1200px] mx-auto px-4 grid md:grid-cols-2">
-            <div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className=" mb-12"
-              >
-                <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-                  Book the Perfect Table Anytime, Anywhere.
+    <main className="min-h-screen bg-white">
+      <div className="relative min-h-[400px]">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-br-[20px] rounded-bl-[20px]"
+          style={{
+            backgroundImage: activeTab === "restaurants" ? "url('/find.png')" : "url('/find-hotel.jpg')",
+          }}
+        />
+        <div className="absolute inset-0 bg-black/70 rounded-br-[20px] rounded-bl-[20px]"></div>
+        <div className="relative max-w-7xl mx-auto px-4 min-h-[400px] justify-center items-center sm:px-6 lg:px-8 py-20">
+          <div className="text-center mt-16">
+            {activeTab === "restaurants" ? (
+              <>
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                  Find your Perfect Table
                 </h1>
-                <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-                  Discover and reserve tables at the best restaurants in town in
-                  seconds.
+                <p className="text-xl text-white/90 mb-8">
+                  Discover and reserve the best restaurants in your city
                 </p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="max-w-4xl mx-auto flex gap-2 flex-col sm:flex-row"
-              >
-                <Button asChild className="rounded-full h-[50px] bg-blue-700 hover:bg-blue-700/90" size='lg'>
-                  <Link href="/userDashboard/search">Book a Table</Link>
-                </Button>
-                <Button asChild className="rounded-full h-[50px]" variant='outline' size='lg'>
-                  <Link href="/vendors-landing-page">Join as a Restaurant</Link>
-                </Button>
-              </motion.div>
-            </div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="w-full flex items-center justify-center"
-            >
-              <div className="relative size-[300px] md:size-[450px] mt-[80px] md:mt-0 items-center flex justify-center">
-                <ChefHat
-                  size={300}
-                  className="animate-pulse text-blue-200 size-[300px] md:size-[450px]"
-                />
-                <CircleDot
-                  size={100}
-                  className="top-[50%] left-[50%] absolute text-blue-700 -translate-[50%] size-[80px] md:size-[100]"
-                />
-                <Utensils
-                  size={100}
-                  className="right-0 md:right-10 bottom-0 md:bottom-10 -rotate-45 absolute text-green-500 size-[80px] md:size-[100]"
-                />
-                <Book
-                  size={100}
-                  className="left-0 md:left-10 bottom-0 md:bottom-10 rotate-45 absolute text-purple-500 size-[80px] md:size-[100]"
-                />
-                <CheckCircle2
-                  size={100}
-                  className="left-[50%] -translate-[50%] top-0 md:top-10 absolute text-orange-500 size-[80px] md:size-[100]"
-                />
-              </div>
-            </motion.div>
-          </div>
-        </section>
+              </>
+            ) : (
+              <>
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                  Start Living Your Dream
+                </h1>
+                <p className="text-xl text-white/90 mb-8">
+                  Discover and reserve the best hotels in your city
+                </p>
+              </>
+            )}
 
-        {/* How It Works */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                How It Works
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Book your favorite restaurant in 3 simple steps
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: Search,
-                  title: "Find",
-                  description:
-                    "Search for restaurants by location, cuisine, or availability",
-                },
-                {
-                  icon: CalendarIcon,
-                  title: "Book",
-                  description:
-                    "Select your preferred date, time, and party size",
-                },
-                {
-                  icon: Utensils,
-                  title: "Dine",
-                  description: "Enjoy your meal with instant confirmation",
-                },
-              ].map((step, index) => (
-                <motion.div
-                  key={step.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.2 }}
-                  className="relative"
+            <div className="flex justify-center items-center gap-4">
+              {tabs.map((tab) => (
+                <button 
+                  key={tab.value} 
+                  className={`px-4 py-2 rounded-[36px] cursor-pointer text-sm font-medium leading-none transition-colors duration-200 ${
+                    activeTab === tab.value 
+                      ? "bg-slate-200 text-gray-900" 
+                      : "bg-transparent text-gray-50 hover:bg-white/10"
+                  }`} 
+                  onClick={() => handleTabChange(tab.value)}
                 >
-                  <Card className="h-full">
-                    <CardContent className="pt-6">
-                      <div className="mb-4 w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                        <step.icon className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div className="text-start">
-                        <h3 className="text-xl font-semibold mb-2">
-                          {step.title}
-                        </h3>
-                        <p className="text-gray-600">{step.description}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                  {tab.name}
+                </button>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* Popular Restaurants */}
-        <section className="py-20 ">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Popular Restaurants
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Explore top restaurants in these culinary destinations
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {restaurants.map((restaurant, index) => (
-                <motion.div
-                  key={restaurant.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group cursor-pointer"
-                >
-                  <div className="relative h-64 rounded-4xl overflow-hidden">
-                    <Image
-                      src={restaurant.image}
-                      alt={restaurant.name}
-                      fill
-                      className="object-cover transition-transform group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-blue-900/90 to-transparent" />
-                    <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
-                      <h3 className="text-2xl font-bold mb-1">
-                        {restaurant.name}
-                      </h3>
-                      <p className="text-blue-200 text-sm">
-                        {restaurant.location}
-                      </p>
-                      <p className="text-blue-200 text-sm">
-                        {restaurant.cuisine}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Cuisine Categories */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Explore by Cuisine
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Find restaurants by your favorite type of food
-              </p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {cuisineTypes.map((cuisine, index) => (
-                <motion.div
-                  key={cuisine.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  className="group"
-                >
-                  <Card className="text-center hover:border-blue-200 transition-colors rounded-full">
-                    <CardContent className="p-6">
-                      <div className="mb-4 w-16 h-16 mx-auto rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                        <cuisine.icon className="w-8 h-8 text-blue-600" />
-                      </div>
-                      <h3 className="font-semibold">{cuisine.name}</h3>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Special Offers */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Special Offers
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Exclusive deals from top restaurants
-              </p>
-            </div>
-            <Carousel className="w-full">
-              <div className="flex gap-4 items-center">
-                <h2 className="font-medium text-lg">Offers</h2>
-                <div className="flex items-center h-fit">
-                  <CarouselPrevious className="static translate-y-0" />
-                  <CarouselNext className="static translate-y-0" />
-                </div>
-              </div>
-              <CarouselContent className="px-4">
-                {deals.map((deal, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="basis-11/12 md:basis-1/2 lg:basis-1/3 p-2"
-                  >
-                    <Card className="overflow-hidden flex flex-col justify-between">
-                      <div className="relative h-48">
-                        <Image
-                          src={deal.image || "/placeholder.svg"}
-                          alt={deal.title}
-                          fill
-                          className="object-cover"
-                        />
-                        <div className="absolute top-4 right-4">
-                          <Badge className="bg-blue-600 text-white">
-                            {deal.discount}
-                          </Badge>
-                        </div>
-                      </div>
-                      <CardHeader>
-                        <CardTitle>{deal.title}</CardTitle>
-                        <CardDescription>{deal.restaurant}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 mb-2">{deal.description}</p>
-                        <p className="text-sm font-medium text-blue-600">
-                          {deal.validUntil}
-                        </p>
-                      </CardContent>
-                      <CardFooter>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                          <Gift className="mr-2 h-4 w-4" />
-                          Claim now
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </div>
-        </section>
-
-        {/* Testimonials */}
-        <section className="py-20 overflow-hidden">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                What Our Users Say
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Join thousands of satisfied diners and restaurant owners
-              </p>
-            </div>
+            
             <div className="relative">
-              <div className="flex space-x-8 animate-marquee2 md:animate-marquee space-y-8">
-                {[...testimonials, ...testimonials].map((testimonial, i) => (
-                  <Card key={i} className="w-[300px] shrink-0">
-                    <CardHeader>
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-full overflow-hidden">
-                          <Image
-                            src={testimonial.image}
-                            alt={testimonial.name}
-                            width={48}
-                            height={48}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">
-                            {testimonial.name}
-                          </CardTitle>
-                          <CardDescription>{testimonial.role}</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex text-yellow-400 mb-2">
-                        {Array.from({ length: testimonial.rating }).map(
-                          (_, i) => (
-                            <Star key={i} className="h-4 w-4 fill-current" />
-                          )
-                        )}
-                      </div>
-                      <p className="text-gray-600">
-                        &quot;{testimonial.comment}&quot;
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <SearchSection activeTab={activeTab} />
             </div>
           </div>
-        </section>
+        </div>
+      </div>
 
-        {/* Features Section */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 bg-linear-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                Why Choose Bookie?
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Experience the best in dining reservations with our premium
-                features
-              </p>
+      {activeTab === "restaurants" ? (
+        <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+         
+          
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-700"></div>
+              <span className="ml-2 text-gray-600">Loading restaurants...</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="text-center"
-                >
-                  <div
-                    className={`mx-auto w-16 h-16 mb-6 rounded-full ${feature.color} flex items-center justify-center`}
-                  >
-                    <feature.icon className={`w-8 h-8 ${feature.color}`} />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </motion.div>
-              ))}
+          ) : error ? (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+              <p className="text-red-600 font-medium">Error loading restaurants</p>
+              <p className="text-red-500 text-sm mt-1">{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                Try Again
+              </button>
             </div>
-          </div>
-        </section>
+          ) : vendors.length > 0 ? (
+            <TableGrid 
+              title='Top Rated Restaurants' 
+              restaurants={vendors.map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))} 
+            />
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No restaurants found</p>
+            </div>
+          )}
 
-        {/* Restaurant Vendors CTA */}
-        <section className="py-20 bg-linear-to-r from-blue-600 to-green-600">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="text-white">
-                <h2 className="text-3xl font-bold mb-6">
-                  Simplify Reservations & Grow Your Business
-                </h2>
-                <p className="text-xl mb-8 text-blue-50">
-                  Say goodbye to no-shows and manual booking hassles! Our
-                  advanced reservation system helps you manage table
-                  availability, streamline customer flow, and increase
-                  efficiency. Take your restaurant to the next level with smart
-                  technology!
-                </p>
-                <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                  {[
-                    { number: "50K+", label: "Monthly Bookings" },
-                    { number: "2K+", label: "Restaurant Partners" },
-                    { number: "95%", label: "Customer Satisfaction" },
-                    { number: "30%", label: "Revenue Increase" },
-                  ].map((stat, i) => (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: i * 0.1 }}
-                      viewport={{ once: true }}
-                      key={stat.label}
-                      className="bg-white/10 rounded-lg p-4 backdrop-blur-xs"
-                    >
-                      <div className="text-2xl font-bold">{stat.number}</div>
-                      <div className="text-blue-100">{stat.label}</div>
-                    </motion.div>
-                  ))}
-                </div>
-                <Button variant="secondary" className=" rounded-full" size="lg" asChild>
-                  <Link
-                    href="/vendors-landing-page"
-                    className="flex items-center"
-                  >
-                    Join for Free
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-              <div className="relative hidden md:block">
-                <div className="absolute inset-0 bg-linear-to-r from-blue-600/20 to-green-600/20 rounded-2xl" />
-                <Image
-                  src="/restaurant.webp"
-                  alt="Restaurant Management"
-                  width={800}
-                  height={600}
-                  className="rounded-2xl"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Newsletter */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <Card className="max-w-4xl mx-auto overflow-hidden">
-              <div className="grid md:grid-cols-2">
-                <div className="relative h-64 md:h-auto">
-                  <Image
-                    src="/restaurant.jpg"
-                    alt="Newsletter"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-r from-blue-900/90 to-green-900/90" />
-                  <div className="absolute inset-0 p-6 flex flex-col justify-center text-white">
-                    <h3 className="text-2xl font-bold mb-2">Stay Updated</h3>
-                    <p className="text-blue-100">
-                      Get the latest deals and restaurant recommendations
-                    </p>
-                  </div>
-                </div>
-                <div className="p-6 md:p-8">
-                  <div className="space-y-4">
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      className="w-full"
-                    />
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                      Subscribe for Exclusive Offers
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </section>
-      </main>
-    </div>
+          <TableGrid title="Popular Searches" />
+          <TableGrid title="In High Demand" />
+          <TableGrid title="Your History" />
+        </div>
+      ) : (
+        <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <TableGridTwo title="Popular Guest House Searches" />
+        </div>
+      )}
+    </main>
   );
 }

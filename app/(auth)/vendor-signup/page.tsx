@@ -99,7 +99,7 @@ import { FaStore } from "react-icons/fa6";
 export default function VendorSignupPage() {
   const [formData, setFormData] = useState({
     businessName: "",
-    businessType: "Hotel",
+    businessType: "",
     name: "",
     email: "",
     phone: "",
