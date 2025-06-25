@@ -3,8 +3,9 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
-// import { DM_Sans } from "next/font/google";
+import { AuthProvider } from "@/app/contexts/AuthContext";
 
+// import { DM_Sans } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,8 +25,10 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={` ${inter.className} antialiased`}>
         <ErrorBoundary>
-          {children}
-          <Toaster />
+          <AuthProvider>
+            {children}
+            <Toaster />
+          </AuthProvider>
         </ErrorBoundary>
       </body>
     </html>
