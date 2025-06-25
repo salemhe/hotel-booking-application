@@ -154,8 +154,6 @@
 //   );
 // }
 
-
-
 // .................................................................................................
 "use client";
 
@@ -173,14 +171,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/app/components/ui/card";
-import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowRight,
-  AlertCircle,
-} from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 
@@ -225,9 +216,13 @@ export default function VendorLoginPage() {
 
     try {
       const response = await AuthService.login(email, password);
-      await AuthService.setToken(response.profile.token)
+      await AuthService.setToken(response.profile.token);
       toast.success(`Welcome back, ${response.profile.businessName}!`);
-      router.push("/vendorDashboard");
+      if (response.profile.onboarded) {
+        router.push("/vendorDashboard");
+      } else {
+        router.push("/onboarding");
+      }
     } catch (error) {
       console.error("Submit error:", error);
 
@@ -342,7 +337,9 @@ export default function VendorLoginPage() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -393,7 +390,10 @@ export default function VendorLoginPage() {
                   role="alert"
                 >
                   This user doesn&apos;t exist.{" "}
-                  <Link href="/vendor-signup" className="underline font-semibold">
+                  <Link
+                    href="/vendor-signup"
+                    className="underline font-semibold"
+                  >
                     Create an account
                   </Link>
                   .
@@ -404,7 +404,9 @@ export default function VendorLoginPage() {
             <CardFooter className="flex flex-col space-y-4 sm:space-y-6 pb-6 sm:pb-8 px-4 sm:px-6 md:px-8">
               <div className="flex items-center gap-3 w-full">
                 <div className="flex-1 border-t border-gray-200" />
-                <span className="text-xs sm:text-sm text-gray-500 font-light">OR</span>
+                <span className="text-xs sm:text-sm text-gray-500 font-light">
+                  OR
+                </span>
                 <div className="flex-1 border-t border-gray-200" />
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full text-sm">

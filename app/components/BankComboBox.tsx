@@ -7,7 +7,6 @@ import { cn } from "@/app/lib/utils"
 import { Button } from "@/app/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/app/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover"
-import { FormControl } from "@/app/components/ui/form"
 
 interface Bank {
   code: string
@@ -17,7 +16,7 @@ interface Bank {
 interface BankComboboxProps {
   banks: Bank[]
   value: string
-  onChange: (value: string) => void
+  onChange: (value: string, code: string) => void
   isLoading?: boolean
 }
 
@@ -27,7 +26,6 @@ export function BankCombobox({ banks, value, onChange, isLoading = false }: Bank
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <FormControl>
           <Button
             variant="outline"
             role="combobox"
@@ -43,7 +41,6 @@ export function BankCombobox({ banks, value, onChange, isLoading = false }: Bank
                 : "Select Bank"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
-        </FormControl>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
@@ -56,7 +53,7 @@ export function BankCombobox({ banks, value, onChange, isLoading = false }: Bank
                   key={i}
                   value={bank.name}
                   onSelect={() => {
-                    onChange(bank.code)
+                    onChange(bank.name, bank.code)
                     setOpen(false)
                   }}
                 >
