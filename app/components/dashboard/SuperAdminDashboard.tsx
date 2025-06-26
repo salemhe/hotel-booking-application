@@ -164,7 +164,7 @@ export default function SuperAdminDashboard() {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4 text-white">
         <h2 className="text-2xl font-bold">Permission Denied</h2>
-        <p>You don't have access to the Super Admin Dashboard.</p>
+        <p>You don&apos;t have access to the Super Admin Dashboard.</p>
         <div className="flex gap-4">
           <Button onClick={() => router.push('/dashboard')}>Go to Dashboard</Button>
           <Button variant="outline" onClick={() => router.push('/vendor-signup')}>

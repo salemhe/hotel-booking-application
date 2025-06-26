@@ -43,7 +43,7 @@ interface Vendor {
   createdAt: string;
   monthlyAverage?: number;
   platformFee?: number;
-  monthlyRevenue?: any[];
+  monthlyRevenue?: { month: string; revenue: number }[];
   totalRooms?: number;
   availableRooms?: number;
   totalTables?: number;

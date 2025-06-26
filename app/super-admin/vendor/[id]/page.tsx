@@ -42,7 +42,7 @@ interface Vendor {
   createdAt: string;
   monthlyAverage?: number;
   platformFee?: number;
-  monthlyRevenue?: any[];
+  monthlyRevenue?: { month: string; revenue: number }[];
   totalRooms?: number;
   availableRooms?: number;
   totalTables?: number;
@@ -121,7 +121,7 @@ export default function VendorDetailPage() {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh', flexDirection: 'column', gap: 2 }}>
         <Typography variant="h5">Permission Denied</Typography>
-        <Typography>You don't have access to the Super Admin Dashboard.</Typography>
+        <Typography>You don&apos;t have access to the Super Admin Dashboard.</Typography>
         <Button variant="contained" onClick={() => router.push('/dashboard')}>
           Go to Dashboard
         </Button>

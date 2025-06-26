@@ -90,9 +90,13 @@ export default function EditChainPage() {
       setTimeout(() => {
         router.push('/super-admin/dashboard');
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating chain:', error);
-      setError(error.response?.data?.message || 'Failed to update chain');
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message || 'Failed to update chain');
+      } else {
+        setError('Failed to update chain');
+      }
     } finally {
       setLoading(false);
     }

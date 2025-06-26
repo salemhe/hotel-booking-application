@@ -42,6 +42,7 @@ import { BankCombobox } from "@/app/components/BankComboBox";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 import API from "@/app/lib/api/axios";
+import { useRouter } from "next/navigation";
 
 interface RestaurantData {
   profileImages: File[];
@@ -98,7 +99,9 @@ const generateTimeOptions = () => {
         minute: "2-digit",
         hour12: true,
       });
-      times.push({ value: timeString, label: displayTime });
+      // Add explicit AM/PM
+      const ampm = hour < 12 ? "AM" : "PM";
+      times.push({ value: timeString, label: `${displayTime} ${ampm}` });
     }
   }
   return times;
@@ -163,6 +166,7 @@ export default function RestaurantProfileSetup() {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
 
   const [formData, setFormData] = useState<RestaurantData>({
     profileImages: [],
@@ -396,7 +400,7 @@ export default function RestaurantProfileSetup() {
       });
       if (response.status === 200) {
         toast.success("Profile setup completed successfully!");
-        // Redirect or perform further actions
+        router.push("/vendorDashboard/menu/add")
       } else {
         toast.error(
           response.data?.message || "Failed to complete profile setup."
