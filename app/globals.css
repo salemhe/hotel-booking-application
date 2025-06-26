@@ -232,3 +232,52 @@ no-scroll-bars {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Make all tables horizontally scrollable on small screens */
+  .responsive-table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Responsive card/grid padding for all screen sizes */
+  .responsive-card {
+    padding: 1rem;
+  }
+  @media (min-width: 640px) {
+    .responsive-card {
+      padding: 1.5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .responsive-card {
+      padding: 2rem;
+    }
+  }
+
+  /* Responsive grid columns for admin cards */
+  .responsive-admin-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .responsive-admin-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .responsive-admin-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Make images, charts, and iframes scale to their containers */
+  .responsive-media {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
