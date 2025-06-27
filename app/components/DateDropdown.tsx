@@ -12,7 +12,7 @@ import {
   isSameDay,
 } from "date-fns";
 import {
-  FiSearch,
+  // FiSearch,
   FiChevronLeft,
   FiChevronRight,
   // FiCalendar,

@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 
-const HotelOverview = ({ address, openingTime, closingTime, cuisines, desc }: { address: string; openingTime: string; closingTime: string; cuisines: string[]; desc: string; }) => {
+const HotelOverview = ({ desc }: { address: string; openingTime: string; closingTime: string; cuisines: string[]; desc: string; }) => {
   const [showMore, setShowMore] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);

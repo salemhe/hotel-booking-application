@@ -1,12 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { cn } from "@/app/lib/utils";
 import { format } from "date-fns";
 import { Label } from "./ui/label";
-import { TimePicker } from "./ui/timepicker";
+// import { TimePicker } from "./ui/timepicker";
 import {
   Select,
   SelectContent,
@@ -29,7 +29,7 @@ const HotelBookingForm = ({ id }: { id: string }) => {
   const router = useRouter();
 
      
-    
+    console.log(setTime, "setTime")
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const params = new URLSearchParams({
