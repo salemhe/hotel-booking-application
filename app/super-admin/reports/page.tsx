@@ -176,10 +176,6 @@ export default function ReportsPage() {
         ticks: { color: chartText },
         grid: { color: chartGrid },
       },
-      y: {
-        ticks: { color: chartText },
-        grid: { color: chartGrid },
-      },
     },
   };
 
@@ -270,12 +266,14 @@ export default function ReportsPage() {
                 <button
                   className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1 rounded shadow w-full xs:w-auto"
                   onClick={() => {
-                    const chartInstance = ChartJS.getChart("main-report-chart");
-                    if (chartInstance && chartInstance.canvas) {
-                      const link = document.createElement("a");
-                      link.download = "analytics-report.png";
-                      link.href = chartInstance.canvas.toDataURL("image/png");
-                      link.click();
+                    if (typeof window !== "undefined" && typeof document !== "undefined") {
+                      const chartInstance = ChartJS.getChart("main-report-chart");
+                      if (chartInstance && chartInstance.canvas) {
+                        const link = document.createElement("a");
+                        link.download = "analytics-report.png";
+                        link.href = chartInstance.canvas.toDataURL("image/png");
+                        link.click();
+                      }
                     }
                   }}
                 >
