@@ -1,14 +1,6 @@
-import { Mail, MapPin, Phone, Star } from "lucide-react";
-import HotelInfo from "./HotelInfo";
-import BookingForm from "../BookingForm";
-import MapComponent from "../MapComponent";
-import Link from "next/link";
+
 import API from "@/app/lib/api/userServerAxios";
 import { Restaurant } from "../../lib/types/restaurant";
-import RestaurantImages from "./HotelImages";
-import RestaurantSaveCopy from "./HotelSaveCopy";
-import HotelImages from "./HotelImages";
-import HotelSaveCopy from "./HotelSaveCopy";
 import { HotelsPageClient } from "./HotelPageClient";
 
 // const images = [

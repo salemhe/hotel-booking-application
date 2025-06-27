@@ -6,7 +6,6 @@ import HotelImages from "./HotelImages";
 import HotelSaveCopy from "./HotelSaveCopy";
 import { Mail, MapPin, Phone, Star } from "lucide-react";
 import HotelInfo from "./HotelInfo";
-import BookingForm from "../BookingForm";
 import MapComponent from "../MapComponent";
 import Link from "next/link"; // Changed from react-router-dom to next/link
 import HotelBookingForm from "../HotelBookingForm";

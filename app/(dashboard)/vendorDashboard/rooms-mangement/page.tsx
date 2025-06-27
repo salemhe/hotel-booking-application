@@ -9,6 +9,7 @@ import {
 import { AuthService } from '@/app/lib/api/services/auth.service';
 
 import API from "@/app/lib/api/axios";
+import { VendorProfile } from '@/app/vendors-landing-page/page';
 
 interface User {
   id: string;
@@ -73,6 +74,7 @@ const RoomsManagement: React.FC<{ user: User }> = () => {
   const [loading, setLoading] = useState(true)
   const canEdit = ['Super Admin', 'Admin'].includes(user?.role);
 
+  console.log(profile, loading, "profile, loading")
   const handleAddRoom = () => {
     setEditingRoom(undefined);
     setIsModalOpen(true);
