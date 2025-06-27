@@ -99,9 +99,7 @@ const generateTimeOptions = () => {
         minute: "2-digit",
         hour12: true,
       });
-      // Add explicit AM/PM
-      const ampm = hour < 12 ? "AM" : "PM";
-      times.push({ value: timeString, label: `${displayTime} ${ampm}` });
+      times.push({ value: timeString, label: displayTime });
     }
   }
   return times;
