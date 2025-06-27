@@ -1,37 +1,50 @@
-import * as React from "react";
 
-interface TableProps extends React.HTMLAttributes<HTMLTableElement> {}
 
-export function Table({ className, ...props }: TableProps) {
-  return <table className={`w-full border-collapse ${className}`} {...props} />;
+import React from 'react'
+
+const Tableotel = () => {
+  return (
+    <div>
+      
+    </div>
+  )
 }
 
-interface TableHeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export default Tableotel
 
-export function TableHeader({ className, ...props }: TableHeaderProps) {
-  return <thead className={`bg-gray-50 ${className}`} {...props} />;
-}
 
-interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
+// interface TableProps extends React.HTMLAttributes<HTMLTableElement> {}
 
-export function TableBody({ className, ...props }: TableBodyProps) {
-  return <tbody className={className} {...props} />;
-}
+// export function Table({ className, ...props }: TableProps) {
+//   return <table className={`w-full border-collapse ${className}`} {...props} />;
+// }
 
-interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {}
+// interface TableHeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
 
-export function TableRow({ className, ...props }: TableRowProps) {
-  return <tr className={`border-b ${className}`} {...props} />;
-}
+// export function TableHeader({ className, ...props }: TableHeaderProps) {
+//   return <thead className={`bg-gray-50 ${className}`} {...props} />;
+// }
 
-interface TableHeadProps extends React.HTMLAttributes<HTMLTableCellElement> {}
+// interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
 
-export function TableHead({ className, ...props }: TableHeadProps) {
-  return <th className={`p-4 text-left font-medium ${className}`} {...props} />;
-}
+// export function TableBody({ className, ...props }: TableBodyProps) {
+//   return <tbody className={className} {...props} />;
+// }
 
-interface TableCellProps extends React.HTMLAttributes<HTMLTableCellElement> {}
+// interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {}
 
-export function TableCell({ className, ...props }: TableCellProps) {
-  return <td className={`p-4 ${className}`} {...props} />;
-}
+// export function TableRow({ className, ...props }: TableRowProps) {
+//   return <tr className={`border-b ${className}`} {...props} />;
+// }
+
+// interface TableHeadProps extends React.HTMLAttributes<HTMLTableCellElement> {}
+
+// export function TableHead({ className, ...props }: TableHeadProps) {
+//   return <th className={`p-4 text-left font-medium ${className}`} {...props} />;
+// }
+
+// interface TableCellProps extends React.HTMLAttributes<HTMLTableCellElement> {}
+
+// export function TableCell({ className, ...props }: TableCellProps) {
+//   return <td className={`p-4 ${className}`} {...props} />;
+// }
