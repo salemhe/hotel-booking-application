@@ -61,11 +61,11 @@ const mockReservations: Reservation[] = [
 
 
 
-const ReservationsManagement: React.FC<{ user: User }> = () => {
+const ReservationsManagement = () => {
   const [reservations, setReservations] = useState<Reservation[]>(mockReservations);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('');
-   const [user] = useState<User>(mockUser);
+  const [user] = useState<User>(mockUser);
 
   const canManage = ['Super Admin', 'Admin'].includes(user.role);
 
@@ -223,4 +223,4 @@ const ReservationsManagement: React.FC<{ user: User }> = () => {
     </div>
   );
 };
-export default ReservationsManagement; 
+export default ReservationsManagement;
