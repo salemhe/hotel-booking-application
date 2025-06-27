@@ -62,7 +62,7 @@ export interface VendorProfile {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [profile, setProfile] = useState<VendorProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+  // const [loading, setLoading] = useState(true)
 
   const isHotel = profile?.businessType === "hotel"
   const isRestaurant = profile?.businessType === "Restaurant " || profile?.businessType === "restaurant"
@@ -71,23 +71,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useEffect(() => {
     const fetchVendorData = async () => {
       try {
-        setLoading(true)
+        // setLoading(true)
         
         // Get the user data from AuthService
         const user = AuthService.getUser()
         if (!user) {
           console.warn("No user found in storage")
-          setLoading(false)
+          // setLoading(false)
           return
         }
 
         // Get the token
-        c
-        if (!token) {
-          console.warn("No token found")
-          setLoading(false)
-          return
-        }
+        // c
+        // if (!token) {
+        //   console.warn("No token found")
+        //   setLoading(false)
+        //   return
+        // }
         // Fetch vendors data
         const response = await API.get('/vendors')
 
@@ -121,7 +121,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           console.error("Error response:", apiError.response.status, apiError.response.data);
         }
       } finally {
-        setLoading(false)
+        // setLoading(false)
       }
     }
     
