@@ -270,7 +270,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
 
 export default TableGrid;
 
-export const TableGridTwo = ({ title }: TableGridProps) => {
+export const TableGridTwo = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
   const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
   const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
   const [isHovering, setIsHovering] = useState<{ [key: number]: boolean }>({});
@@ -364,7 +364,7 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
             <div
               key={restaurant.id}
               onClick={() => {
-                router.push("/restaurants");
+                router.push(`/hotels/${restaurant._id}`);
               }}
               className="h-80 px-2 pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
             >

@@ -137,7 +137,7 @@ const RoomsManagement: React.FC<{ user: User }> = () => {
           return
         }
         // Fetch vendors data
-        const response = await API.get(`hotels/${user?.id}/reservations`)
+        const response = await API.get(`vendors`)
 console.log(response)
         if (response.data && Array.isArray(response.data)) {
           // Find the vendor that matches the logged-in user's email

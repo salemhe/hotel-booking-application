@@ -36,18 +36,19 @@ const Navigation = () => {
   
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [isHomePage, setIsHomePage] = useState(pathname?.startsWith('/'));
+  const [isHomePage, setIsHomePage] = useState(pathname === '/');
   const [isSearchPage, setIsSearchPage] = useState(pathname?.startsWith('/search'));
   const [isLoginSlug, setIsLoginSlug] = useState(pathname?.startsWith('-login'));
+  const[ishotelPaymentPage, setIsHotelPaymentPage] = useState(pathname?.startsWith('/hotels/:id/payment'));
 
   // Check if the current path is a login slug
   useEffect(() => {
     setIsLoginSlug(pathname?.endsWith('-login'));
+    setIsHotelPaymentPage(pathname?.startsWith('/hotels/') && pathname.endsWith('/payment'));
   }, [pathname]);
 
   useEffect(() => {
-
-    setIsHomePage(pathname?.startsWith('/'));
+    setIsHomePage(pathname === '/');
     setIsSearchPage(pathname?.startsWith('/search'));
   }, [pathname]);
 
@@ -260,14 +261,14 @@ const Navigation = () => {
   };
 
   return (
-    !isLoginSlug && (
+    !isLoginSlug && !ishotelPaymentPage &&  (
       <nav className={`fixed top-0 z-90 w-full transition-all duration-300 ${scrolled || !isHomePage ? 'bg-[#F9FAFB] ' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between h-16 items-center">
             <div className="flex">
               <div className="shrink-0 flex items-center">
                 <Link href="/" className="flex items-center space-x-2">
-                  <ChefHat className="h-8 w-8 text-blue-600" />
+                  <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
                   <span className={`text-2xl font-bold ${scrolled || !isHomePage ? 'text-gray-900' : 'text-[#F9FAFB]'}`}>
                     Bookies
                   </span>

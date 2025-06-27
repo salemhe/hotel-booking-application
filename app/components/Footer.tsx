@@ -1,10 +1,23 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { FiPhone, FiMail, FiMapPin } from "react-icons/fi";
 
 const Footer = () => {
+  
+  const pathname = usePathname();
+    const[ishotelPaymentPage, setIsHotelPaymentPage] = useState(pathname?.startsWith('/hotels/:id/payment'));
+
+  // Check if the current path is a login slug
+  useEffect(() => {
+    setIsHotelPaymentPage(pathname?.startsWith('/hotels/') && pathname.endsWith('/payment'));
+  }, [pathname]);
   return (
-    <footer className="bg-slate-200 py-12">
-      <div className="max-w-7xl mx-auto px-4">
+    <>
+      {!ishotelPaymentPage && (
+        <footer className="bg-slate-200 py-12">
+          <div className="max-w-7xl mx-auto px-4">
         {/* Top grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
@@ -105,9 +118,11 @@ const Footer = () => {
               Terms of Service
             </Link>
           </div>
-        </div>
       </div>
+          </div>
     </footer>
+      )}
+    </>
   );
 };
 

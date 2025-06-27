@@ -4,16 +4,8 @@ import { VendorService, Vendor } from '@/app/lib/api/services/vendors';
 import SearchSection from "@/app/components/SearchSection";
 import TableGrid, { TableGridTwo, Restaurant } from "@/app/components/TableGrid";
 
-const tabs = [
-  {
-    name: "Restaurants",
-    value: "restaurants"
-  },
-  {
-    name: "Hotels", 
-    value: "hotels"
-  },
-]
+
+
 
 interface ApiRestaurant {
   _id: string;
@@ -95,7 +87,7 @@ export default function Home() {
       try {
         // Ensure profileImages are valid URLs or relative paths
         const sanitizedProfileImages = vendor.profileImages?.map(imgOrString => {
-          // if it’s a string, use it; otherwise assume it’s { url: string }
+          // if it's a string, use it; otherwise assume it's { url: string }
           const url = typeof imgOrString === 'string'
             ? imgOrString
             : (imgOrString as { url?: string }).url || '';
@@ -193,6 +185,56 @@ export default function Home() {
     );
   }
 
+  const SvgIcon: React.FC<{ activeTab: string }> = ({ activeTab }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="none"
+      viewBox="0 0 16 16"
+    >
+      <path
+        fill={activeTab === "restaurants" ? "#111827" : "#ffffff"}
+        fillRule="evenodd"
+        d="M5.5 1.333A.833.833 0 0 1 6.333.5h3.334a.833.833 0 0 1 0 1.667h-.834v.862c4.534.409 7.509 5.11 5.775 9.447a.83.83 0 0 1-.775.524H2.167a.83.83 0 0 1-.774-.524c-1.735-4.337 1.24-9.038 5.774-9.447v-.862h-.834a.833.833 0 0 1-.833-.834m2.308 3.334c-3.521 0-5.986 3.377-5.047 6.666h10.478c.94-3.289-1.526-6.666-5.047-6.666zm-7.308 10a.833.833 0 0 1 .833-.834h13.334a.833.833 0 0 1 0 1.667H1.333a.833.833 0 0 1-.833-.833"
+        clipRule="evenodd"
+      ></path>
+    </svg>
+  );
+  
+  const SvgIcon2: React.FC<{ activeTab: string }> = ({ activeTab }) => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        fill="none"
+        viewBox="0 0 18 18"
+      >
+        <path
+           fill={activeTab === "restaurants" ? "#ffffff" : "#111827"}
+          fillRule="evenodd"
+          d="M7.96.83a1.67 1.67 0 0 0-1.384.153l-3.433 2.06a1.67 1.67 0 0 0-.81 1.429v11.195H1.5a.833.833 0 0 0 0 1.666h15a.833.833 0 1 0 0-1.666h-.833V4.6a1.67 1.67 0 0 0-1.14-1.58zM14 15.668V4.6L8.167 2.657v13.01zM6.5 2.972 4 4.472v11.195h2.5z"
+          clipRule="evenodd"
+        ></path>
+      </svg>
+    );
+    
+    
+  
+  
+  const tabs = [
+    {
+      name: "Restaurants",
+      value: "restaurants",
+      img: <SvgIcon activeTab={activeTab}/>,
+    },
+    {
+      name: "Hotels", 
+      value: "hotels",
+      img: <SvgIcon2 activeTab={activeTab}/>,
+    },
+  ]
+
   return (
     <main className="min-h-screen bg-white">
       <div className="relative min-h-[400px]">
@@ -229,14 +271,14 @@ export default function Home() {
               {tabs.map((tab) => (
                 <button 
                   key={tab.value} 
-                  className={`px-4 py-2 rounded-[36px] cursor-pointer text-sm font-medium leading-none transition-colors duration-200 ${
+                  className={`px-4 py-2 rounded-[36px] gap-2.5 cursor-pointer text-sm flex font-medium leading-none transition-colors duration-200 ${
                     activeTab === tab.value 
                       ? "bg-slate-200 text-gray-900" 
                       : "bg-transparent text-gray-50 hover:bg-white/10"
                   }`} 
                   onClick={() => handleTabChange(tab.value)}
                 >
-                  {tab.name}
+                <figure>{tab.img}</figure>  <span>{tab.name}</span> 
                 </button>
               ))}
             </div>
