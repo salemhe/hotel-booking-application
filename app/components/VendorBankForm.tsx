@@ -60,7 +60,7 @@ export default function VendorBankForm() {
 
   const user = AuthService.getUser() as AuthUser;
   if (!user) {
-    router.push("/vendor-login")
+    router.push("/vendor-login");
   }
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -123,9 +123,6 @@ export default function VendorBankForm() {
     }
   }
 
-  
- 
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!accountName) {
       setError("Please verify your account details first");
@@ -133,7 +130,7 @@ export default function VendorBankForm() {
     }
     setIsLoading(true);
     setError(null);
-            const businessName = AuthService.getUser()?.profile.businessName
+    const businessName = AuthService.getUser()?.profile.businessName;
 
     try {
       const response = await API.patch("/vendors/save-payment", {

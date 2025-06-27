@@ -14,8 +14,8 @@ import {
   InputLabel, 
   FormHelperText 
 } from '@mui/material';
-import { useRouter } from 'next/router';
-import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import axios, { AxiosError } from 'axios';
 
 
 const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/';
@@ -85,7 +85,7 @@ const LocationCreateForm: React.FC = () => {
     fetchChains();
   }, [token]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -104,9 +104,13 @@ const LocationCreateForm: React.FC = () => {
       setTimeout(() => {
         router.push('/super-admin/dashboard');
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating location:', error);
-      setError(error.response?.data?.message || 'Failed to create location');
+      if (error instanceof AxiosError) {
+        setError(error.response?.data?.message || 'Failed to create location');
+      } else {
+        setError('Failed to create location');
+      }
     } finally {
       setLoading(false);
     }
@@ -215,7 +219,7 @@ const LocationCreateForm: React.FC = () => {
                 id="chainId"
                 name="chainId"
                 value={formData.chainId}
-                onChange={handleChange}
+                onChange={(e) => setFormData(prev => ({ ...prev, chainId: e.target.value }))}
                 label="Chain"
                 disabled={fetchingChains}
               >

@@ -15,10 +15,11 @@ import {
   Select,
   FormControl, 
   InputLabel, 
-  FormHelperText 
+  // FormHelperText 
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+// import { ZodUnknown } from 'zod';
 
 const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/';
 
@@ -95,7 +96,7 @@ export default function EditLocationPage() {
     fetchData();
   }, [locationId, token]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -114,9 +115,14 @@ export default function EditLocationPage() {
       setTimeout(() => {
         router.push('/super-admin/dashboard');
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating location:', error);
-      setError(error.response?.data?.message || 'Failed to update location');
+      if (error instanceof AxiosError) {
+
+        setError(error.response?.data?.message || 'Failed to update location');
+      } else {
+        setError("Failed to update location")
+      }
     } finally {
       setLoading(false);
     }
@@ -233,7 +239,7 @@ export default function EditLocationPage() {
                 id="chainId"
                 name="chainId"
                 value={formData.chainId}
-                onChange={handleChange}
+                onChange={(e) => setFormData(prev => ({ ...prev, chainId: e.target.value }))}
                 label="Chain"
               >
                 <MenuItem value="">

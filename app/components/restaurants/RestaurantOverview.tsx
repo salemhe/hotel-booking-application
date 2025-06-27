@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 
-const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc }: { address: string; openingTime: string; closingTime: string; cuisines: string[]; desc: string; }) => {
+const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc, priceRange }: { address: string; openingTime: string; closingTime: string; cuisines: string[]; desc: string; priceRange: string; }) => {
   const [showMore, setShowMore] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -106,7 +106,7 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc 
           </div>
           <div className="space-y-1">
             <p className="text-xs">Price Range</p>
-            <p className="font-semibold text-sm">From ₦20,000</p>
+            <p className="font-semibold text-sm">From {priceRange}</p>
           </div>
         </div>
       </div>
@@ -120,10 +120,9 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc 
           )}
         >
           <p className="text-gray-700 text-sm leading-relaxed">
-            {desc.split("  ").map((part, idx, arr) => (
+            {desc.split("  ").map((part, idx) => (
               <span key={idx}>
                 {part}
-                {idx < arr.length - 1 && <br />}
               </span>
             ))}
           </p>

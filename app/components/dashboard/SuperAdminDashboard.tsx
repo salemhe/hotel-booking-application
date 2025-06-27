@@ -1,44 +1,25 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
+import {SidebarProvider} from "@/app/components/ui/sidebar"
 import axios from 'axios'
 import { useAuth } from '@/app/contexts/AuthContext'
 
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { Button } from '../ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../ui/table'
-import { Badge } from '../ui/badge'
-import {
-  Building2,
-  Users,
-  DollarSign,
-  MapPin,
-  TrendingUp,
-  Hotel,
-  UtensilsCrossed,
-  Plus,
-  Edit,
-  Trash2,
-} from 'lucide-react'
+import SuperAdminSidebar from '../sidebars/SuperAdminSidebar'
+import { Users, DollarSign, Building2, TrendingUp } from 'lucide-react'
 
 const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/'
 
-interface Vendor {
-  id: string
-  name: string
-  type: string
-  chain: string
-  location: string
-  revenue: number
+interface VendorAnalytics {
+  totalVendors: number
+  totalHotels: number
+  totalRestaurants: number
+}
+
+interface RevenueAnalytics {
+  totalRevenue: number
 }
 
 interface Chain {
@@ -57,32 +38,9 @@ interface Location {
   chain?: { name: string }
 }
 
-interface MonthlyData {
-  period: string
-  total: number
-  hotel: number
-  restaurant: number
-  growth: number
-}
-
-interface VendorAnalytics {
-  totalVendors: number
-  totalHotels: number
-  totalRestaurants: number
-  vendors?: Vendor[]
-}
-
-interface RevenueAnalytics {
-  totalRevenue: number
-  hotelRevenue: number
-  restaurantRevenue: number
-  monthly?: MonthlyData[]
-}
-
 export default function SuperAdminDashboard() {
-  const { user, token, isAuthenticated } = useAuth()
-  const router = useRouter()
-
+  const { token } = useAuth()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [vendorAnalytics, setVendorAnalytics] = useState<VendorAnalytics>({
     totalVendors: 0,
@@ -91,31 +49,11 @@ export default function SuperAdminDashboard() {
   })
   const [revenueAnalytics, setRevenueAnalytics] = useState<RevenueAnalytics>({
     totalRevenue: 0,
-    hotelRevenue: 0,
-    restaurantRevenue: 0,
   })
   const [chains, setChains] = useState<Chain[]>([])
   const [locations, setLocations] = useState<Location[]>([])
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/vendor-signup')
-      return
-    }
-    if (user?.role !== 'super-admin') {
-      if (user?.role === 'hotel-admin') {
-        router.push('/hotel-dashboard')
-      } else if (user?.role === 'restaurant-admin') {
-        router.push('/restaurant-dashboard')
-      } else {
-        router.push('/dashboard')
-      }
-    }
-  }, [isAuthenticated, user, router])
-
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'super-admin') return
-
     const fetchData = async () => {
       setLoading(true)
       try {
@@ -125,18 +63,10 @@ export default function SuperAdminDashboard() {
           chainsRes,
           locationsRes,
         ] = await Promise.all([
-          axios.get(`${API_URL}/super-admin/analytics/vendors`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${API_URL}/super-admin/analytics/revenue`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${API_URL}/super-admin/chains`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${API_URL}/super-admin/locations`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          axios.get(`${API_URL}/super-admin/analytics/vendors`),
+          axios.get(`${API_URL}/super-admin/analytics/revenue`),
+          axios.get(`${API_URL}/super-admin/chains`),
+          axios.get(`${API_URL}/super-admin/locations`),
         ])
         setVendorAnalytics(vendorRes.data.data)
         setRevenueAnalytics(revenueRes.data.data)
@@ -148,36 +78,14 @@ export default function SuperAdminDashboard() {
         setLoading(false)
       }
     }
-
     fetchData()
-  }, [isAuthenticated, user, token])
+  }, [token])
 
-  if (!isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center h-screen text-white">
-        Redirecting to vendor signup…
-      </div>
-    )
-  }
-
-  if (user?.role !== 'super-admin') {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen gap-4 text-white">
-        <h2 className="text-2xl font-bold">Permission Denied</h2>
-        <p>You don't have access to the Super Admin Dashboard.</p>
-        <div className="flex gap-4">
-          <Button onClick={() => router.push('/dashboard')}>Go to Dashboard</Button>
-          <Button variant="outline" onClick={() => router.push('/vendor-signup')}>
-            Register as Vendor
-          </Button>
-        </div>
-      </div>
-    )
-  }
+  // const { SidebarProvider } = require("@/app/components/ui/sidebar")
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center min-h-screen w-full">
         <svg className="animate-spin h-10 w-10 text-white" viewBox="0 0 24 24">
           <circle
             className="opacity-25"
@@ -198,73 +106,85 @@ export default function SuperAdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-900 to-emerald-900 relative">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
-      </div>
-      <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
+    <SidebarProvider>
+      <div className="flex flex-col md:flex-row min-h-screen w-full bg-gradient-to-br from-slate-900 via-teal-900 to-emerald-900 overflow-x-hidden relative">
+        {/* Sidebar */}
+        <div
+          className={`z-30 fixed md:static inset-y-0 left-0 transition-transform duration-200 ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 w-4/5 max-w-xs md:w-64 bg-slate-900 md:bg-transparent h-full md:h-auto`}
+        >
+          <SuperAdminSidebar />
+        </div>
 
-      <div className="relative z-10 p-6 max-w-7xl mx-auto text-white">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-          Super Admin Dashboard
-        </h1>
-        <p className="text-gray-300 mb-8">Manage your entire platform from one place</p>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col w-full min-h-screen relative">
+          {/* Collapse Button */}
+          <button
+            className="fixed top-4 left-4 z-40 md:hidden bg-slate-800 text-white p-2 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            aria-label="Toggle sidebar"
+          >
+            {sidebarOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+            )}
+          </button>
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid grid-cols-5 bg-white/10 backdrop-blur-sm border border-white/20">
-            {['overview', 'vendors', 'chains', 'locations', 'revenue'].map(v => (
-              <TabsTrigger
-                key={v}
-                value={v}
-                className="data-[state=active]:bg-teal-600 data-[state=active]:text-white text-gray-300"
-              >
-                {v[0].toUpperCase() + v.slice(1)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          {/* Animated Background */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
+            <div className="absolute top-40 left-40 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
+          </div>
 
-          {/* 1. Overview */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px] pointer-events-none"></div>
+
+          <div className="relative z-10 w-full px-2 sm:px-4 md:px-6 lg:px-8 py-4 flex-1 flex flex-col">
+            <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mt-16 md:mt-0">
+              Super Admin Dashboard
+            </h1>
+            <p className="text-gray-300 mb-3 sm:mb-4 lg:mb-8 text-xs sm:text-base">
+              Manage your entire platform from one place
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white min-h-[120px]">
                 <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-sm text-gray-200">Total Vendors</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm text-gray-200">Total Vendors</CardTitle>
                   <Users className="h-4 w-4 text-teal-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-lg sm:text-xl font-bold">
                     {vendorAnalytics.totalVendors}
                   </div>
                   <p className="text-xs text-gray-300 mt-1">
-                    {vendorAnalytics.totalHotels} Hotels, {vendorAnalytics.totalRestaurants}{' '}
-                    Restaurants
+                    {vendorAnalytics.totalHotels} Hotels, {vendorAnalytics.totalRestaurants} Restaurants
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 min-h-[120px]">
                 <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-sm text-gray-200">Total Revenue</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm text-gray-200">Total Revenue</CardTitle>
                   <DollarSign className="h-4 w-4 text-emerald-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-lg sm:text-xl font-bold">
                     ${revenueAnalytics.totalRevenue.toFixed(2)}
                   </div>
                   <p className="text-xs text-gray-300 mt-1">Last 30 days</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20 min-h-[120px]">
                 <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-sm text-gray-200">Total Chains</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm text-gray-200">Total Chains</CardTitle>
                   <Building2 className="h-4 w-4 text-cyan-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{chains.length}</div>
+                  <div className="text-lg sm:text-xl font-bold">{chains.length}</div>
                   <p className="text-xs text-gray-300 mt-1">
                     Across {locations.length} locations
                   </p>
@@ -272,289 +192,20 @@ export default function SuperAdminDashboard() {
               </Card>
             </div>
 
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20 mt-3 sm:mt-4 lg:mt-8">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <TrendingUp className="h-5 w-5 text-emerald-400" />
                   Recent Activity
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-300">No recent activity to display</p>
+                <p className="text-gray-300 text-xs sm:text-base">No recent activity to display</p>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          {/* 2. Vendors */}
-          <TabsContent value="vendors" className="space-y-6">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-teal-400" />
-                  Vendor Analytics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {[
-                        'Vendor ID',
-                        'Name',
-                        'Type',
-                        'Chain',
-                        'Location',
-                        'Revenue',
-                        'Actions',
-                      ].map(h => (
-                        <TableHead key={h}>{h}</TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {vendorAnalytics.vendors?.map(v => (
-                      <TableRow key={v.id}>
-                        <TableCell>{v.id}</TableCell>
-                        <TableCell>{v.name}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">{v.type}</Badge>
-                        </TableCell>
-                        <TableCell>{v.chain}</TableCell>
-                        <TableCell>{v.location}</TableCell>
-                        <TableCell>${v.revenue.toFixed(2)}</TableCell>
-                        <TableCell>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              router.push(
-                                `/super-admin/vendor/${v.id}?vendorType=${v.type}`
-                              )
-                            }
-                          >
-                            View
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {!vendorAnalytics.vendors?.length && (
-                      <TableRow>
-                        <TableCell colSpan={7} className="py-8 text-center text-gray-400">
-                          No vendors found
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* 3. Chains */}
-          <TabsContent value="chains" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <Building2 className="h-6 w-6 text-cyan-400" /> Manage Chains
-              </h2>
-              <Button onClick={() => router.push('/super-admin/chains/create')}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add New Chain
-              </Button>
-            </div>
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {['Chain ID', 'Name', 'Description', 'Owner', 'Locations', 'Actions'].map(
-                        h => (
-                          <TableHead key={h}>{h}</TableHead>
-                        )
-                      )}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {chains.map(c => (
-                      <TableRow key={c.id}>
-                        <TableCell>{c.id}</TableCell>
-                        <TableCell>{c.name}</TableCell>
-                        <TableCell>{c.description}</TableCell>
-                        <TableCell>{c.owner}</TableCell>
-                        <TableCell>{c.locationCount}</TableCell>
-                        <TableCell className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              router.push(`/super-admin/chains/${c.id}/edit`)
-                            }
-                          >
-                            <Edit className="mr-1 h-3 w-3" /> Edit
-                          </Button>
-                          <Button size="sm" variant="outline" className="text-red-300">
-                            <Trash2 className="mr-1 h-3 w-3" /> Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {!chains.length && (
-                      <TableRow>
-                        <TableCell colSpan={6} className="py-8 text-center text-gray-400">
-                          No chains found
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* 4. Locations */}
-          <TabsContent value="locations" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <MapPin className="h-6 w-6 text-teal-400" /> Manage Locations
-              </h2>
-              <Button onClick={() => router.push('/super-admin/locations/create')}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add New Location
-              </Button>
-            </div>
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {['Location ID', 'Name', 'Address', 'City', 'Chain', 'Actions'].map(h => (
-                        <TableHead key={h}>{h}</TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {locations.map(l => (
-                      <TableRow key={l.id}>
-                        <TableCell>{l.id}</TableCell>
-                        <TableCell>{l.name}</TableCell>
-                        <TableCell>{l.address}</TableCell>
-                        <TableCell>{l.city}</TableCell>
-                        <TableCell>{l.chain?.name || 'N/A'}</TableCell>
-                        <TableCell className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              router.push(`/super-admin/locations/${l.id}/edit`)
-                            }
-                          >
-                            <Edit className="mr-1 h-3 w-3" /> Edit
-                          </Button>
-                          <Button size="sm" variant="outline" className="text-red-300">
-                            <Trash2 className="mr-1 h-3 w-3" /> Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {!locations.length && (
-                      <TableRow>
-                        <TableCell colSpan={6} className="py-8 text-center text-gray-400">
-                          No locations found
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* 5. Revenue */}
-          <TabsContent value="revenue" className="space-y-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <DollarSign className="h-6 w-6 text-emerald-400" /> Revenue Analytics
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-                <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-sm text-gray-200">Total Revenue</CardTitle>
-                  <DollarSign className="h-4 w-4 text-emerald-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    ${revenueAnalytics.totalRevenue.toFixed(2)}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-                <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-sm text-gray-200">Hotel Revenue</CardTitle>
-                  <Hotel className="h-4 w-4 text-teal-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    ${revenueAnalytics.hotelRevenue.toFixed(2)}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-                <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-sm text-gray-200">Restaurant Revenue</CardTitle>
-                  <UtensilsCrossed className="h-4 w-4 text-cyan-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    ${revenueAnalytics.restaurantRevenue.toFixed(2)}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader>
-                <CardTitle className="text-white">Monthly Revenue Breakdown</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {['Period', 'Total', 'Hotel', 'Restaurant', 'Growth'].map(h => (
-                        <TableHead key={h}>{h}</TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {revenueAnalytics.monthly?.map((m, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="font-medium">{m.period}</TableCell>
-                        <TableCell className="text-emerald-400 font-medium">
-                          ${m.total.toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-teal-400">
-                          ${m.hotel.toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-cyan-400">
-                          ${m.restaurant.toFixed(2)}
-                        </TableCell>
-                        <TableCell className={m.growth > 0 ? 'text-emerald-400' : 'text-red-400'}>
-                          {m.growth > 0 ? '+' : ''}
-                          {m.growth.toFixed(2)}%
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {!revenueAnalytics.monthly?.length && (
-                      <TableRow>
-                        <TableCell colSpan={5} className="py-8 text-center text-gray-400">
-                          No monthly data available
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

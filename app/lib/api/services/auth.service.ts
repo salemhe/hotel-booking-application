@@ -11,12 +11,14 @@ interface LoginResponse {
     id: string;
     name: string;
     businessName: string;
+    businessType: string;
     email: string;
     address: string;
     branch: string;
     profileImage: string;
     services: string[];
     token: string;
+    onboarded: boolean;
   };
 }
 
@@ -31,6 +33,7 @@ export interface UserProfile {
   branch?: string;
   password: string;
   role: string;
+  onboarded: boolean;
   services: string[];
 }
 
@@ -42,6 +45,7 @@ interface RegisterData {
   address: string;
   password: string;
   role: string;
+  onboarded?: boolean;
 }
 
 interface PaymentDetalsProps {
@@ -52,6 +56,7 @@ interface PaymentDetalsProps {
   paystackSubAccount: string;
   percentageCharge: number;
   recipientCode: string;
+
 }
 
 export interface AuthUser {
@@ -62,6 +67,7 @@ export interface AuthUser {
   profile: {
     id: string;
     businessName: string;
+    businessType: string;
     email: string;
     address: string;
     branch: string;
@@ -69,6 +75,7 @@ export interface AuthUser {
     phone: number;
     paymentDetails: PaymentDetalsProps;
     recipientCode: string;
+    onboarded: boolean;
   };
 }
 
