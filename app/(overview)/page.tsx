@@ -292,8 +292,6 @@ export default function Home() {
 
       {activeTab === "restaurants" ? (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-         
-          
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-700"></div>
@@ -310,10 +308,13 @@ export default function Home() {
                 Try Again
               </button>
             </div>
-          ) : vendors.length > 0 ? (
+          ) : vendors.filter(v => v.businessType?.toLowerCase() === "restaurant").length > 0 ? (
             <TableGrid 
               title='Top Rated Restaurants' 
-              restaurants={vendors.map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))} 
+              restaurants={vendors
+                .filter(vendor => vendor.businessType?.toLowerCase() === "restaurant")
+                .map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))
+              } 
             />
           ) : (
             <div className="text-center py-12">
@@ -327,7 +328,13 @@ export default function Home() {
         </div>
       ) : (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <TableGridTwo title="Popular Guest House Searches" />
+          <TableGridTwo 
+            title="Popular Guest House Searches"
+            restaurants={vendors
+              .filter(vendor => vendor.businessType?.toLowerCase() === "hotel")
+              .map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))
+            }
+          />
         </div>
       )}
     </main>

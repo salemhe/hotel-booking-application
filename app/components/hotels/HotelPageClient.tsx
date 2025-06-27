@@ -28,7 +28,7 @@ export const HotelsPageClient = ({
         <div className="w-full space-y-8">
           <div className="col-span-2">
             <div className="w-full space-y-6">
-             <div className="flex">
+             <div className="flex gap-2">
                 <HotelImages
                 images={restaurant.profileImages}
                 name={restaurant.businessName}

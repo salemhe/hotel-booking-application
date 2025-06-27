@@ -270,7 +270,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
 
 export default TableGrid;
 
-export const TableGridTwo = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
+export const TableGridTwo = ({ title, restaurants }: { title: string; restaurants: Hotel[] }) => {
   const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
   const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
   const [isHovering, setIsHovering] = useState<{ [key: number]: boolean }>({});
@@ -354,7 +354,7 @@ export const TableGridTwo = ({ title, restaurants = DUMMY_DATA }: TableGridProps
       </Button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {DUMMY_HOTEL_DATA.map((restaurant: Hotel) => {
+        {restaurants?.map((restaurant: Hotel) => {
           const images = getImagesForRestaurant(restaurant);
           const currentIndex = currentIndices[restaurant.id || 0];
           const multipleImages = hasMultipleImages(restaurant);

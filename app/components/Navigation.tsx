@@ -40,11 +40,14 @@ const Navigation = () => {
   const [isSearchPage, setIsSearchPage] = useState(pathname?.startsWith('/search'));
   const [isLoginSlug, setIsLoginSlug] = useState(pathname?.startsWith('-login'));
   const[ishotelPaymentPage, setIsHotelPaymentPage] = useState(pathname?.startsWith('/hotels/:id/payment'));
+  const [onboarding, setOnboarding] = useState(pathname === '/onboarding');
 
   // Check if the current path is a login slug
   useEffect(() => {
+
     setIsLoginSlug(pathname?.endsWith('-login'));
     setIsHotelPaymentPage(pathname?.startsWith('/hotels/') && pathname.endsWith('/payment'));
+    setOnboarding(pathname === '/onboarding');
   }, [pathname]);
 
   useEffect(() => {
@@ -98,6 +101,8 @@ const Navigation = () => {
     AuthService.logout();
     setProfile(null);
   };
+
+  const hideNavigation = !isLoginSlug && !ishotelPaymentPage && !onboarding ;
 
   const renderAuthButtons = () => {
     if (loading) {
@@ -261,7 +266,7 @@ const Navigation = () => {
   };
 
   return (
-    !isLoginSlug && !ishotelPaymentPage &&  (
+     hideNavigation ? (
       <nav className={`fixed top-0 z-90 w-full transition-all duration-300 ${scrolled || !isHomePage ? 'bg-[#F9FAFB] ' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between h-16 items-center">
@@ -341,7 +346,7 @@ const Navigation = () => {
           </div>
         </div>
       </nav>
-    )
+    ): null
   );
 };
 
