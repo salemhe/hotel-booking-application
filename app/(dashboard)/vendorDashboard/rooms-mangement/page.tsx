@@ -64,7 +64,7 @@ const mockUser: User = {
   role: 'Admin',
   name: 'John Doe'
 };
-const RoomsManagement: React.FC<{ user: User }> = () => {
+const RoomsManagement = () => {
   const [rooms, setRooms] = useState<Room[]>(mockRooms);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | undefined>();
