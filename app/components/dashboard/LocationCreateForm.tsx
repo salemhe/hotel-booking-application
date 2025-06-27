@@ -14,7 +14,7 @@ import {
   InputLabel, 
   FormHelperText 
 } from '@mui/material';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import axios, { AxiosError } from 'axios';
 
 

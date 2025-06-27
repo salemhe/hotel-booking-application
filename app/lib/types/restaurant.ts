@@ -15,6 +15,7 @@ export type Restaurant = {
   // branch: string;
   // role: string;
   profileImage: string;
+  priceRange: string;
   // services: string[];
   // price: string;
   // rating: number;
