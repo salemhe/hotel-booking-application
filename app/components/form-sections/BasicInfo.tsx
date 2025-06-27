@@ -108,11 +108,10 @@ export function BasicInfo({ onNext, initialData }: BasicInfoProps) {
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="appetizer">Appetizer</SelectItem>
-                <SelectItem value="mainCourse">Main Course</SelectItem>
-                <SelectItem value="dessert">Dessert</SelectItem>
-                <SelectItem value="drinks">Drinks</SelectItem>
-                <SelectItem value="sides">Sides</SelectItem>
+                <SelectItem value="Appetizer">Appetizer</SelectItem>
+                <SelectItem value="Main Course">Main Course</SelectItem>
+                <SelectItem value="Dessert">Dessert</SelectItem>
+                <SelectItem value="Drinks">Drinks</SelectItem>
               </SelectContent>
             </Select>
           )}

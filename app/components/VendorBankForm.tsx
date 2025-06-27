@@ -140,7 +140,6 @@ export default function VendorBankForm() {
         businessName,
         bankCode: values.bankCode,
         accountNumber: values.accountNumber,
-        percentageCharge: 15,
       });
       // Update user profile in local storage with new payment details
       const updatedUser = {
@@ -153,7 +152,7 @@ export default function VendorBankForm() {
       AuthService.setUser(updatedUser);
       toast.success("Payment details saved successfully!");
       console.log("Payment details saved:", response);
-      router.replace("/vendorsDashboard/payment");
+      router.replace("/vendorDashboard/payment");
       // router.push("/vendorsDashboard/payment");
     } catch (error) {
       if (error instanceof AxiosError) {

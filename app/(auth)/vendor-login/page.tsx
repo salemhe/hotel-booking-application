@@ -225,6 +225,7 @@ export default function VendorLoginPage() {
 
     try {
       const response = await AuthService.login(email, password);
+      await AuthService.setToken(response.profile.token)
       toast.success(`Welcome back, ${response.profile.businessName}!`);
       router.push("/vendorDashboard");
     } catch (error) {

@@ -106,7 +106,7 @@ export default function PaymentPage() {
                 Exit
               </Button>
               <Button
-                className="w-2/3 h-11 text-sm font-medium bg-teal-700 hover:bg-teal-800"
+                className="w-2/3 h-11 text-sm font-medium bg-[#0A6C6D] hover:bg-teal-800"
                 onClick={handlePayClick}
                 disabled={isLoading}
               >
