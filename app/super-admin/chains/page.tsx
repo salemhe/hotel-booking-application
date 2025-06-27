@@ -15,6 +15,7 @@ import {
 } from "@/app/components/ui/table";
 import { Building2, Edit, Trash2, Plus } from "lucide-react";
 import SuperAdminSidebar from "@/app/components/sidebars/SuperAdminSidebar";
+import { SidebarProvider } from "@/app/components/ui/sidebar";
 const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/';
 
 interface Chain {
@@ -46,7 +47,7 @@ export default function ChainsPage() {
     fetchData();
   }, []);
 
-  const { SidebarProvider } = require("@/app/components/ui/sidebar");
+  // const { SidebarProvider } = require("@/app/components/ui/sidebar");
 
   if (loading) {
     return (

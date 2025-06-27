@@ -13,6 +13,7 @@ import {
   TableRow,
 } from '@/app/components/ui/table'
 import { DollarSign, Hotel, UtensilsCrossed } from 'lucide-react'
+import { SidebarProvider } from '@/app/components/ui/sidebar'
 
 const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/'
 
@@ -56,7 +57,7 @@ export default function SuperAdminDashboard() {
     fetchData()
   }, [])
 
-  const { SidebarProvider } = require('@/app/components/ui/sidebar')
+  // const { SidebarProvider } = require('@/app/components/ui/sidebar')
 
   if (loading) {
     return (

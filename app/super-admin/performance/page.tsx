@@ -16,6 +16,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+import { SidebarProvider } from '@/app/components/ui/sidebar'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
@@ -29,11 +30,18 @@ interface MonthlyData {
   growth: number
 }
 
+interface Vendor {
+  id: string
+  name: string
+  type: 'hotel' | 'restaurant'
+  // Add other relevant fields as needed
+}
+
 interface VendorAnalytics {
   totalVendors: number
   totalHotels: number
   totalRestaurants: number
-  vendors?: any[]
+  vendors?: Vendor[]
 }
 
 interface RevenueAnalytics {
@@ -89,7 +97,7 @@ export default function SuperAdminDashboard() {
     fetchData()
   }, [])
 
-  const { SidebarProvider } = require('@/app/components/ui/sidebar')
+  // const { SidebarProvider } = require('@/app/components/ui/sidebar')
 
   if (loading) {
     return (
