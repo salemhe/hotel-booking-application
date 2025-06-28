@@ -9,7 +9,7 @@ import HotelInfo from "./HotelInfo";
 import MapComponent from "../MapComponent";
 import Link from "next/link"; // Changed from react-router-dom to next/link
 import HotelBookingForm from "../HotelBookingForm";
-import BookingProgress from "./BookingProgress";
+// import BookingProgress from "./BookingProgress";
 
 export const HotelsPageClient = ({
   id,
@@ -71,7 +71,7 @@ export const HotelsPageClient = ({
          
           <div className="space-y-8">
             {/* Show booking progress if user has started booking */}
-            <BookingProgress hotelId={id} />
+            {/* <BookingProgress hotelId={id} /> */}
             
               <HotelBookingForm id={id} restaurant={restaurant} />
           
