@@ -11,7 +11,7 @@ const BookingDetails = () => {
   const router = useRouter();
   const params = useParams();
   const hotelId = params.id as string;
-  const { bookingData, isLoading,  } = useBookingData(hotelId);
+  const { bookingData, isLoading } = useBookingData(hotelId);
 
   useEffect(() => {
     // Redirect back to hotel page if no booking data exists
@@ -21,9 +21,11 @@ const BookingDetails = () => {
   }, [bookingData, isLoading, hotelId, router]);
 
   const handleDoneClick = () => {
-    // Clear booking data after successful payment
-    // clearBookingData();
-    router.push("/confirmation");
+    // Store booking data in localStorage before navigating to confirmation
+    if (bookingData) {
+      localStorage.setItem('hotelBookingData', JSON.stringify(bookingData));
+    }
+    router.push(`/hotel-confirmation`);
   };
 
   const handleBackClick = () => {
