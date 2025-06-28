@@ -6,7 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npm rebuild lightningcss || true"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
