@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+// "use client"
+import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Wifi, Users, Bed, Coffee, Car, Building } from 'lucide-react';
 
+import API from "@/app/lib/api/userServerAxios";
 interface Room {
   id: number;
   name: string;
@@ -21,12 +23,35 @@ interface Room {
   cancellation: string;
 }
 
-const HotelRoomBooking = () => {
+const fetchRestaurant = async ({id}:{id: string}) => {
+  try {
+    const response = await API.get(`/${id}/available-rooms`);
+    const data = await response.data;
+    console.log(data, "data from fetchRestaurant")
+    return { data };
+  } catch (error) {
+    console.error(error);
+    // Handle error and return a default value or rethrow
+    return { data: [] };
+  }
+};
+const HotelRoomBooking =  ({id}:{id: string}) => {
   const [activeTab, setActiveTab] = useState('Superior Standard Room');
   const [currentImageIndex, setCurrentImageIndex] = useState<{[key: number]: number}>({});
 
   const tabs = ['Superior Standard Room', 'Superior Luxury Room', 'Superior Specialty Room'];
+  
 
+
+ useEffect(() => {
+    const fetchData = async () => {
+      const result = await fetchRestaurant({ id });
+      // If you want to use API data, setRoomsData(result.data);
+      // For now, keep the static rooms as fallback.
+      console.log(result, "result from fetchData")
+    };
+    fetchData();
+  }, [id]);
   const rooms: Room[] = [
     {
       id: 1,

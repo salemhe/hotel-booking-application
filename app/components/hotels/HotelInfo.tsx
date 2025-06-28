@@ -8,7 +8,9 @@ const HotelInfo = ({
   data,
   activeTab,
   setActiveTab,
+  id,
 }: {
+  id: string;
   data: Restaurant;
   activeTab: "property_details" | "rooms" | "policies" | "reviews" | "messages";
   setActiveTab: (tab: "property_details" | "rooms" | "policies" | "reviews" | "messages") => void;
@@ -38,6 +40,8 @@ const HotelInfo = ({
       tab: "messages"
     }
   ];
+
+
   return (
     <div>
       <div className="border-[#E5E7EB] border-b  overflow-auto w-full">
@@ -59,7 +63,7 @@ const HotelInfo = ({
       <div className="mt-8">
         {activeTab === "property_details" && <HotelOverview address={data.address} openingTime={data.openingTime} closingTime={data.closingTime} cuisines={data.cuisines} desc={data.businessDescription} />}
         {/* {activeTab === "menu" && <HotelMenu id={data._id} />} */}
-        {activeTab === "rooms" && <HotelAvalableSlot />}
+        {activeTab === "rooms" && <HotelAvalableSlot id={id} />}
         {activeTab === "reviews" && <p>Reviews</p>}
       </div>
     </div>

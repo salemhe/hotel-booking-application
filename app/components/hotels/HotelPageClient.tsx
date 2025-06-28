@@ -60,7 +60,7 @@ export const HotelsPageClient = ({
           </div>
           <div className={activeTab === "rooms" ? "w-full" : "col-span-2"}>
             {/* Pass activeTab and setActiveTab to HotelInfo */}
-            <HotelInfo data={restaurant} activeTab={activeTab} setActiveTab={setActiveTab} />
+            <HotelInfo id={id} data={restaurant} activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
         </div>
         {/* Hide the right column when activeTab is "rooms" */}
