@@ -25,7 +25,8 @@ interface Room {
 
 const fetchRestaurant = async ({id}:{id: string}) => {
   try {
-    const response = await API.get(`/${id}/available-rooms`);
+    const vendorId = id; // Assuming id is the vendorId
+    const response = await API.get(`/${vendorId}/available-rooms`);
     const data = await response.data;
     console.log(data, "data from fetchRestaurant")
     return { data };

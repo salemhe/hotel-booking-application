@@ -1,15 +1,66 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, MapPin, Edit2, Star } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import { useBookingData } from '../../../hooks/useBookingData';
+import { format } from 'date-fns';
 
 const BookingDetails = () => {
   const [selectedPayment, setSelectedPayment] = useState('full');
   const router = useRouter();
+  const params = useParams();
+  const hotelId = params.id as string;
+  const { bookingData, isLoading, clearBookingData } = useBookingData(hotelId);
+
+  useEffect(() => {
+    // Redirect back to hotel page if no booking data exists
+    if (!isLoading && !bookingData) {
+      router.push(`/hotels/${hotelId}`);
+    }
+  }, [bookingData, isLoading, hotelId, router]);
 
   const handleDoneClick = () => {
+    // Clear booking data after successful payment
+    clearBookingData();
     router.push("/confirmation");
   };
+
+  const handleBackClick = () => {
+    router.push(`/hotels/${hotelId}`);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="mx-auto bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading booking details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!bookingData) {
+    return (
+      <div className="mx-auto bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">No booking data found</p>
+          <button 
+            onClick={handleBackClick}
+            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg"
+          >
+            Back to Hotel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const checkInDate = new Date(bookingData.checkInDate);
+  const checkOutDate = new Date(bookingData.checkOutDate);
+  const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
+  const pricePerNight = bookingData.hotelInfo?.price || 150000;
+  const totalPrice = pricePerNight * nights;
 
   return (
     <div className=" mx-auto bg-white min-h-screen">
@@ -30,21 +81,25 @@ const BookingDetails = () => {
         <div className="flex gap-4 mb-8">
           <div className="w-24 h-20 rounded-lg overflow-hidden flex-shrink-0">
             <img 
-              src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200&h=160&fit=crop" 
-              alt="Eko Hotel & Suites" 
+              src={bookingData.hotelInfo?.profileImages?.[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200&h=160&fit=crop"} 
+              alt={bookingData.hotelInfo?.businessName || "Hotel"} 
               className="w-full h-full object-cover"
             />
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Eko Hotel & Suites, Lagos, Nigeria</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">
+              {bookingData.hotelInfo?.businessName || "Hotel"}, Lagos, Nigeria
+            </h2>
             <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
               <MapPin className="w-4 h-4" />
-              <span>16, Idowu Taylor Street, Victoria Island</span>
+              <span>{bookingData.hotelInfo?.address || "Address not available"}</span>
             </div>
             <div className="text-sm text-gray-600">101241 Nigeria</div>
             <div className="flex items-center gap-1 mt-2">
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium">4.8 (1,000 reviews)</span>
+              <span className="text-sm font-medium">
+                {bookingData.hotelInfo?.rating || 4.8} ({bookingData.hotelInfo?.reviews?.toLocaleString() || 1000} reviews)
+              </span>
             </div>
           </div>
         </div>
@@ -59,21 +114,21 @@ const BookingDetails = () => {
               <div className="border border-gray-200 rounded-lg p-4">
                 <div className="text-sm text-gray-600 mb-1">Check In Date</div>
                 <div className="font-medium text-gray-900 flex items-center justify-between">
-                  23rd May, 2025
+                  {format(checkInDate, "do MMM, yyyy")}
                   <Edit2 className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
               <div className="border border-gray-200 rounded-lg p-4">
                 <div className="text-sm text-gray-600 mb-1">Check Out Date</div>
                 <div className="font-medium text-gray-900 flex items-center justify-between">
-                  25th May, 2025
+                  {format(checkOutDate, "do MMM, yyyy")}
                   <Edit2 className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
               <div className="border border-gray-200 rounded-lg p-4">
                 <div className="text-sm text-gray-600 mb-1">Guest</div>
                 <div className="font-medium text-gray-900 flex items-center justify-between">
-                  2 people
+                  {bookingData.guests} {parseInt(bookingData.guests) === 1 ? 'person' : 'people'}
                   <Edit2 className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
@@ -90,7 +145,7 @@ const BookingDetails = () => {
                   </div>
                   <div>
                     <div className="text-sm text-gray-600 mb-1">Price per night</div>
-                    <div className="font-medium text-gray-900">₦150,000</div>
+                    <div className="font-medium text-gray-900">₦{pricePerNight.toLocaleString()}</div>
                   </div>
                   <div></div>
                 </div>
@@ -101,7 +156,7 @@ const BookingDetails = () => {
                   </div>
                   <div>
                     <div className="text-sm text-gray-600 mb-1">Guests Allowed</div>
-                    <div className="font-medium text-gray-900">2</div>
+                    <div className="font-medium text-gray-900">{bookingData.guests}</div>
                   </div>
                   <div></div>
                 </div>
@@ -115,8 +170,10 @@ const BookingDetails = () => {
             <div className="mb-8">
               <h4 className="font-semibold text-gray-900 mb-2">Special Request (Optional)</h4>
               <textarea 
-                placeholder="Let us know if you have any special request"
-                className="w-full border border-gray-200 rounded-lg p-4 text-sm text-gray-600 resize-none h-24"
+                value={bookingData.specialRequest || ""}
+                readOnly
+                placeholder="No special requests"
+                className="w-full border border-gray-200 rounded-lg p-4 text-sm text-gray-600 resize-none h-24 bg-gray-50"
               />
             </div>
           </div>
@@ -134,7 +191,7 @@ const BookingDetails = () => {
                 onClick={() => setSelectedPayment('full')}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-gray-900">Pay ₦150,000 now</span>
+                  <span className="font-medium text-gray-900">Pay ₦{totalPrice.toLocaleString()} now</span>
                   <div className={`w-4 h-4 rounded-full border-2 ${
                     selectedPayment === 'full' ? 'border-teal-500 bg-teal-500' : 'border-gray-300'
                   }`}>
@@ -162,7 +219,7 @@ const BookingDetails = () => {
                   </div>
                 </div>
                 <div className="text-sm text-gray-600">
-                  Pay 75,000 now, and 75,000 on 23rd may, 2025. No extra fees
+                  Pay {(totalPrice / 2).toLocaleString()} now, and {(totalPrice / 2).toLocaleString()} on {format(checkInDate, "do MMM, yyyy")}. No extra fees
                 </div>
               </div>
             </div>
@@ -173,13 +230,13 @@ const BookingDetails = () => {
               <div className="space-y-2">
                 <div className="text-sm text-gray-600 mb-2">Price Details</div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-900">₦150,000 / 2 nights</span>
-                  <span className="font-medium text-gray-900">₦300,000</span>
+                  <span className="text-sm text-gray-900">₦{pricePerNight.toLocaleString()} / {nights} {nights === 1 ? 'night' : 'nights'}</span>
+                  <span className="font-medium text-gray-900">₦{totalPrice.toLocaleString()}</span>
                 </div>
                 <hr className="my-3" />
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-gray-900">Sub Total</span>
-                  <span className="font-semibold text-gray-900">₦300,000</span>
+                  <span className="font-semibold text-gray-900">₦{totalPrice.toLocaleString()}</span>
                 </div>
               </div>
             </div>
@@ -190,7 +247,10 @@ const BookingDetails = () => {
       </div>
       {/* Bottom Navigation */}
         <div className="flex justify-between items-center px-4 sm:px-24 py-6 border-t">
-          <button className="flex items-center gap-2 text-teal-600 hover:text-teal-700">
+          <button 
+            onClick={handleBackClick}
+            className="flex items-center gap-2 text-teal-600 hover:text-teal-700"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back to Hotel Details Page
           </button>
