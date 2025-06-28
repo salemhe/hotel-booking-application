@@ -1,15 +1,13 @@
-/* app/globals.css */
-@import "tailwindcss/preflight";
-@tailwind utilities;
+@import 'tailwindcss';
 
-/* @custom-variant dark (&:is(.dark *)); */
+@custom-variant dark (&:is(.dark *));
 
-.no-scroll-bars {
+no-scroll-bars {
   scrollbar-width: thin;
   scrollbar-color: transparent;
 }
 
-/* @theme {
+@theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
 
@@ -86,7 +84,7 @@
       transform: translateX(-2496);
     }
   }
-} */
+}
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -202,105 +200,84 @@
   }
 }
 
+
 @layer base {
   * {
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
+    @apply border-border;
   }
-
   body {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(
-        to bottom,
-        transparent,
-        rgb(var(--background-end-rgb))
-      )
-      rgb(var(--background-start-rgb));
-  }
-
-  .rdrDay {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-    line-height: 2.5rem;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 0.375rem;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .rdrDay:hover:not(.rdrDayPassive) {
-    background-color: hsl(var(--primary) / 0.1);
-    color: hsl(var(--primary));
-  }
-
-  .rdrDaySelected {
-    background-color: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
+    @apply bg-background text-foreground;
   }
 }
 
+@layer utilities {
+  .rdrDay {
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+
+  .rdrDay:hover:not(.rdrDayPassive) {
+    background-color: #0071c2;
+    color: white;
+  }
+}
+
+
+
 @layer base {
   * {
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
+    @apply border-border outline-ring/50;
   }
-
   body {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(
-        to bottom,
-        transparent,
-        rgb(var(--background-end-rgb))
-      )
-      rgb(var(--background-start-rgb));
+    @apply bg-background text-foreground;
   }
+}
 
+@layer utilities {
+  /* Make all tables horizontally scrollable on small screens */
   .responsive-table {
     width: 100%;
+    display: block;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
+  /* Responsive card/grid padding for all screen sizes */
   .responsive-card {
-    width: 100%;
+    padding: 1rem;
   }
-
   @media (min-width: 640px) {
     .responsive-card {
-      width: calc(50% - 1rem);
+      padding: 1.5rem;
     }
   }
-
   @media (min-width: 1024px) {
     .responsive-card {
-      width: calc(33.333% - 1rem);
+      padding: 2rem;
     }
   }
 
+  /* Responsive grid columns for admin cards */
   .responsive-admin-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
   }
-
   @media (min-width: 640px) {
     .responsive-admin-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
-
   @media (min-width: 1024px) {
     .responsive-admin-grid {
       grid-template-columns: repeat(3, 1fr);
     }
   }
 
+  /* Make images, charts, and iframes scale to their containers */
   .responsive-media {
-    width: 100%;
+    max-width: 100%;
     height: auto;
+    display: block;
   }
 }
