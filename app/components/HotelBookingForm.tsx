@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
@@ -21,17 +21,16 @@ import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { AuthService } from "../lib/api/services/userAuth.service";
 import { useBookingData } from "../hooks/useBookingData";
+import { bookingStorage } from "../lib/utils/bookingStorage";
 import { Restaurant } from "../lib/types/restaurant";
 
 const HotelBookingForm = ({ id, restaurant }: { id: string; restaurant?: Restaurant }) => {
   const [date, setDate] = useState<Date>();
   const [date2, setDate2] = useState<Date>();
-  const [time, setTime] = useState<string>("");
   const [request, setRequest] = useState<string>("");
   const [guests, setGuests] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const user = AuthService.getUser(id);
   const { bookingData, saveBookingData } = useBookingData(id);
 
   // Load existing booking data from localStorage on component mount
@@ -44,8 +43,8 @@ const HotelBookingForm = ({ id, restaurant }: { id: string; restaurant?: Restaur
     }
   }, [bookingData]);
 
-  // Save form data to localStorage whenever form fields change
-  const saveFormData = () => {
+  // Save form data to localStorage
+  const saveFormData = useCallback(() => {
     if (date && date2 && guests) {
       const bookingDataToSave = {
         hotelId: id,
@@ -58,31 +57,43 @@ const HotelBookingForm = ({ id, restaurant }: { id: string; restaurant?: Restaur
           address: restaurant.address,
           rating: restaurant.rating,
           reviews: restaurant.reviews,
-          profileImages: restaurant.profileImages,
+          profileImages: restaurant.profileImages.map(img => img.url),
           price: 150000, // You might want to get this from the restaurant data
         } : undefined,
       };
       saveBookingData(bookingDataToSave);
     }
-  };
-
-  // Save data whenever form fields change
-  useEffect(() => {
-    saveFormData();
   }, [date, date2, guests, request, id, restaurant, saveBookingData]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
+    console.log("Form submitted with data:", { date, date2, guests, request });
+    
     // Save final form data
-    saveFormData();
+    const saveResult = saveFormData();
+    console.log("Save form data result:", saveResult);
+    
+    // Check if data was saved properly
+    const savedData = bookingStorage.getBookingDataForHotel(id);
+    console.log("Saved booking data:", savedData);
+    console.log("Validation result:", savedData ? bookingStorage.validateBookingData(savedData) : false);
     
     const paymentUrl = `/hotels/${id}/payment`;
 
-    // Replace this with your actual auth check
-    const isLoggedIn = user.id; // TODO: Replace with real check
-    console.log(isLoggedIn, "isLoggedIn")
-    if (!isLoggedIn) {
+    // Check if user is authenticated
+    try {
+      const isAuthenticated = await AuthService.isAuthenticated();
+      console.log("Authentication check result:", isAuthenticated);
+      
+      if (!isAuthenticated) {
+        console.log("User not authenticated, redirecting to login");
+        router.push(`/user-login?redirect=${encodeURIComponent(paymentUrl)}`);
+        return;
+      }
+    } catch (error) {
+      console.error("Error checking authentication:", error);
+      // If authentication check fails, redirect to login
       router.push(`/user-login?redirect=${encodeURIComponent(paymentUrl)}`);
       return;
     }
@@ -92,10 +103,16 @@ const HotelBookingForm = ({ id, restaurant }: { id: string; restaurant?: Restaur
       if (!date || !date2) {
         throw new Error("Date and Time are required");
       }
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      
       toast.success("Booking data saved successfully");
+      console.log("Navigating to:", paymentUrl);
+      
+      // Add a small delay to ensure data is saved before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       router.push(paymentUrl);
     } catch (err) {
+      console.error("Error in handleSubmit:", err);
       if (err instanceof AxiosError) {
         const errorMessage =
           err.response?.data?.message ||

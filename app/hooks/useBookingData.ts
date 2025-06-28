@@ -16,7 +16,8 @@ export const useBookingData = (hotelId: string) => {
   const saveBookingData = useCallback((data: Omit<HotelBookingData, 'timestamp'>) => {
     const success = bookingStorage.saveBookingData(data);
     if (success) {
-      setBookingData({ ...data, timestamp: Date.now() });
+      const newBookingData = { ...data, timestamp: Date.now() };
+      setBookingData(newBookingData);
     }
     return success;
   }, []);
@@ -32,13 +33,13 @@ export const useBookingData = (hotelId: string) => {
   }, [hotelId]);
 
   // Clear booking data
-  const clearBookingData = useCallback(() => {
-    const success = bookingStorage.clearBookingData();
-    if (success) {
-      setBookingData(null);
-    }
-    return success;
-  }, []);
+  // const clearBookingData = useCallback(() => {
+  //   const success = bookingStorage.clearBookingData();
+  //   if (success) {
+  //     setBookingData(null);
+  //   }
+  //   return success;
+  // }, []);
 
   // Check if booking data exists
   const hasBookingData = useCallback(() => {
@@ -61,7 +62,7 @@ export const useBookingData = (hotelId: string) => {
     loadBookingData,
     saveBookingData,
     updateBookingData,
-    clearBookingData,
+    // clearBookingData,
     hasBookingData,
     validateBookingData,
   };

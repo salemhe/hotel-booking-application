@@ -22,13 +22,19 @@ const BookingGuard: React.FC<BookingGuardProps> = ({
 
   useEffect(() => {
     if (!isLoading) {
+      console.log("BookingGuard: Checking booking data for hotel:", hotelId);
+      console.log("BookingGuard: Current booking data:", bookingData);
+      
       const redirectUrl = bookingNavigation.validateCurrentStep(hotelId, requiredStep);
+      console.log("BookingGuard: Validation result - redirect URL:", redirectUrl);
       
       if (redirectUrl) {
+        console.log("BookingGuard: Redirecting to:", redirectUrl);
         router.push(redirectUrl);
         return;
       }
       
+      console.log("BookingGuard: Validation passed, showing content");
       setIsValid(true);
       setIsChecking(false);
     }

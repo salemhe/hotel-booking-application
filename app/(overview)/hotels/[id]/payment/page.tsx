@@ -2,15 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, MapPin, Edit2, Star } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
-import { useBookingData } from '../../../hooks/useBookingData';
 import { format } from 'date-fns';
+import BookingGuard from '../../../../components/BookingGuard';
+import { useBookingData } from '@/app/hooks/useBookingData';
 
 const BookingDetails = () => {
   const [selectedPayment, setSelectedPayment] = useState('full');
   const router = useRouter();
   const params = useParams();
   const hotelId = params.id as string;
-  const { bookingData, isLoading, clearBookingData } = useBookingData(hotelId);
+  const { bookingData, isLoading,  } = useBookingData(hotelId);
 
   useEffect(() => {
     // Redirect back to hotel page if no booking data exists
@@ -21,7 +22,7 @@ const BookingDetails = () => {
 
   const handleDoneClick = () => {
     // Clear booking data after successful payment
-    clearBookingData();
+    // clearBookingData();
     router.push("/confirmation");
   };
 
@@ -262,4 +263,12 @@ const BookingDetails = () => {
   );
 };
 
-export default BookingDetails;
+export default function PaymentPageWrapper() {
+  const params = useParams();
+  const hotelId = params.id as string;
+  return (
+    <BookingGuard hotelId={hotelId} requiredStep="payment">
+      <BookingDetails />
+    </BookingGuard>
+  );
+}

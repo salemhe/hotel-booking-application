@@ -23,11 +23,24 @@ export const bookingNavigation = {
 
   // Validate current step and redirect if necessary
   validateCurrentStep: (hotelId: string, currentStep: string): string | null => {
+    console.log("validateCurrentStep called with:", { hotelId, currentStep });
+    
     const bookingData = bookingStorage.getBookingDataForHotel(hotelId);
+    console.log("bookingData retrieved:", bookingData);
     
     switch (currentStep) {
       case 'payment':
-        if (!bookingData || !bookingStorage.validateBookingData(bookingData)) {
+        console.log("Checking payment validation...");
+        console.log("bookingData exists:", !!bookingData);
+        if (bookingData) {
+          const isValid = bookingStorage.validateBookingData(bookingData);
+          console.log("validation result:", isValid);
+          if (!isValid) {
+            console.log("Validation failed, redirecting to hotel page");
+            return `/hotels/${hotelId}`; // Redirect to hotel page if no valid booking
+          }
+        } else {
+          console.log("No booking data found, redirecting to hotel page");
           return `/hotels/${hotelId}`; // Redirect to hotel page if no valid booking
         }
         break;
@@ -38,6 +51,7 @@ export const bookingNavigation = {
         break;
     }
     
+    console.log("Validation passed, no redirect needed");
     return null; // No redirect needed
   },
 
