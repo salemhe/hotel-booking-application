@@ -10,7 +10,7 @@ export default function PrePaymentPage() {
   const router = useRouter();
 
   const handlePrepayClick = () => {
-    router.push("/confirmation");
+    router.push("/payment");
   };
 
   return (
