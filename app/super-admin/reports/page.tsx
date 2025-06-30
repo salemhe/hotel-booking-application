@@ -3,51 +3,40 @@
 import React, { useState, useEffect } from "react";
 import SuperAdminSidebar from "@/app/components/sidebars/SuperAdminSidebar";
 import { TrendingUp, Sun, Moon, Eye, EyeOff } from "lucide-react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-  TimeScale,
-} from "chart.js";
-import zoomPlugin from "chartjs-plugin-zoom";
-import "chartjs-adapter-date-fns";
-import type { ChartOptions } from "chart.js";
+import dynamic from "next/dynamic";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-  zoomPlugin,
-  TimeScale
-);
+// Dynamically import the Chart component to prevent SSR issues
+const DynamicChart = dynamic(() => import("./chartComponent"), {
+  ssr: false,
+  loading: () => (
+    <div className="min-w-[350px] sm:min-w-[500px] md:min-w-[700px] lg:min-w-[900px] h-[220px] xs:h-[260px] sm:h-[320px] flex items-center justify-center">
+      <div className="text-white">Loading chart...</div>
+    </div>
+  ),
+});
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api/";
 
 export default function ReportsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  
   type MonthlyRevenue = {
     period: string;
     total: number;
     hotel: number;
     restaurant: number;
   };
+  
   const [monthly, setMonthly] = useState<MonthlyRevenue[]>([]);
   const [range, setRange] = useState<"7" | "30" | "90" | "all">("30");
   const [darkMode, setDarkMode] = useState(true);
   const [showPoints, setShowPoints] = useState(true);
+
+  // Ensure component is mounted before rendering client-side features
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,113 +63,20 @@ export default function ReportsPage() {
   const chartText = darkMode ? "#fff" : "#222";
   const chartGrid = darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)";
 
-  const chartData = {
-    labels: filtered.map((m) => m.period),
-    datasets: [
-      {
-        label: "Total Revenue",
-        data: filtered.map((m) => m.total),
-        borderColor: "#10b981",
-        backgroundColor: "rgba(16,185,129,0.2)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: showPoints ? 5 : 0,
-        pointHoverRadius: showPoints ? 8 : 0,
-        pointBackgroundColor: "#fff",
-        borderWidth: 3,
-      },
-      {
-        label: "Hotel Revenue",
-        data: filtered.map((m) => m.hotel),
-        borderColor: "#14b8a6",
-        backgroundColor: "rgba(20,184,166,0.2)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: showPoints ? 5 : 0,
-        pointHoverRadius: showPoints ? 8 : 0,
-        pointBackgroundColor: "#fff",
-        borderWidth: 3,
-      },
-      {
-        label: "Restaurant Revenue",
-        data: filtered.map((m) => m.restaurant),
-        borderColor: "#06b6d4",
-        backgroundColor: "rgba(6,182,212,0.2)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: showPoints ? 5 : 0,
-        pointHoverRadius: showPoints ? 8 : 0,
-        pointBackgroundColor: "#fff",
-        borderWidth: 3,
-      },
-    ],
+  const handleDownloadChart = () => {
+    if (!mounted || typeof window === "undefined") return;
+    
+    // This will be handled by the ChartComponent
+    const event = new CustomEvent('downloadChart');
+    window.dispatchEvent(event);
   };
 
-  const chartOptions: ChartOptions<"line"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: "top",
-        labels: {
-          color: chartText,
-          font: { size: 13, family: "inherit" },
-          usePointStyle: true,
-          padding: 20,
-        },
-      },
-      tooltip: {
-        enabled: true,
-        backgroundColor: darkMode ? "#222" : "#fff",
-        titleColor: chartText,
-        bodyColor: chartText,
-        borderColor: "#10b981",
-        borderWidth: 1,
-        padding: 12,
-        caretSize: 8,
-        callbacks: {
-          label: function (context: import("chart.js").TooltipItem<"line">) {
-            return `${
-              context.dataset.label
-            }: $${context.parsed.y.toLocaleString()}`;
-          },
-        },
-      },
-      zoom: {
-        pan: {
-          enabled: true,
-          mode: "x",
-        },
-        zoom: {
-          wheel: { enabled: true },
-          pinch: { enabled: true },
-          mode: "x",
-        },
-        limits: {
-          x: { min: 0, max: filtered.length - 1 },
-        },
-      },
-    },
-    elements: {
-      line: { borderWidth: 3, tension: 0.5 },
-      point: {
-        radius: showPoints ? 5 : 0,
-        hoverRadius: showPoints ? 8 : 0,
-        backgroundColor: "#fff",
-        borderWidth: 2,
-      },
-    },
-    scales: {
-      x: {
-        ticks: { color: chartText },
-        grid: { color: chartGrid },
-      },
-      y: {
-        ticks: { color: chartText },
-        grid: { color: chartGrid },
-      },
-    },
+  const handleResetZoom = () => {
+    if (!mounted || typeof window === "undefined") return;
+    
+    // This will be handled by the ChartComponent
+    const event = new CustomEvent('resetZoom');
+    window.dispatchEvent(event);
   };
 
   return (
@@ -200,6 +96,7 @@ export default function ReportsPage() {
       >
         <SuperAdminSidebar />
       </div>
+      
       {/* Main Content */}
       <main className="flex-1 px-2 sm:px-4 md:px-8 lg:px-10 max-w-7xl mx-auto text-white overflow-y-visible relative">
         {/* Collapse Button */}
@@ -241,12 +138,14 @@ export default function ReportsPage() {
             </svg>
           )}
         </button>
+        
         <div className="flex flex-col gap-4 w-full max-w-full mt-16 md:mt-0">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
             <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold flex items-center gap-2">
               <TrendingUp className="h-7 w-7 text-emerald-400" /> Reports &
               Analytics
             </h1>
+            
             <div className="flex flex-col gap-2 xs:flex-row xs:items-center xs:gap-2 flex-wrap w-full xs:w-auto">
               <div className="flex gap-2 items-center w-full xs:w-auto">
                 <label htmlFor="range" className="text-xs sm:text-sm">
@@ -266,29 +165,19 @@ export default function ReportsPage() {
                   <option value="all">All</option>
                 </select>
               </div>
+              
               <div className="flex gap-2 flex-wrap w-full xs:w-auto">
                 <button
                   className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1 rounded shadow w-full xs:w-auto"
-                  onClick={() => {
-                    const chartInstance = ChartJS.getChart("main-report-chart");
-                    if (chartInstance && chartInstance.canvas) {
-                      const link = document.createElement("a");
-                      link.download = "analytics-report.png";
-                      link.href = chartInstance.canvas.toDataURL("image/png");
-                      link.click();
-                    }
-                  }}
+                  onClick={handleDownloadChart}
+                  disabled={!mounted}
                 >
                   Download Chart
                 </button>
                 <button
                   className="bg-slate-700 hover:bg-slate-800 text-white text-xs px-3 py-1 rounded shadow w-full xs:w-auto"
-                  onClick={() => {
-                    const chart = ChartJS.getChart("main-report-chart");
-                    if (chart) {
-                      chart.resetZoom();
-                    }
-                  }}
+                  onClick={handleResetZoom}
+                  disabled={!mounted}
                 >
                   Reset Zoom
                 </button>
@@ -319,19 +208,22 @@ export default function ReportsPage() {
               </div>
             </div>
           </div>
+          
           <div className="w-full max-w-full bg-white/10 backdrop-blur-sm border-white/20 rounded-lg p-2 sm:p-4">
             <div
               className="rounded-lg p-2 sm:p-4 overflow-x-auto"
               style={{ background: chartBg }}
             >
-              <div className="min-w-[350px] sm:min-w-[500px] md:min-w-[700px] lg:min-w-[900px] h-[220px] xs:h-[260px] sm:h-[320px]">
-                <Line
-                  id="main-report-chart"
-                  data={chartData}
-                  options={chartOptions}
-                  style={{ width: "100%", height: "100%" }}
+              {mounted && (
+                <DynamicChart
+                  data={filtered}
+                  darkMode={darkMode}
+                  showPoints={showPoints}
+                  chartBg={chartBg}
+                  chartText={chartText}
+                  chartGrid={chartGrid}
                 />
-              </div>
+              )}
             </div>
             <div className="block sm:hidden text-xs text-gray-400 mt-2 text-center">
               Pinch, zoom, or swipe to explore the chart

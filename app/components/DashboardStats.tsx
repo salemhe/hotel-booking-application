@@ -1,5 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+
 import { delay } from "@/app/lib/utils"
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
+
 
 async function fetchDashboardStats() {
   await delay(2000) // Simulate network delay

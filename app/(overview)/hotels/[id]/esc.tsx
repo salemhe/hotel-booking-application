@@ -1,4 +1,4 @@
-import HotelsPage from "@/app/components/hotels/HotelsPage";
+import HotelPage from "@/app/components/HotelsPage";
 import React from "react";
 import { Suspense } from "react";
 
@@ -6,7 +6,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id;
   return (
     <Suspense fallback={<Loading />}>
-      <HotelsPage id={id} />
+      <HotelPage id={id} />
     </Suspense>
   );
 };

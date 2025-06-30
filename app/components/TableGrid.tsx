@@ -12,25 +12,30 @@ export interface Restaurant {
   name: string;
   image?: string;
   profileImages?: { url: string }[];
-  rating: number;
+  rating?: number;
   reviews?: number;
-  cuisine: string;
-  location: string;
+  cuisine?: string;
+  location?: string;
   badge?: string;
+  price?: number;
+  
+  discount?: number;
 }
 
 interface Hotel {
   _id?: string;
   id?: number;
   name: string;
-  image: string;
-  rating: number;
-  reviews: number;
-  price: number;
-  cuisine: string;
-  location: string;
+  image?: string;
+  rating?: number;
+  reviews?: number;
+  price?: number;
+  cuisine?: string;
+  location?: string;
   badge?: string;
-  discount: number;
+  discount?: number;
+  
+  profileImages?: { url: string }[];
 }
 
 interface TableGridProps {
@@ -238,7 +243,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
                   <div className="flex items-center mb-1">
                     <FiStar className="text-yellow-500 mr-1" />
                     <span className="text-sm font-medium text-gray-900">
-                      {restaurant.rating.toFixed(1)}
+                      {restaurant.rating?.toFixed(1)}
                     </span>
                     <span className="text-sm text-gray-500 ml-1">
                       ({restaurant?.reviews?.toLocaleString()} reviews)
@@ -270,7 +275,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
 
 export default TableGrid;
 
-export const TableGridTwo = ({ title }: TableGridProps) => {
+export const TableGridTwo = ({ title, restaurants }: { title: string; restaurants: Hotel[] }) => {
   const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
   const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
   const [isHovering, setIsHovering] = useState<{ [key: number]: boolean }>({});
@@ -354,7 +359,7 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
       </Button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {DUMMY_HOTEL_DATA.map((restaurant: Hotel) => {
+        {restaurants?.map((restaurant: Hotel) => {
           const images = getImagesForRestaurant(restaurant);
           const currentIndex = currentIndices[restaurant.id || 0];
           const multipleImages = hasMultipleImages(restaurant);
@@ -364,7 +369,7 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
             <div
               key={restaurant.id}
               onClick={() => {
-                router.push("/restaurants");
+                router.push(`/hotels/${restaurant._id}`);
               }}
               className="h-80 px-2 pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
             >
@@ -441,10 +446,10 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
                   <div className="flex items-center mb-1">
                     <FiStar className="text-yellow-500 mr-1" />
                     <span className="text-sm font-medium text-gray-900">
-                      {restaurant.rating.toFixed(1)}
+                      {restaurant.rating?.toFixed(1)}
                     </span>
                     <span className="text-sm text-gray-500 ml-1">
-                      ({restaurant.reviews.toLocaleString()} reviews)
+                      ({restaurant.reviews?.toLocaleString()} reviews)
                     </span>
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900">

@@ -3,7 +3,7 @@ import SessionManager from "@/app/components/SessionManager";
 import { AppSidebar } from "@/app/components/sidebars/VendorSidebar";
 import { SidebarInset, SidebarProvider } from "@/app/components/ui/sidebar";
 import { VendorProvider } from "@/app/contexts/VendorContext";
-// import ProtectedRoute from "@/app/components/ProtectedRoute";
+// import ProtectedRoute from "@/app/components/Prot
 
 export default function VendorDasboardLayout({
   children,
