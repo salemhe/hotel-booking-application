@@ -64,6 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [profile, setProfile] = useState<VendorProfile | null>(null)
   // const [loading, setLoading] = useState(true)
 
+  console.log(profile)
   const isHotel = profile?.businessType === "hotel"
   const isRestaurant = profile?.businessType === "Restaurant " || profile?.businessType === "restaurant"
     console.log(isHotel, isRestaurant, "isHotel, isRestaurant")
@@ -194,7 +195,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ],
     },
     {
-      title: isHotel ? "Hostel Listings" : isRestaurant ? "Restaurant Listings" : "My Listings",
+      title: isHotel ? "Hotel Listings" : isRestaurant ? "Restaurant Listings" : "My Listings",
       url: isHotel ? "/vendorDashboard/hostelListings" : isRestaurant ? "/vendorDashboard/restaurantListings" : "/vendorDashboard/listings",
       icon: StickyNote,
       items: [
