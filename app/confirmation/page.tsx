@@ -9,7 +9,7 @@ export default function ConfirmationPage() {
   const router = useRouter()
 
   const handleDoneClick = () => {
-    router.push("/payment")
+    router.push("/bookings")
   }
 
   return (

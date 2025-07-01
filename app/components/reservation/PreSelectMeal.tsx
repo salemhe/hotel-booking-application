@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import { Minus, Plus } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
@@ -10,100 +10,134 @@ import { Textarea } from "@/app/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import ReservationHeader from "./ReservationHeader";
 import { useRouter } from "next/navigation";
+import { useReservations } from "@/app/contexts/ReservationContext";
+import { toast } from "sonner";
+import API from "@/app/lib/api/userAxios";
 // import { useRouter } from "next/navigation";
 
 export interface MenuItem {
-  id: string;
-  name: string;
+  _id: string;
+  dishName: string;
   description: string;
   price: number;
-  image: string;
+  itemImage: string;
   quantity: number;
   specialRequest: string;
   selected: boolean;
-  categories: string;
+  category: string;
 }
 
-export default function PreSelectMeal() {
-  const [activeTab, setActiveTab] = useState("starters");
-  const [additionalNote, setAdditionalNote] = useState("");
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
-    {
-      id: "meze-platter",
-      name: "Meze Platter",
-      description: "Hummus, baba ghanoush, tzatziki, pita bread",
-      price: 15000,
-      image: "/hero-bg.png",
-      quantity: 2,
-      specialRequest: "",
-      selected: false,
-      categories: "starters",
-    },
-    {
-      id: "chicken-springrolls-1",
-      name: "Chicken Springrolls",
-      description: "Chicken, garnished vegetables",
-      price: 12000,
-      image: "/hero-bg.jpg",
-      quantity: 1,
-      specialRequest: "",
-      selected: false,
-      categories: "main",
-    },
-    {
-      id: "chicken-springrolls-2",
-      name: "Chicken Springrolls",
-      description: "Chicken, garnished vegetables",
-      price: 12000,
-      image: "/hero-bg.png",
-      quantity: 1,
-      specialRequest: "",
-      selected: false,
-      categories: "main",
-    },
-    {
-      id: "chicken-springrolls-3",
-      name: "Chicken Springrolls",
-      description: "Chicken, garnished vegetables",
-      price: 12000,
-      image: "/hero-bg.png",
-      quantity: 1,
-      specialRequest: "",
-      selected: false,
-      categories: "main",
-    },
-  ]);
+export default function PreSelectMeal({ id }: { id: string }) {
+  const {activeTab, setActiveTab, additionalNote, setAdditionalNote, menuItems, setMenuItems, vendor, time, guestCount, date, handleSubmit} = useReservations()
+  // const [activeTab, setActiveTab] = useState("starters");
+  // const [additionalNote, setAdditionalNote] = useState("");
+  // const [menuItems, setMenuItems] = useState<MenuItem[]>([
+  //   {
+  //     id: "meze-platter",
+  //     name: "Meze Platter",
+  //     description: "Hummus, baba ghanoush, tzatziki, pita bread",
+  //     price: 15000,
+  //     image: "/hero-bg.png",
+  //     quantity: 2,
+  //     specialRequest: "",
+  //     selected: false,
+  //     categories: "starters",
+  //   },
+  //   {
+  //     id: "chicken-springrolls-1",
+  //     name: "Chicken Springrolls",
+  //     description: "Chicken, garnished vegetables",
+  //     price: 12000,
+  //     image: "/hero-bg.jpg",
+  //     quantity: 1,
+  //     specialRequest: "",
+  //     selected: false,
+  //     categories: "main",
+  //   },
+  //   {
+  //     id: "chicken-springrolls-2",
+  //     name: "Chicken Springrolls",
+  //     description: "Chicken, garnished vegetables",
+  //     price: 12000,
+  //     image: "/hero-bg.png",
+  //     quantity: 1,
+  //     specialRequest: "",
+  //     selected: false,
+  //     categories: "main",
+  //   },
+  //   {
+  //     id: "chicken-springrolls-3",
+  //     name: "Chicken Springrolls",
+  //     description: "Chicken, garnished vegetables",
+  //     price: 12000,
+  //     image: "/hero-bg.png",
+  //     quantity: 1,
+  //     specialRequest: "",
+  //     selected: false,
+  //     categories: "main",
+  //   },
+  // ]);
   const [visibleCount, setVisibleCount] = useState(3);
-  const menuFiltered = menuItems.filter((a) => a.categories === activeTab);
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const tabs = [
     {
       name: "Starters",
-      value: "starters",
+      value: "Starters",
     },
     {
       name: "Main Course",
-      value: "main",
+      value: "Main Course",
     },
     {
       name: "Appetizers",
-      value: "appetizers",
+      value: "Appetizer",
     },
     {
       name: "Desserts",
-      value: "desserts",
+      value: "Dessert",
     },
     {
       name: "Drinks",
-      value: "drinks",
+      value: "Drinks",
     },
   ];
+
+      const fetchMenuItems = useCallback(async () => {
+        setLoading(true);
+        try {
+            const res = await API.get(`/vendors/menus?vendorId=${id}`);
+            const data = res.data.menus as MenuItem[];
+            setMenuItems(
+                data.map((item) => ({
+                    ...item,
+                    selected: false, 
+                    quantity: 1,
+                    specialRequest: "",
+                }))
+            );
+            if (data.length === 0) {
+                toast.info("No menu items available at the moment.");
+            }
+        } catch (error) {
+            console.error("Error fetching menu items:", error);
+            toast.error("Failed to load menu items. Please try again later.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchMenuItems();
+    }, [])
+      const menuFiltered = menuItems.filter((a) => a.category === activeTab);
+
   // const router = useRouter();
   const handleQuantityChange = (id: string, change: number, type?: string) => {
     setMenuItems(
       menuItems.map((item) => {
-        if (item.id === id) {
+        if (item._id === id) {
           if (type === "input") {
             const newQuantity = change;
             return { ...item, quantity: newQuantity };
@@ -120,7 +154,7 @@ export default function PreSelectMeal() {
   const handleSpecialRequestChange = (id: string, value: string) => {
     setMenuItems(
       menuItems.map((item) => {
-        if (item.id === id) {
+        if (item._id === id) {
           return { ...item, specialRequest: value };
         }
         return item;
@@ -131,7 +165,7 @@ export default function PreSelectMeal() {
   const handleSelectionChange = (id: string) => {
     setMenuItems(
       menuItems.map((item) => {
-        if (item.id === id) {
+        if (item._id === id) {
           return { ...item, selected: !item.selected };
         }
         return item;
@@ -156,6 +190,14 @@ export default function PreSelectMeal() {
     router.push("/completed")
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg text-gray-600">Loading menu items...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -166,18 +208,44 @@ export default function PreSelectMeal() {
             Reservation Completed
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-            <span className="font-medium">Kapadoccia</span>
+            <span className="font-medium">{vendor?.businessName || "Restaurant Name"}</span>
             <span className="flex items-center">
               <span className="size-2 bg-black rounded-full mx-2"></span>
-              23rd May, 2025
+                {date
+                ? date.toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                  }).replace(
+                  /^(\d{1,2})/,
+                  (d) =>
+                    d +
+                    (["1", "21", "31"].includes(d)
+                    ? "st"
+                    : ["2", "22"].includes(d)
+                    ? "nd"
+                    : ["3", "23"].includes(d)
+                    ? "rd"
+                    : "th")
+                  )
+                : "N/A"}
             </span>
             <span className="flex items-center">
               <span className="size-2 bg-black rounded-full mx-2"></span>
-              7:30 pm
+                {time
+                ? (() => {
+                  const [hourStr, minuteStr] = time.split(":");
+                  let hour = parseInt(hourStr, 10);
+                  const minute = minuteStr || "00";
+                  const ampm = hour >= 12 ? "PM" : "AM";
+                  hour = hour % 12 || 12;
+                  return `${hour}:${minute} ${ampm}`;
+                  })()
+                : "N/A"}
             </span>
             <span className="flex items-center">
-              <span className="size-2 bg-black rounded-full mx-2"></span>2
-              guests
+              <span className="size-2 bg-black rounded-full mx-2"></span>
+              {guestCount || "N/A"} Guest{guestCount && parseInt(guestCount) > 1 ? "s" : ""}
             </span>
           </div>
         </div>
@@ -243,7 +311,7 @@ export default function PreSelectMeal() {
           {menuFiltered.length > 0
             ? menuFiltered.slice(0, visibleCount).map((item) => (
                 <Card
-                  key={item.id}
+                  key={item._id}
                   className={`overflow-hidden rounded-[20px] ${
                     item.selected ? "border-[#1E3A8A]" : ""
                   }`}
@@ -259,8 +327,8 @@ export default function PreSelectMeal() {
                       >
                         <div className="relative w-full h-24 sm:w-32 sm:h-32 flex-shrink-0">
                           <Image
-                            src={item.image || "/placeholder.svg"}
-                            alt={item.name}
+                            src={item.itemImage || "/placeholder.svg"}
+                            alt={item.dishName}
                             fill
                             className="object-cover rounded-2xl"
                           />
@@ -268,7 +336,7 @@ export default function PreSelectMeal() {
                         <div className="flex-1">
                           <div className="flex justify-between items-start">
                             <div>
-                              <h3 className="font-medium">{item.name}</h3>
+                              <h3 className="font-medium">{item.dishName}</h3>
                               <p className="text-sm text-gray-600 mt-1">
                                 {item.description}
                               </p>
@@ -282,7 +350,7 @@ export default function PreSelectMeal() {
                                   ? "bg-[#0A6C6D] border-[#0A6C6D] text-white"
                                   : "border-gray-300"
                               }`}
-                              onClick={() => handleSelectionChange(item.id)}
+                              onClick={() => handleSelectionChange(item._id)}
                             >
                               {item.selected && (
                                 <svg
@@ -311,7 +379,7 @@ export default function PreSelectMeal() {
                                 size="icon"
                                 className="h-8 w-8 rounded-full border-[#1E3A8A] border-2 text-[#1E3A8A]"
                                 onClick={() =>
-                                  handleQuantityChange(item.id, -1)
+                                  handleQuantityChange(item._id, -1)
                                 }
                               >
                                 <Minus className="h-3 w-3" />
@@ -332,7 +400,7 @@ export default function PreSelectMeal() {
                                     let value = Number(e.target.value);
                                     if (value < 1) value = 1;
                                     handleQuantityChange(
-                                      item.id,
+                                      item._id,
                                       value,
                                       "input"
                                     );
@@ -343,7 +411,7 @@ export default function PreSelectMeal() {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-full border-[#1E3A8A] text-[#1E3A8A]"
-                                onClick={() => handleQuantityChange(item.id, 1)}
+                                onClick={() => handleQuantityChange(item._id, 1)}
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -354,7 +422,7 @@ export default function PreSelectMeal() {
                                 value={item.specialRequest}
                                 onChange={(e) =>
                                   handleSpecialRequestChange(
-                                    item.id,
+                                    item._id,
                                     e.target.value
                                   )
                                 }
@@ -368,7 +436,7 @@ export default function PreSelectMeal() {
                   </CardContent>
                 </Card>
               ))
-            : "not found"}
+            : `not found any ${activeTab} items`}
         </div>
 
         {menuFiltered.length > 3 && menuFiltered.length > visibleCount && (
@@ -380,7 +448,7 @@ export default function PreSelectMeal() {
                 setVisibleCount((prev) => {
                   // Reset visibleCount when tab changes
                   const filteredLength = menuItems.filter(
-                    (a) => a.categories === activeTab
+                    (a) => a.category === activeTab
                   ).length;
                   if (visibleCount >= filteredLength) return prev;
                   return prev + 3;
@@ -421,9 +489,9 @@ export default function PreSelectMeal() {
 
             <div className="space-y-3 mb-4">
               {selectedItems.map((item) => (
-                <div key={item.id} className="flex justify-between text-sm">
+                <div key={item._id} className="flex justify-between text-sm">
                   <span>
-                    {item.quantity}x {item.name}
+                    {item.quantity}x {item.dishName}
                   </span>
                   <span>₦{(item.price * item.quantity).toLocaleString()}</span>
                 </div>
@@ -455,7 +523,7 @@ export default function PreSelectMeal() {
           <Button onClick={handleClick}  variant="ghost" className="text-teal-600">
             Skip for now
           </Button>
-          <Button onClick={handleClick} className="bg-teal-600 hover:bg-teal-700 px-8 w-full max-w-xs">
+          <Button onClick={handleSubmit} disabled={!selectedItems.length} className="bg-teal-600 hover:bg-teal-700 px-8 w-full max-w-xs">
             Confirm Meal Selection
           </Button>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { ArrowLeft, MapPin, Star } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
@@ -23,10 +22,14 @@ import { TimePicker } from "../ui/timepicker";
 import { cn } from "@/app/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import API from "@/app/lib/api/userAxios";
 
 export default function ReservationDetails({
+  id,
   searchQuery,
 }: {
+  id: string;
   searchQuery: {
     date: string;
     time: string;
@@ -34,16 +37,51 @@ export default function ReservationDetails({
     specialRequest: string;
   };
 }) {
-  // const {selectedOccasion, setSelectedOccasion, seatingPreference, setSeatingPreference, guestCount, setGuestCount, specialRequest, setSpecialRequest, occasions } = useReservations()
-  const { setPage } = useReservations();
-  const [selectedOccasion, setSelectedOccasion] = useState<string>("");
-  const [seatingPreference, setSeatingPreference] = useState<string>("indoor");
-  const [guestCount, setGuestCount] = useState<string>(searchQuery.guests);
-  const [specialRequest, setSpecialRequest] = useState<string>(
-    searchQuery.specialRequest
-  );
-  const [date, setDate] = useState<Date>(new Date(searchQuery.date));
-  const [time, setTime] = useState(searchQuery.time);
+  const {
+    selectedOccasion,
+    setSelectedOccasion,
+    seatingPreference,
+    setSeatingPreference,
+    guestCount,
+    setGuestCount,
+    specialRequest,
+    setSpecialRequest,
+    occasions,
+    setPage,
+    date,
+    setDate,
+    time,
+    setTime,
+    setVendor,
+    vendor,
+  } = useReservations();
+  // const { setPage } = useReservations();
+  // const [selectedOccasion, setSelectedOccasion] = useState<string>("");
+  // const [seatingPreference, setSeatingPreference] = useState<string>("indoor");
+  // const [guestCount, setGuestCount] = useState<string>(searchQuery.guests);
+  // const [specialRequest, setSpecialRequest] = useState<string>(
+  //   searchQuery.specialRequest
+  // );
+  const [loading, setLoading] = useState<boolean>(true);
+
+
+  const fetchVendor = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get(`/vendors/${id}`)
+      setVendor(response.data)
+    } catch (error) {
+      console.error("Error fetching vendor:", error)
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchVendor()
+    setDate(new Date(searchQuery.date));
+    setTime(searchQuery.time);
+  }, []);
   const router = useRouter();
 
   const preferences = [
@@ -61,7 +99,7 @@ export default function ReservationDetails({
     },
   ];
 
-  const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Others"];
+  // const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Others"];
 
   const handleContinue = () => {
     if (!date || !seatingPreference || !guestCount || !time) {
@@ -70,6 +108,14 @@ export default function ReservationDetails({
     }
     setPage(1);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen mb-[65px] bg-gray-50">
@@ -80,7 +126,7 @@ export default function ReservationDetails({
           <div className="flex gap-4">
             <div className="relative w-32 h-24 rounded-2xl overflow-hidden flex-shrink-0">
               <Image
-                src="/hero-bg.png"
+                src={vendor?.profileImages[0].url || "/hero-bg.png"}
                 alt="Restaurant interior"
                 fill
                 className="object-cover"
@@ -88,19 +134,19 @@ export default function ReservationDetails({
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-semibold mb-2">
-                Kapadoccia - Lagos, Nigeria
+               {vendor?.businessName || "Restaurant Name"}
               </h2>
               <div className="flex items-start gap-1 text-gray-600 mb-2">
                 <div>
                   <MapPin className="h-4 w-4" />
                 </div>
                 <span className="text-sm">
-                  16, Idowu Taylor Street, Victoria Island 101241 Nigeria
+                 {vendor?.address || "123 Main St, City, Country"}
                 </span>
               </div>
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-[#F0AE02] text-[#F0AE02]" />
-                <span className="text-sm font-medium">4.8 (1,000 reviews)</span>
+                <span className="text-sm font-medium">{vendor?.rating || "4.8"} ({vendor?.reviews.toLocaleString() || "1,000"} reviews)</span>
               </div>
             </div>
           </div>
@@ -243,7 +289,9 @@ export default function ReservationDetails({
                   onChange={(e) => setSpecialRequest(e.target.value)}
                   className="min-h-[100px] bg-[#F9FAFB] border text-sm border-[#E5E7EB] resize-none rounded-xl"
                 />
-                <p className="absolute bottom-2 right-2 text-xs text-gray-400">{specialRequest.length}/500</p>
+                <p className="absolute bottom-2 right-2 text-xs text-gray-400">
+                  {specialRequest.length}/500
+                </p>
               </div>
             </div>
           </div>
@@ -262,6 +310,7 @@ export default function ReservationDetails({
           <Button
             className="bg-teal-600 hover:bg-teal-700 px-8 w-full max-w-xs rounded-xl cursor-pointer"
             onClick={handleContinue}
+            disabled={!date || !seatingPreference || !guestCount || !time}
           >
             Continue
           </Button>
