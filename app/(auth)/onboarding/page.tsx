@@ -205,8 +205,7 @@ export default function BusinessProfileSetup() {
   const timeOptions = generateTimeOptions()
   const [currentStep, setCurrentStep] = useState(1)
   const [businessType] = useState<"restaurant" | "hotel">(
-    // user?.profile.businessType.toLowerCase() as "restaurant" | "hotel",
-    "hotel"
+    user?.profile.businessType.toLowerCase() as "restaurant" | "hotel",
   )
   const [skippedSections, setSkippedSections] = useState<number[]>([])
   const [images, setImages] = useState<string[]>([])
