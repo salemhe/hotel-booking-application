@@ -294,3 +294,5 @@ function ConfirmationPage() {
     </div>
   );
 }
+
+export default page
