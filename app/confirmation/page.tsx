@@ -4,11 +4,19 @@ import { Check, Mail, Clock } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import API from "../lib/api/userAxios";
 import { BookingDetails } from "../lib/types/restaurant";
 
-export default function ConfirmationPage() {
+const page = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ConfirmationPage />
+    </Suspense>
+  );
+};
+
+function ConfirmationPage() {
   const searchParams = useSearchParams();
   const reference = searchParams.get("reference");
   const [status, setStatus] = useState<"loading" | "success" | "failed">(
@@ -16,7 +24,7 @@ export default function ConfirmationPage() {
   );
   const [booking, setBooking] = useState<BookingDetails>();
   const [isLoading, setIsLoading] = useState(false);
-  const [paidAt, setPaidAt] = useState<Date>()
+  const [paidAt, setPaidAt] = useState<Date>();
   const router = useRouter();
 
   useEffect(() => {
@@ -30,7 +38,7 @@ export default function ConfirmationPage() {
         const data = await res.data;
         setBooking(data.booking);
         setStatus("success");
-        setPaidAt(new Date(data.paid_at))
+        setPaidAt(new Date(data.paid_at));
       } catch (err) {
         console.error(err);
         setStatus("failed");
@@ -196,18 +204,20 @@ export default function ConfirmationPage() {
         <Card className="mb-6">
           <CardContent className="p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Your Selection ({booking?.meals.length} {booking?.meals.length === 1 ? "item" : "items"})
+              Your Selection ({booking?.meals.length}{" "}
+              {booking?.meals.length === 1 ? "item" : "items"})
             </h2>
 
             <div className="space-y-3 mb-6">
-              {booking?.meals.map(( meal, i) => (
-
-              <div key={i} className="flex justify-between items-center">
-                <span className="font-medium text-gray-900">
-                  {meal.quantity}x {meal.name}
-                </span>
-                <span className="font-medium text-gray-900">₦{meal.price.toLocaleString()}</span>
-              </div>
+              {booking?.meals.map((meal, i) => (
+                <div key={i} className="flex justify-between items-center">
+                  <span className="font-medium text-gray-900">
+                    {meal.quantity}x {meal.name}
+                  </span>
+                  <span className="font-medium text-gray-900">
+                    ₦{meal.price.toLocaleString()}
+                  </span>
+                </div>
               ))}
             </div>
 
@@ -228,7 +238,19 @@ export default function ConfirmationPage() {
                 </div>
                 <span className="font-medium text-[#37703F]">Paid</span>
                 <span className="text-gray-600 text-sm">
-                   {paidAt && paidAt.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit", hour12: true })}, {paidAt && paidAt.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}
+                  {paidAt &&
+                    paidAt.toLocaleTimeString(undefined, {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
+                  ,{" "}
+                  {paidAt &&
+                    paidAt.toLocaleDateString(undefined, {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
                 </span>
               </div>
             </div>
