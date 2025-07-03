@@ -74,6 +74,19 @@ export default function VendorBankForm() {
   const accountNumber = form.watch("accountNumber");
   const bankCode = form.watch("bankCode");
 
+  const retry = async () => {
+    try {
+      setIsLoadingBanks(true);
+      const banksList = await getBanks();
+      setBanks(banksList);
+    } catch (error) {
+      console.error("Failed to load banks:", error);
+      setError("Failed to load banks. Please refresh the page.");
+    } finally {
+      setIsLoadingBanks(false);
+    }
+  };
+
   useEffect(() => {
     async function loadBanks() {
       try {
@@ -210,6 +223,7 @@ export default function VendorBankForm() {
                         Bank Name
                       </FormLabel>
                       <BankCombobox
+                        retry={retry}
                         banks={banks}
                         value={field.value}
                         onChange={field.onChange}
