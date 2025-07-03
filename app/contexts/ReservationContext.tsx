@@ -5,7 +5,7 @@ import { MenuItem } from "../components/reservation/PreSelectMeal";
 import { Restaurant } from "../lib/types/restaurant";
 import { AuthService } from "../lib/api/services/userAuth.service";
 import { useRouter } from "next/navigation";
-// import API from "../lib/api/userAxios";
+import API from "../lib/api/userAxios";
 import { toast } from "sonner";
 
 type ReservationsContextType = {
@@ -57,7 +57,7 @@ export function ReservationsProvider({
   const [vendor, setVendor] = useState<Restaurant | undefined>(undefined);
   const router = useRouter();
 
-  const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Others"];
+  const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Other"];
 
 
   const handleSubmit = async () => {
@@ -73,32 +73,42 @@ export function ReservationsProvider({
       const user = await AuthService.fetchMyProfile(id!);
 
     const reservationData = {
-      email: user?.email,
+      customerEmail: user?.email,
       date: date.toISOString(),
       time,
       seatingPreference,
-      guestCount: parsedGuestCount,
+      guests: parsedGuestCount,
       additionalNote,
-      selectedOccasion,
+      specialOccasion: selectedOccasion.toLowerCase(),
       specialRequest,
-      menus,
-      amount: menus.reduce(
+      meals: menus.filter(item => item.selected).map(item => ({
+        id: item._id,
+        name: item.dishName,
+        price: item.price,
+        quantity: item.quantity, 
+        specialRequest: item.specialRequest || "",
+        category: item.category,
+      })),
+      totalPrice: menus.reduce(
         (total, item) => total + ((item.price || 0) * (item.quantity || 1)),
         0
       ),
-      userId: user?.id, // Assuming user has an id field
-      vendorId: vendor?._id, // Assuming vendor has an id field
+      vendorId: vendor?._id,
+      businessName: vendor?.businessName,
+      location: vendor?.address,
+      customerName: `${user?.firstName} ${user?.lastName}`,
+      image: vendor?.profileImages[0].url,
+
     };
     console.log("Reservation Data to be sent:", reservationData);
 
-    //   const res = await API.post("/users/bookings", reservationData);
+      const res = await API.post("/users/bookings", reservationData);
 
-    //   const bookingId = res.data._id
+      const bookingId = res.data.booking._id
+      console.log("Booking ID:", bookingId);
 
-      router.replace(`/completed`)
-
-      console.log("Reservation Data:", reservationData);
-      // Here you would typically send this data to your backend API
+      toast.success("Reservation submitted successfully!");
+      router.push(`/completed/${bookingId}`);
 
     } catch (error) {
       console.error("Error submitting reservation:", error);

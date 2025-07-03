@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/app/components/ui/button";
-import Paystack from "@paystack/inline-js";
 import {
   Card,
   CardContent,
@@ -16,17 +15,12 @@ import { useRouter } from "next/navigation";
 import { AuthService, UserProfile } from "../lib/api/services/userAuth.service";
 import API from "../lib/api/userAxios";
 import { AxiosError } from "axios";
-
-interface PaystackResponse {
-  status: string;
-  reference: string;
-}
+import { toast } from "sonner";
 
 export default function PaymentPage({ id }: { id: string }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("card");
-  const [isRedirecting, setIsRedirecting] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [booking, setBooking] = useState<{
     totalPrice: number;
@@ -46,12 +40,67 @@ export default function PaymentPage({ id }: { id: string }) {
     vendorId: "",
   });
 
+  function calculateSplitPaymentAmount(
+    vendorAmount: number,
+    platformPercent: number = 0.1
+  ): {
+    totalAmount: number;
+    paystackFee: number;
+    platformCut: number;
+    vendorCut: number;
+  } {
+    const paystackPercent = 0.015;
+
+    // Step 1: Calculate total amount before Paystack cap
+    let estimatedTotal = vendorAmount / (1 - platformPercent - paystackPercent);
+
+    // Step 2: Calculate paystack fee
+    let paystackFee = estimatedTotal * paystackPercent;
+
+    // Step 3: Cap the fee at ₦2000
+    if (paystackFee > 2000) {
+      paystackFee = 2000;
+      estimatedTotal = (vendorAmount + 2000) / (1 - platformPercent);
+    }
+
+    const platformCut = estimatedTotal * platformPercent;
+
+    return {
+      totalAmount: Math.round(estimatedTotal), // Send this to Paystack
+      paystackFee: Math.round(paystackFee),
+      platformCut: Math.round(platformCut),
+      vendorCut: vendorAmount, // exactly what vendor wants
+    };
+  }
+
+  const totalPrice = calculateSplitPaymentAmount(booking.totalPrice, 0.08);
+  
   const handlePayClick = async () => {
-    setIsLoading(true);
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsLoading(false);
-    router.push("/confirmation");
+    if (paymentMethod === "paystack") {
+      try {
+        setIsLoading(true);
+        const res = await API.post("/users/make-payment", {
+          amount: totalPrice.totalAmount,
+          email: user?.email,
+          vendorId: booking.vendorId,
+          bookingId: id,
+        });
+        const ref = res.data.data.ref
+        console.log(ref)
+        router.push(res.data.data.authorization_url);
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to redirect to Paystack");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(true);
+      // Simulate payment processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setIsLoading(false);
+      // router.push("/confirmation");
+    }
   };
 
   const paymentOptions = [
@@ -82,11 +131,17 @@ export default function PaymentPage({ id }: { id: string }) {
       const bookings = await API.get(`/users/bookings?bookingId=${id}`);
       setBooking(bookings.data[0]);
     } catch (error) {
-      if (error instanceof AxiosError)
+      if (error instanceof AxiosError) {
         console.error(
           "Error fetching booking:",
           error.response?.data || error.message
         );
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          router.replace(
+            `/user-login?redirect=${encodeURIComponent(`/payment/${id}`)}`
+          );
+        }
+      }
       throw error;
     } finally {
       setIsLoading(false);
@@ -97,85 +152,81 @@ export default function PaymentPage({ id }: { id: string }) {
     fetchBooking(id);
   }, [id]);
 
-  const subtotal = booking.totalPrice;
-  const vat = subtotal * 0.115;
-  const total = subtotal + vat;
+  // const handlePaystackCheckout = async () => {
+  //   setIsRedirecting(true);
 
-  const handlePaystackCheckout = async () => {
-    setIsRedirecting(true);
+  //   // Check if the Paystack SDK is available
+  //   if (Paystack) {
+  //     const popup = new Paystack();
 
-    // Check if the Paystack SDK is available
-    if (Paystack) {
-      const popup = new Paystack();
+  //     try {
+  //       if (!user?.email) {
+  //         alert("User email is required for payment.");
+  //         setIsRedirecting(false);
+  //         return;
+  //       }
+  //       const paymentData = {
+  //         key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+  //         email: user.email,
+  //         amount: total * 100,
+  //         currency: "NGN",
+  //         metadata: {
+  //           vendorId: booking?.vendorId,
+  //           bookingId: id,
+  //           userId: user?.id,
+  //           amount: subtotal,
+  //           total,
+  //           custom_fields: [
+  //             {
+  //               display_name: "Vendor ID",
+  //               variable_name: "vendorId",
+  //               value: booking?.vendorId,
+  //             },
+  //             {
+  //               display_name: "Booking ID",
+  //               variable_name: "bookingId",
+  //               value: id,
+  //             },
+  //           ],
+  //         },
+  //         onSuccess: async (transaction: PaystackResponse) => {
+  //           try {
+  //             const response = await API.post("/users/verify-payment", {
+  //               reference: transaction.reference,
+  //             });
 
-      try {
-        if (!user?.email) {
-          alert("User email is required for payment.");
-          setIsRedirecting(false);
-          return;
-        }
-        const paymentData = {
-          key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-          email: user.email,
-          amount: total * 100,
-          currency: "NGN",
-          metadata: {
-            vendorId: booking?.vendorId,
-            bookingId: id,
-            userId: user?.id,
-            amount: subtotal,
-            total,
-            custom_fields: [
-              {
-                display_name: "Vendor ID",
-                variable_name: "vendorId",
-                value: booking?.vendorId,
-              },
-              {
-                display_name: "Booking ID",
-                variable_name: "bookingId",
-                value: id,
-              },
-            ],
-          },
-          onSuccess: async (transaction: PaystackResponse) => {
-            try {
-              const response = await API.post("/users/verify-payment", {
-                reference: transaction.reference,
-              });
+  //             if (response.data.status === "success") {
+  //               alert("Payment verified successfully!");
+  //               router.push(`/confirmation`);
+  //             } else {
+  //               alert("Payment verification failed. Please contact support.");
+  //             }
+  //           } catch (error) {
+  //             console.error("Error verifying payment:", error);
+  //             alert("Payment verification failed. Please try again.");
+  //           }
+  //         },
+  //         onClose: () => {
+  //           alert("Payment window closed.");
+  //           setIsRedirecting(false);
+  //         },
+  //       };
+  //       popup.newTransaction(paymentData);
+  //     } catch (error) {
+  //       console.error("Error initializing Paystack:", error);
+  //       setIsRedirecting(false);
+  //       return;
+  //     } finally {
+  //       setIsRedirecting(false);
+  //     }
 
-              if (response.data.status === "success") {
-                alert("Payment verified successfully!");
-                router.push(`/confirmation`);
-              } else {
-                alert("Payment verification failed. Please contact support.");
-              }
-            } catch (error) {
-              console.error("Error verifying payment:", error);
-              alert("Payment verification failed. Please try again.");
-            }
-          },
-          onClose: () => {
-            alert("Payment window closed.");
-            setIsRedirecting(false);
-          },
-        };
-        popup.newTransaction(paymentData);
-      } catch (error) {
-        console.error("Error initializing Paystack:", error);
-        setIsRedirecting(false);
-        return;
-      } finally {
-        setIsRedirecting(false);
-      }
-
-      // Start the Paystack payment process
-      // paystack.inlinePay(paymentData);
-    } else {
-      console.error("Paystack SDK is not available.");
-      setIsRedirecting(false);
-    }
-  };
+  //     // Start the Paystack payment process
+  //     // paystack.inlinePay(paymentData);
+  //   } else {
+  //     console.error("Paystack SDK is not available.");
+  //     setIsRedirecting(false);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-4 md:px-6 md:py-6">
@@ -345,7 +396,7 @@ export default function PaymentPage({ id }: { id: string }) {
                   <p className="text-sm text-gray-700">
                     You will be redirected to Paystack to complete your payment.
                   </p>
-                  <div>
+                  {/* <div>
                     <Button
                       onClick={handlePaystackCheckout}
                       disabled={isRedirecting}
@@ -359,8 +410,8 @@ export default function PaymentPage({ id }: { id: string }) {
                       ) : (
                         "Continue to Paystack"
                       )}
-                    </Button>
-                  </div>
+                    </Button> */}
+                  {/* </div> */}
                 </div>
               )}
             </div>
@@ -383,7 +434,7 @@ export default function PaymentPage({ id }: { id: string }) {
                     Processing...
                   </div>
                 ) : (
-                  "Pay ₦42,000 now"
+                  `Pay ₦${totalPrice.totalAmount.toLocaleString()} now`
                 )}
               </Button>
             </div>

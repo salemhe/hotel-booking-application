@@ -18,9 +18,10 @@ interface BankComboboxProps {
   value: string
   onChange: (value: string, code: string) => void
   isLoading?: boolean
+  retry: () => void
 }
 
-export function BankCombobox({ banks, value, onChange, isLoading = false }: BankComboboxProps) {
+export function BankCombobox({ banks, value, onChange, isLoading = false, retry }: BankComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
   return (
@@ -46,7 +47,19 @@ export function BankCombobox({ banks, value, onChange, isLoading = false }: Bank
         <Command>
           <CommandInput placeholder="Search bank..." />
           <CommandList>
-            <CommandEmpty>No bank found.</CommandEmpty>
+            <CommandEmpty>
+              <div className="flex flex-col items-center gap-2 py-4">
+              <span>No bank found.</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={retry}
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading banks..." : "Retry"}
+              </Button>
+              </div>
+            </CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-y-auto">
               {banks.map((bank, i) => (
                 <CommandItem

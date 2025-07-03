@@ -410,7 +410,7 @@ export default function PreSelectMeal({ id }: { id: string }) {
                               <Button
                                 variant="outline"
                                 size="icon"
-                                className="h-8 w-8 rounded-full border-[#1E3A8A] text-[#1E3A8A]"
+                                className="h-8 w-8 rounded-full border-[#1E3A8A] border-2 text-[#1E3A8A]"
                                 onClick={() => handleQuantityChange(item._id, 1)}
                               >
                                 <Plus className="h-3 w-3" />

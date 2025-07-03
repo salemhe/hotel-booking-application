@@ -51,3 +51,22 @@ export type Menu = {
   price: number;
   dishName: string;
 }
+
+export interface BookingDetails {
+  businessName: string;
+  guests: number;
+  date: string;
+  time: string;
+  _id: string;
+  location: string;
+  specialRequest: string;
+  totalPrice: number;
+  meals: {
+    _id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    specialRequest: string;
+    category: "Appetizer" | "Main Course" | "Dessert" | "Drinks";
+  }[];
+}
