@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { Star, Heart } from 'lucide-react';
-import rest from "@/public/restaurant.jpg";
+// import rest from "@/public/restaurant.jpg";
 // import { useSearchParams } from 'next/navigation';
 interface Restaurant {
   id: number;
@@ -30,7 +30,7 @@ const SearchResults = () => {
       location: "Lagos, Ikeja",
       rating: 4.8,
       reviews: 1000,
-      image: rest.src,
+      image: "/restaurant.jpg",
       priceRange: "₦₦₦₦",
       isBookmarked: false
     },
@@ -42,7 +42,7 @@ const SearchResults = () => {
       location: "Lagos, Ikeja",
       rating: 4.8,
       reviews: 1000,
-      image: rest.src,
+      image: "/restaurant.jpg",
       priceRange: "₦₦₦₦",
       isBookmarked: false
     }))

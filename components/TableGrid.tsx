@@ -1,9 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { FiStar, FiHeart, FiChevronRight, FiChevronsDown } from "react-icons/fi";
-import rest from "@/public/restaurant.jpg";
 import { Button } from "@/app/components/ui/button";
-import discount from "@/public/sale_fill.svg";
 
 interface Restaurant {
   id: number;
@@ -37,7 +35,7 @@ interface TableGridProps {
 const DUMMY_DATA: Restaurant[] = Array.from({ length: 8 }, (_, i) => ({
   id: i + 1,
   name: "Kapaddocia",
-  image: rest.src,
+  image: "/restaurant.jpg",
   rating: 4.8,
   reviews: 1000,
   cuisine: "International, Turkish, Contemporary",
@@ -48,7 +46,7 @@ const DUMMY_DATA: Restaurant[] = Array.from({ length: 8 }, (_, i) => ({
 const DUMMY_HOTEL_DATA: Hotel[] = Array.from({ length: 8 }, (_, i) => ({
   id: i + 1,
   name: "Kapaddocia",
-  image: rest.src,
+  image: "/restaurant.jpg",
   rating: 4.8,
   reviews: 1000,
   cuisine: "International, Turkish, Contemporary",
@@ -383,7 +381,7 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
         <div className="inline-flex justify-start items-center gap-1.5">
             <div className="w-4 h-4 relative overflow-hidden">
                 <div className="w-4 h-4 left-0 top-0 absolute" >
-                  <Image src={discount} alt="discount" />
+                  <Image src="/sale_fill.svg" alt="discount" />
                 </div>
                 {/* <div className="w-3.5 h-3.5 left-[1.29px] top-[1.29px] absolute bg-yellow-500" /> */}
             </div>

@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { FiStar, FiHeart, FiChevronRight, FiChevronsDown } from "react-icons/fi";
-import rest from "@/public/restaurant.jpg";
+// import rest from "@/public/restaurant.jpg";
 import { Button } from "./ui/button";
-import discount from "@/public/sale_fill.svg"
 import { useRouter } from "next/navigation";
 
 export interface Restaurant {
@@ -47,7 +46,7 @@ interface TableGridProps {
 const DUMMY_DATA: Restaurant[] = Array.from({ length: 8 }, (_, i) => ({
   id: i + 1,
   name: "Kapaddocia",
-  image: rest.src,
+  image: "/restaurant.jpg",
   rating: 4.8,
   reviews: 1000,
   cuisine: "International, Turkish, Contemporary",
@@ -58,7 +57,7 @@ const DUMMY_DATA: Restaurant[] = Array.from({ length: 8 }, (_, i) => ({
 const DUMMY_HOTEL_DATA: Hotel[] = Array.from({ length: 8 }, (_, i) => ({
   id: i + 1,
   name: "Kapaddocia",
-  image: rest.src,
+  image: "/restaurant.jpg",
   rating: 4.8,
   reviews: 1000,
   cuisine: "International, Turkish, Contemporary",
@@ -470,7 +469,7 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
                       <div className="inline-flex justify-start items-center gap-1.5">
                         <div className="w-4 h-4 relative overflow-hidden">
                           <div className="w-4 h-4 left-0 top-0 absolute">
-                            <Image src={discount} alt="discount" />
+                            <Image src="/sale_fill.svg" alt="discount" />
                           </div>
                         </div>
                         <div className="justify-start text-gray-900 text-xs font-medium font-['Inter'] leading-none tracking-tight">{restaurant.discount}% off</div>
