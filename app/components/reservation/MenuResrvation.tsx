@@ -12,7 +12,7 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
       const handleQuantityChange = (id: string, change: number) => {
         setMenuItems(
           menuItems.map((item) => {
-            if (item.id === id) {
+            if (item._id === id) {
               const newQuantity = Math.max(1, item.quantity + change);
               return { ...item, quantity: newQuantity };
             }
@@ -24,7 +24,7 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
       const handleSpecialRequestChange = (id: string, value: string) => {
         setMenuItems(
           menuItems.map((item) => {
-            if (item.id === id) {
+            if (item._id === id) {
               return { ...item, specialRequest: value };
             }
             return item;
@@ -35,7 +35,7 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
       const handleSelectionChange = (id: string) => {
         setMenuItems(
           menuItems.map((item) => {
-            if (item.id === id) {
+            if (item._id === id) {
               return { ...item, selected: !item.selected };
             }
             return item;
@@ -58,8 +58,8 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
                     <div className="flex">
                       <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
                         <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
+                          src={item.itemImage || "/placeholder.svg"}
+                          alt={item.dishName}
                           fill
                           className="object-cover"
                         />
@@ -67,7 +67,7 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
                       <div className="flex-1 p-4">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="font-medium">{item.name}</h3>
+                            <h3 className="font-medium">{item.dishName}</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               {item.description}
                             </p>
@@ -81,7 +81,7 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
                                 ? "bg-teal-600 border-teal-600 text-white"
                                 : "border-gray-300"
                             }`}
-                            onClick={() => handleSelectionChange(item.id)}
+                            onClick={() => handleSelectionChange(item._id)}
                           >
                             {item.selected && <Check className="h-4 w-4" />}
                           </div>
@@ -93,7 +93,7 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
                               variant="outline"
                               size="icon"
                               className="h-8 w-8 rounded-full"
-                              onClick={() => handleQuantityChange(item.id, -1)}
+                              onClick={() => handleQuantityChange(item._id, -1)}
                             >
                               <Minus className="h-3 w-3" />
                             </Button>
@@ -104,7 +104,7 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
                               variant="outline"
                               size="icon"
                               className="h-8 w-8 rounded-full"
-                              onClick={() => handleQuantityChange(item.id, 1)}
+                              onClick={() => handleQuantityChange(item._id, 1)}
                             >
                               <Plus className="h-3 w-3" />
                             </Button>
@@ -115,7 +115,7 @@ const MenuReservation = ({ menuFiltered, setMenuItems, menuItems }: { menuFilter
                               value={item.specialRequest}
                               onChange={(e) =>
                                 handleSpecialRequestChange(
-                                  item.id,
+                                  item._id,
                                   e.target.value
                                 )
                               }
