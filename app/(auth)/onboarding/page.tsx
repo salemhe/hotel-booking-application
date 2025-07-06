@@ -62,7 +62,7 @@ interface Room {
 
 interface MenuItem {
   vendorId: string;
-  addon: string[];
+  addOns: string[];
   availabilityStatus: boolean;
   category: string;
   cuisineType: string;
@@ -394,7 +394,7 @@ export default function BusinessProfileSetup() {
   const addMenuItem = () => {
     const newMenuItem: MenuItem = {
       vendorId: user?.id || "",
-      addon: [],
+      addOns: [],
       availabilityStatus: true,
       category: "",
       cuisineType: "",
@@ -1389,14 +1389,14 @@ export default function BusinessProfileSetup() {
                               >
                                 <Checkbox
                                   id={`${index}-addon-${addon}`}
-                                  checked={item.addon.includes(addon)}
+                                  checked={item.addOns.includes(addon)}
                                   onCheckedChange={(checked) => {
                                     const updatedAddons = checked
-                                      ? [...item.addon, addon]
-                                      : item.addon.filter((a) => a !== addon);
+                                      ? [...item.addOns, addon]
+                                      : item.addOns.filter((a) => a !== addon);
                                     updateMenuItem(
                                       index,
-                                      "addon",
+                                      "addOns",
                                       updatedAddons
                                     );
                                   }}
