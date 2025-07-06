@@ -5,7 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
 import { SearchSectionTwo } from '@/app/components/SearchSection';
 
-const SearchResults = () => {
+// Separate the component that uses useSearchParams
+const SearchResultsContent = () => {
   const [selectedCuisine, setSelectedCuisine] = useState('International');
   const [priceRange, setPriceRange] = useState([10000, 70000]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,15 +42,13 @@ const SearchResults = () => {
     }
   };
 
-
-
   return (
     <div className="min-h-screen mt-[100px] bg-gray-50">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="sm:hidden mb-8 flex">
-                  <SearchSectionTwo  />
-                </div>
+        <div className="sm:hidden mb-8 flex">
+          <SearchSectionTwo  />
+        </div>
         <div className="flex  gap-8">
           {/* Filters Sidebar */}
           <div className="w-64 sm:flex hidden flex-shrink-0">
@@ -249,12 +248,13 @@ const SearchLoading = () => (
   </div>
 );
 
+// Main component with proper Suspense wrapping
 const SearchPage = () => {
   return (
     <Suspense fallback={<SearchLoading />}>
-      <SearchResults />
+      <SearchResultsContent />
     </Suspense>
   );
 };
 
-export default SearchPage; 
+export default SearchPage;
