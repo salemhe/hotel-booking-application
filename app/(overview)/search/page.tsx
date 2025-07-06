@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
@@ -161,7 +161,7 @@ const SearchResults = () => {
           {/* Results Grid */}
           <div className="flex-1">
             <h1 className="text-2xl font-bold mb-6">
-              {loading ? 'Searching...' : `${restaurants.length} Restaurant${restaurants.length !== 1 ? 's' : ''} found`}
+              {`${restaurants.length} Restaurant${restaurants.length !== 1 ? 's' : ''} found`}
             </h1>
             
             {loading && (
@@ -237,4 +237,24 @@ const SearchResults = () => {
   );
 };
 
-export default SearchResults; 
+// Loading component for Suspense fallback
+const SearchLoading = () => (
+  <div className="min-h-screen mt-[100px] bg-gray-50">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-600">Loading search...</span>
+      </div>
+    </div>
+  </div>
+);
+
+const SearchPage = () => {
+  return (
+    <Suspense fallback={<SearchLoading />}>
+      <SearchResults />
+    </Suspense>
+  );
+};
+
+export default SearchPage; 
