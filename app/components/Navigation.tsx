@@ -299,9 +299,9 @@ const Navigation = () => {
                   })}
                 </div>
               ) : (
-                <>
-                  <SearchSectionTwo />
-                </>
+                <div className="sm:flex hidden">
+                  <SearchSectionTwo  />
+                </div>
               )
             }
             <div className="hidde md:ml-6 flex items-center space-x-4">

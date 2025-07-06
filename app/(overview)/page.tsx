@@ -235,6 +235,21 @@ export default function Home() {
     },
   ]
 
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) return;
+    
+    // Navigate to search page with the query
+    const queryParams = new URLSearchParams({
+      query: query,
+      tab: activeTab
+    });
+    
+    // Use router to navigate to search page
+    if (typeof window !== 'undefined') {
+      window.location.href = `/search?${queryParams.toString()}`;
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white">
       <div className="relative min-h-[400px]">
@@ -284,7 +299,7 @@ export default function Home() {
             </div>
             
             <div className="relative">
-              <SearchSection activeTab={activeTab} />
+              <SearchSection activeTab={activeTab} onSearch={handleSearch} />
             </div>
           </div>
         </div>

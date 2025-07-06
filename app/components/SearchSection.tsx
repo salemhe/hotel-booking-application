@@ -1,4 +1,4 @@
-import React, { useState,  } from "react";
+import React, { useEffect, useState } from "react";
 import {
   format,
 } from "date-fns";
@@ -7,28 +7,61 @@ import {
 } from "react-icons/fi";
 import { TimeDropdown } from "./TimeDropdown";
 import { GuestDropdown } from "./GuestsDroppdown";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DateDropdown } from "./DateDropdown";
 
-const SearchSection = ({ activeTab }: { activeTab: string }) => {
+interface SearchSectionProps {
+  activeTab: string;
+  onSearch?: (query: string) => void;
+}
+
+const SearchSection = ({ activeTab, onSearch }: SearchSectionProps) => {
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [guests, setGuests] = useState<{
+    adults: number;
+    children: number;
+    infants: number;
+  }>({ adults: 2, children: 0, infants: 0 });
+  
   const router = useRouter();
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (onSearch) {
+      onSearch(searchQuery);
+    } else {
+      // Navigate to search page with query parameters
+      const totalGuests = guests.adults + guests.children + guests.infants;
+      const queryParams = new URLSearchParams({
+        query: searchQuery,
+        tab: activeTab,
+        ...(date && { date: format(date, "yyyy-MM-dd") }),
+        ...(time && { time }),
+        guests: totalGuests.toString()
+      });
+      
+      router.push(`/search?${queryParams.toString()}`);
+    }
+  };
+
   return (
-    <div className="bg-white z-50 sm:absolute top-15 w-[90%] mx-auto left-0 right-0 rounded-2xl sm:rounded-full shadow-lg p-4 sm:p-2 justify-center mb-8">
+    <form onSubmit={handleSearchSubmit} className="bg-white z-50 sm:absolute top-15 w-[90%] mx-auto left-0 right-0 rounded-2xl sm:rounded-full shadow-lg p-4 sm:p-2 justify-center mb-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Restaurant/Cuisine */}
-        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0  pl-3 w">
-          <label className="text-xs text-text-secondary text-left   mb-1">
-            Restaurant/Cuisine
+        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 pl-3">
+          <label className="text-xs text-text-secondary text-left mb-1">
+           {activeTab === "restaurants" ? " Restaurant/Cuisine" : "Hotels"}
           </label>
-          {/* <div className="flex flex-col items-center pr- text-left"> */}
           <input
             type="text"
-            placeholder="Enter Restaurant or Cuisine"
-            className="w- focus:outline-none text-text-primary placeholder:text-text-secondary text-sm sm:text-base"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={activeTab === "restaurants" ? "Enter Restaurant or Cuisine" : "Enter Hotels"}
+            className="w-full focus:outline-none text-text-primary placeholder:text-text-secondary text-sm sm:text-base"
           />
-          {/* </div> */}
         </div>
 
         {/* Date */}
@@ -36,10 +69,7 @@ const SearchSection = ({ activeTab }: { activeTab: string }) => {
           <label className="text-xs text-text-secondary text-left mb-1">
             Date
           </label>
-          {/* <div className="relative flex flex-col items-center text-left"> */}
-          {/* <FiCalendar className="absolute left-0 w-5 h-5 text-text-secondary" /> */}
           <DateDropdown selectedDate={date} onChange={(d) => setDate(d)} />
-          {/* </div> */}
         </div>
 
         {/* Time */}
@@ -56,20 +86,18 @@ const SearchSection = ({ activeTab }: { activeTab: string }) => {
             Guests
           </label>
           <GuestDropdown
-            onChange={(counts) => console.log("guest counts", counts)}
+            onChange={(counts) => setGuests(counts)}
           />
         </div>
+        
         {/* Search button */}
         <div className="flex items-center justify-center sm:justify-end w-full">
           <button
-            onClick={() => {
-              router.push(`/search?date=${date ? format(date, "yyyy-MM-dd") : ""}&time=${time || ""}`);
-              console.log("search button clicked");
-            }}
+            type="submit"
             className={`flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-3 transition ${
               activeTab === "restaurants"
-                ? "bg-gradient-to-b from-[#0A6C6D] to-[#08577C] hover:from-[#084F4F] hover:to-[#064E5C] text-white rounded-full px-6 py-3 transition"
-                : "bg-gradient-to-b from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600 text-white rounded-full px-6 py-3 transition"
+                ? "bg-gradient-to-b from-[#0A6C6D] to-[#08577C] hover:from-[#084F4F] hover:to-[#064E5C]"
+                : "bg-gradient-to-b from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600"
             }`}
           >
             <FiSearch className="w-5 h-5" />
@@ -77,114 +105,181 @@ const SearchSection = ({ activeTab }: { activeTab: string }) => {
           </button>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 
 export default SearchSection;
 
-// DateDropdown.tsx
-
-
-export const SearchSectionTwo = () => {
-  const [restaurant, setRestaurant] = useState<string>(
-    "International Restaurant"
-  );
+export const SearchSectionTwo = ({ onSearch }: { onSearch?: (query: string) => void }) => {
   const [date, setDate] = useState<Date | null>(
     new Date("2025-05-23T00:00:00")
   );
   const [time, setTime] = useState<string | null>("7:30 pm");
-  const [, setGuests] = useState<{
+  const [guests, setGuests] = useState<{
     adults: number;
     children: number;
     infants: number;
   }>({ adults: 2, children: 0, infants: 0 });
-  const [, setShowDate] = useState(false);
-  const [, setShowTime] = useState(false);
-  const [, setShowGuests] = useState(false);
-  // const totalGuests = guests.adults + guests.children + guests.infants;
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialQuery = searchParams.get('query') || '';
 
+  useEffect(() => {
+    if (initialQuery) {
+      setSearchQuery(initialQuery);
+    }
+  }, [initialQuery]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onSearch) {
+      onSearch(searchQuery);
+    } else {
+      // Default behavior - navigate to search page
+      const totalGuests = guests.adults + guests.children + guests.infants;
+      router.push(`/search?query=${encodeURIComponent(searchQuery)}&date=${date ? format(date, "yyyy-MM-dd") : ""}&time=${time || ""}&guests=${totalGuests}`);
+    }
+  };
+  
   return (
-    <div className="mx-auto w-full max-w-3xl h-16 bg-white rounded-full shadow-lg flex items-center px-2 sm:px-4 gap-2 sm:gap-0">
-      {/* Restaurant/Cuisine */}
-      <div className="flex flex-col justify-center h-full px-4 border-r border-gray-200 min-w-0 w-1/4">
-        <label className="text-xs text-text-secondary text-left mb-1">
-          Restaurant/Cuisine
-        </label>
-        <input
-          type="text"
-          value={restaurant}
-          onChange={(e) => setRestaurant(e.target.value)}
-          placeholder="Enter Restaurant or Cuisine"
-          className="w-full bg-transparent focus:outline-none text-text-primary placeholder:text-text-secondary text-sm sm:text-base"
-        />
+    <form onSubmit={handleSearchSubmit} className="mx-auto w-full max-w-3xl">
+      {/* Desktop Search Bar */}
+      <div className="hidden sm:block">
+        <div className="h-16 bg-white rounded-full shadow-lg flex items-center px-2 sm:px-4 gap-2 sm:gap-0">
+          {/* Restaurant/Cuisine */}
+          <div className="flex flex-col justify-center h-full px-4 border-r border-gray-200 min-w-0 w-1/4">
+            <label className="text-xs text-text-secondary text-left mb-1">
+              Restaurant/Cuisine
+            </label>
+            <input
+              type="text"
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Enter Restaurant or Cuisine"
+              className="w-full bg-transparent focus:outline-none text-text-primary placeholder:text-text-secondary text-sm sm:text-base"
+            />
+          </div>
+          
+          {/* Date */}
+          <div className="flex flex-col justify-center h-full px-4 border-r border-gray-200 min-w-0 w-1/4 relative">
+            <label className="text-xs text-text-secondary text-left mb-1">
+              Date
+            </label>
+            <DateDropdown
+              selectedDate={date}
+              onChange={(d) => {
+                setDate(d);
+              }}
+            />
+          </div>
+          
+          {/* Time */}
+          <div className="flex flex-col justify-center h-full px-4 border-r border-gray-200 min-w-0 w-1/4 relative">
+            <label className="text-xs text-text-secondary text-left mb-1">
+              Time
+            </label>
+            <TimeDropdown
+              selectedTime={time}
+              onChange={(t) => {
+                setTime(t);
+              }}
+            />
+          </div>
+          
+          {/* Guests */}
+          <div className="flex flex-col justify-center h-full px-4 border-r border-gray-200 min-w-0 w-1/4 relative">
+            <label className="text-xs text-text-secondary text-left mb-1">
+              Guests
+            </label>
+            <GuestDropdown
+              onChange={(counts) => {
+                setGuests(counts);
+              }}
+            />
+          </div>
+          
+          {/* Search Button */}
+          <div className="flex items-center justify-center pl-2 pr-1">
+            <button type="submit" className="flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-2 transition bg-gradient-to-r from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600 focus:outline-none shadow-md">
+              <FiSearch className="w-5 h-5" />
+              <span className="text-sm sm:text-base">Search</span>
+            </button>
+          </div>
+        </div>
       </div>
-      {/* Date */}
-      <div className="flex flex-col justify-center h-full px-4 border-r border-gray-200 min-w-0 w-1/4 relative">
-        <label className="text-xs text-text-secondary text-left mb-1">
-          Date
-        </label>
-        {/* <div onClick={() => setShowDate(v => !v)} className="cursor-pointer">
-          <span className="text-sm text-text-primary truncate">{date ? format(date, 'MMM d, yyyy') : 'Pick date'}</span>
-        </div> */}
-        {/* {showDate && (
-          <div className="absolute top-14 left-0 z-50"> */}
-        <DateDropdown
-          selectedDate={date}
-          onChange={(d) => {
-            setDate(d);
-            setShowDate(false);
-          }}
-        />
-        {/* </div> */}
-        {/* )} */}
+
+      {/* Mobile Search Bar */}
+      <div className="sm:hidden">
+        <div className="bg-white rounded-xl shadow-lg p-4 space-y-4">
+          {/* Restaurant/Cuisine */}
+          <div className="space-y-2">
+            <label className="text-xs text-text-secondary font-medium">
+              Restaurant/Cuisine
+            </label>
+            <input
+              type="text"
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Enter Restaurant or Cuisine"
+              className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            />
+          </div>
+          
+          {/* Date and Time Row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <label className="text-xs text-text-secondary font-medium">
+                Date
+              </label>
+              <div className="p-3 border border-gray-200 rounded-lg">
+                <DateDropdown
+                  selectedDate={date}
+                  onChange={(d) => {
+                    setDate(d);
+                  }}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-xs text-text-secondary font-medium">
+                Time
+              </label>
+              <div className="p-3 border border-gray-200 rounded-lg">
+                <TimeDropdown
+                  selectedTime={time}
+                  onChange={(t) => {
+                    setTime(t);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Guests */}
+          <div className="space-y-2">
+            <label className="text-xs text-text-secondary font-medium">
+              Guests
+            </label>
+            <div className="p-3 border border-gray-200 rounded-lg">
+              <GuestDropdown
+                onChange={(counts) => {
+                  setGuests(counts);
+                }}
+              />
+            </div>
+          </div>
+          
+          {/* Search Button */}
+          <button type="submit" className="w-full flex items-center justify-center gap-2 cursor-pointer text-white rounded-lg px-6 py-4 transition bg-gradient-to-r from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600 focus:outline-none shadow-md">
+            <FiSearch className="w-5 h-5" />
+            <span className="text-base font-medium">Search</span>
+          </button>
+        </div>
       </div>
-      {/* Time */}
-      <div className="flex flex-col justify-center h-full px-4 border-r border-gray-200 min-w-0 w-1/4 relative">
-        <label className="text-xs text-text-secondary text-left mb-1">
-          Time
-        </label>
-        {/* <div onClick={() => setShowTime(v => !v)} className="cursor-pointer">
-          <span className="text-sm text-text-primary truncate">{time || 'Pick time'}</span>
-        </div> */}
-        {/* {showTime && (
-          <div className="absolute top-14 left-0 z-50"> */}
-        <TimeDropdown
-          selectedTime={time}
-          onChange={(t) => {
-            setTime(t);
-            setShowTime(false);
-          }}
-        />
-        {/* </div>
-        )} */}
-      </div>
-      {/* Guests */}
-      <div className="flex flex-col justify-center h-full px-4 border-r border-gray-200 min-w-0 w-1/4 relative">
-        <label className="text-xs text-text-secondary text-left mb-1">
-          Guests
-        </label>
-        {/* <div onClick={() => setShowGuests(v => !v)} className="cursor-pointer">
-          <span className="text-sm text-text-primary truncate">{totalGuests} Guest{totalGuests > 1 ? 's' : ''}</span>
-        </div> */}
-        {/* {showGuests && ( */}
-        {/* <div className="absolute top-14 left-0 z-50"> */}
-        <GuestDropdown
-          onChange={(counts) => {
-            setGuests(counts);
-            setShowGuests(false);
-          }}
-        />
-        {/* </div>
-        )} */}
-      </div>
-      {/* Search Button */}
-      <div className="flex items-center justify-center pl-2 pr-1">
-        <button className="flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-2 transition bg-gradient-to-r from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600 focus:outline-none shadow-md">
-          <FiSearch className="w-5 h-5" />
-          <span className="text-sm sm:text-base">Search</span>
-        </button>
-      </div>
-    </div>
+    </form>
   );
 };

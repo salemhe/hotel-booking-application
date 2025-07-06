@@ -1,60 +1,58 @@
 "use client"
-import React, { useState } from 'react';
-import { Star, Heart } from 'lucide-react';
-// import rest from "@/public/restaurant.jpg";
-// import { useSearchParams } from 'next/navigation';
-interface Restaurant {
-  id: number;
-  name: string;
-  cuisine: string;
-  location: string;
-  rating: number;
-  reviews: number;
-  image: string;
-  priceRange: string;
-  isBookmarked: boolean;
-}
+import React, { useState, useEffect } from 'react';
+import { Star, Heart, Loader2 } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
+import { SearchSectionTwo } from '@/app/components/SearchSection';
 
 const SearchResults = () => {
   const [selectedCuisine, setSelectedCuisine] = useState('International');
   const [priceRange, setPriceRange] = useState([10000, 70000]);
-  // const searchParams = useSearchParams();
-  // const time = searchParams.get('time');
-  // console.log(time);
-  // Sample restaurant data
-  const restaurants: Restaurant[] = [
-    {
-      id: 1,
-      name: "Kapadoccia",
-      cuisine: "International, Turkish, Contemporary",
-      location: "Lagos, Ikeja",
-      rating: 4.8,
-      reviews: 1000,
-      image: "/restaurant.jpg",
-      priceRange: "₦₦₦₦",
-      isBookmarked: false
-    },
-    // Duplicate the same restaurant 5 more times for demonstration
-    ...Array(5).fill(null).map((_, index) => ({
-      id: index + 2,
-      name: "Kapadoccia",
-      cuisine: "International, Turkish, Contemporary",
-      location: "Lagos, Ikeja",
-      rating: 4.8,
-      reviews: 1000,
-      image: "/restaurant.jpg",
-      priceRange: "₦₦₦₦",
-      isBookmarked: false
-    }))
-  ];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [restaurants, setRestaurants] = useState<ApiRestaurant[]>([]);
+  const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
+  
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialQuery = searchParams.get('query') || '';
+
+  useEffect(() => {
+    if (initialQuery) {
+      setSearchQuery(initialQuery);
+      handleSearch(initialQuery);
+    }
+  }, [initialQuery]);
+
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) return;
+    
+    setLoading(true);
+    // setError(null);
+    
+    try {
+      const response = await restaurantService.searchRestaurants(query);
+      setRestaurants(response.data);
+    } catch (err) {
+      // setError('Failed to search restaurants. Please try again.');
+      console.error('Search error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   return (
     <div className="min-h-screen mt-[100px] bg-gray-50">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
+      <div className="sm:hidden mb-8 flex">
+                  <SearchSectionTwo  />
+                </div>
+        <div className="flex  gap-8">
           {/* Filters Sidebar */}
-          <div className="w-64 flex-shrink-0">
+          <div className="w-64 sm:flex hidden flex-shrink-0">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
               <h2 className="text-lg font-semibold mb-4">Filters</h2>
               
@@ -162,37 +160,76 @@ const SearchResults = () => {
 
           {/* Results Grid */}
           <div className="flex-1">
-            <h1 className="text-2xl font-bold mb-6">24 International Restaurants in Lagos</h1>
+            <h1 className="text-2xl font-bold mb-6">
+              {loading ? 'Searching...' : `${restaurants.length} Restaurant${restaurants.length !== 1 ? 's' : ''} found`}
+            </h1>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {restaurants.map((restaurant) => (
-                <div key={restaurant.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="relative">
-                    <img
-                      src={restaurant.image}
-                      alt={restaurant.name}
-                      className="w-full h-48 object-cover"
-                    />
-                    <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50">
-                      <Heart className="w-4 h-4 text-gray-400" />
-                    </button>
-                  </div>
-                  <div className="p-4">
-                    <div className="flex flex-col  mb-2">
-                      
-                      <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-400" />
-                        <span className="ml-1 text-sm font-medium">{restaurant.rating}</span>
-                        <span className="text-xs text-gray-500 ml-1">({restaurant.reviews})</span>
-                      </div>
-                      <h3 className="font-semibold text-gray-900">{restaurant.name}</h3>
+            {loading && (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <span className="ml-2 text-gray-600">Searching restaurants...</span>
+              </div>
+            )}
+            
+            {!loading && restaurants.length === 0 && searchQuery && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No restaurants found for &quot;{searchQuery}&quot;</p>
+                <p className="text-sm text-gray-400 mt-2">Try searching with different keywords</p>
+              </div>
+            )}
+            
+            {!loading && restaurants.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {restaurants.map((restaurant) => (
+                  <div 
+                    key={restaurant._id} 
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => router.push(`/restaurants/${restaurant._id}`)}
+                  >
+                    <div className="relative">
+                      <img
+                        src={restaurant.profileImage || "/restaurant.jpg"}
+                        alt={restaurant.businessName}
+                        className="w-full h-48 object-cover"
+                      />
+                      <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50">
+                        <Heart className="w-4 h-4 text-gray-400" />
+                      </button>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{restaurant.cuisine}</p>
-                    <p className="text-xs text-gray-500">{restaurant.location}</p>
+                    <div className="p-4">
+                      <div className="flex flex-col mb-2">
+                        <h3 className="font-semibold text-gray-900 mb-2">{restaurant.businessName}</h3>
+                        <div className="flex items-center mb-2">
+                          <Star className="w-4 h-4 text-yellow-400" />
+                          <span className="ml-1 text-sm font-medium">4.5</span>
+                          <span className="text-xs text-gray-500 ml-1">(50+ reviews)</span>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{restaurant.services.join(', ')}</p>
+                      <p className="text-xs text-gray-500 mb-3">{restaurant.address}</p>
+                      
+                      {/* Menu Items Preview */}
+                      {restaurant.menus.length > 0 && (
+                        <div className="border-t pt-3">
+                          <p className="text-xs text-gray-500 mb-2">Popular items:</p>
+                          <div className="space-y-1">
+                            {restaurant.menus.slice(0, 2).map((menu) => (
+                              <div key={menu._id} className="flex justify-between items-center text-xs">
+                                <span className="text-gray-700">{menu.dishName}</span>
+                                <span className="text-gray-600">₦{menu.price.toLocaleString()}</span>
+                              </div>
+                            ))}
+                            {restaurant.menus.length > 2 && (
+                              <p className="text-xs text-blue-600">+{restaurant.menus.length - 2} more items</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
