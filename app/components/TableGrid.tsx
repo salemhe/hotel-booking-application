@@ -469,8 +469,11 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
                       <div className="inline-flex justify-start items-center gap-1.5">
                         <div className="w-4 h-4 relative overflow-hidden">
                           <div className="w-4 h-4 left-0 top-0 absolute">
-                            <Image src="/sale_fill.svg" alt="discount" />
-                          </div>
+                            <Image 
+                              width={100}
+                              height={100} src="/sale_fill.svg" alt="discount"
+                             />
+                                  </div>
                         </div>
                         <div className="justify-start text-gray-900 text-xs font-medium font-['Inter'] leading-none tracking-tight">{restaurant.discount}% off</div>
                       </div>
