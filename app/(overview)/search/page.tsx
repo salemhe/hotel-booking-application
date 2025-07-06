@@ -249,7 +249,7 @@ const SearchLoading = () => (
 );
 
 // Wrapper component with Suspense
-export const SearchResults = () => {
+const SearchResults = () => {
   return (
     <Suspense fallback={<SearchLoading />}>
       <SearchResultsInner />
