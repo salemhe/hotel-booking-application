@@ -5,13 +5,13 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
 import { SearchSectionTwo } from '@/app/components/SearchSection';
 
-// Separate the component that uses useSearchParams
-const SearchResultsContent = () => {
+const SearchResults = () => {
   const [selectedCuisine, setSelectedCuisine] = useState('International');
   const [priceRange, setPriceRange] = useState([10000, 70000]);
   const [searchQuery, setSearchQuery] = useState('');
   const [restaurants, setRestaurants] = useState<ApiRestaurant[]>([]);
   const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
   
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -28,25 +28,29 @@ const SearchResultsContent = () => {
     if (!query.trim()) return;
     
     setLoading(true);
+    // setError(null);
     
     try {
       const response = await restaurantService.searchRestaurants(query);
       setRestaurants(response.data);
     } catch (err) {
+      // setError('Failed to search restaurants. Please try again.');
       console.error('Search error:', err);
     } finally {
       setLoading(false);
     }
   };
 
+
+
   return (
     <div className="min-h-screen mt-[100px] bg-gray-50">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="sm:hidden mb-8 flex">
-          <SearchSectionTwo  />
-        </div>
-        <div className="flex gap-8">
+      <div className="sm:hidden mb-8 flex">
+                  <SearchSectionTwo  />
+                </div>
+        <div className="flex  gap-8">
           {/* Filters Sidebar */}
           <div className="w-64 sm:flex hidden flex-shrink-0">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -245,13 +249,12 @@ const SearchLoading = () => (
   </div>
 );
 
-// Main component with proper Suspense wrapping
 const SearchPage = () => {
   return (
     <Suspense fallback={<SearchLoading />}>
-      <SearchResultsContent />
+      <SearchResults />
     </Suspense>
   );
 };
 
-export default SearchPage;
+export default SearchPage; 
