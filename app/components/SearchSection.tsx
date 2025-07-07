@@ -7,12 +7,21 @@ import {
 } from "react-icons/fi";
 import { TimeDropdown } from "./TimeDropdown";
 import { GuestDropdown } from "./GuestsDroppdown";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { DateDropdown } from "./DateDropdown";
+
+interface SearchData {
+  query: string;
+  tab: string;
+  date?: string;
+  time?: string;
+  guests?: string;
+  timestamp: string;
+}
 
 interface SearchSectionProps {
   activeTab: string;
-  onSearch?: (query: string) => void;
+  onSearch?: (searchData: SearchData) => void;
 }
 
 const SearchSection = ({ activeTab, onSearch }: SearchSectionProps) => {
@@ -29,21 +38,20 @@ const SearchSection = ({ activeTab, onSearch }: SearchSectionProps) => {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+    const totalGuests = guests.adults + guests.children + guests.infants;
+    const searchData = {
+      query: searchQuery,
+      tab: activeTab,
+      date: date ? format(date, "yyyy-MM-dd") : undefined,
+      time: time || undefined,
+      guests: totalGuests.toString(),
+      timestamp: new Date().toISOString(),
+    };
+    localStorage.setItem('searchData', JSON.stringify(searchData));
     if (onSearch) {
-      onSearch(searchQuery);
+      onSearch(searchData);
     } else {
-      // Navigate to search page with query parameters
-      const totalGuests = guests.adults + guests.children + guests.infants;
-      const queryParams = new URLSearchParams({
-        query: searchQuery,
-        tab: activeTab,
-        ...(date && { date: format(date, "yyyy-MM-dd") }),
-        ...(time && { time }),
-        guests: totalGuests.toString()
-      });
-      
-      router.push(`/search?${queryParams.toString()}`);
+      router.push(`/search`);
     }
   };
 
@@ -111,11 +119,14 @@ const SearchSection = ({ activeTab, onSearch }: SearchSectionProps) => {
 
 export default SearchSection;
 
-export const SearchSectionTwo = ({ onSearch }: { onSearch?: (query: string) => void }) => {
-  const [date, setDate] = useState<Date | null>(
-    new Date("2025-05-23T00:00:00")
-  );
-  const [time, setTime] = useState<string | null>("7:30 pm");
+interface SearchSectionTwoProps {
+  onSearch?: (searchData: SearchData) => void;
+  searchData?: SearchData | null;
+}
+
+export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps) => {
+  const [date, setDate] = useState<Date | null>(null);
+  const [time, setTime] = useState<string | null>(null);
   const [guests, setGuests] = useState<{
     adults: number;
     children: number;
@@ -123,24 +134,52 @@ export const SearchSectionTwo = ({ onSearch }: { onSearch?: (query: string) => v
   }>({ adults: 2, children: 0, infants: 0 });
   const [searchQuery, setSearchQuery] = useState('');
   
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const initialQuery = searchParams.get('query') || '';
 
   useEffect(() => {
-    if (initialQuery) {
-      setSearchQuery(initialQuery);
+    // Update state from searchData prop if provided
+    if (searchData) {
+      if (searchData.query) setSearchQuery(searchData.query);
+      if (searchData.date) setDate(new Date(searchData.date));
+      if (searchData.time) setTime(searchData.time);
+      if (searchData.guests) {
+        const guestsNum = parseInt(searchData.guests, 10);
+        setGuests({ adults: guestsNum || 2, children: 0, infants: 0 });
+      }
+    } else {
+      // On mount, load from localStorage if available
+      const stored = localStorage.getItem('searchData');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.query) setSearchQuery(parsed.query);
+          if (parsed.date) setDate(new Date(parsed.date));
+          if (parsed.time) setTime(parsed.time);
+          if (parsed.guests) {
+            const guestsNum = parseInt(parsed.guests, 10);
+            setGuests({ adults: guestsNum || 2, children: 0, infants: 0 });
+          }
+        } catch {}
+      }
     }
-  }, [initialQuery]);
+  }, [searchData]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const totalGuests = guests.adults + guests.children + guests.infants;
+    const searchData = {
+      query: searchQuery,
+      tab: 'restaurants',
+      date: date ? format(date, "yyyy-MM-dd") : undefined,
+      time: time || undefined,
+      guests: totalGuests.toString(),
+      timestamp: new Date().toISOString(),
+    };
+    localStorage.setItem('searchData', JSON.stringify(searchData));
     if (onSearch) {
-      onSearch(searchQuery);
+      onSearch(searchData);
     } else {
-      // Default behavior - navigate to search page
-      const totalGuests = guests.adults + guests.children + guests.infants;
-      router.push(`/search?query=${encodeURIComponent(searchQuery)}&date=${date ? format(date, "yyyy-MM-dd") : ""}&time=${time || ""}&guests=${totalGuests}`);
+      router.push(`/search`);
     }
   };
   

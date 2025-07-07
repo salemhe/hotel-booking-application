@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ChevronDown,  } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -25,7 +25,6 @@ export interface UserProfile {
 }
 
 const Navigation = () => {
-  // const router = useRouter();
   
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -34,6 +33,7 @@ const Navigation = () => {
   const [isLoginSlug, setIsLoginSlug] = useState(pathname?.startsWith('-login'));
   const[ishotelPaymentPage, setIsHotelPaymentPage] = useState(pathname?.startsWith('/hotels/:id/payment'));
   const [onboarding, setOnboarding] = useState(pathname === '/onboarding');
+
 
   // Check if the current path is a login slug
   useEffect(() => {
@@ -257,6 +257,20 @@ const Navigation = () => {
   //     </div>
   //   );
   // };
+  const handleSearch = (searchData: {
+    query: string;
+    tab: string;
+    date?: string;
+    time?: string;
+    guests?: string;
+    timestamp: string;
+  }) => {
+    if (!searchData.query.trim()) return;
+    localStorage.setItem('searchData', JSON.stringify(searchData));
+    if (typeof window !== 'undefined') {
+      window.location.href = `/search`;
+    }
+  };
 
   return (
      hideNavigation ? (
@@ -300,7 +314,7 @@ const Navigation = () => {
                 </div>
               ) : (
                 <div className="sm:flex hidden">
-                  <SearchSectionTwo  />
+          <SearchSectionTwo onSearch={handleSearch} />
                 </div>
               )
             }

@@ -4,9 +4,6 @@ import { VendorService, Vendor } from '@/app/lib/api/services/vendors';
 import SearchSection from "@/app/components/SearchSection";
 import TableGrid, { TableGridTwo, Restaurant } from "@/app/components/TableGrid";
 
-
-
-
 interface ApiRestaurant {
   _id: string;
   name: string;
@@ -219,9 +216,6 @@ export default function Home() {
       </svg>
     );
     
-    
-  
-  
   const tabs = [
     {
       name: "Restaurants",
@@ -235,18 +229,18 @@ export default function Home() {
     },
   ]
 
-  const handleSearch = async (query: string) => {
-    if (!query.trim()) return;
-    
-    // Navigate to search page with the query
-    const queryParams = new URLSearchParams({
-      query: query,
-      tab: activeTab
-    });
-    
-    // Use router to navigate to search page
+  const handleSearch = (searchData: {
+    query: string;
+    tab: string;
+    date?: string;
+    time?: string;
+    guests?: string;
+    timestamp: string;
+  }) => {
+    if (!searchData.query.trim()) return;
+    localStorage.setItem('searchData', JSON.stringify(searchData));
     if (typeof window !== 'undefined') {
-      window.location.href = `/search?${queryParams.toString()}`;
+      window.location.href = `/search`;
     }
   };
 
