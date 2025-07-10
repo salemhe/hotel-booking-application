@@ -82,6 +82,7 @@ export interface AuthUser {
 export class AuthService {
   private static BASE_URL =
     "https://hotel-booking-app-backend-30q1.onrender.com";
+    // "localhost:5000";
   private static TOKEN_KEY = "auth_token";
   private static USER_KEY = "auth_user";
   private static SESSION_ID_KEY = "session_id";
