@@ -3,11 +3,25 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
+
+// Define the Reservation type
+export type Reservation = {
+  id: string;
+  name: string;
+  email: string;
+  date: string;
+  time: string;
+  guests: number;
+  mealPreselected: boolean;
+  paymentStatus: string;
+  reservationStatus: string;
+  // Add other fields as needed
+};
 import {
   Search,
   Bell,
   ChevronDown,
-  MoreHorizontal,
+   MoreHorizontal,
   Calendar,
   DollarSign,
   Users,
@@ -462,8 +476,8 @@ export default function RestaurantDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <ReservationDropdown
                             reservation={reservation}
-                            onView={(res) => { setShowModal(true); setModalType("view"); setSelectedReservation(res); }}
-                            onEdit={(res) => { setShowModal(true); setModalType("edit"); setSelectedReservation(res); setForm(res); }}
+                            onView={(res: Reservation) => { setShowModal(true); setModalType("view"); setSelectedReservation(res); }}
+                            onEdit={(res: Reservation) => { setShowModal(true); setModalType("edit"); setSelectedReservation(res); setForm(res); }}
                             onDelete={handleDeleteReservation}
                           />
                         </td>
