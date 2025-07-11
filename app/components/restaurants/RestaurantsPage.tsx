@@ -7,38 +7,6 @@ import API from "@/app/lib/api/userServerAxios";
 import { Restaurant } from "../../lib/types/restaurant";
 import RestaurantImages from "./RestaurantImages";
 import RestaurantSaveCopy from "./RestaurantSaveCopy";
-
-// const images = [
-//   {
-//     image: "/blue-origin.png",
-//     name: "Blue Origin",
-//   },
-//   {
-//     image: "/hero-bg.png",
-//     name: "Blue Origin",
-//   },
-//   {
-//     image: "/dominos.webp",
-//     name: "Blue Origin",
-//   },
-//   {
-//     image: "/blue-origin.png",
-//     name: "Blue Origin",
-//   },
-//   {
-//     image: "/blue-origin.png",
-//     name: "Blue Origin",
-//   },
-//   {
-//     image: "/blue-origin.png",
-//     name: "Blue Origin",
-//   },
-//   {
-//     image: "/blue-origin.png",
-//     name: "Blue Origin",
-//   },
-// ];
-
 const fetchRestaurant = async (
   id: string
 ): Promise<{
@@ -47,21 +15,9 @@ const fetchRestaurant = async (
   try {
     const response = await API.get(`/vendors?vendorId=${id}`);
     const data = await response.data;
-    // const data = [
-    //   {
-    //     businessName: "Kapadoccia",
-    //     _id: "12",
-    //     name: "Wisdom",
-    //     email: "wisetega007@gmail",
-    //     phone: "12345678990",
-    //     address: "16, Idowu Taylor Street, Victoria Island 101241 Nigeria",
-    //     profileImage: "",
-    //   },
-    // ];
     return { data };
   } catch (error) {
     console.error(error);
-    // Handle error and return a default value or rethrow
     return { data: [] };
   }
 };
