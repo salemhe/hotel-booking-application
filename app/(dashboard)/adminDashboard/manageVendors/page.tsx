@@ -208,15 +208,17 @@ export default function VendorsPage() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <Suspense fallback={<VendorTableSkeleton />}>
-        <VendorsTable
-          vendors={vendors}
-          loading={loading}
-          deleteVendor={deleteVendor}
-          updateVendor={updateVendor}
-        />
-      </Suspense>
+    <div className="w-full flex-1 flex flex-col overflow-hidden bg-gray-50 min-h-screen">
+      <div className="w-full flex-1 space-y-4 px-1 sm:px-8 xl:px-24 pt-6 pb-8 overflow-auto">
+        <Suspense fallback={<VendorTableSkeleton />}>
+          <VendorsTable
+            vendors={vendors}
+            loading={loading}
+            deleteVendor={deleteVendor}
+            updateVendor={updateVendor}
+          />
+        </Suspense>
+      </div>
     </div>
   );
 }

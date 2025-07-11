@@ -190,27 +190,31 @@ export default function MenuManagement() {
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
               <span className="text-teal-800 font-bold text-sm">B</span>
             </div>
-            <span className="font-semibold text-lg">Bookies</span>
+            <span className="text-xl font-bold">Bookies</span>
           </div>
         </div>
         {/* Navigation */}
-        <nav className="flex-1 py-4">
-          {sidebarItems.map((item, index) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={index}
-                href={item.href}
-                className={`flex items-center space-x-3 px-6 py-3 cursor-pointer transition-colors rounded-r-lg ${
-                  isActive ? "bg-teal-700 border-r-4 border-white" : "hover:bg-teal-700"
-                }`}
-                prefetch={false}
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="text-sm">{item.label}</span>
-              </Link>
-            );
-          })}
+        <nav className="flex-1 p-4">
+          <ul className="space-y-2">
+            {sidebarItems.map((item, index) => {
+              const isActive = pathname === item.href;
+              const Icon = item.icon;
+              return (
+                <li key={index}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors w-full text-left ${
+                      isActive ? "bg-teal-700 text-white" : "text-teal-100 hover:bg-teal-700 hover:text-white"
+                    }`}
+                    prefetch={false}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{item.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </nav>
       </div>
       {/* Main Content */}

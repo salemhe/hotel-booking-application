@@ -81,8 +81,7 @@ export default function SuperAdminDashboard() {
     { id: "branches", label: "Branches", icon: MapPin, href: "/super-admin/branches" },
     { id: "menu", label: "Menu Management", icon: MenuIcon, href: "/super-admin/menu" },
     { id: "reports", label: "Reports", icon: FileText, href: "/super-admin/reports" },
-    { id: "staff", label: "Staff", icon: Users, href: "/super-admin/staff" },
-    { id: "settings", label: "Settings", icon: Settings, href: "/super-admin/settings" },
+        { id: "settings", label: "Settings", icon: Settings, href: "/super-admin/settings" },
     { id: "logout", label: "Logout", icon: LogOut, href: "/logout" },
   ];
 
@@ -155,36 +154,25 @@ export default function SuperAdminDashboard() {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div className="w-64 bg-teal-800 text-white flex flex-col">
-        <div className="p-4 border-b border-teal-700">
-          <div className="flex items-center gap-2">
+        <div className="p-6 border-b border-teal-700">
+          <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
               <span className="text-teal-800 font-bold text-sm">B</span>
             </div>
-            <span className="font-semibold text-lg">Bookies</span>
+            <span className="text-xl font-bold">Bookies</span>
           </div>
-        </div>
-        <div className="p-4 border-b border-teal-700">
-          <div className="text-sm text-teal-200 mb-1">Restaurant 1 - HQ</div>
-          <Button variant="ghost" size="sm" className="text-white hover:bg-teal-700 p-0 h-auto">
-            <ChevronDown className="w-4 h-4 ml-1" />
-          </Button>
         </div>
         <nav className="flex-1 p-4">
           <ul className="space-y-2">
-            {sidebarItems.map((item) => {
-              const Icon = item.icon;
-              // Determine if this tab is active based on the current route
+            {sidebarItems.map((item, index) => {
               const isActive = pathname.startsWith(item.href);
+              const Icon = item.icon;
               return (
-                <li key={item.id}>
+                <li key={index}>
                   <button
-                    onClick={() => {
-                      if (item.href) router.push(item.href);
-                    }}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                      isActive
-                        ? "bg-teal-700 text-white"
-                        : "text-teal-100 hover:bg-teal-700 hover:text-white"
+                    onClick={() => router.push(item.href)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors w-full text-left ${
+                      isActive ? "bg-teal-700 text-white" : "text-teal-100 hover:bg-teal-700 hover:text-white"
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -195,6 +183,28 @@ export default function SuperAdminDashboard() {
             })}
           </ul>
         </nav>
+        <div className="p-4 border-t border-teal-700">
+          <ul className="space-y-2">
+            <li>
+              <button
+                onClick={() => router.push("/super-admin/settings")}
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-teal-100 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
+              >
+                <Settings className="w-5 h-5" />
+                <span>Settings</span>
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => router.push("/logout")}
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-teal-100 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Logout</span>
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -391,7 +401,7 @@ export default function SuperAdminDashboard() {
                               <div className="flex items-center">
                                 <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center mr-3">
                                   <span className="text-white text-sm font-medium">
-                                    {reservation.name?.split(" ").map((n) => n[0]).join("")}
+                                    {reservation.name?.split(" ").map((n: string) => n[0]).join("")}
                                   </span>
                                 </div>
                                 <div>

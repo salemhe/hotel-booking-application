@@ -15,7 +15,7 @@ import {
 } from "@/app/components/ui/table";
 import { Badge } from "@/app/components/ui/badge";
 import { Users } from "lucide-react";
-import SuperAdminSidebar from "@/app/components/sidebars/SuperAdminSidebar";
+import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
 import { SidebarProvider } from "@/app/components/ui/sidebar";
 const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/';
 

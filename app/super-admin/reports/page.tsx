@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import SuperAdminSidebar from "@/app/components/sidebars/SuperAdminSidebar";
+import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
 import { TrendingUp, Sun, Moon, Eye, EyeOff } from "lucide-react";
 import dynamic from "next/dynamic";
 

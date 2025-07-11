@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import SuperAdminSidebar from '@/app/components/sidebars/SuperAdminSidebar'
+import SuperAdminSidebar from '@/app/components/SuperAdminSidebar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
 import {
   Table,

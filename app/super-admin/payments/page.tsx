@@ -27,6 +27,7 @@ import {
   Filter,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -68,8 +69,8 @@ export default function BookiesDashboard() {
     const fetchData = async () => {
       try {
         const [chartRes, transRes] = await Promise.all([
-          fetch("/api/payments/chart"),
-          fetch("/api/payments/transactions"),
+          fetch("https://hotel-booking-app-backend-30q1.onrender.com/api/super-admin/payments/chart"),
+          fetch("https://hotel-booking-app-backend-30q1.onrender.com/api/super-admin/payments/transactions"),
         ]);
         const chartJson = await chartRes.json();
         const transJson = await transRes.json();
@@ -92,66 +93,7 @@ export default function BookiesDashboard() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className="w-64 bg-teal-800 text-white flex flex-col min-h-screen">
-        <div className="p-6">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-teal-800 font-bold text-sm">B</span>
-            </div>
-            <span className="text-xl font-bold">Bookies</span>
-          </div>
-        </div>
-        <div className="px-4 mb-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-between text-white hover:bg-teal-700">
-                Restaurant 1 - HQ
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Restaurant 1 - HQ</DropdownMenuItem>
-              <DropdownMenuItem>Restaurant 2 - Ikeja</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <nav className="flex-1 px-4">
-          {sidebarItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg mb-1 text-left transition-colors ${
-                  isActive ? "bg-teal-700 text-white" : "text-teal-100 hover:bg-teal-700 hover:text-white"
-                }`}
-                prefetch={false}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="p-4 border-t border-teal-700">
-          <div className="flex items-center space-x-3 mb-4">
-            <Link href="/super-admin/settings" className="w-full">
-              <Button variant="ghost" className="w-full justify-start text-white hover:bg-teal-700">
-                <Settings className="h-5 w-5 mr-3" />
-                Settings
-              </Button>
-            </Link>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Link href="/logout" className="w-full">
-              <Button variant="ghost" className="w-full justify-start text-white hover:bg-teal-700">
-                <LogOut className="h-5 w-5 mr-3" />
-                Logout
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <SuperAdminSidebar />
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
@@ -164,7 +106,7 @@ export default function BookiesDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="sm">
                 <Bell className="h-5 w-5" />
               </Button>
               <div className="flex items-center space-x-2">
@@ -186,11 +128,11 @@ export default function BookiesDashboard() {
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Payments & Earnings</h1>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
+              <Button variant="ghost" size="sm">
                 <Eye className="h-4 w-4 mr-2" />
                 Hide charts
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="ghost" size="sm">
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
@@ -274,7 +216,7 @@ export default function BookiesDashboard() {
                       <div className="text-sm opacity-75">Zenith Bank</div>
                       <div className="text-xs opacity-60">Savings Account</div>
                     </div>
-                    <Button variant="ghost" size="icon" className="text-white hover:bg-gray-800">
+                    <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800">
                       <Edit className="h-4 w-4" />
                     </Button>
                   </div>
@@ -298,13 +240,13 @@ export default function BookiesDashboard() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-semibold">Earnings Trends</CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="ghost" size="sm">
                       <Eye className="h-4 w-4 mr-2" />
                       View All
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
+                        <Button variant="ghost" size="sm">
                           Weekly <ChevronDown className="h-4 w-4 ml-2" />
                         </Button>
                       </DropdownMenuTrigger>

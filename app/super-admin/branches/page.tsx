@@ -40,10 +40,9 @@ const sidebarItems = [
   { icon: MapPin, label: "Branches", href: "/super-admin/branches" },
   { icon: MenuIcon, label: "Menu Management", href: "/super-admin/menu" },
   { icon: CreditCard, label: "Payments", href: "/super-admin/payments" },
-  { icon: UserCheck, label: "Staff", href: "/super-admin/staff" },
 ];
 
-function AddNewBranchModal({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (v: boolean) => void }) {
+function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onBranchAdded: () => void }) {
   const [formData, setFormData] = useState({
     branchName: "",
     address: "",
@@ -59,29 +58,57 @@ function AddNewBranchModal({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: 
     assignedMenu: "",
     importAllMenuItems: false,
   });
+  const [saving, setSaving] = useState(false);
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const countryCodes = ["+234", "+1", "+44", "+91", "+86"];
   const handleDayChange = (day, checked) => {
     setFormData((prev) => ({ ...prev, openingDays: { ...prev.openingDays, [day]: checked } }));
   };
-  const handleSubmit = (action) => {
-    // TODO: Send to backend and refresh branches
-    setIsOpen(false);
-    if (action === "saveAndAdd") {
-      setFormData({
-        branchName: "",
-        address: "",
-        city: "",
-        phoneNumber: "",
-        countryCode: "+234",
-        openingDays: { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
-        opensAt: "08:00",
-        closesAt: "22:00",
-        assignedManager: "",
-        assignedMenu: "",
-        importAllMenuItems: false,
+  const handleSubmit = async (action) => {
+    setSaving(true);
+    try {
+      // POST to backend
+      await axios.post(`${API_URL}/super-admin/branches`, {
+        name: formData.branchName,
+        address: formData.address,
+        city: formData.city,
+        phoneNumber: formData.countryCode + formData.phoneNumber,
+        openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day]),
+        opensAt: formData.opensAt,
+        closesAt: formData.closesAt,
+        assignedManager: formData.assignedManager,
+        assignedMenu: formData.assignedMenu,
+        importAllMenuItems: formData.importAllMenuItems,
       });
-      setIsOpen(true);
+      onBranchAdded(); // Refresh branch list
+      if (action === "saveAndAdd") {
+        setFormData({
+          branchName: "",
+          address: "",
+          city: "",
+          phoneNumber: "",
+          countryCode: "+234",
+          openingDays: { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
+          opensAt: "08:00",
+          closesAt: "22:00",
+          assignedManager: "",
+          assignedMenu: "",
+          importAllMenuItems: false,
+        });
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
+    } catch (err) {
+      if (err.response) {
+        console.error('API error:', err.response.data);
+        alert("Failed to save branch: " + (err.response.data?.message || JSON.stringify(err.response.data)));
+      } else {
+        console.error('Error:', err);
+        alert("Failed to save branch. Please try again.");
+      }
+    } finally {
+      setSaving(false);
     }
   };
   return (
@@ -355,7 +382,7 @@ export default function BranchesDashboard() {
             <Export className="w-4 h-4 mr-2" />
             Export
             </Button>
-            <AddNewBranchModal isOpen={showAddBranch} setIsOpen={setShowAddBranch} />
+            <AddNewBranchModal isOpen={showAddBranch} setIsOpen={setShowAddBranch} onBranchAdded={fetchBranches} />
             <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => setShowAddBranch(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Add New Branch
