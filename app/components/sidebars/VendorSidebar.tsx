@@ -21,7 +21,7 @@ import {
 } from "lucide-react"
 // import { BsImage } from "react-icons/bs";
 import { PiHandCoinsLight } from "react-icons/pi";
-import { MdOutlineBarChart } from "react-icons/md";
+// import { MdOutlineBarChart } from "react-icons/md";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { useEffect, useState } from "react"
 
@@ -189,7 +189,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     {
       title: "Perfomance & Insights",
       url: "/vendorDashboard/insights",
-      icon: MdOutlineBarChart,
+      icon: Home,
       items: [
         {
           title: "Genesis",
@@ -354,3 +354,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
+
+
+
+const Home = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    fill="none"
+    viewBox="0 0 20 20"
+  >
+    <g clipPath="url(#clip0_737_886)">
+      <path
+        fill="#fff"
+        d="M11.023 2.24a1.666 1.666 0 0 0-2.046 0L1.99 7.673c-.627.49-.282 1.494.513 1.494h.83v6.666A1.666 1.666 0 0 0 5 17.5h3.333v-5a1.667 1.667 0 1 1 3.334 0v5H15a1.667 1.667 0 0 0 1.667-1.667V9.167h.83c.794 0 1.14-1.005.513-1.493z"
+      ></path>
+    </g>
+    <defs>
+      <clipPath id="clip0_737_886">
+        <path fill="#fff" d="M0 0h20v20H0z"></path>
+      </clipPath>
+    </defs>
+  </svg>
+);
+
