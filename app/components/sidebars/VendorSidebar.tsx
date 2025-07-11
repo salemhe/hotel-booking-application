@@ -12,11 +12,12 @@ import {
 //   Settings2,
   LayoutDashboard,
   StickyNote,
-  CircleHelp,
+  // CircleHelp,
   // MessageSquareMore, 
   Bed,
    Settings,
    BookOpen,
+   LogOut,
 } from "lucide-react"
 // import { BsImage } from "react-icons/bs";
 import { PiHandCoinsLight } from "react-icons/pi";
@@ -38,6 +39,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/app/components/ui/sidebar"
+import { useRouter } from "next/navigation";
 // import Logo from "@/assets/logosaas.png";
 
 // This is sample data.
@@ -129,7 +131,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     fetchVendorData()
   }, [])
   console.log(profile, "profile");
-
+  
+  const router = useRouter()
+  const handleLogout = async () => {
+    try {
+      await AuthService.logout();
+      router.push("/vendor-login");
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    }
+  };
   const data = {
   user: {
     name: "shadcn",
@@ -138,7 +149,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   },
   teams: [
     {
-      name: "LOGO",
+      name: "Bookies",
       logo: GalleryVerticalEnd,
       logo2: '/Logo',
       plan: "Enterprise",
@@ -307,31 +318,37 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
   ],
   projects: [
+    // {
+    //   name: "Support & Dispute Resolution",
+    //   url: "/vendorDashboard/support",
+    //   icon: CircleHelp,
+    // },
     {
-      name: "Support & Dispute Resolution",
-      url: "/vendorDashboard/support",
-      icon: CircleHelp,
-    },
-    {
-      name: "Account & Setting",
+      name: "Settings",
       url: "/vendorDashboard/setting",
       icon:  Settings,
+    },
+    {
+      name: "Logout",
+      icon: LogOut,
+      onclick: handleLogout,
     },
   ],
 }
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="bg-emerald-950">
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-emerald-950">
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         {/* <NavUser
          user={data.user}
           /> */}
+          
+        <NavProjects projects={data.projects} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

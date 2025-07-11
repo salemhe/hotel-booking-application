@@ -6,6 +6,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import API from '@/app/lib/api/axios';
+import { AuthService } from '@/app/lib/api/services/auth.service';
 
 interface Reservation {
   id: string;
@@ -29,7 +30,7 @@ const mockUser: User = {
   name: 'John Doe'
 };
 
-const hotelId = "685dbe1b348bf4006362be1f"; // Replace with actual hotelId source
+// const hotelId = "685dbe1b348bf4006362be1f"; // Replace with actual hotelId source
 
 const ReservationsManagement = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -41,28 +42,67 @@ const ReservationsManagement = () => {
 
   const canManage = ['Super Admin', 'Admin', 'Hotel Owner'].includes(user.role);
 
-  // Fetch reservations from API
-  useEffect(() => {
-    const fetchReservations = async () => {
+  const fetchRooms = async () => {
+    try {
       setLoading(true);
-      setApiError(null);
-      try {
-        let url = `/hotels/${hotelId}/reservations?`;
-        if (statusFilter !== 'all') url += `status=${statusFilter}&`;
-        if (dateFilter) url += `startDate=${dateFilter}&`;
-        // Add pagination if needed
-        const res = await API.get(url);
-        setReservations(res.data);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        setApiError(err.message || 'An error occurred');
-      } finally {
+      // Get the user data from AuthService
+      const user = AuthService.getUser();
+      if (!user) {
+        console.warn("No user found in storage");
         setLoading(false);
+        return;
       }
-    };
+      // Get the token
+      const token = AuthService.getToken();
+      if (!token) {
+        console.warn("No token found");
+        setLoading(false);
+        return;
+      }
+      // Fetch rooms data
+      const response = await API.get(`/hotels/685dc4cfe4f2836c529b95f6/reservations`);
+      if (response.data && response.data.success && Array.isArray(response.data.data)) {
+        setReservations(response.data.data);
+      } else {
+        console.warn("Invalid room data format");
+      }
+    } catch (error: unknown) {
+      console.error("Failed to fetch room data:", error);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as { response: { status: number; data: unknown } };
+        console.error("Error response:", apiError.response.status, apiError.response.data);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchReservations();
-  }, [statusFilter, dateFilter]);
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
+  // Fetch reservations from API
+  // useEffect(() => {
+  //   const fetchReservations = async () => {
+  //     setLoading(true);
+  //     setApiError(null);
+  //     try {
+  //       let url = `/hotels/${hotelId}/reservations?`;
+  //       if (statusFilter !== 'all') url += `status=${statusFilter}&`;
+  //       if (dateFilter) url += `startDate=${dateFilter}&`;
+  //       // Add pagination if needed
+  //       const res = await API.get(url);
+  //       setReservations(res.data);
+  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //     } catch (err: any) {
+  //       setApiError(err.message || 'An error occurred');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchReservations();
+  // }, [statusFilter, dateFilter]);
 
   const handleConfirmReservation = async (reservationId: string) => {
     setLoading(true);
