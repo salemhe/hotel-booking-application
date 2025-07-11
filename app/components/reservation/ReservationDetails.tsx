@@ -5,25 +5,16 @@ import { ArrowLeft, MapPin, Star } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Label } from "@/app/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
 import { Textarea } from "@/app/components/ui/textarea";
 import { useReservations } from "@/app/contexts/ReservationContext";
 import ReservationHeader from "./ReservationHeader";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { format } from "date-fns";
-import { Calendar } from "../ui/calendar";
-import { TimePicker } from "../ui/timepicker";
-import { cn } from "@/app/lib/utils";
+import { TimePicker } from "../restaurants/ui/timepicker";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import API from "@/app/lib/api/userAxios";
+import DatePicker from "../restaurants/ui/datepicker";
+import { GuestPicker } from "../restaurants/ui/guestpicker";
 
 export default function ReservationDetails({
   id,
@@ -55,32 +46,26 @@ export default function ReservationDetails({
     setVendor,
     vendor,
   } = useReservations();
-  // const { setPage } = useReservations();
-  // const [selectedOccasion, setSelectedOccasion] = useState<string>("");
-  // const [seatingPreference, setSeatingPreference] = useState<string>("indoor");
-  // const [guestCount, setGuestCount] = useState<string>(searchQuery.guests);
-  // const [specialRequest, setSpecialRequest] = useState<string>(
-  //   searchQuery.specialRequest
-  // );
   const [loading, setLoading] = useState<boolean>(true);
-
 
   const fetchVendor = async () => {
     try {
       setLoading(true);
-      const response = await API.get(`/vendors/${id}`)
-      setVendor(response.data)
+      const response = await API.get(`/vendors/${id}`);
+      setVendor(response.data);
     } catch (error) {
-      console.error("Error fetching vendor:", error)
+      console.error("Error fetching vendor:", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchVendor()
+    fetchVendor();
     setDate(new Date(searchQuery.date));
     setTime(searchQuery.time);
+    setGuestCount(searchQuery.guests)
+    setSpecialRequest(searchQuery.specialRequest)
   }, []);
   const router = useRouter();
 
@@ -98,8 +83,6 @@ export default function ReservationDetails({
       value: "no-preference",
     },
   ];
-
-  // const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Others"];
 
   const handleContinue = () => {
     if (!date || !seatingPreference || !guestCount || !time) {
@@ -134,19 +117,22 @@ export default function ReservationDetails({
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-semibold mb-2">
-               {vendor?.businessName || "Restaurant Name"}
+                {vendor?.businessName || "Restaurant Name"}
               </h2>
               <div className="flex items-start gap-1 text-gray-600 mb-2">
                 <div>
                   <MapPin className="h-4 w-4" />
                 </div>
                 <span className="text-sm">
-                 {vendor?.address || "123 Main St, City, Country"}
+                  {vendor?.address || "123 Main St, City, Country"}
                 </span>
               </div>
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-[#F0AE02] text-[#F0AE02]" />
-                <span className="text-sm font-medium">{vendor?.rating || "4.8"} ({vendor?.reviews.toLocaleString() || "1,000"} reviews)</span>
+                <span className="text-sm font-medium">
+                  {vendor?.rating || "4.8"} (
+                  {vendor?.reviews.toLocaleString() || "1,000"} reviews)
+                </span>
               </div>
             </div>
           </div>
@@ -157,56 +143,9 @@ export default function ReservationDetails({
               <h3 className="text-lg font-semibold">Reservation Details</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal bg-[#F9FAFB] border border-[#E5E7EB] flex-col items-start rounded-xl px-6 min-w-[150px] flex h-[60px]",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <Label htmlFor="date" className="text-black">
-                      Date
-                    </Label>
-                    {date ? format(date, "do MMM, yyyy") : "Select date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    initialFocus
-                    mode="single"
-                    selected={date}
-                    onSelect={(selected) => {
-                      if (selected) setDate(selected);
-                    }}
-                    disabled={(date) => date < new Date()}
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker value={date} onChange={setDate} />
               <TimePicker value={time} onChange={setTime} />
-              <Select value={guestCount} onValueChange={setGuestCount}>
-                <SelectTrigger
-                  className={cn(
-                    "w-full text-left font-normal bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl px-6 min-w-[150px] flex h-[60px]",
-                    !guestCount && "text-muted-foreground"
-                  )}
-                >
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="time" className="text-black">
-                      Guest
-                    </Label>
-                    <SelectValue placeholder="Number of guests" />
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4].map((t) => (
-                    <SelectItem key={t} value={`${t}`}>
-                      {t} {t > 1 ? "People" : "Person"}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <GuestPicker value={guestCount} onChange={setGuestCount} />
             </div>
           </div>
         </div>

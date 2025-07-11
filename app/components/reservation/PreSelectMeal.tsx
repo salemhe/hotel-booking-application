@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { Minus, Plus } from "lucide-react";
+import { Loader2, Minus, Plus } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
@@ -13,7 +13,6 @@ import { useRouter } from "next/navigation";
 import { useReservations } from "@/app/contexts/ReservationContext";
 import { toast } from "sonner";
 import API from "@/app/lib/api/userAxios";
-// import { useRouter } from "next/navigation";
 
 export interface MenuItem {
   _id: string;
@@ -28,55 +27,7 @@ export interface MenuItem {
 }
 
 export default function PreSelectMeal({ id }: { id: string }) {
-  const {activeTab, setActiveTab, additionalNote, setAdditionalNote, menuItems, setMenuItems, vendor, time, guestCount, date, handleSubmit} = useReservations()
-  // const [activeTab, setActiveTab] = useState("starters");
-  // const [additionalNote, setAdditionalNote] = useState("");
-  // const [menuItems, setMenuItems] = useState<MenuItem[]>([
-  //   {
-  //     id: "meze-platter",
-  //     name: "Meze Platter",
-  //     description: "Hummus, baba ghanoush, tzatziki, pita bread",
-  //     price: 15000,
-  //     image: "/hero-bg.png",
-  //     quantity: 2,
-  //     specialRequest: "",
-  //     selected: false,
-  //     categories: "starters",
-  //   },
-  //   {
-  //     id: "chicken-springrolls-1",
-  //     name: "Chicken Springrolls",
-  //     description: "Chicken, garnished vegetables",
-  //     price: 12000,
-  //     image: "/hero-bg.jpg",
-  //     quantity: 1,
-  //     specialRequest: "",
-  //     selected: false,
-  //     categories: "main",
-  //   },
-  //   {
-  //     id: "chicken-springrolls-2",
-  //     name: "Chicken Springrolls",
-  //     description: "Chicken, garnished vegetables",
-  //     price: 12000,
-  //     image: "/hero-bg.png",
-  //     quantity: 1,
-  //     specialRequest: "",
-  //     selected: false,
-  //     categories: "main",
-  //   },
-  //   {
-  //     id: "chicken-springrolls-3",
-  //     name: "Chicken Springrolls",
-  //     description: "Chicken, garnished vegetables",
-  //     price: 12000,
-  //     image: "/hero-bg.png",
-  //     quantity: 1,
-  //     specialRequest: "",
-  //     selected: false,
-  //     categories: "main",
-  //   },
-  // ]);
+  const {activeTab, setActiveTab, additionalNote, setAdditionalNote, menuItems, setMenuItems, vendor, time, guestCount, date, handleSubmit, isLoading} = useReservations()
   const [visibleCount, setVisibleCount] = useState(3);
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -523,8 +474,8 @@ export default function PreSelectMeal({ id }: { id: string }) {
           <Button onClick={handleClick}  variant="ghost" className="text-teal-600">
             Skip for now
           </Button>
-          <Button onClick={handleSubmit} disabled={!selectedItems.length} className="bg-teal-600 hover:bg-teal-700 px-8 w-full max-w-xs">
-            Confirm Meal Selection
+          <Button onClick={handleSubmit} disabled={!selectedItems.length || isLoading} className="bg-teal-600 hover:bg-teal-700 px-8 w-full max-w-xs">
+            {isLoading ? <span className="flex gap-2"><Loader2 className="animate-spin" /> Confirming</span> : "Confirm Meal Selection"}
           </Button>
         </div>
       </div>

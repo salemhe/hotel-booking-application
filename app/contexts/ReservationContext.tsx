@@ -33,6 +33,7 @@ type ReservationsContextType = {
   vendor: Restaurant | undefined;
   setVendor: React.Dispatch<React.SetStateAction<Restaurant | undefined>>;
   handleSubmit: () => void;
+  isLoading: boolean
 };
 
 const ReservationContext = createContext<ReservationsContextType | undefined>(
@@ -48,13 +49,14 @@ export function ReservationsProvider({
   const [additionalNote, setAdditionalNote] = useState("");
   const [selectedOccasion, setSelectedOccasion] = useState<string>("");
   const [seatingPreference, setSeatingPreference] = useState<string>("indoor");
-  const [guestCount, setGuestCount] = useState<string>("2");
+  const [guestCount, setGuestCount] = useState<string>("1");
   const [specialRequest, setSpecialRequest] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("Starters");
   const [page, setPage] = useState(0);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState("");
   const [vendor, setVendor] = useState<Restaurant | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Other"];
@@ -63,6 +65,7 @@ export function ReservationsProvider({
   const handleSubmit = async () => {
 
     try {
+      setIsLoading(true)
       if (!date || !seatingPreference || !guestCount || !time) {
         throw new Error("Please fill in all required fields.");
       }
@@ -73,13 +76,14 @@ export function ReservationsProvider({
       const user = await AuthService.fetchMyProfile(id!);
 
     const reservationData = {
+      reservationType: "restaurant",
       customerEmail: user?.email,
       date: date.toISOString(),
       time,
       seatingPreference,
       guests: parsedGuestCount,
       additionalNote,
-      specialOccasion: selectedOccasion.toLowerCase(),
+      specialOccasion: selectedOccasion.toLowerCase() || "other",
       specialRequest,
       meals: menus.filter(item => item.selected).map(item => ({
         id: item._id,
@@ -114,6 +118,8 @@ export function ReservationsProvider({
       console.error("Error submitting reservation:", error);
       toast.error("Failed to submit reservation. Please try again.");
       // Handle error (e.g., show a notification to the user)
+    } finally {
+      setIsLoading(false)
     }
   };
   // Simulate fetching menu items
@@ -145,6 +151,7 @@ export function ReservationsProvider({
         vendor,
         setVendor,
         handleSubmit,
+        isLoading,
       }}
     >
       {children}

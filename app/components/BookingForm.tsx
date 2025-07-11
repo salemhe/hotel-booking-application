@@ -1,30 +1,21 @@
 "use client";
 import React, { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
-import { Calendar } from "./ui/calendar";
-import { cn } from "@/app/lib/utils";
-import { format } from "date-fns";
 import { Label } from "./ui/label";
-import { TimePicker } from "./ui/timepicker";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import { TimePicker } from "./restaurants/ui/timepicker";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import DatePicker from "./restaurants/ui/datepicker";
+import { GuestPicker } from "./restaurants/ui/guestpicker";
 
 const BookingForm = ({ id }: { id: string }) => {
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState<string>("");
   const [request, setRequest] = useState<string>("");
-  const [guests, setGuests] = useState<string>("");
+  const [guests, setGuests] = useState<string>("1");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -43,8 +34,8 @@ const BookingForm = ({ id }: { id: string }) => {
       if (!date || !time) {
         throw new Error("Date and Time are required");
       }
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    toast.success("Booked Succesfully")
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      toast.success("Booked Succesfully");
     } catch (err) {
       if (err instanceof AxiosError) {
         const errorMessage =
@@ -63,55 +54,10 @@ const BookingForm = ({ id }: { id: string }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 mt-6">
       <div className="flex flex-col md:flex-row w-full gap-4">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal bg-[#F9FAFB] border border-[#E5E7EB] flex-col items-start rounded-xl px-6 min-w-[150px] flex h-[60px]",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <Label htmlFor="date" className="text-black">
-                Date
-              </Label>
-              {date ? format(date, "do MMM, yyyy") : "Select date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              disabled={(date) => date < new Date()}
-            />
-          </PopoverContent>
-        </Popover>
+        <DatePicker value={date} onChange={setDate} />
         <TimePicker value={time} onChange={setTime} />
       </div>
-      <Select value={guests} onValueChange={setGuests}>
-        <SelectTrigger
-          className={cn(
-            "w-full text-left font-normal bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl px-6 min-w-[150px] flex h-[60px]",
-            !request && "text-muted-foreground"
-          )}
-        >
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="time" className="text-black">
-              Guest
-            </Label>
-            <SelectValue placeholder="Number of guests" />
-          </div>
-        </SelectTrigger>
-        <SelectContent>
-          {[1, 2, 3, 4].map((t) => (
-            <SelectItem key={t} value={`${t}`}>
-              {t}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <GuestPicker value={guests} onChange={setGuests} />
       <div className="flex flex-col gap-y-3">
         <Label htmlFor="special-request">Special Request</Label>
         <Textarea
