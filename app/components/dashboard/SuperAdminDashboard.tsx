@@ -342,8 +342,8 @@ export default function SuperAdminDashboard() {
                                   </span>
                                 </div>
                                 <div>
-                                  <div className="text-sm font-medium text-gray-900">{reservation.name}</div>
-                                  <div className="text-sm text-gray-500">{reservation.email}</div>
+                                  <div className="text-sm font-medium text-gray-900">{typeof reservation.name === "string" ? reservation.name : ""}</div>
+                                  <div className="text-sm text-gray-500">{typeof reservation.email === "string" ? reservation.email : ""}</div>
                                 </div>
                               </div>
                             </td>
