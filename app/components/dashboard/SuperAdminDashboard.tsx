@@ -32,9 +32,14 @@ import {
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
+interface Reservation {
+  id: string | number;
+  [key: string]: any;
+}
+
 export default function SuperAdminDashboard() {
   // Removed unused router and pathname
-  const [reservations, setReservations] = useState<Array<Record<string, unknown>>>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [chartData, setChartData] = useState<Array<{ name: string; value: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<Record<string, unknown>>({});
