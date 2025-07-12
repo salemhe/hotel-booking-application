@@ -135,36 +135,7 @@ export default function VendorRegistration() {
     }
   };
 
-  const handleOTPVerification = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await AuthService.verifyOTP(formData.email, otp);
-      toast.success("Your account has been verified. Please log in.");
-      router.push("/vendor-login");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Please try again");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendOTP = async () => {
-    try {
-      await AuthService.resendOTP(formData.email);
-      toast.success("Please check your email for the new verification code.");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Please try again");
-      }
-    }
-  };
+  // Removed unused handleOTPVerification and handleResendOTP to fix ESLint errors
 
   const totalSteps = 4;
   const updateFormData = (field: keyof FormData, value: string) => {
