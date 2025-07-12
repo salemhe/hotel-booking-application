@@ -160,7 +160,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
-                    <p className="text-2xl font-bold">${stats.totalRevenue?.toFixed(2) || '0.00'}</p>
+                    <p className="text-2xl font-bold">${typeof stats.totalRevenue === "number" ? stats.totalRevenue.toFixed(2) : '0.00'}</p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-green-600" />
@@ -199,7 +199,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Monthly Average</p>
-                    <p className="text-2xl font-bold">${stats.monthlyAverage?.toFixed(2) || '0.00'}</p>
+                    <p className="text-2xl font-bold">${typeof stats.monthlyAverage === "number" ? stats.monthlyAverage.toFixed(2) : '0.00'}</p>
                   </div>
                   <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-yellow-600" />
