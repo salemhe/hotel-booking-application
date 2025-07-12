@@ -169,6 +169,5 @@ export default function SuperAdminDashboard() {
           </Card>
         </main>
       </div>
-    </SidebarProvider>
   )
 }
