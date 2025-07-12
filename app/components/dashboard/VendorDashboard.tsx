@@ -146,7 +146,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
         <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Welcome, {vendor.name}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome, {typeof vendor.name === "string" ? vendor.name : ""}</h1>
               <p className="text-gray-600">Here is your current performance overview.</p>
             </div>
           </div>
@@ -251,10 +251,10 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <tbody className="bg-white divide-y divide-gray-200">
                   {reservations.map((reservation) => (
                     <tr key={reservation.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-4 whitespace-nowrap">{reservation.name}</td>
-                      <td className="px-4 py-4 whitespace-nowrap">{reservation.date} {reservation.time}</td>
-                      <td className="px-4 py-4 whitespace-nowrap">{reservation.guests}</td>
-                      <td className="px-4 py-4 whitespace-nowrap">{reservation.status}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.name === "string" ? reservation.name : ""}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.date === "string" ? reservation.date : ""} {typeof reservation.time === "string" ? reservation.time : ""}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.guests === "number" ? reservation.guests : ""}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.status === "string" ? reservation.status : ""}</td>
                     </tr>
                   ))}
                   {!reservations.length && (
