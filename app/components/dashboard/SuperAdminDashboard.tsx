@@ -201,8 +201,8 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Reservations made today</p>
-                    <p className="text-2xl font-bold">{stats.reservationsToday || 0}</p>
-                    <p className="text-xs text-gray-500">↑ {stats.reservationsChange || 0}% vs last week</p>
+                    <p className="text-2xl font-bold">{typeof stats.reservationsToday === "number" ? stats.reservationsToday : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.reservationsChange === "number" ? stats.reservationsChange : 0}% vs last week</p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Calendar className="w-6 h-6 text-blue-600" />
@@ -215,8 +215,8 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Prepaid Reservations</p>
-                    <p className="text-2xl font-bold">{stats.prepaidReservations || 0}</p>
-                    <p className="text-xs text-gray-500">↑ {stats.prepaidChange || 0}% vs last week</p>
+                    <p className="text-2xl font-bold">{typeof stats.prepaidReservations === "number" ? stats.prepaidReservations : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.prepaidChange === "number" ? stats.prepaidChange : 0}% vs last week</p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-green-600" />
@@ -229,8 +229,8 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Expected Guests Today</p>
-                    <p className="text-2xl font-bold">{stats.guestsToday || 0}</p>
-                    <p className="text-xs text-gray-500">↑ {stats.guestsChange || 0}% vs last week</p>
+                    <p className="text-2xl font-bold">{typeof stats.guestsToday === "number" ? stats.guestsToday : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.guestsChange === "number" ? stats.guestsChange : 0}% vs last week</p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Users className="w-6 h-6 text-purple-600" />
@@ -243,8 +243,8 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Pending Payments</p>
-                    <p className="text-2xl font-bold">${stats.pendingPayments || 0}</p>
-                    <p className="text-xs text-gray-500">↓ {stats.paymentsChange || 0}% vs last week</p>
+                    <p className="text-2xl font-bold">${typeof stats.pendingPayments === "number" ? stats.pendingPayments : 0}</p>
+                    <p className="text-xs text-gray-500">↓ {typeof stats.paymentsChange === "number" ? stats.paymentsChange : 0}% vs last week</p>
                   </div>
                   <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-yellow-600" />
@@ -422,10 +422,10 @@ export default function SuperAdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="mb-4">
-                    <div className="text-2xl font-bold">{stats.reservationsThisWeek || 0}</div>
+                    <div className="text-2xl font-bold">{typeof stats.reservationsThisWeek === "number" ? stats.reservationsThisWeek : 0}</div>
                     <div className="text-sm text-gray-500 flex items-center gap-1">
                       <TrendingUp className="w-4 h-4 text-green-500" />
-                      {stats.reservationsTrend || 0}% vs last week
+                      {typeof stats.reservationsTrend === "number" ? stats.reservationsTrend : 0}% vs last week
                     </div>
                   </div>
                   <SimpleChart data={chartData} />
