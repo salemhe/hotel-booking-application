@@ -17,12 +17,6 @@ interface StaffMember {
   avatar: string
 }
 
-// interface Permission {
-//   view: boolean
-//   create: boolean
-//   edit: boolean
-//   delete: boolean
-// }
 
 // interface Permissions {
 //   reservations: Permission
