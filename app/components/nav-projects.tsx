@@ -19,8 +19,9 @@ export function NavProjects({
 }: {
   projects: {
     name: string
-    url: string
+    url?: string
     icon: LucideIcon
+    onclick?: () => void;
   }[]
 }) {
 //   const { isMobile } = useSidebar()
@@ -31,10 +32,10 @@ export function NavProjects({
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton onClick={item.onclick} asChild>
               <a href={item.url}>
-                <item.icon className="text-[#757575] w-5 h-5"/>
-                <span className="font-normal text-[16px]/[24px] tracking-[0.5px] text-[#757575]">{item.name}</span>
+                <item.icon className="text-gray-200 w-5 h-5"/>
+                <span className="font-normal text-[16px]/[24px] tracking-[0.5px] text-gray-200">{item.name}</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
