@@ -369,7 +369,7 @@ export default function SuperAdminDashboard() {
                                     : "bg-gray-100 text-gray-800"
                                 }`}
                               >
-                                {reservation.paymentStatus}
+                                {typeof reservation.paymentStatus === "string" ? reservation.paymentStatus : ""}
                               </span>
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap">
