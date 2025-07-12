@@ -44,16 +44,14 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     assignedMenu: "",
     importAllMenuItems: false,
   });
-  const [saving, setSaving] = useState(false);
-  // Removed unused variable 'saving'
+    // Removed unused variable 'saving'
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const countryCodes = ["+234", "+1", "+44", "+91", "+86"];
   const handleDayChange = (day: string, checked: boolean) => {
     setFormData((prev) => ({ ...prev, openingDays: { ...prev.openingDays, [day]: checked } }));
   };
   const handleSubmit = async (action: string) => {
-    setSaving(true);
-    try {
+        try {
       // POST to backend
       await axios.post(`${API_URL}/super-admin/branches`, {
         name: formData.branchName,
@@ -95,8 +93,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         alert("Failed to save branch. Please try again.");
       }
     } finally {
-      setSaving(false);
-    }
+          }
   };
   return (
     <>
