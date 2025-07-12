@@ -574,8 +574,7 @@ export default function VendorRegistration() {
               </div>
             </CardContent>
           </>
-        )}
-      </Card>
+        </Card>
     </div>
   );
 }
