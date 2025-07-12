@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Calendar,
-  Users,
   DollarSign,
   Clock,
   Home,
@@ -41,11 +39,10 @@ const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
 export default function SuperAdminDashboard() {
   // Removed unused router and pathname
-  const [reservations, setReservations] = useState<any[]>([]);
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<Array<Record<string, any>>>([]);
+  const [chartData, setChartData] = useState<Array<{ name: string; value: number }>>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>({});
-  // Removed unused Badge import
+  const [stats, setStats] = useState<Record<string, any>>({});
 
   useEffect(() => {
     async function fetchData() {
@@ -74,15 +71,7 @@ export default function SuperAdminDashboard() {
     fetchData();
   }, []);
 
-  const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: Home, href: "/super-admin/dashboard" },
-    { id: "reservations", label: "Reservations", icon: Calendar, href: "/super-admin/reservations" },
-    { id: "branches", label: "Branches", icon: MapPin, href: "/super-admin/branches" },
-    { id: "menu", label: "Menu Management", icon: MenuIcon, href: "/super-admin/menu" },
-    { id: "reports", label: "Reports", icon: FileText, href: "/super-admin/reports" },
-        { id: "settings", label: "Settings", icon: Settings, href: "/super-admin/settings" },
-    { id: "logout", label: "Logout", icon: LogOut, href: "/logout" },
-  ];
+  // Removed unused sidebarItems
 
   const SimpleChart = ({ data }: { data: typeof chartData }) => (
     <div className="flex items-end justify-between h-32 gap-1">

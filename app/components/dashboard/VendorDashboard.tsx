@@ -19,11 +19,11 @@ import { Input } from "@/components/ui/input";
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
 export default function VendorDashboard({ vendorId, vendorType }: { vendorId: string; vendorType: string }) {
-  const [vendor, setVendor] = useState<any>(null);
+  const [vendor, setVendor] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [reservations, setReservations] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>({});
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<Array<Record<string, any>>>([]);
+  const [stats, setStats] = useState<Record<string, any>>({});
+  const [chartData, setChartData] = useState<Array<{ month: string; revenue: number }>>([]);
 
   useEffect(() => {
     async function fetchData() {

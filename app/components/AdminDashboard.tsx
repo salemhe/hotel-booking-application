@@ -35,7 +35,7 @@ interface Data {
 }
 
 export default function AdminDashboard() {
-  const [_, setInitialLoad] = useState(false); // removed unused variable
+  const [initialLoad, setInitialLoad] = useState(false);
   const [data, setData] = useState<Data>({
     grossSales: 0,
     totalUsers: 0,

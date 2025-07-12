@@ -59,8 +59,8 @@ const getStatusColor = (status: string) => {
 
 export default function BookiesDashboard() {
   // Removed unused variable 'pathname'
-  const [chartData, setChartData] = useState([]);
-  const [transactions, setTransactions] = useState([]);
+  const [chartData, setChartData] = useState<Array<Record<string, any>>>([]);
+  const [transactions, setTransactions] = useState<Array<Record<string, any>>>([]);
 
   // Fetch chart data and transactions from backend
   useEffect(() => {
@@ -346,7 +346,7 @@ export default function BookiesDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transactions.map((transaction: any, index: number) => (
+                    {transactions.map((transaction, index: number) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium">{transaction.date}</TableCell>
                         <TableCell>{transaction.transactionId}</TableCell>

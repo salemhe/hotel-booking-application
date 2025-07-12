@@ -9,10 +9,10 @@ import { Users, MapPin, CreditCard, Calendar, CheckCircle, XCircle } from "lucid
 
 export default function SuperAdminDashboard() {
   // Simulated data for demo
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [payments, setPayments] = useState<any[]>([]);
-  const [branches, setBranches] = useState<any[]>([]);
-  const [staff, setStaff] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Array<Record<string, any>>>([]);
+  const [payments, setPayments] = useState<Array<Record<string, any>>>([]);
+  const [branches, setBranches] = useState<Array<Record<string, any>>>([]);
+  const [staff, setStaff] = useState<Array<Record<string, any>>>([]);
 
   useEffect(() => {
     // Simulate fetching data from API

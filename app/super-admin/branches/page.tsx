@@ -230,7 +230,7 @@ export default function BranchesDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
-  const [branches, setBranches] = useState<any[]>([]);
+   const [branches, setBranches] = useState<Array<Record<string, any>>>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -245,7 +245,7 @@ export default function BranchesDashboard() {
   async function fetchBranches() {
     setLoading(true);
     try {
-      const params: any = { page, limit: 12 };
+      const params: Record<string, unknown> = { page, limit: 12 };
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       const res = await axios.get(`${API_URL}/super-admin/branches`, { params });
