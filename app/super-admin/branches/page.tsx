@@ -44,6 +44,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     assignedMenu: "",
     importAllMenuItems: false,
   });
+  const [saving, setSaving] = useState(false);
   // Removed unused variable 'saving'
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const countryCodes = ["+234", "+1", "+44", "+91", "+86"];
