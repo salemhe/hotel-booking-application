@@ -27,8 +27,20 @@ const fetchMenus = () => {
   ];
 };
 
+interface Menu {
+  id: string | number;
+  name: string;
+  price: number;
+  type: string;
+  mealTimes: string[];
+  items: number;
+  tags: string[];
+  status: boolean;
+  image?: string;
+}
+
 const UserRestaurantMenuPage = () => {
-  const [menus, setMenus] = useState([]);
+  const [menus, setMenus] = useState<Menu[]>([]);
 
   useEffect(() => {
     setMenus(fetchMenus());
