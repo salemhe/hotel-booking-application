@@ -65,9 +65,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // const [loading, setLoading] = useState(true)
 
   console.log(profile)
-  const isHotel = profile?.businessType === "hotel"
-  const isRestaurant = profile?.businessType === "Restaurant " || profile?.businessType === "restaurant"
-    console.log(isHotel, isRestaurant, "isHotel, isRestaurant")
+  // Normalize businessType for robust type detection
+  const businessType = profile?.businessType?.trim().toLowerCase();
+  const isHotel = businessType === "hotel";
+  const isRestaurant = businessType === "restaurant";
+  // Add more types as needed
+  // console.log(isHotel, isRestaurant, "isHotel, isRestaurant")
 
   useEffect(() => {
     const fetchVendorData = async () => {

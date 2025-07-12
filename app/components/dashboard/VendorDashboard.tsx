@@ -111,40 +111,38 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar placeholder for vendor navigation */}
-      <div className="w-64 bg-teal-800 text-white flex flex-col">
-        <div className="p-4 border-b border-teal-700">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-teal-800 font-bold text-sm">V</span>
-            </div>
-            <span className="font-semibold text-lg">Vendor Panel</span>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar for vendor navigation - teal background, improved layout */}
+      <aside className="w-64 bg-teal-800 text-white flex flex-col">
+        <div className="p-6 border-b border-teal-700 flex items-center gap-3">
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+            <span className="text-teal-800 font-bold text-lg">V</span>
           </div>
+          <span className="font-semibold text-xl">Vendor Panel</span>
         </div>
         <nav className="flex-1 p-4">
           <ul className="space-y-2">
             <li>
-              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors bg-teal-700 text-white">
+              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors bg-teal-700 text-white font-semibold">
                 <Calendar className="w-5 h-5" />
                 <span>Dashboard</span>
               </button>
             </li>
             <li>
-              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors text-teal-100 hover:bg-teal-700 hover:text-white">
+              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors hover:bg-teal-700 hover:text-white text-teal-100">
                 <Users className="w-5 h-5" />
                 <span>Reservations</span>
               </button>
             </li>
             <li>
-              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors text-teal-100 hover:bg-teal-700 hover:text-white">
+              <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors hover:bg-teal-700 hover:text-white text-teal-100">
                 <DollarSign className="w-5 h-5" />
                 <span>Financials</span>
               </button>
             </li>
           </ul>
         </nav>
-      </div>
+      </aside>
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}

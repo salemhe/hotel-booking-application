@@ -24,6 +24,7 @@ interface Vendor {
   branch: string;
   phone: string;
   services: string[];
+  menuVisible?: boolean; // Add menu visibility status
 }
 
 function VendorTableSkeleton() {
@@ -123,6 +124,26 @@ function VendorsTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <DropDown setShowConfirm={setShowConfirm} setId={setId} vendorId={vendor._id} />
+                  {/* Show/Hide Menu Button */}
+                  <Button
+                    variant={vendor.menuVisible ? "destructive" : "default"}
+                    size="sm"
+                    className="ml-2"
+                    onClick={async () => {
+                      // Toggle menu visibility for this vendor
+                      try {
+                        await axios.patch(`https://hotel-booking-app-backend-30q1.onrender.com/api/admin/vendors/${vendor._id}/menu-visibility`, {
+                          visible: !vendor.menuVisible,
+                        });
+                        // Update UI
+                        updateVendor && updateVendor({ ...vendor, menuVisible: !vendor.menuVisible });
+                      } catch (error) {
+                        console.error("Error toggling menu visibility", error);
+                      }
+                    }}
+                  >
+                    {vendor.menuVisible ? "Hide Menu" : "Show Menu"}
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
