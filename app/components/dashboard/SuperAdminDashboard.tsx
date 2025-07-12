@@ -384,7 +384,7 @@ export default function SuperAdminDashboard() {
                                     : "bg-gray-100 text-gray-800"
                                 }`}
                               >
-                                {reservation.reservationStatus}
+                                {typeof reservation.reservationStatus === "string" ? reservation.reservationStatus : ""}
                               </span>
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
