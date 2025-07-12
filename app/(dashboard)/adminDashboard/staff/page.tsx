@@ -3,7 +3,11 @@
 import type React from "react"
 import { useState } from "react"
 import {
+<<<<<<< HEAD
   Search, /* Bell, ChevronDown, X, Upload, Trash2, */ Users, UserCheck, UserX, UserMinus, MoreHorizontal, ChevronLeft, ChevronRight,
+=======
+  Search, Bell, ChevronDown, X, Upload, Trash2, Users, UserCheck, UserX, UserMinus, MoreHorizontal, ChevronLeft, ChevronRight,
+>>>>>>> deploy
 } from "lucide-react"
 
 interface StaffMember {
@@ -17,7 +21,23 @@ interface StaffMember {
   avatar: string
 }
 
+<<<<<<< HEAD
 
+=======
+interface Permission {
+  view: boolean
+  create: boolean
+  edit: boolean
+  delete: boolean
+}
+
+interface Permissions {
+  reservations: Permission
+  menuManagement: Permission
+  staffManagement: Permission
+  paymentsReports: Permission
+}
+>>>>>>> deploy
 
 const mockStaff: StaffMember[] = [
   { id: "1", name: "Emily Johnson", phone: "+234701234567", email: "staff@example@gmail.com", role: "Chef", dateAdded: "25/07/25", status: "active", avatar: "/placeholder.svg?height=32&width=32" },
@@ -31,11 +51,35 @@ const mockStaff: StaffMember[] = [
 ];
 
 export default function StaffManagement() {
+<<<<<<< HEAD
   const [isModalOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
   const [filterRole, setFilterRole] = useState("All")
   const [filterStatus, setFilterStatus] = useState("All")
       // const [customPermissions, setCustomPermissions] = useState(false)
+=======
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalStep, setModalStep] = useState(1)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filterRole, setFilterRole] = useState("All")
+  const [filterStatus, setFilterStatus] = useState("All")
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phone: "",
+    email: "",
+    staffId: "",
+    jobTitle: "",
+    branch: "",
+    profilePicture: null as File | null,
+  })
+  const [permissions, setPermissions] = useState<Permissions>({
+    reservations: { view: true, create: true, edit: true, delete: false },
+    menuManagement: { view: true, create: true, edit: true, delete: true },
+    staffManagement: { view: true, create: false, edit: false, delete: false },
+    paymentsReports: { view: true, create: false, edit: false, delete: false },
+  })
+  const [customPermissions, setCustomPermissions] = useState(false)
+>>>>>>> deploy
 
   const activeStaff = mockStaff.filter((staff) => staff.status === "active").length
   const inactiveStaff = mockStaff.filter((staff) => staff.status === "inactive").length
@@ -47,6 +91,7 @@ export default function StaffManagement() {
     return matchesSearch && matchesRole && matchesStatus
   })
 
+<<<<<<< HEAD
   // const handleOpenModal = () => { setIsModalOpen(true); /* setModalStep(1); */ }
     // const handleNextStep = () => { if (modalStep === 1) setModalStep(2); }
   // const handlePrevStep = () => { if (modalStep === 2) setModalStep(1); }
@@ -64,11 +109,62 @@ export default function StaffManagement() {
   //   const file = event.target.files?.[0]
   //   if (file) setFormData((prev) => ({ ...prev, profilePicture: file }))
   // }
+=======
+  const handleOpenModal = () => { setIsModalOpen(true); setModalStep(1); }
+  const handleCloseModal = () => {
+    setIsModalOpen(false); setModalStep(1);
+    setFormData({ fullName: "", phone: "", email: "", staffId: "", jobTitle: "", branch: "", profilePicture: null })
+  }
+  const handleNextStep = () => { if (modalStep === 1) setModalStep(2); }
+  const handlePrevStep = () => { if (modalStep === 2) setModalStep(1); }
+  const handleSaveStaff = () => {
+    if (!formData.fullName || !formData.phone || !formData.email) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    console.log("Saving staff:", formData, permissions); handleCloseModal();
+  }
+  const handlePermissionChange = (module: keyof Permissions, permission: keyof Permission, value: boolean) => {
+    setPermissions((prev) => ({ ...prev, [module]: { ...prev[module], [permission]: value } }))
+  }
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) setFormData((prev) => ({ ...prev, profilePicture: file }))
+  }
+>>>>>>> deploy
 
   return (
     <div className="w-full flex-1 flex flex-col overflow-hidden bg-gray-50 min-h-screen">
       <div className="w-full flex-1 space-y-4 px-1 sm:px-8 xl:px-24 pt-6 pb-8 overflow-auto">
+<<<<<<< HEAD
         {/* Header removed as requested */}
+=======
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Bell className="w-5 h-5 text-gray-600" />
+              <div className="flex items-center space-x-2">
+                <img src="/placeholder.svg?height=32&width=32" alt="User" className="w-8 h-8 rounded-full" />
+                <span className="text-sm font-medium">Joseph Eyebolahn</span>
+                <ChevronDown className="w-4 h-4 text-gray-600" />
+              </div>
+            </div>
+          </div>
+        </header>
+>>>>>>> deploy
         {/* Main Content */}
         <main className="flex-1 p-6">
           <div className="flex items-center justify-between mb-6">
