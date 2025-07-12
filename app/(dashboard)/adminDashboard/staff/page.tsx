@@ -44,26 +44,10 @@ const mockStaff: StaffMember[] = [
 
 export default function StaffManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  // const [modalStep, setModalStep] = useState(1)
-  const [searchTerm, setSearchTerm] = useState("")
+    const [searchTerm, setSearchTerm] = useState("")
   const [filterRole, setFilterRole] = useState("All")
   const [filterStatus, setFilterStatus] = useState("All")
-  // const [formData, setFormData] = useState({
-  //   fullName: "",
-  //   phone: "",
-  //   email: "",
-  //   staffId: "",
-  //   jobTitle: "",
-  //   branch: "",
-  //   profilePicture: null as File | null,
-  // })
-  // const [permissions, setPermissions] = useState<Permissions>({
-  //   reservations: { view: true, create: true, edit: true, delete: false },
-  //   menuManagement: { view: true, create: true, edit: true, delete: true },
-  //   staffManagement: { view: true, create: false, edit: false, delete: false },
-  //   paymentsReports: { view: true, create: false, edit: false, delete: false },
-  // })
-  // const [customPermissions, setCustomPermissions] = useState(false)
+      // const [customPermissions, setCustomPermissions] = useState(false)
 
   const activeStaff = mockStaff.filter((staff) => staff.status === "active").length
   const inactiveStaff = mockStaff.filter((staff) => staff.status === "inactive").length
@@ -75,12 +59,8 @@ export default function StaffManagement() {
     return matchesSearch && matchesRole && matchesStatus
   })
 
-  const handleOpenModal = () => { setIsModalOpen(true); /* setModalStep(1); */ }
-  // const handleCloseModal = () => {
-  //   setIsModalOpen(false); setModalStep(1);
-  //   setFormData({ fullName: "", phone: "", email: "", staffId: "", jobTitle: "", branch: "", profilePicture: null })
-  // }
-  // const handleNextStep = () => { if (modalStep === 1) setModalStep(2); }
+  // const handleOpenModal = () => { setIsModalOpen(true); /* setModalStep(1); */ }
+    // const handleNextStep = () => { if (modalStep === 1) setModalStep(2); }
   // const handlePrevStep = () => { if (modalStep === 2) setModalStep(1); }
   // const handleSaveStaff = () => {
   //   if (!formData.fullName || !formData.phone || !formData.email) {
