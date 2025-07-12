@@ -169,7 +169,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     {
       title: "Dashboard",
       url: "/vendorDashboard",
-      icon: LayoutDashboard,
+      icon: Home,
       isActive: true,
       items: [
         {
@@ -189,7 +189,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     {
       title: "Perfomance & Insights",
       url: "/vendorDashboard/insights",
-      icon: Home,
+      icon: LayoutDashboard,
       items: [
         {
           title: "Genesis",
@@ -225,8 +225,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ],
     },
     {
-      title: isHotel ? "Hotel Bookings" : isRestaurant ? "Restaurant Bookings" : "Bookings Management",
-      url: isHotel ? "/vendorDashboard/hotel-reservations" : isRestaurant ? "/vendorDashboard/restaurantBookings" : "/vendorDashboard/bookingManagement",
+      title: isHotel ? "Hotel Bookings" : isRestaurant ? "Restaurant Bookings" : "Restaurant Bookings",
+      url: isHotel ? "/vendorDashboard/hotel-reservations" : isRestaurant ? "/vendorDashboard/restaurantBookings"  : "/vendorDashboard/restaurantBookings",
       icon: IoDocumentTextOutline,
       items: [
         {
