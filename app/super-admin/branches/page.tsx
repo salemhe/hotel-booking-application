@@ -393,11 +393,11 @@ export default function BranchesDashboard() {
                       <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{branch.name.replace(/'/g, "&apos;")}</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today's Reservation</span>
+                          <span className="text-sm text-gray-600">Today&apos;s Reservation</span>
                           <span className="text-sm font-semibold">{branch.todayReservation}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today's Revenue</span>
+                          <span className="text-sm text-gray-600">Today&apos;s Revenue</span>
                           <span className="text-sm font-semibold">₦{branch.todayRevenue?.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between items-center">
