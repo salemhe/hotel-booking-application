@@ -4,15 +4,14 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Users, MapPin, CreditCard, Calendar, CheckCircle, XCircle } from "lucide-react";
+import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
 
 export default function SuperAdminDashboard() {
   // Simulated data for demo
-  const [bookings, setBookings] = useState<Array<Record<string, any>>>([]);
-  const [payments, setPayments] = useState<Array<Record<string, any>>>([]);
-  const [branches, setBranches] = useState<Array<Record<string, any>>>([]);
-  const [staff, setStaff] = useState<Array<Record<string, any>>>([]);
+  const [bookings, setBookings] = useState<Array<Record<string, unknown>>>([]);
+  const [payments, setPayments] = useState<Array<Record<string, unknown>>>([]);
+  const [branches, setBranches] = useState<Array<Record<string, unknown>>>([]);
+  const [staff, setStaff] = useState<Array<Record<string, unknown>>>([]);
 
   useEffect(() => {
     // Simulate fetching data from API

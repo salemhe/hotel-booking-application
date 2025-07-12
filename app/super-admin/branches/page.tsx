@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
 import {
   Search,
@@ -18,9 +17,7 @@ import {
   MapPin,
   MenuIcon,
   CreditCard,
-  Settings,
-  LogOut,
-  ChevronLeft,
+    ChevronLeft,
   ChevronRight,
   Download as Export,
   X,
@@ -33,13 +30,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
-const sidebarItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/super-admin/dashboard" },
-  { icon: BookOpen, label: "Reservations", href: "/super-admin/reservations" },
-  { icon: MapPin, label: "Branches", href: "/super-admin/branches" },
-  { icon: MenuIcon, label: "Menu Management", href: "/super-admin/menu" },
-  { icon: CreditCard, label: "Payments", href: "/super-admin/payments" },
-];
+// Removed unused sidebarItems
 
 function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onBranchAdded: () => void }) {
   const [formData, setFormData] = useState({
@@ -124,7 +115,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
             {/* Branch Name */}
             <div className="space-y-2">
               <label htmlFor="branchName" className="text-sm font-medium">Branch name*</label>
-              <Input id="branchName" placeholder="e.g. Joe's Chicken and Grill - Ikeja" value={formData.branchName} onChange={e => setFormData(prev => ({ ...prev, branchName: e.target.value }))} className="w-full" />
+              <Input id="branchName" placeholder="e.g. Joe&apos;s Chicken and Grill - Ikeja" value={formData.branchName} onChange={e => setFormData(prev => ({ ...prev, branchName: e.target.value }))} className="w-full" />
             </div>
             {/* Address */}
             <div className="space-y-2">
@@ -230,7 +221,7 @@ export default function BranchesDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
-   const [branches, setBranches] = useState<Array<Record<string, any>>>([]);
+   const [branches, setBranches] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -251,7 +242,7 @@ export default function BranchesDashboard() {
       const res = await axios.get(`${API_URL}/super-admin/branches`, { params });
       setBranches(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
-    } catch (err) {
+    } catch {
       setBranches([]);
       setTotalPages(1);
     } finally {

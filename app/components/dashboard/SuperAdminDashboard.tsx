@@ -6,7 +6,8 @@ import {
   Calendar,
   DollarSign,
   Clock,
-    Bell,
+  Users,
+  Bell,
   Search,
   ChevronDown,
   Eye,
@@ -33,10 +34,10 @@ const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
 export default function SuperAdminDashboard() {
   // Removed unused router and pathname
-  const [reservations, setReservations] = useState<Array<Record<string, any>>>([]);
+  const [reservations, setReservations] = useState<Array<Record<string, unknown>>>([]);
   const [chartData, setChartData] = useState<Array<{ name: string; value: number }>>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<Record<string, any>>({});
+  const [stats, setStats] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     async function fetchData() {
@@ -53,7 +54,7 @@ export default function SuperAdminDashboard() {
         // Fetch stats (example endpoint, adjust as needed)
         const statsRes = await axios.get(`${API_URL}/super-admin/analytics/summary`);
         setStats(statsRes.data.data || {});
-      } catch (err) {
+      } catch {
         // fallback to empty data
         setReservations([]);
         setChartData([]);
