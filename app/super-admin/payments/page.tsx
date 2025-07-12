@@ -5,12 +5,7 @@ import {
   Search,
   Bell,
   ChevronDown,
-  Home,
-  Calendar,
-  Star,
-  Menu as MenuIcon,
-  CreditCard,
-  Edit,
+    Edit,
   Plus,
   MoreHorizontal,
   TrendingUp,
@@ -65,7 +60,7 @@ export default function BookiesDashboard() {
           setChartData(chartJson);
           setTransactions(transJson);
         }
-      } catch (err) {
+      } catch {
         // Optionally handle error
       }
     };

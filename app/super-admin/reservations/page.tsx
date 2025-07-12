@@ -26,10 +26,6 @@ import {
   DollarSign,
   Users,
   CreditCard,
-  Home,
-  Star,
-  MenuIcon,
-  MapPin,
   Filter,
   Download,
   Plus,
@@ -87,9 +83,7 @@ export default function RestaurantDashboard() {
   const [selectedReservation, setSelectedReservation] = useState<Reservation|null>(null);
   const [form, setForm] = useState<Reservation>({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
   const [formLoading, setFormLoading] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
-
+  
   useEffect(() => {
     fetchStats();
     fetchReservations();
@@ -105,7 +99,7 @@ export default function RestaurantDashboard() {
     try {
       const res = await axios.get(`${API_URL}/super-admin/analytics/summary`);
       setStats(res.data.data || {});
-    } catch (err) {
+    } catch {
       setStats({});
     }
   }
@@ -118,7 +112,7 @@ export default function RestaurantDashboard() {
       if (filterStatus && filterStatus !== "All") params.status = filterStatus;
       const res = await axios.get(`${API_URL}/super-admin/reservations/today`, { params });
       setReservations(res.data.data || []);
-    } catch (err) {
+    } catch {
       setReservations([]);
     } finally {
       setLoading(false);
@@ -133,7 +127,7 @@ export default function RestaurantDashboard() {
       setShowModal(false);
       setForm({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
       fetchReservations();
-    } catch (err) {
+    } catch {
       // handle error
     } finally {
       setFormLoading(false);
@@ -145,7 +139,7 @@ export default function RestaurantDashboard() {
     try {
       await axios.delete(`${API_URL}/super-admin/reservations/${reservation.id}`);
       fetchReservations();
-    } catch (err) {
+    } catch {
       // handle error
     }
   }
