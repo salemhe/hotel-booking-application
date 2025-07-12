@@ -85,8 +85,8 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         setIsOpen(false);
       }
     } catch (err) {
-      if (typeof err === "object" && err !== null && "response" in err && typeof (err as any).response === "object") {
-        const response = (err as any).response;
+      if (axios.isAxiosError(err) && err.response) {
+        const response = err.response;
         console.error('API error:', response.data);
         alert("Failed to save branch: " + (response.data?.message || JSON.stringify(response.data)));
       } else {
