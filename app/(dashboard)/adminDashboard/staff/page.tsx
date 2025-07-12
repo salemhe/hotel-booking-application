@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import Image from "next/image";
 import { useState } from "react"
 import {
   Search, Users, UserCheck, UserX, UserMinus, MoreHorizontal, ChevronLeft, ChevronRight,

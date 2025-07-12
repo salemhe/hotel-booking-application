@@ -1,4 +1,5 @@
 import React, { useState, useEffect, } from 'react';
+import Image from "next/image";
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';

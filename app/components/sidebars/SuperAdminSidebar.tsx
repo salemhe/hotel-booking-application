@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Box, List, ListItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
