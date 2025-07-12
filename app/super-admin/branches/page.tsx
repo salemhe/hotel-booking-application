@@ -85,9 +85,10 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         setIsOpen(false);
       }
     } catch (err) {
-      if (err.response) {
-        console.error('API error:', err.response.data);
-        alert("Failed to save branch: " + (err.response.data?.message || JSON.stringify(err.response.data)));
+      if (typeof err === "object" && err !== null && "response" in err && typeof (err as any).response === "object") {
+        const response = (err as any).response;
+        console.error('API error:', response.data);
+        alert("Failed to save branch: " + (response.data?.message || JSON.stringify(response.data)));
       } else {
         console.error('Error:', err);
         alert("Failed to save branch. Please try again.");
