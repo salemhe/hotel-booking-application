@@ -49,7 +49,7 @@ function VendorsTable({
   vendors,
   loading,
   deleteVendor,
-  // updateVendor,
+  updateVendor,
 }: {
   vendors: Vendor[];
   loading: boolean;
