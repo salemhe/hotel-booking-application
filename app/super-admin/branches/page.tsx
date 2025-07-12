@@ -50,7 +50,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
   const handleDayChange = (day: string, checked: boolean) => {
     setFormData((prev) => ({ ...prev, openingDays: { ...prev.openingDays, [day]: checked } }));
   };
-  const handleSubmit = async (action) => {
+  const handleSubmit = async (action: string) => {
     setSaving(true);
     try {
       // POST to backend
