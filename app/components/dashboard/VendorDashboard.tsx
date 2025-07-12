@@ -173,7 +173,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Total Bookings</p>
-                    <p className="text-2xl font-bold">{stats.totalBookings || 0}</p>
+                    <p className="text-2xl font-bold">{typeof stats.totalBookings === "number" ? stats.totalBookings : 0}</p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Calendar className="w-6 h-6 text-blue-600" />
@@ -186,7 +186,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Active Bookings</p>
-                    <p className="text-2xl font-bold">{stats.activeBookings || 0}</p>
+                    <p className="text-2xl font-bold">{typeof stats.activeBookings === "number" ? stats.activeBookings : 0}</p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Users className="w-6 h-6 text-purple-600" />
@@ -226,11 +226,11 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-green-500" />
-                    <span>Active: {stats.activeBookings || 0}</span>
+                    <span>Active: {typeof stats.activeBookings === "number" ? stats.activeBookings : 0}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <X className="w-5 h-5 text-red-500" />
-                    <span>Completed: {stats.totalBookings - stats.activeBookings || 0}</span>
+                    <span>Completed: {typeof stats.totalBookings === "number" && typeof stats.activeBookings === "number" ? stats.totalBookings - stats.activeBookings : 0}</span>
                   </div>
                 </div>
               </CardContent>
