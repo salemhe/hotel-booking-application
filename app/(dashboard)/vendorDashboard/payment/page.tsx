@@ -4,6 +4,7 @@ import { PaymentBreakdown } from "@/app/components/PaymentBreakdown";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import Withdraw from "@/app/components/Withdraw";
+// import AccountDetails from "@/app/components/AccountDetails";
 
 export default function Payment() {
   return (
@@ -39,6 +40,7 @@ export default function Payment() {
         <PaymentStats />
       </Suspense>
       <Withdraw />
+      {/* <AccountDetails /> */}
       <div className="grid gap-4 sm:gap-6 mt-4 sm:mt-6 w-full grid-cols-1">
         <Suspense
           fallback={
