@@ -58,7 +58,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         address: formData.address,
         city: formData.city,
         phoneNumber: formData.countryCode + formData.phoneNumber,
-        openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day]),
+        openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
         opensAt: formData.opensAt,
         closesAt: formData.closesAt,
         assignedManager: formData.assignedManager,
