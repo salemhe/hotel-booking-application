@@ -249,8 +249,8 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {reservations.map((reservation) => (
-                    <tr key={reservation.id} className="hover:bg-gray-50">
+                  {reservations.map((reservation, idx) => (
+                    <tr key={typeof reservation.id === "string" || typeof reservation.id === "number" ? reservation.id : idx} className="hover:bg-gray-50">
                       <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.name === "string" ? reservation.name : ""}</td>
                       <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.date === "string" ? reservation.date : ""} {typeof reservation.time === "string" ? reservation.time : ""}</td>
                       <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.guests === "number" ? reservation.guests : ""}</td>
