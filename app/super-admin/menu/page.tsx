@@ -1,12 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   Search,
-  Bell,
-  ChevronDown,
   MoreHorizontal,
   Plus,
   Download,
@@ -15,22 +11,15 @@ import {
   List,
   ChevronLeft,
   ChevronRight,
-  LayoutDashboard,
   Calendar,
   MapPin,
-  Menu as MenuIcon,
-  CreditCard,
   Users,
-  Settings,
-  LogOut,
   UtensilsCrossed,
   Home,
   ImageIcon,
   Banknote,
   CreditCard as CardIcon,
   DollarSign,
-  ChevronLeft as CollapseIcon,
-  ChevronRight as ExpandIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,16 +52,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-const sidebarItems = [
-  { icon: Home, label: "Dashboard", href: "/super-admin/dashboard" },
-  { icon: Calendar, label: "Reservations", href: "/super-admin/reservations" },
-  { icon: MapPin, label: "Branches", href: "/super-admin/branches" },
-  { icon: UtensilsCrossed, label: "Menu Management", href: "/super-admin/menu" },
-  { icon: CreditCard, label: "Payments", href: "/super-admin/payments" },
-  { icon: Users, label: "Staff", href: "/super-admin/staff" },
-  { icon: Settings, label: "Settings", href: "/super-admin/settings" },
-  { icon: LogOut, label: "Logout", href: "/logout" },
-];
+// Removed unused sidebarItems
 
 // This will be our real-time menu list (simulate backend)
 const initialMenuItems = [
@@ -137,7 +117,6 @@ export default function MenuManagement() {
   const [activeMenuTab, setActiveMenuTab] = useState<'allMenu' | 'allMenuItems'>('allMenuItems');
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [step, setStep] = useState(1); // 1: Menu, 2: Add Menu Items, 3: Payment
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [menuList, setMenuList] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('superAdminMenus');
@@ -145,7 +124,7 @@ export default function MenuManagement() {
     }
     return initialMenuItems;
   });
-  const [newMenu, setNewMenu] = useState<any>({
+  const [newMenu, setNewMenu] = useState<Record<string, unknown>>({
     name: '',
     description: '',
     type: 'a-la-carte',
@@ -159,11 +138,10 @@ export default function MenuManagement() {
   });
   const [menuItemName, setMenuItemName] = useState('');
   const [menuItemPrice, setMenuItemPrice] = useState('');
-  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [menuItems, setMenuItems] = useState<Array<Record<string, unknown>>>([]);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState('');
   const [paymentError, setPaymentError] = useState('');
-  const pathname = usePathname();
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
