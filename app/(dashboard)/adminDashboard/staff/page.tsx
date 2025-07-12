@@ -18,12 +18,6 @@ interface StaffMember {
 }
 
 
-// interface Permissions {
-//   reservations: Permission
-//   menuManagement: Permission
-//   staffManagement: Permission
-//   paymentsReports: Permission
-// }
 
 const mockStaff: StaffMember[] = [
   { id: "1", name: "Emily Johnson", phone: "+234701234567", email: "staff@example@gmail.com", role: "Chef", dateAdded: "25/07/25", status: "active", avatar: "/placeholder.svg?height=32&width=32" },
