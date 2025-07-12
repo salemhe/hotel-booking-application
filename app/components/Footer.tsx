@@ -27,7 +27,7 @@ const Footer = () => {
               {/* small blue dot */}
               <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
               <span className="text-gray-900 text-xl font-bold leading-relaxed">
-                Bookies
+                Rhace
               </span>
             </Link>
             <p className="text-gray-900 text-base font-normal leading-normal">
