@@ -24,12 +24,12 @@ interface Permission {
   delete: boolean
 }
 
-interface Permissions {
-  reservations: Permission
-  menuManagement: Permission
-  staffManagement: Permission
-  paymentsReports: Permission
-}
+// interface Permissions {
+//   reservations: Permission
+//   menuManagement: Permission
+//   staffManagement: Permission
+//   paymentsReports: Permission
+// }
 
 const mockStaff: StaffMember[] = [
   { id: "1", name: "Emily Johnson", phone: "+234701234567", email: "staff@example@gmail.com", role: "Chef", dateAdded: "25/07/25", status: "active", avatar: "/placeholder.svg?height=32&width=32" },
@@ -43,7 +43,7 @@ const mockStaff: StaffMember[] = [
 ];
 
 export default function StaffManagement() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
   const [filterRole, setFilterRole] = useState("All")
   const [filterStatus, setFilterStatus] = useState("All")
