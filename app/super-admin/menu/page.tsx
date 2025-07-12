@@ -11,12 +11,7 @@ import {
   List,
   ChevronLeft,
   ChevronRight,
-  Calendar,
-  MapPin,
-  Users,
-  UtensilsCrossed,
-  Home,
-  ImageIcon,
+    ImageIcon,
   Banknote,
   CreditCard as CardIcon,
   DollarSign,
@@ -33,13 +28,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -47,7 +35,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -117,7 +104,7 @@ export default function MenuManagement() {
   const [activeMenuTab, setActiveMenuTab] = useState<'allMenu' | 'allMenuItems'>('allMenuItems');
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [step, setStep] = useState(1); // 1: Menu, 2: Add Menu Items, 3: Payment
-  const [menuList, setMenuList] = useState(() => {
+  const [menuList] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('superAdminMenus');
       if (saved) return JSON.parse(saved);
@@ -141,7 +128,6 @@ export default function MenuManagement() {
   const [menuItems, setMenuItems] = useState<Array<Record<string, unknown>>>([]);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState('');
-  const [paymentError, setPaymentError] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -189,8 +175,6 @@ export default function MenuManagement() {
   };
 
   // Sidebar collapse logic
-  const sidebarWidth = sidebarCollapsed ? "w-16" : "w-64";
-  const sidebarLabel = sidebarCollapsed ? "hidden" : "inline";
 
   return (
     <div className="flex h-screen bg-gray-50">
