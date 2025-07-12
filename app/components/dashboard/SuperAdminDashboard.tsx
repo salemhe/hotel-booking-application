@@ -336,7 +336,9 @@ export default function SuperAdminDashboard() {
                               <div className="flex items-center">
                                 <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center mr-3">
                                   <span className="text-white text-sm font-medium">
-                                    {reservation.name?.split(" ").map((n: string) => n[0]).join("")}
+                                    {typeof reservation.name === "string"
+                                      ? reservation.name.split(" ").map((n: string) => n[0]).join("")
+                                      : ""}
                                   </span>
                                 </div>
                                 <div>
