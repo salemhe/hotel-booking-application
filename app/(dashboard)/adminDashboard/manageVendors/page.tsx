@@ -24,6 +24,7 @@ interface Vendor {
   branch: string;
   phone: string;
   services: string[];
+  menuVisible?: boolean; // Add menu visibility status
 }
 
 function VendorTableSkeleton() {
@@ -123,6 +124,28 @@ function VendorsTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <DropDown setShowConfirm={setShowConfirm} setId={setId} vendorId={vendor._id} />
+                  {/* Show/Hide Menu Button */}
+                  <Button
+                    variant={vendor.menuVisible ? "destructive" : "default"}
+                    size="sm"
+                    className="ml-2"
+                    onClick={async () => {
+                      // Toggle menu visibility for this vendor
+                      try {
+                        await axios.patch(`https://hotel-booking-app-backend-30q1.onrender.com/api/admin/vendors/${vendor._id}/menu-visibility`, {
+                          visible: !vendor.menuVisible,
+                        });
+                        // Update UI
+                        if (updateVendor) {
+                          updateVendor({ ...vendor, menuVisible: !vendor.menuVisible });
+                        }
+                      } catch (error) {
+                        console.error("Error toggling menu visibility", error);
+                      }
+                    }}
+                  >
+                    {vendor.menuVisible ? "Hide Menu" : "Show Menu"}
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -208,15 +231,17 @@ export default function VendorsPage() {
   };
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <Suspense fallback={<VendorTableSkeleton />}>
-        <VendorsTable
-          vendors={vendors}
-          loading={loading}
-          deleteVendor={deleteVendor}
-          updateVendor={updateVendor}
-        />
-      </Suspense>
+    <div className="w-full flex-1 flex flex-col overflow-hidden bg-gray-50 min-h-screen">
+      <div className="w-full flex-1 space-y-4 px-1 sm:px-8 xl:px-24 pt-6 pb-8 overflow-auto">
+        <Suspense fallback={<VendorTableSkeleton />}>
+          <VendorsTable
+            vendors={vendors}
+            loading={loading}
+            deleteVendor={deleteVendor}
+            updateVendor={updateVendor}
+          />
+        </Suspense>
+      </div>
     </div>
   );
 }

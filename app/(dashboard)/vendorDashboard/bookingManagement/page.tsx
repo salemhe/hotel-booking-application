@@ -398,6 +398,7 @@ export default function AdminDashboard(): ReactElement {
 
   // Status badge color mapping
   const getStatusBadgeClass = (status: string): string => {
+    if (!status) return "bg-gray-200 text-gray-800";
     switch (status.toLowerCase()) {
       case "confirmed":
         return "bg-green-600 text-white";
