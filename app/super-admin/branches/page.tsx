@@ -102,7 +102,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
           <div className="flex flex-row items-center justify-between pb-4">
             <div className="text-lg font-semibold">Add New Branch</div>
-            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-6 w-6 rounded-full">
+            <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="h-6 w-6 rounded-full">
               <X className="h-4 w-4" />
             </Button>
           </div>
