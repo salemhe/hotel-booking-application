@@ -38,7 +38,7 @@ const MenuItem = ({ data }: { data: dataType }) => {
     try {
       await API.patch(`/vendors/menus/${_id}/visibility`, { visible: !isVisible });
       setIsVisible(!isVisible);
-    } catch (error) {
+    } catch {
       // Optionally show error toast
       // toast.error("Failed to update visibility");
     } finally {

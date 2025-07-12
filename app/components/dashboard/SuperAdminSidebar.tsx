@@ -6,7 +6,6 @@ import {
   MapPin,
   Menu as MenuIcon,
   CreditCard,
-  Users,
   Settings,
   LogOut,
   Star,

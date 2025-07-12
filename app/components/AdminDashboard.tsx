@@ -20,14 +20,9 @@ import {
   Store,
   CreditCard,
   TrendingUp,
-  Home,
-  Calendar,
-  Settings,
-  LogOut,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useRouter, usePathname } from "next/navigation";
 
 interface Data {
   grossSales: number;
@@ -40,7 +35,7 @@ interface Data {
 }
 
 export default function AdminDashboard() {
-  const [initailLoad, setInitialLoad] = useState(false);
+  const [_, setInitialLoad] = useState(false); // removed unused variable
   const [data, setData] = useState<Data>({
     grossSales: 0,
     totalUsers: 0,
@@ -51,8 +46,7 @@ export default function AdminDashboard() {
     balances: 0,
   });
 
-  const router = useRouter();
-  const pathname = usePathname();
+  // Removed unused router and pathname
 
   useEffect(() => {
     getMetrics();

@@ -12,7 +12,6 @@ import {
   Star,
   Menu as MenuIcon,
   CreditCard,
-  Users,
   Settings,
   LogOut,
   Edit,
@@ -59,7 +58,7 @@ const getStatusColor = (status: string) => {
 };
 
 export default function BookiesDashboard() {
-  const pathname = usePathname();
+  // Removed unused variable 'pathname'
   const [chartData, setChartData] = useState([]);
   const [transactions, setTransactions] = useState([]);
 

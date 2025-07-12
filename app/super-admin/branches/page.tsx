@@ -18,7 +18,6 @@ import {
   MapPin,
   MenuIcon,
   CreditCard,
-  UserCheck,
   Settings,
   LogOut,
   ChevronLeft,
@@ -58,7 +57,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     assignedMenu: "",
     importAllMenuItems: false,
   });
-  const [saving, setSaving] = useState(false);
+  // Removed unused variable 'saving'
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const countryCodes = ["+234", "+1", "+44", "+91", "+86"];
   const handleDayChange = (day, checked) => {
@@ -236,8 +235,7 @@ export default function BranchesDashboard() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAddBranch, setShowAddBranch] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
+  // Removed unused variables 'router' and 'pathname'
 
   useEffect(() => {
     fetchBranches();

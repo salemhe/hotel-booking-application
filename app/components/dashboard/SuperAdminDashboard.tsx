@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Calendar,
@@ -29,7 +29,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -41,12 +40,12 @@ import {
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
 export default function SuperAdminDashboard() {
-  const router = useRouter();
-  const pathname = usePathname();
+  // Removed unused router and pathname
   const [reservations, setReservations] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>({});
+  // Removed unused Badge import
 
   useEffect(() => {
     async function fetchData() {
