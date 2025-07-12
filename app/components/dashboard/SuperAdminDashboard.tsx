@@ -456,7 +456,7 @@ export default function SuperAdminDashboard() {
               </CardHeader>
               <CardContent className="flex items-center justify-center">
                 <div className="flex items-center gap-4">
-                  <DonutChart percentage={64} color="#3b82f6" label="New Customers" />
+                  <DonutChart percentage={64} color="#3b82f6" />
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
@@ -525,7 +525,7 @@ export default function SuperAdminDashboard() {
               </CardHeader>
               <CardContent className="flex items-center justify-center">
                 <div className="flex items-center gap-4">
-                  <DonutChart percentage={58} color="#10b981" label="Total online orders" />
+                  <DonutChart percentage={58} color="#10b981" />
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>
