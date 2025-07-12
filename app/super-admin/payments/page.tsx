@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   Search,
   Bell,
@@ -12,8 +10,6 @@ import {
   Star,
   Menu as MenuIcon,
   CreditCard,
-  Settings,
-  LogOut,
   Edit,
   Plus,
   MoreHorizontal,
@@ -35,14 +31,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
-const sidebarItems = [
-  { name: "Dashboard", icon: Home, href: "/super-admin/dashboard" },
-  { name: "Reservations", icon: Calendar, href: "/super-admin/reservations" },
-  { name: "Reviews", icon: Star, href: "/super-admin/reviews" },
-  { name: "Menu Management", icon: MenuIcon, href: "/super-admin/menu" },
-  { name: "Payments", icon: CreditCard, href: "/super-admin/payments" },
-  { name: "Staff", icon: Users, href: "/super-admin/staff" },
-];
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -59,8 +47,8 @@ const getStatusColor = (status: string) => {
 
 export default function BookiesDashboard() {
   // Removed unused variable 'pathname'
-  const [chartData, setChartData] = useState<Array<Record<string, any>>>([]);
-  const [transactions, setTransactions] = useState<Array<Record<string, any>>>([]);
+  const [chartData, setChartData] = useState<Array<Record<string, unknown>>>([]);
+  const [transactions, setTransactions] = useState<Array<Record<string, unknown>>>([]);
 
   // Fetch chart data and transactions from backend
   useEffect(() => {

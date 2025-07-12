@@ -1,6 +1,5 @@
 // "use client"
 import React, { useEffect, useState } from 'react';
-import Image from "next/image";
 import { ChevronLeft, ChevronRight, Wifi, Users, Bed, Coffee, Car, Building } from 'lucide-react';
 import API from '@/app/lib/api/userAxios';
 interface Room {

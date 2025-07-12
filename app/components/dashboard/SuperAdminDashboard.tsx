@@ -88,7 +88,7 @@ export default function SuperAdminDashboard() {
     </div>
   );
 
-  const DonutChart = ({ percentage, color, label }: { percentage: number; color: string; label: string }) => (
+  const DonutChart = ({ percentage, color }: { percentage: number; color: string }) => (
     <div className="relative w-24 h-24">
       <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
         <path

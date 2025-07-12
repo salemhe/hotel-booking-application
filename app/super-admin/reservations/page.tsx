@@ -30,8 +30,6 @@ import {
   Star,
   MenuIcon,
   MapPin,
-  Settings,
-  LogOut,
   Filter,
   Download,
   Plus,
@@ -41,17 +39,8 @@ import {
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
-const sidebarItems = [
-  { icon: Home, label: "Dashboard", href: "/super-admin/dashboard" },
-  { icon: Calendar, label: "Reservations", href: "/super-admin/reservations" },
-  { icon: MapPin, label: "Branches", href: "/super-admin/branches" },
-  { icon: Star, label: "Reviews", href: "/super-admin/reviews" },
-  { icon: MenuIcon, label: "Menu Management", href: "/super-admin/menu" },
-  { icon: CreditCard, label: "Payments", href: "/super-admin/payments" },
-  { icon: Users, label: "Staff", href: "/super-admin/staff" },
-];
 
-function ReservationDropdown({ reservation, onView, onEdit, onDelete }: any) {
+function ReservationDropdown({ reservation, onView, onEdit, onDelete }: { reservation: Reservation, onView: (r: Reservation) => void, onEdit: (r: Reservation) => void, onDelete: (r: Reservation) => void }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -90,13 +79,13 @@ function ReservationDropdown({ reservation, onView, onEdit, onDelete }: any) {
 export default function RestaurantDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  const [reservations, setReservations] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>({});
+  const [stats, setStats] = useState<Record<string, unknown>>({});
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"view"|"edit"|"create"|null>(null);
-  const [selectedReservation, setSelectedReservation] = useState<any>(null);
-  const [form, setForm] = useState<any>({ name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
+  const [selectedReservation, setSelectedReservation] = useState<Reservation|null>(null);
+  const [form, setForm] = useState<Reservation>({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
   const [formLoading, setFormLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -124,7 +113,7 @@ export default function RestaurantDashboard() {
   async function fetchReservations() {
     setLoading(true);
     try {
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (filterStatus && filterStatus !== "All") params.status = filterStatus;
       const res = await axios.get(`${API_URL}/super-admin/reservations/today`, { params });
@@ -136,13 +125,13 @@ export default function RestaurantDashboard() {
     }
   }
 
-  async function handleCreateReservation(e: any) {
+  async function handleCreateReservation(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFormLoading(true);
     try {
       await axios.post(`${API_URL}/super-admin/reservations`, form);
       setShowModal(false);
-      setForm({ name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
+      setForm({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
       fetchReservations();
     } catch (err) {
       // handle error
@@ -151,7 +140,7 @@ export default function RestaurantDashboard() {
     }
   }
 
-  async function handleDeleteReservation(reservation: any) {
+  async function handleDeleteReservation(reservation: Reservation) {
     if (!window.confirm("Are you sure you want to delete this reservation?")) return;
     try {
       await axios.delete(`${API_URL}/super-admin/reservations/${reservation.id}`);
