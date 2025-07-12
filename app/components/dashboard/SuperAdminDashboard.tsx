@@ -34,7 +34,7 @@ const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
 interface Reservation {
   id: string | number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export default function SuperAdminDashboard() {
