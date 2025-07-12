@@ -348,10 +348,10 @@ export default function SuperAdminDashboard() {
                               </div>
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{reservation.date}</div>
-                              <div className="text-sm text-gray-500">{reservation.time}</div>
+                              <div className="text-sm text-gray-900">{typeof reservation.date === "string" ? reservation.date : ""}</div>
+                              <div className="text-sm text-gray-500">{typeof reservation.time === "string" ? reservation.time : ""}</div>
                             </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{reservation.guests}</td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{typeof reservation.guests === "number" ? reservation.guests : ""}</td>
                             <td className="px-4 py-4 whitespace-nowrap">
                               {reservation.mealPreselected ? (
                                 <Check className="w-5 h-5 text-green-500" />
