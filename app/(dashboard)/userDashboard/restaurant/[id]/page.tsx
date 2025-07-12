@@ -44,10 +44,12 @@ const UserRestaurantMenuPage = () => {
         {menus.map((menu, i) => (
           <Card key={menu.id || i} className="overflow-hidden hover:shadow-lg transition-shadow">
             <div className="relative">
-              <img
+              <Image
                 src={menu.image || "/placeholder.svg"}
                 alt={menu.name}
                 className="w-full h-32 object-cover"
+                width={300}
+                height={128}
               />
             </div>
             <CardContent className="p-4">

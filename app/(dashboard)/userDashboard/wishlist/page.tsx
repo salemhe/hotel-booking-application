@@ -77,10 +77,12 @@ export default function Favorites() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {favorites.map((favorite) => (
             <div key={favorite.id} className="relative rounded-lg overflow-hidden group">
-              <img
+              <Image
                 src={favorite.image || "/placeholder.svg"}
                 alt={favorite.name}
                 className="w-full h-48 object-cover"
+                width={400}
+                height={192}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
                 <h3 className="text-xl font-bold text-white">{favorite.name}</h3>

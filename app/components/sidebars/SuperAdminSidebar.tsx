@@ -40,7 +40,7 @@ function SuperAdminSidebar() {
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 80, borderBottom: 1, borderColor: 'divider', mb: 1 }}>
         {/* Replace src with your logo path if available */}
         {/* <img src="/logo.png" alt="Logo" style={{ maxHeight: 48, maxWidth: '80%' }} onError={e => { e.target.style.display = 'none'; }} /> */}
-        <img src="/logo.png" alt="Logo" style={{ maxHeight: 48, maxWidth: '80%' }}  />
+        <Image src="/logo.png" alt="Logo" width={120} height={48} style={{ maxHeight: 48, maxWidth: '80%' }} />
         {/* <span style={{ fontWeight: 'bold', fontSize: 24 }}>LOGO</span> */}
       </Box>
       <List>
