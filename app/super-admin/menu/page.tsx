@@ -26,6 +26,11 @@ import {
   UtensilsCrossed,
   Home,
   ImageIcon,
+  Banknote,
+  CreditCard as CardIcon,
+  DollarSign,
+  ChevronLeft as CollapseIcon,
+  ChevronRight as ExpandIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,7 +74,8 @@ const sidebarItems = [
   { icon: LogOut, label: "Logout", href: "/logout" },
 ];
 
-const menuItems = [
+// This will be our real-time menu list (simulate backend)
+const initialMenuItems = [
   {
     id: 1,
     name: "Joe's Platter",
@@ -130,28 +136,51 @@ export default function MenuManagement() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [activeMenuTab, setActiveMenuTab] = useState<'allMenu' | 'allMenuItems'>('allMenuItems');
   const [showCreateMenu, setShowCreateMenu] = useState(false);
+  const [step, setStep] = useState(1); // 1: Menu, 2: Add Menu Items, 3: Payment
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [menuList, setMenuList] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('superAdminMenus');
+      if (saved) return JSON.parse(saved);
+    }
+    return initialMenuItems;
+  });
+  const [newMenu, setNewMenu] = useState<any>({
+    name: '',
+    description: '',
+    type: 'a-la-carte',
+    mealTypes: [],
+    showOnApp: true,
+    branch: '',
+    priceType: 'fixed',
+    fixedPrice: '',
+    items: [],
+    payment: { method: '', details: '' },
+  });
+  const [menuItemName, setMenuItemName] = useState('');
+  const [menuItemPrice, setMenuItemPrice] = useState('');
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [paymentDetails, setPaymentDetails] = useState('');
+  const [paymentError, setPaymentError] = useState('');
   const pathname = usePathname();
-
-  // For the table view
-  const filteredItems = menuItems.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Create Menu form state
-  const [menuName, setMenuName] = useState("");
-  const [menuDescription, setMenuDescription] = useState("");
-  const [menuType, setMenuType] = useState("a-la-carte");
-  const [mealTypes, setMealTypes] = useState<string[]>(["breakfast"]);
-  const [showMenuOnApp, setShowMenuOnApp] = useState(true);
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [priceType, setPriceType] = useState("fixed");
-  const [fixedPrice, setFixedPrice] = useState("10,000");
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleMealTypeToggle = (mealType: string) => {
-    setMealTypes((prev) => (prev.includes(mealType) ? prev.filter((type) => type !== mealType) : [...prev, mealType]));
+  // File select handler for file upload
+  const handleFileSelect = () => {
+    fileInputRef.current?.click();
   };
+
+  // File change handler for file upload
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      // Handle file upload logic here
+      console.log("File selected:", e.target.files[0]);
+    }
+  };
+
+  // Drag and drop handlers for file upload
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -170,338 +199,329 @@ export default function MenuManagement() {
       console.log("File dropped:", e.dataTransfer.files[0]);
     }
   };
-  const handleFileSelect = () => {
-    fileInputRef.current?.click();
+
+  // For the table view
+  const filteredItems = menuList.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Menu Step Handlers
+  const handleMenuContinue = () => {
+    setStep(2);
   };
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      // Handle file upload logic here
-      console.log("File selected:", e.target.files[0]);
-    }
-  };
+
+  // Sidebar collapse logic
+  const sidebarWidth = sidebarCollapsed ? "w-16" : "w-64";
+  const sidebarLabel = sidebarCollapsed ? "hidden" : "inline";
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-teal-800 text-white flex flex-col">
-        {/* Logo */}
-        <div className="p-6 border-b border-teal-700">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-teal-800 font-bold text-sm">B</span>
-            </div>
-            <span className="text-xl font-bold">Bookies</span>
-          </div>
-        </div>
-        {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {sidebarItems.map((item, index) => {
-              const isActive = pathname === item.href;
-              const Icon = item.icon;
-              return (
-                <li key={index}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors w-full text-left ${
-                      isActive ? "bg-teal-700 text-white" : "text-teal-100 hover:bg-teal-700 hover:text-white"
-                    }`}
-                    prefetch={false}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </div>
+      {/* Sidebar removed: now handled by layout.tsx */}
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-screen transition-all duration-300 w-full" style={{ marginLeft: 0 }}>
         {/* Header */}
         <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <h1 className="text-xl font-semibold text-gray-900">Menu Management page</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search"
-                  className="pl-10 w-64"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              {/* Notifications */}
-              <Button variant="ghost" size="icon">
-                <Bell className="w-5 h-5" />
-              </Button>
-              {/* User Profile */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                      <AvatarFallback>JE</AvatarFallback>
-                    </Avatar>
-                    <div className="text-left">
-                      <div className="text-sm font-medium">Joseph Eyekowin</div>
-                      <div className="text-xs text-gray-500">Admin</div>
-                    </div>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
           </div>
         </header>
         {/* Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-2 md:p-6 overflow-x-auto">
           {showCreateMenu ? (
-            // Create Menu Form
             <div className="min-h-screen bg-gray-50">
-              {/* Header */}
-              <header className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">B</span>
-                      </div>
-                      <span className="text-xl font-semibold text-gray-900">Bookies</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <ChevronLeft className="w-4 h-4" />
-                      <span className="text-sm">Create Menu</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <Bell className="w-5 h-5 text-gray-600" />
-                    <div className="flex items-center space-x-2">
-                      <Avatar className="w-8 h-8">
-                        <AvatarFallback className="bg-gray-200 text-gray-600 text-sm">JE</AvatarFallback>
-                      </Avatar>
-                      <div className="text-sm">
-                        <div className="font-medium text-gray-900">Joseph Eyebolam</div>
-                        <div className="text-gray-500">Admin</div>
-                      </div>
-                      <ChevronDown className="w-4 h-4 text-gray-600" />
-                    </div>
-                  </div>
-                </div>
-              </header>
               {/* Progress Steps */}
               <div className="bg-white border-b border-gray-200 px-6 py-4">
                 <div className="flex items-center space-x-8">
                   <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm">1</span>
-                    </div>
-                    <span className="text-sm font-medium text-teal-600">Menu</span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step === 1 ? 'bg-teal-600' : 'bg-gray-300'}`}> <span className={`text-sm ${step === 1 ? 'text-white' : 'text-gray-600'}`}>1</span> </div>
+                    <span className={`text-sm font-medium ${step === 1 ? 'text-teal-600' : 'text-gray-600'}`}>Menu</span>
                   </div>
                   <div className="flex-1 h-px bg-gray-300"></div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                      <span className="text-gray-600 text-sm">2</span>
-                    </div>
-                    <span className="text-sm text-gray-600">Add menu items</span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step === 2 ? 'bg-teal-600' : 'bg-gray-300'}`}> <span className={`text-sm ${step === 2 ? 'text-white' : 'text-gray-600'}`}>2</span> </div>
+                    <span className={`text-sm font-medium ${step === 2 ? 'text-teal-600' : 'text-gray-600'}`}>Add menu items</span>
                   </div>
                   <div className="flex-1 h-px bg-gray-300"></div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                      <span className="text-gray-600 text-sm">3</span>
-                    </div>
-                    <span className="text-sm text-gray-600">Payment</span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step === 3 ? 'bg-teal-600' : 'bg-gray-300'}`}> <span className={`text-sm ${step === 3 ? 'text-white' : 'text-gray-600'}`}>3</span> </div>
+                    <span className={`text-sm font-medium ${step === 3 ? 'text-teal-600' : 'text-gray-600'}`}>Payment</span>
                   </div>
                 </div>
               </div>
-              {/* Main Content */}
+              {/* Step Content */}
               <div className="max-w-2xl mx-auto p-6">
-                <div className="space-y-6">
-                  {/* Menu Name */}
-                  <div className="space-y-2">
-                    <Label htmlFor="menu-name" className="text-sm font-medium text-gray-700">
-                      Menu name*
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="menu-name"
-                        placeholder="e.g John Platter"
-                        value={menuName}
-                        onChange={(e) => setMenuName(e.target.value)}
-                        maxLength={50}
-                        className="pr-12"
-                      />
-                      <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
-                        {menuName.length}/50
-                      </span>
+                {step === 1 && (
+                  <div className="space-y-6">
+                    {/* Menu Name */}
+                    <div className="space-y-2">
+                      <Label htmlFor="menu-name" className="text-sm font-medium text-gray-700">
+                        Menu name*
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          id="menu-name"
+                          placeholder="e.g John Platter"
+                          value={newMenu.name}
+                          onChange={e => setNewMenu({ ...newMenu, name: e.target.value })}
+                          maxLength={50}
+                          className="pr-12"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
+                          {newMenu.name.length}/50
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  {/* Cover Image */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">Cover Image (Optional)</Label>
-                    <Card
-                      className={`border-2 border-dashed transition-colors ${dragActive ? "border-teal-500 bg-teal-50" : "border-gray-300"}`}
-                      onDragEnter={handleDrag}
-                      onDragLeave={handleDrag}
-                      onDragOver={handleDrag}
-                      onDrop={handleDrop}
-                    >
-                      <CardContent className="p-8 text-center">
-                        <div className="space-y-4">
-                          <div className="w-12 h-12 mx-auto bg-gray-100 rounded-lg flex items-center justify-center">
-                            <ImageIcon className="w-6 h-6 text-gray-400" />
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600 mb-2">Drag and drop an image here, or</p>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={handleFileSelect}
-                              className="text-teal-600 border-teal-600 hover:bg-teal-50 bg-transparent"
-                            >
-                              Browse Files
-                            </Button>
-                            <input
-                              ref={fileInputRef}
-                              type="file"
-                              accept="image/*"
-                              onChange={handleFileChange}
-                              className="hidden"
-                            />
-                          </div>
-                          <p className="text-xs text-gray-500">JPG, PNG OR 4 Max 5MB</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  {/* Menu Description */}
-                  <div className="space-y-2">
-                    <Label htmlFor="menu-description" className="text-sm font-medium text-gray-700">
-                      Menu Description (Optional)
-                    </Label>
-                    <Textarea
-                      id="menu-description"
-                      placeholder="Add a short description or notes about this menu"
-                      value={menuDescription}
-                      onChange={(e) => setMenuDescription(e.target.value)}
-                      rows={3}
-                    />
-                  </div>
-                  {/* Menu Type */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-700">Menu Type</Label>
-                    <RadioGroup value={menuType} onValueChange={setMenuType} className="flex flex-wrap gap-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="a-la-carte" id="a-la-carte" />
-                        <Label htmlFor="a-la-carte" className="text-sm">A la Carte</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="buffet" id="buffet" />
-                        <Label htmlFor="buffet" className="text-sm">Buffet</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="set-menu" id="set-menu" />
-                        <Label htmlFor="set-menu" className="text-sm">Set Menu</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="tasting-menu" id="tasting-menu" />
-                        <Label htmlFor="tasting-menu" className="text-sm">Tasting Menu</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="takeaway" id="takeaway" />
-                        <Label htmlFor="takeaway" className="text-sm">Takeaway</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  {/* Menu Availability */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-700">Menu Availability (Meal Type)</Label>
-                    <div className="flex flex-wrap gap-3">
-                      {["breakfast", "brunch", "lunch", "dinner", "late-night", "all-day"].map((mealType) => (
-                        <Button
-                          key={mealType}
-                          variant={mealTypes.includes(mealType) ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleMealTypeToggle(mealType)}
-                          className={mealTypes.includes(mealType) ? "bg-teal-600 hover:bg-teal-700" : ""}
-                        >
-                          {mealType.charAt(0).toUpperCase() + mealType.slice(1).replace("-", " ")}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                  {/* Menu Availability Toggle */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-700">Menu Availability</Label>
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div>
-                        <div className="font-medium text-sm text-gray-900">Show menu on this app</div>
-                        <div className="text-xs text-gray-600">Make this menu visible to customers</div>
-                      </div>
-                      <Switch checked={showMenuOnApp} onCheckedChange={setShowMenuOnApp} />
-                    </div>
-                  </div>
-                  {/* Assign to Branches */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">Assign to Branches</Label>
-                    <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select branches" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="branch1">Branch 1</SelectItem>
-                        <SelectItem value="branch2">Branch 2</SelectItem>
-                        <SelectItem value="branch3">Branch 3</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {/* Price */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-700">Price</Label>
-                    <RadioGroup value={priceType} onValueChange={setPriceType} className="space-y-3">
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="fixed" id="fixed-price" />
-                          <Label htmlFor="fixed-price" className="text-sm">Fixed Price</Label>
-                        </div>
-                        {priceType === "fixed" && (
-                          <div className="ml-6">
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-600">₦</span>
-                              <Input
-                                value={fixedPrice}
-                                onChange={(e) => setFixedPrice(e.target.value)}
-                                className="pl-8"
-                                placeholder="10,000"
+                    {/* Cover Image */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">Cover Image (Optional)</Label>
+                      <Card
+                        className={`border-2 border-dashed transition-colors ${dragActive ? "border-teal-500 bg-teal-50" : "border-gray-300"}`}
+                        onDragEnter={handleDrag}
+                        onDragLeave={handleDrag}
+                        onDragOver={handleDrag}
+                        onDrop={handleDrop}
+                      >
+                        <CardContent className="p-8 text-center">
+                          <div className="space-y-4">
+                            <div className="w-12 h-12 mx-auto bg-gray-100 rounded-lg flex items-center justify-center">
+                              <ImageIcon className="w-6 h-6 text-gray-400" />
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-600 mb-2">Drag and drop an image here, or</p>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleFileSelect}
+                                className="text-teal-600 border-teal-600 hover:bg-teal-50 bg-transparent"
+                              >
+                                Browse Files
+                              </Button>
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="hidden"
                               />
                             </div>
+                            <p className="text-xs text-gray-500">JPG, PNG OR 4 Max 5MB</p>
                           </div>
-                        )}
+                        </CardContent>
+                      </Card>
+                    </div>
+                    {/* Menu Description */}
+                    <div className="space-y-2">
+                      <Label htmlFor="menu-description" className="text-sm font-medium text-gray-700">
+                        Menu Description (Optional)
+                      </Label>
+                      <Textarea
+                        id="menu-description"
+                        placeholder="Add a short description or notes about this menu"
+                        value={newMenu.description}
+                        onChange={e => setNewMenu({ ...newMenu, description: e.target.value })}
+                        rows={3}
+                      />
+                    </div>
+                    {/* Menu Type */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-700">Menu Type</Label>
+                      <RadioGroup value={newMenu.type} onValueChange={val => setNewMenu({ ...newMenu, type: val })} className="flex flex-wrap gap-4">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="a-la-carte" id="a-la-carte" />
+                          <Label htmlFor="a-la-carte" className="text-sm">A la Carte</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="buffet" id="buffet" />
+                          <Label htmlFor="buffet" className="text-sm">Buffet</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="set-menu" id="set-menu" />
+                          <Label htmlFor="set-menu" className="text-sm">Set Menu</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="tasting-menu" id="tasting-menu" />
+                          <Label htmlFor="tasting-menu" className="text-sm">Tasting Menu</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="takeaway" id="takeaway" />
+                          <Label htmlFor="takeaway" className="text-sm">Takeaway</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    {/* Menu Availability */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-700">Menu Availability (Meal Type)</Label>
+                      <div className="flex flex-wrap gap-3">
+                        {["breakfast", "brunch", "lunch", "dinner", "late-night", "all-day"].map((mealType) => (
+                          <Button
+                            key={mealType}
+                            variant={newMenu.mealTypes.includes(mealType) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              setNewMenu({
+                                ...newMenu,
+                                mealTypes: newMenu.mealTypes.includes(mealType)
+                                  ? newMenu.mealTypes.filter((type: string) => type !== mealType)
+                                  : [...newMenu.mealTypes, mealType],
+                              });
+                            }}
+                            className={newMenu.mealTypes.includes(mealType) ? "bg-teal-600 hover:bg-teal-700" : ""}
+                          >
+                            {mealType.charAt(0).toUpperCase() + mealType.slice(1).replace("-", " ")}
+                          </Button>
+                        ))}
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="per-item" id="per-item" />
-                        <Label htmlFor="per-item" className="text-sm">Price per item</Label>
+                    </div>
+                    {/* Menu Availability Toggle */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-700">Menu Availability</Label>
+                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                          <div className="font-medium text-sm text-gray-900">Show menu on this app</div>
+                          <div className="text-xs text-gray-600">Make this menu visible to customers</div>
+                        </div>
+                        <Switch checked={newMenu.showOnApp} onCheckedChange={val => setNewMenu({ ...newMenu, showOnApp: val })} />
                       </div>
-                    </RadioGroup>
+                    </div>
+                    {/* Assign to Branches */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">Assign to Branches</Label>
+                      <select
+                        value={newMenu.branch}
+                        onChange={e => setNewMenu({ ...newMenu, branch: e.target.value })}
+                        className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                      >
+                        <option value="">Select branches</option>
+                        <option value="branch1">Branch 1</option>
+                        <option value="branch2">Branch 2</option>
+                        <option value="branch3">Branch 3</option>
+                      </select>
+                    </div>
+                    {/* Price */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-700">Price</Label>
+                      <RadioGroup value={newMenu.priceType} onValueChange={val => setNewMenu({ ...newMenu, priceType: val })} className="space-y-3">
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="fixed" id="fixed-price" />
+                            <Label htmlFor="fixed-price" className="text-sm">Fixed Price</Label>
+                          </div>
+                          {newMenu.priceType === "fixed" && (
+                            <div className="ml-6">
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-600">₦</span>
+                                <Input
+                                  value={newMenu.fixedPrice}
+                                  onChange={e => setNewMenu({ ...newMenu, fixedPrice: e.target.value })}
+                                  className="pl-8"
+                                  placeholder="10,000"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="per-item" id="per-item" />
+                          <Label htmlFor="per-item" className="text-sm">Price per item</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    {/* Action Buttons */}
+                    <div className="flex justify-between pt-8 border-t border-gray-200 mt-8">
+                      <Button variant="outline" className="px-8 bg-transparent" onClick={() => { setShowCreateMenu(false); setStep(1); setMenuItems([]); }}>
+                        Cancel
+                      </Button>
+                      <Button className="px-8 bg-teal-600 hover:bg-teal-700" onClick={handleMenuContinue}>
+                        Continue to Menu Item
+                      </Button>
+                    </div>
                   </div>
-                  {/* Action Buttons */}
-                  <div className="flex justify-between pt-8 border-t border-gray-200 mt-8">
-                    <Button variant="outline" className="px-8 bg-transparent" onClick={() => setShowCreateMenu(false)}>
-                      Cancel
-                    </Button>
-                    <Button className="px-8 bg-teal-600 hover:bg-teal-700">Continue to Menu Item</Button>
+                )}
+                {step === 2 && (
+                  <div className="space-y-6">
+                    <h2 className="text-lg font-semibold">Add Menu Items</h2>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Menu Item Name"
+                        value={menuItemName}
+                        onChange={e => setMenuItemName(e.target.value)}
+                      />
+                      <Input
+                        placeholder="Price"
+                        value={menuItemPrice}
+                        onChange={e => setMenuItemPrice(e.target.value)}
+                        type="number"
+                      />
+                      <Button onClick={handleAddMenuItem}>Add</Button>
+                    </div>
+                    <ul className="list-disc pl-6">
+                      {menuItems.map((item, idx) => (
+                        <li key={idx}>{item.name} - ₦{item.price}</li>
+                      ))}
+                    </ul>
+                    <div className="flex justify-between pt-8 border-t border-gray-200 mt-8">
+                      <Button variant="outline" className="px-8 bg-transparent" onClick={() => setStep(1)}>
+                        Back
+                      </Button>
+                      <Button className="px-8 bg-teal-600 hover:bg-teal-700" onClick={handleMenuItemsContinue}>
+                        Continue to Payment
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                )}
+                {step === 3 && (
+                  <div className="space-y-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Payment</h2>
+                    <Label className="text-base font-medium text-gray-700 mb-2 block">Select Payment Method</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Card className={`cursor-pointer border-2 transition-colors ${paymentMethod === 'transfer' ? 'border-teal-600 shadow-lg' : 'border-gray-200'}`}
+                        onClick={() => setPaymentMethod('transfer')}>
+                        <CardContent className="flex flex-col items-center p-6">
+                          <Banknote className="w-8 h-8 text-teal-600 mb-2" />
+                          <span className="font-semibold text-lg">Bank Transfer</span>
+                          <span className="text-xs text-gray-500 mt-1">Pay via direct bank transfer</span>
+                        </CardContent>
+                      </Card>
+                      <Card className={`cursor-pointer border-2 transition-colors ${paymentMethod === 'card' ? 'border-teal-600 shadow-lg' : 'border-gray-200'}`}
+                        onClick={() => setPaymentMethod('card')}>
+                        <CardContent className="flex flex-col items-center p-6">
+                          <CardIcon className="w-8 h-8 text-teal-600 mb-2" />
+                          <span className="font-semibold text-lg">Card Payment</span>
+                          <span className="text-xs text-gray-500 mt-1">Pay with debit/credit card</span>
+                        </CardContent>
+                      </Card>
+                      <Card className={`cursor-pointer border-2 transition-colors ${paymentMethod === 'cash' ? 'border-teal-600 shadow-lg' : 'border-gray-200'}`}
+                        onClick={() => setPaymentMethod('cash')}>
+                        <CardContent className="flex flex-col items-center p-6">
+                          <DollarSign className="w-8 h-8 text-teal-600 mb-2" />
+                          <span className="font-semibold text-lg">Cash</span>
+                          <span className="text-xs text-gray-500 mt-1">Pay with cash at the venue</span>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    {paymentMethod && (
+                      <div className="space-y-2 mt-6">
+                        <Label className="text-sm font-medium text-gray-700">Payment Details</Label>
+                        <Input
+                          placeholder={`Enter ${paymentMethod} details`}
+                          value={paymentDetails}
+                          onChange={e => setPaymentDetails(e.target.value)}
+                        />
+                      </div>
+                    )}
+                    {paymentError && <div className="text-red-600 text-sm font-medium">{paymentError}</div>}
+                    <div className="flex justify-between pt-8 border-t border-gray-200 mt-8">
+                      <Button variant="outline" className="px-8 bg-transparent" onClick={() => setStep(2)}>
+                        Back
+                      </Button>
+                      <Button className="px-8 bg-teal-600 hover:bg-teal-700" onClick={handlePaymentSave}>
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -554,17 +574,16 @@ export default function MenuManagement() {
                     />
                   </div>
                   {/* Category Filter */}
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="All Category">All Category</SelectItem>
-                      <SelectItem value="A la Carte">A la Carte</SelectItem>
-                      <SelectItem value="Buffet">Buffet</SelectItem>
-                      <SelectItem value="Fixed">Fixed</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <select
+                    value={selectedCategory}
+                    onChange={e => setSelectedCategory(e.target.value)}
+                    className="w-40 px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                  >
+                    <option value="All Category">All Category</option>
+                    <option value="A la Carte">A la Carte</option>
+                    <option value="Buffet">Buffet</option>
+                    <option value="Fixed">Fixed</option>
+                  </select>
                   {/* Advanced Filter */}
                   <Button variant="outline" className="flex items-center space-x-2 bg-transparent">
                     <Filter className="w-4 h-4" />
@@ -619,18 +638,18 @@ export default function MenuManagement() {
                             />
                           </TableCell>
                           <TableCell className="font-medium text-black">{item.name}</TableCell>
-                          <TableCell className="text-black">₦{item.price.toLocaleString()}</TableCell>
+                          <TableCell className="text-black">₦{item.price?.toLocaleString()}</TableCell>
                           <TableCell className="text-black">{item.type}</TableCell>
-                          <TableCell className="text-black">{item.mealTimes.join(", ")}</TableCell>
-                          <TableCell className="text-black">{item.items}</TableCell>
+                          <TableCell className="text-black">{Array.isArray(item.mealTimes) ? item.mealTimes.join(", ") : ''}</TableCell>
+                          <TableCell className="text-black">{item.items?.length || 0}</TableCell>
                           <TableCell className="text-black">
                             <div className="flex flex-wrap gap-1">
-                              {item.tags.slice(0, 2).map((tag, index) => (
+                              {item.tags?.slice(0, 2).map((tag, index) => (
                                 <Badge key={index} variant="secondary" className="text-xs text-black">
                                   {tag}
                                 </Badge>
                               ))}
-                              {item.tags.length > 2 && (
+                              {item.tags && item.tags.length > 2 && (
                                 <Badge variant="secondary" className="text-xs text-black">
                                   +{item.tags.length - 2} more
                                 </Badge>

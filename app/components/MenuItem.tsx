@@ -21,10 +21,30 @@ interface dataType {
   price: number;
   category: string;
   itemImage: string;
+  visible?: boolean; // Add visibility property
 }
 
+import { Switch } from "./ui/switch";
+import { useState } from "react";
+import API from "@/app/lib/api/axios";
+
 const MenuItem = ({ data }: { data: dataType }) => {
-  const { _id, dishName, itemImage, category, price } = data;
+  const { _id, dishName, itemImage, category, price, visible = true } = data;
+  const [isVisible, setIsVisible] = useState(visible);
+  const [loading, setLoading] = useState(false);
+
+  const handleToggle = async () => {
+    setLoading(true);
+    try {
+      await API.patch(`/vendors/menus/${_id}/visibility`, { visible: !isVisible });
+      setIsVisible(!isVisible);
+    } catch (error) {
+      // Optionally show error toast
+      // toast.error("Failed to update visibility");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-sm bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden transform transition-all hover:shadow-2xl p-6 border border-gray-200">
@@ -46,12 +66,16 @@ const MenuItem = ({ data }: { data: dataType }) => {
           {dishName}
         </h3>
         <p className="text-sm text-gray-600">
-          {/* <span className="font-medium text-gray-800">Cuisine:</span> {vendor}{" "}
-          |  */}
           <span className="font-medium text-gray-800">Category:</span>{" "}
           {category}
         </p>
         <p className="text-xl font-bold text-indigo-600">₦{price}</p>
+      </div>
+
+      {/* Show/Hide Toggle */}
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm text-gray-700">{isVisible ? "Visible" : "Hidden"}</span>
+        <Switch checked={isVisible} onCheckedChange={handleToggle} disabled={loading} />
       </div>
 
       {/* Action Buttons */}

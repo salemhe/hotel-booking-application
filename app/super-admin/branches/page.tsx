@@ -265,76 +265,7 @@ export default function BranchesDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-teal-800 text-white flex flex-col">
-        {/* Logo */}
-        <div className="p-6 border-b border-teal-700">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-teal-800 font-bold text-sm">B</span>
-            </div>
-            <span className="text-xl font-bold">Bookies</span>
-          </div>
-        </div>
-        {/* Restaurant Selection */}
-        <div className="p-4 border-b border-teal-700">
-          <div className="flex items-center justify-between bg-teal-700 rounded-lg p-3 cursor-pointer hover:bg-teal-600 transition-colors">
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-orange-500 rounded-full"></div>
-              <div>
-                <div className="text-sm font-medium">Restaurant 1</div>
-                <div className="text-xs text-teal-200">HQ</div>
-              </div>
-            </div>
-            <ChevronDown className="w-4 h-4" />
-          </div>
-        </div>
-        {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {sidebarItems.map((item, index) => {
-              const isActive = pathname.startsWith(item.href);
-              const Icon = item.icon;
-              return (
-                <li key={index}>
-                  <button
-                    onClick={() => router.push(item.href)}
-                    className={`flex items-center space-x-3 p-3 rounded-lg transition-colors w-full text-left ${
-                      isActive ? "bg-teal-700 text-white" : "text-teal-200 hover:bg-teal-700 hover:text-white"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-        {/* Bottom Navigation */}
-        <div className="p-4 border-t border-teal-700">
-          <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => router.push("/super-admin/settings")}
-                className="flex items-center space-x-3 p-3 rounded-lg text-teal-200 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
-              >
-                <Settings className="w-5 h-5" />
-                <span className="text-sm font-medium">Settings</span>
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => router.push("/logout")}
-                className="flex items-center space-x-3 p-3 rounded-lg text-teal-200 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
-              >
-                <LogOut className="w-5 h-5" />
-                <span className="text-sm font-medium">Logout</span>
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
+      {/* Sidebar removed: now handled by layout.tsx */}
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}

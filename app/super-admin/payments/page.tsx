@@ -27,7 +27,7 @@ import {
   Filter,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
+// import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -92,8 +92,7 @@ export default function BookiesDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <SuperAdminSidebar />
+      {/* Sidebar removed: now handled by layout.tsx */}
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
