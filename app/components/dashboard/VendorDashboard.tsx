@@ -6,23 +6,20 @@ import {
   Calendar,
   Users,
   DollarSign,
-  Clock,
   TrendingUp,
   Check,
   X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 // Removed unused Badge import
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
 export default function VendorDashboard({ vendorId, vendorType }: { vendorId: string; vendorType: string }) {
-  const [vendor, setVendor] = useState<Record<string, any> | null>(null);
+  const [vendor, setVendor] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [reservations, setReservations] = useState<Array<Record<string, any>>>([]);
-  const [stats, setStats] = useState<Record<string, any>>({});
+  const [reservations, setReservations] = useState<Array<Record<string, unknown>>>([]);
+  const [stats, setStats] = useState<Record<string, unknown>>({});
   const [chartData, setChartData] = useState<Array<{ month: string; revenue: number }>>([]);
 
   useEffect(() => {
@@ -45,7 +42,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
         });
         // Fetch chart data (if available)
         setChartData(vendorRes.data.data.monthlyRevenue || []);
-      } catch (err) {
+      } catch {
         setVendor(null);
         setReservations([]);
         setStats({});

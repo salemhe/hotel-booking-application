@@ -35,8 +35,7 @@ interface Data {
 }
 
 export default function AdminDashboard() {
-  const [initialLoad, setInitialLoad] = useState(false);
-  const [data, setData] = useState<Data>({
+    const [data, setData] = useState<Data>({
     grossSales: 0,
     totalUsers: 0,
     totalVendors: 0,
@@ -54,16 +53,14 @@ export default function AdminDashboard() {
 
   const getMetrics = async () => {
     try {
-      setInitialLoad(true);
-      const res = await axios.get(
+            const res = await axios.get(
         "https://hotel-booking-app-backend-30q1.onrender.com/api/admin/metrics"
       );
       setData(res.data.data);
     } catch (error) {
       console.error("Failed to fetch metrics:", error);
     } finally {
-      setInitialLoad(false);
-    }
+          }
   };
 
   return (
