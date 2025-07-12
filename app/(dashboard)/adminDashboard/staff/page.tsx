@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import {
-  Search, Bell, ChevronDown, X, Upload, Trash2, Users, UserCheck, UserX, UserMinus, MoreHorizontal, ChevronLeft, ChevronRight,
+  Search, /* Bell, ChevronDown, X, Upload, Trash2, */ Users, UserCheck, UserX, UserMinus, MoreHorizontal, ChevronLeft, ChevronRight,
 } from "lucide-react"
 
 interface StaffMember {
@@ -63,7 +63,7 @@ export default function StaffManagement() {
     staffManagement: { view: true, create: false, edit: false, delete: false },
     paymentsReports: { view: true, create: false, edit: false, delete: false },
   })
-  const [customPermissions, setCustomPermissions] = useState(false)
+  // const [customPermissions, setCustomPermissions] = useState(false)
 
   const activeStaff = mockStaff.filter((staff) => staff.status === "active").length
   const inactiveStaff = mockStaff.filter((staff) => staff.status === "inactive").length
@@ -80,22 +80,22 @@ export default function StaffManagement() {
     setIsModalOpen(false); setModalStep(1);
     setFormData({ fullName: "", phone: "", email: "", staffId: "", jobTitle: "", branch: "", profilePicture: null })
   }
-  const handleNextStep = () => { if (modalStep === 1) setModalStep(2); }
-  const handlePrevStep = () => { if (modalStep === 2) setModalStep(1); }
-  const handleSaveStaff = () => {
-    if (!formData.fullName || !formData.phone || !formData.email) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-    console.log("Saving staff:", formData, permissions); handleCloseModal();
-  }
-  const handlePermissionChange = (module: keyof Permissions, permission: keyof Permission, value: boolean) => {
-    setPermissions((prev) => ({ ...prev, [module]: { ...prev[module], [permission]: value } }))
-  }
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) setFormData((prev) => ({ ...prev, profilePicture: file }))
-  }
+  // const handleNextStep = () => { if (modalStep === 1) setModalStep(2); }
+  // const handlePrevStep = () => { if (modalStep === 2) setModalStep(1); }
+  // const handleSaveStaff = () => {
+  //   if (!formData.fullName || !formData.phone || !formData.email) {
+  //     alert("Please fill in all required fields.");
+  //     return;
+  //   }
+  //   console.log("Saving staff:", formData, permissions); handleCloseModal();
+  // }
+  // const handlePermissionChange = (module: keyof Permissions, permission: keyof Permission, value: boolean) => {
+  //   setPermissions((prev) => ({ ...prev, [module]: { ...prev[module], [permission]: value } }))
+  // }
+  // const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0]
+  //   if (file) setFormData((prev) => ({ ...prev, profilePicture: file }))
+  // }
 
   return (
     <div className="w-full flex-1 flex flex-col overflow-hidden bg-gray-50 min-h-screen">
