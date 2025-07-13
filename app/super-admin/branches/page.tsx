@@ -202,8 +202,8 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
             </div>
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={() => setIsOpen(false)} className="flex-1">Cancel</Button>
-              <Button variant="outline" onClick={() => handleSubmit("saveAndAdd")} className="flex-1">Save & Add another</Button>
+              <Button variant="secondary" onClick={() => setIsOpen(false)} className="flex-1">Cancel</Button>
+              <Button variant="secondary" onClick={() => handleSubmit("saveAndAdd")} className="flex-1">Save & Add another</Button>
               <Button onClick={() => handleSubmit("save") } className="flex-1 bg-teal-600 hover:bg-teal-700 text-white">Save Branch</Button>
             </div>
           </div>
