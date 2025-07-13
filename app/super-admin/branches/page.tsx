@@ -367,7 +367,7 @@ export default function BranchesDashboard() {
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {filteredBranches.map((branch) => (
-                <Card key={branch.id} className="relative overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={String(branch.id)} className="relative overflow-hidden hover:shadow-lg transition-shadow">
                   <CardContent className="p-0">
                     {/* Status Badge */}
                     <div className="absolute top-4 left-4 z-10">
