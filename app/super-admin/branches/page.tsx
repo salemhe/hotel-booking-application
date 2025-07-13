@@ -377,7 +377,7 @@ export default function BranchesDashboard() {
                     </div>
                     {/* More Options */}
                     <div className="absolute top-4 right-4 z-10">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 bg-white/80 hover:bg-white">
+                      <Button variant="ghost" size="sm" className="h-8 w-8 bg-white/80 hover:bg-white">
                         <MoreHorizontal className="w-4 h-4" />
                       </Button>
                     </div>
