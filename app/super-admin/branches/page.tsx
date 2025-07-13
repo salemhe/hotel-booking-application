@@ -432,13 +432,13 @@ export default function BranchesDashboard() {
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
+              <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).slice(0, 6).map((p) => (
                 <Button
                   key={p}
-                  variant={p === page ? "default" : "outline"}
+                  variant={p === page ? "default" : "secondary"}
                   size="sm"
                   className={p === page ? "bg-teal-600 hover:bg-teal-700" : ""}
                   onClick={() => setPage(p)}
@@ -446,7 +446,7 @@ export default function BranchesDashboard() {
                   {p}
                 </Button>
               ))}
-              <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+              <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
