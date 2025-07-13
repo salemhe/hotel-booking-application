@@ -389,7 +389,7 @@ export default function BranchesDashboard() {
                     </div>
                     {/* Branch Info */}
                     <div className="px-6 pb-6">
-                      <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{branch.name.replace(/'/g, "&apos;")}</h3>
+                      <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{String(branch.name).replace(/'/g, "&apos;")}</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">Today&apos;s Reservation</span>
