@@ -293,7 +293,7 @@ export default function BranchesDashboard() {
               <h1 className="text-2xl font-bold text-gray-900">All Branches</h1>
             </div>
             <div className="flex items-center space-x-3">
-            <Button variant="outline" size="sm">
+            <Button variant="secondary" size="sm">
             <Export className="w-4 h-4 mr-2" />
             Export
             </Button>
