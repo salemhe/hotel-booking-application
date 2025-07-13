@@ -191,7 +191,7 @@ export default function SuperAdminDashboard() {
             </TableHeader>
             <TableBody>
               {staff.map((s) => (
-                <TableRow key={s.id}>
+                <TableRow key={String(s.id)}>
                   <TableCell>{s.name}</TableCell>
                   <TableCell>{s.role}</TableCell>
                   <TableCell>{s.branch}</TableCell>
