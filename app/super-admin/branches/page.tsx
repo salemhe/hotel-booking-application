@@ -412,7 +412,7 @@ export default function BranchesDashboard() {
                         </div>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         className="w-full mt-4 border-teal-600 text-teal-600 hover:bg-teal-50 bg-transparent"
                       >
                         View Branch
