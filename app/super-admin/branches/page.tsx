@@ -393,7 +393,7 @@ export default function BranchesDashboard() {
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">Today&apos;s Reservation</span>
-                          <span className="text-sm font-semibold">{branch.todayReservation}</span>
+                          <span className="text-sm font-semibold">{String(branch.todayReservation)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">Today&apos;s Revenue</span>
