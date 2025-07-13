@@ -133,13 +133,13 @@ export default function SuperAdminDashboard() {
             <TableBody>
               {payments.map((p) => (
                 <TableRow key={String(p.id)}>
-                  <TableCell>{p.payer}</TableCell>
-                  <TableCell>{p.branch}</TableCell>
-                  <TableCell>₦{p.amount.toLocaleString()}</TableCell>
+                  <TableCell>{String(p.payer)}</TableCell>
+                  <TableCell>{String(p.branch)}</TableCell>
+                  <TableCell>₦{Number(p.amount).toLocaleString()}</TableCell>
                   <TableCell>
-                    <Badge className={p.status === "Paid" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>{p.status}</Badge>
+                    <Badge className={String(p.status) === "Paid" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>{String(p.status)}</Badge>
                   </TableCell>
-                  <TableCell>{p.date}</TableCell>
+                  <TableCell>{String(p.date)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
