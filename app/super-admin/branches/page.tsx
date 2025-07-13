@@ -45,9 +45,10 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     importAllMenuItems: false,
   });
     // Removed unused variable 'saving'
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+  const days: DayOfWeek[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const countryCodes = ["+234", "+1", "+44", "+91", "+86"];
-  const handleDayChange = (day: string, checked: boolean) => {
+  const handleDayChange = (day: DayOfWeek, checked: boolean) => {
     setFormData((prev) => ({ ...prev, openingDays: { ...prev.openingDays, [day]: checked } }));
   };
   const handleSubmit = async (action: string) => {
@@ -151,7 +152,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
                 <div className="grid grid-cols-2 gap-2">
                   {days.map(day => (
                     <div key={day} className="flex items-center space-x-2">
-                      <input type="checkbox" id={day} checked={formData.openingDays[day]} onChange={e => handleDayChange(day, e.target.checked)} />
+                      <input type="checkbox" id={day} checked={formData.openingDays[day]} onChange={e => handleDayChange(day as DayOfWeek, e.target.checked)} />
                       <label htmlFor={day} className="text-sm">{day}</label>
                     </div>
                   ))}
