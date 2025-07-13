@@ -162,7 +162,7 @@ export default function SuperAdminDashboard() {
             </TableHeader>
             <TableBody>
               {branches.map((br) => (
-                <TableRow key={br.id}>
+                <TableRow key={String(br.id)}>
                   <TableCell>{br.name}</TableCell>
                   <TableCell>{br.location}</TableCell>
                   <TableCell>
