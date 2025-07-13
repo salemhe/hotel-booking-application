@@ -372,7 +372,7 @@ export default function BranchesDashboard() {
                     {/* Status Badge */}
                     <div className="absolute top-4 left-4 z-10">
                       <Badge variant="secondary" className={`${branch.status === "Opened" ? "bg-green-500" : "bg-red-500"} text-white border-0`}>
-                        {branch.status}
+                        {String(branch.status)}
                       </Badge>
                     </div>
                     {/* More Options */}
