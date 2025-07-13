@@ -292,7 +292,6 @@ export default function BranchesDashboard() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">All Branches</h1>
             </div>
-            <AddNewBranchModal />
             <div className="flex items-center space-x-3">
             <Button variant="outline" size="sm">
             <Export className="w-4 h-4 mr-2" />
