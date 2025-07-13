@@ -401,7 +401,7 @@ export default function BranchesDashboard() {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">Last Food Today</span>
-                          <span className="text-sm font-semibold">{branch.lastFoodToday}</span>
+                          <span className="text-sm font-semibold">{String(branch.lastFoodToday)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">Average Rating</span>
