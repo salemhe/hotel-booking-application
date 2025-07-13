@@ -384,7 +384,7 @@ export default function BranchesDashboard() {
                     {/* Branch Avatar */}
                     <div className="flex justify-center pt-12 pb-4">
                       <div className="w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xl font-bold">{branch.name.split(" ")[0][0]}</span>
+                        <span className="text-white text-xl font-bold">{String(branch.name).split(" ")[0][0]}</span>
                       </div>
                     </div>
                     {/* Branch Info */}
