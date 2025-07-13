@@ -192,11 +192,11 @@ export default function SuperAdminDashboard() {
             <TableBody>
               {staff.map((s) => (
                 <TableRow key={String(s.id)}>
-                  <TableCell>{s.name}</TableCell>
-                  <TableCell>{s.role}</TableCell>
-                  <TableCell>{s.branch}</TableCell>
+                  <TableCell>{String(s.name)}</TableCell>
+                  <TableCell>{String(s.role)}</TableCell>
+                  <TableCell>{String(s.branch)}</TableCell>
                   <TableCell>
-                    <Badge className={s.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>{s.status}</Badge>
+                    <Badge className={String(s.status) === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>{String(s.status)}</Badge>
                   </TableCell>
                 </TableRow>
               ))}
