@@ -106,7 +106,7 @@ export default function SuperAdminDashboard() {
                       b.status === "Upcoming" ? "bg-blue-100 text-blue-800" :
                       b.status === "Completed" ? "bg-green-100 text-green-800" :
                       "bg-red-100 text-red-800"
-                    }>{b.status}</Badge>
+                    }>{String(b.status)}</Badge>
                   </TableCell>
                 </TableRow>
               ))}
