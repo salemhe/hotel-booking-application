@@ -97,7 +97,7 @@ export default function SuperAdminDashboard() {
             </TableHeader>
             <TableBody>
               {bookings.map((b) => (
-                <TableRow key={b.id}>
+                <TableRow key={String(b.id)}>
                   <TableCell>{b.guest}</TableCell>
                   <TableCell>{b.branch}</TableCell>
                   <TableCell>{b.date}</TableCell>
