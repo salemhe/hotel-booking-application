@@ -98,9 +98,9 @@ export default function SuperAdminDashboard() {
             <TableBody>
               {bookings.map((b) => (
                 <TableRow key={String(b.id)}>
-                  <TableCell>{b.guest}</TableCell>
-                  <TableCell>{b.branch}</TableCell>
-                  <TableCell>{b.date}</TableCell>
+                  <TableCell>{String(b.guest)}</TableCell>
+                  <TableCell>{String(b.branch)}</TableCell>
+                  <TableCell>{String(b.date)}</TableCell>
                   <TableCell>
                     <Badge className={
                       b.status === "Upcoming" ? "bg-blue-100 text-blue-800" :
