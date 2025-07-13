@@ -163,10 +163,10 @@ export default function SuperAdminDashboard() {
             <TableBody>
               {branches.map((br) => (
                 <TableRow key={String(br.id)}>
-                  <TableCell>{br.name}</TableCell>
-                  <TableCell>{br.location}</TableCell>
+                  <TableCell>{String(br.name)}</TableCell>
+                  <TableCell>{String(br.location)}</TableCell>
                   <TableCell>
-                    <Badge className={br.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>{br.status}</Badge>
+                    <Badge className={String(br.status) === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>{String(br.status)}</Badge>
                   </TableCell>
                 </TableRow>
               ))}
