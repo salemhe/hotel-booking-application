@@ -132,7 +132,7 @@ export default function SuperAdminDashboard() {
             </TableHeader>
             <TableBody>
               {payments.map((p) => (
-                <TableRow key={p.id}>
+                <TableRow key={String(p.id)}>
                   <TableCell>{p.payer}</TableCell>
                   <TableCell>{p.branch}</TableCell>
                   <TableCell>₦{p.amount.toLocaleString()}</TableCell>
