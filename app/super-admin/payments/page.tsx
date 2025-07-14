@@ -40,10 +40,20 @@ const getStatusColor = (status: string) => {
   }
 };
 
+// Define a type for transactions
+interface Transaction {
+  date: string;
+  transactionId: string;
+  customer: string;
+  branch: string;
+  method: string;
+  status: string;
+}
+
 export default function BookiesDashboard() {
   // Removed unused variable 'pathname'
   const [chartData, setChartData] = useState<Array<Record<string, unknown>>>([]);
-  const [transactions, setTransactions] = useState<Array<Record<string, unknown>>>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   // Fetch chart data and transactions from backend
   useEffect(() => {
@@ -285,7 +295,7 @@ export default function BookiesDashboard() {
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button variant="ghost" size="sm">
                         Date <ChevronDown className="h-4 w-4 ml-2" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -297,7 +307,7 @@ export default function BookiesDashboard() {
                   </DropdownMenu>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button variant="ghost" size="sm">
                         Status <ChevronDown className="h-4 w-4 ml-2" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -307,7 +317,7 @@ export default function BookiesDashboard() {
                       <DropdownMenuItem>Pending</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  <Button variant="outline" size="sm">
+                  <Button variant="ghost" size="sm">
                     <Filter className="h-4 w-4 mr-2" />
                     Advanced Filter
                   </Button>
@@ -347,7 +357,7 @@ export default function BookiesDashboard() {
                           <Badge className={getStatusColor(transaction.status)}>{transaction.status}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="sm">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </TableCell>
