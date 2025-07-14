@@ -12,9 +12,10 @@ export function RadioGroup({ value, onValueChange, children, ...props }: RadioGr
     <div role="radiogroup" {...props}>
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child) && child.type === RadioGroupItem) {
-          return React.cloneElement(child, {
-            checked: value === child.props.value,
-            onChange: () => onValueChange(child.props.value),
+          const radioChild = child as React.ReactElement<RadioGroupItemProps, typeof RadioGroupItem>;
+          return React.cloneElement(radioChild, {
+            checked: value === radioChild.props.value,
+            onChange: () => onValueChange(radioChild.props.value),
             name: props.id || "radio-group",
           });
         }
