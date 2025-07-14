@@ -253,7 +253,7 @@ export default function MenuManagement() {
                             <div>
                               <p className="text-sm text-gray-600 mb-2">Drag and drop an image here, or</p>
                               <Button
-                                variant="outline"
+                                variant="secondary"
                                 size="sm"
                                 onClick={handleFileSelect}
                                 className="text-teal-600 border-teal-600 hover:bg-teal-50 bg-transparent"
