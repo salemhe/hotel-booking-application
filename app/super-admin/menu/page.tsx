@@ -165,7 +165,7 @@ export default function MenuManagement() {
   };
 
   // For the table view
-  const filteredItems = menuList.filter((item) =>
+  const filteredItems = menuList.filter((item: { name: string }) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
