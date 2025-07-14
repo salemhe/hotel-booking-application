@@ -134,7 +134,7 @@ export default function SuperAdminSettings() {
           <span className="flex items-center gap-2 text-sm font-medium">
             <Sun className="w-5 h-5 text-yellow-400" /> Light
           </span>
-          <Switch checked={theme === "dark"} onCheckedChange={handleThemeToggle} />
+          <Switch checked={theme === "dark"} onChange={handleThemeToggle} />
           <span className="flex items-center gap-2 text-sm font-medium">
             <Moon className="w-5 h-5 text-gray-700" /> Dark
           </span>
