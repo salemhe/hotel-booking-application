@@ -344,7 +344,7 @@ export default function MenuManagement() {
                           <div className="font-medium text-sm text-gray-900">Show menu on this app</div>
                           <div className="text-xs text-gray-600">Make this menu visible to customers</div>
                         </div>
-                        <Switch checked={Boolean(newMenu.showOnApp)} onCheckedChange={val => setNewMenu({ ...newMenu, showOnApp: val })} />
+                        <Switch checked={Boolean(newMenu.showOnApp)} onChange={val => setNewMenu({ ...newMenu, showOnApp: val })} />
                       </div>
                     </div>
                     {/* Assign to Branches */}
