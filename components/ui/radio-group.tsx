@@ -27,6 +27,7 @@ export function RadioGroup({ value, onValueChange, children, ...props }: RadioGr
 interface RadioGroupItemProps extends React.InputHTMLAttributes<HTMLInputElement> {
   value: string;
   id?: string;
+  name?: string;
 }
 
 export function RadioGroupItem({ value, checked, onChange, id, ...props }: RadioGroupItemProps) {
