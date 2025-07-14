@@ -281,7 +281,7 @@ export default function MenuManagement() {
                       <Textarea
                         id="menu-description"
                         placeholder="Add a short description or notes about this menu"
-                        value={newMenu.description}
+                        value={String(newMenu.description)}
                         onChange={e => setNewMenu({ ...newMenu, description: e.target.value })}
                         rows={3}
                       />
