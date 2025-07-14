@@ -319,7 +319,7 @@ export default function MenuManagement() {
                         {["breakfast", "brunch", "lunch", "dinner", "late-night", "all-day"].map((mealType) => (
                           <Button
                             key={mealType}
-                            variant={newMenu.mealTypes.includes(mealType) ? "default" : "outline"}
+                            variant={newMenu.mealTypes.includes(mealType) ? "default" : "secondary"}
                             size="sm"
                             onClick={() => {
                               setNewMenu({
