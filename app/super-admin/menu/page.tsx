@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -126,7 +127,7 @@ export default function MenuManagement() {
   const [menuItemName, setMenuItemName] = useState('');
   const [menuItemPrice, setMenuItemPrice] = useState('');
   const [menuItems, setMenuItems] = useState<Array<Record<string, unknown>>>([]);
-  const [paymentError, setPaymentError] = useState<string>('');
+  const [paymentError] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState('');
   const [dragActive, setDragActive] = useState(false);
@@ -175,11 +176,11 @@ export default function MenuManagement() {
     setStep(2);
   };
 
-  function handleAddMenuItem(event: React.MouseEvent<HTMLButtonElement>): void {
+  function handleAddMenuItem(): void {
   throw new Error("Function not implemented.");
   }
   
-  function handlePaymentSave(event: React.MouseEvent<HTMLButtonElement>): void {
+  function handlePaymentSave(): void {
   throw new Error("Function not implemented.");
   }
 
@@ -599,12 +600,24 @@ export default function MenuManagement() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredItems.map((item: any) => (
+                      {filteredItems.map((item: {
+                        id: number;
+                        name: string;
+                        price: number;
+                        type: string;
+                        mealTimes: string[];
+                        items: number;
+                        tags: string[];
+                        status: boolean;
+                        image: string;
+                      }) => (
                         <TableRow key={item.id} className="text-black">
                           <TableCell className="text-black">
-                            <img
+                            <Image
                               src={item.image || "/placeholder.svg"}
                               alt={item.name}
+                              width={40}
+                              height={40}
                               className="w-10 h-10 rounded-lg object-cover"
                             />
                           </TableCell>
@@ -612,7 +625,7 @@ export default function MenuManagement() {
                           <TableCell className="text-black">₦{item.price?.toLocaleString()}</TableCell>
                           <TableCell className="text-black">{item.type}</TableCell>
                           <TableCell className="text-black">{Array.isArray(item.mealTimes) ? item.mealTimes.join(", ") : ''}</TableCell>
-                          <TableCell className="text-black">{item.items?.length || 0}</TableCell>
+                          <TableCell className="text-black">{item.items || 0}</TableCell>
                           <TableCell className="text-black">
                             <div className="flex flex-wrap gap-1">
                               {item.tags?.slice(0, 2).map((tag: string, index: number) => (
@@ -691,9 +704,11 @@ export default function MenuManagement() {
                   {menuGridItems.map((item) => (
                     <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="relative">
-                        <img
+                        <Image
                           src={item.image || "/placeholder.svg"}
                           alt={item.name}
+                          width={300}
+                          height={200}
                           className="w-full h-48 object-cover"
                         />
                         <div className="absolute top-2 left-2">
