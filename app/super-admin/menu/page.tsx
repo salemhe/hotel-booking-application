@@ -329,7 +329,7 @@ export default function MenuManagement() {
                                   : [...(newMenu.mealTypes as string[]), mealType],
                               });
                             }}
-                            className={newMenu.mealTypes.includes(mealType) ? "bg-teal-600 hover:bg-teal-700" : ""}
+                            className={(newMenu.mealTypes as string[]).includes(mealType) ? "bg-teal-600 hover:bg-teal-700" : ""}
                           >
                             {mealType.charAt(0).toUpperCase() + mealType.slice(1).replace("-", " ")}
                           </Button>
