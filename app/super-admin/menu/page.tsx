@@ -289,7 +289,7 @@ export default function MenuManagement() {
                     {/* Menu Type */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium text-gray-700">Menu Type</Label>
-                      <RadioGroup value={newMenu.type} onValueChange={val => setNewMenu({ ...newMenu, type: val })} className="flex flex-wrap gap-4">
+                      <RadioGroup value={String(newMenu.type)} onValueChange={val => setNewMenu({ ...newMenu, type: val })} className="flex flex-wrap gap-4">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="a-la-carte" id="a-la-carte" />
                           <Label htmlFor="a-la-carte" className="text-sm">A la Carte</Label>
