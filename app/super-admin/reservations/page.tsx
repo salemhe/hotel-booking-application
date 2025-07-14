@@ -76,7 +76,26 @@ export default function RestaurantDashboard() {
   const [filterStatus, setFilterStatus] = useState("All");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<Record<string, unknown>>({});
+  interface Stats {
+    reservationsToday: number;
+    reservationsChange: number;
+    prepaidReservations: number;
+    prepaidChange: number;
+    guestsToday: number;
+    guestsChange: number;
+    pendingPayments: number;
+    paymentsChange: number;
+  }
+  const [stats, setStats] = useState<Stats>({
+    reservationsToday: 0,
+    reservationsChange: 0,
+    prepaidReservations: 0,
+    prepaidChange: 0,
+    guestsToday: 0,
+    guestsChange: 0,
+    pendingPayments: 0,
+    paymentsChange: 0,
+  });
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"view"|"edit"|"create"|null>(null);
   const [selectedReservation, setSelectedReservation] = useState<Reservation|null>(null);
@@ -97,9 +116,27 @@ export default function RestaurantDashboard() {
   async function fetchStats() {
     try {
       const res = await axios.get(`${API_URL}/super-admin/analytics/summary`);
-      setStats(res.data.data || {});
+      setStats({
+        reservationsToday: Number(res.data.data?.reservationsToday) || 0,
+        reservationsChange: Number(res.data.data?.reservationsChange) || 0,
+        prepaidReservations: Number(res.data.data?.prepaidReservations) || 0,
+        prepaidChange: Number(res.data.data?.prepaidChange) || 0,
+        guestsToday: Number(res.data.data?.guestsToday) || 0,
+        guestsChange: Number(res.data.data?.guestsChange) || 0,
+        pendingPayments: Number(res.data.data?.pendingPayments) || 0,
+        paymentsChange: Number(res.data.data?.paymentsChange) || 0,
+      });
     } catch {
-      setStats({});
+      setStats({
+        reservationsToday: 0,
+        reservationsChange: 0,
+        prepaidReservations: 0,
+        prepaidChange: 0,
+        guestsToday: 0,
+        guestsChange: 0,
+        pendingPayments: 0,
+        paymentsChange: 0,
+      });
     }
   }
 
