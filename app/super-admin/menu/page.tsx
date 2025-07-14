@@ -126,6 +126,7 @@ export default function MenuManagement() {
   const [menuItemName, setMenuItemName] = useState('');
   const [menuItemPrice, setMenuItemPrice] = useState('');
   const [menuItems, setMenuItems] = useState<Array<Record<string, unknown>>>([]);
+  const [paymentError, setPaymentError] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState('');
   const [dragActive, setDragActive] = useState(false);
@@ -173,6 +174,14 @@ export default function MenuManagement() {
   const handleMenuContinue = () => {
     setStep(2);
   };
+
+  function handleAddMenuItem(event: React.MouseEvent<HTMLButtonElement>): void {
+  throw new Error("Function not implemented.");
+  }
+  
+  function handlePaymentSave(event: React.MouseEvent<HTMLButtonElement>): void {
+  throw new Error("Function not implemented.");
+  }
 
   // Sidebar collapse logic
 
@@ -364,7 +373,7 @@ export default function MenuManagement() {
                     {/* Price */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium text-gray-700">Price</Label>
-                      <RadioGroup value={newMenu.priceType} onValueChange={val => setNewMenu({ ...newMenu, priceType: val })} className="space-y-3">
+                      <RadioGroup value={String(newMenu.priceType)} onValueChange={val => setNewMenu({ ...newMenu, priceType: val })} className="space-y-3">
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="fixed" id="fixed-price" />
@@ -375,10 +384,10 @@ export default function MenuManagement() {
                               <div className="relative">
                                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-600">₦</span>
                                 <Input
-                                  value={newMenu.fixedPrice}
-                                  onChange={e => setNewMenu({ ...newMenu, fixedPrice: e.target.value })}
-                                  className="pl-8"
-                                  placeholder="10,000"
+                                value={String(newMenu.fixedPrice)}
+                                onChange={e => setNewMenu({ ...newMenu, fixedPrice: e.target.value })}
+                                className="pl-8"
+                                placeholder="10,000"
                                 />
                               </div>
                             </div>
@@ -392,8 +401,8 @@ export default function MenuManagement() {
                     </div>
                     {/* Action Buttons */}
                     <div className="flex justify-between pt-8 border-t border-gray-200 mt-8">
-                      <Button variant="outline" className="px-8 bg-transparent" onClick={() => { setShowCreateMenu(false); setStep(1); setMenuItems([]); }}>
-                        Cancel
+                      <Button variant="secondary" className="px-8 bg-transparent" onClick={() => { setShowCreateMenu(false); setStep(1); setMenuItems([]); }}>
+                      Cancel
                       </Button>
                       <Button className="px-8 bg-teal-600 hover:bg-teal-700" onClick={handleMenuContinue}>
                         Continue to Menu Item
@@ -420,14 +429,14 @@ export default function MenuManagement() {
                     </div>
                     <ul className="list-disc pl-6">
                       {menuItems.map((item, idx) => (
-                        <li key={idx}>{item.name} - ₦{item.price}</li>
+                      <li key={idx}>{String(item.name)} - ₦{String(item.price)}</li>
                       ))}
                     </ul>
                     <div className="flex justify-between pt-8 border-t border-gray-200 mt-8">
-                      <Button variant="outline" className="px-8 bg-transparent" onClick={() => setStep(1)}>
+                      <Button variant="secondary" className="px-8 bg-transparent" onClick={() => setStep(1)}>
                         Back
                       </Button>
-                      <Button className="px-8 bg-teal-600 hover:bg-teal-700" onClick={handleMenuItemsContinue}>
+                      <Button className="px-8 bg-teal-600 hover:bg-teal-700" onClick={handleMenuContinue}>
                         Continue to Payment
                       </Button>
                     </div>
@@ -475,7 +484,7 @@ export default function MenuManagement() {
                     )}
                     {paymentError && <div className="text-red-600 text-sm font-medium">{paymentError}</div>}
                     <div className="flex justify-between pt-8 border-t border-gray-200 mt-8">
-                      <Button variant="outline" className="px-8 bg-transparent" onClick={() => setStep(2)}>
+                      <Button variant="secondary" className="px-8 bg-transparent" onClick={() => setStep(2)}>
                         Back
                       </Button>
                       <Button className="px-8 bg-teal-600 hover:bg-teal-700" onClick={handlePaymentSave}>
@@ -492,7 +501,7 @@ export default function MenuManagement() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
                 <h2 className="text-2xl font-bold text-gray-900">Menu Management</h2>
                 <div className="flex items-center space-x-3">
-                  <Button variant="outline" className="flex items-center space-x-2 bg-transparent">
+                  <Button variant="secondary" className="flex items-center space-x-2 bg-transparent">
                     <Download className="w-4 h-4" />
                     <span>Export</span>
                   </Button>
@@ -510,7 +519,7 @@ export default function MenuManagement() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
                 <div className="flex items-center space-x-4">
                   <Button
-                    variant={activeMenuTab === 'allMenu' ? 'default' : 'outline'}
+                    variant={activeMenuTab === 'allMenu' ? 'default' : 'secondary'}
                     className={`text-teal-600 border-teal-600 bg-transparent ${activeMenuTab === 'allMenu' ? 'bg-teal-600 text-white' : ''}`}
                     onClick={() => setActiveMenuTab('allMenu')}
                   >
@@ -547,7 +556,7 @@ export default function MenuManagement() {
                     <option value="Fixed">Fixed</option>
                   </select>
                   {/* Advanced Filter */}
-                  <Button variant="outline" className="flex items-center space-x-2 bg-transparent">
+                  <Button variant="secondary" className="flex items-center space-x-2 bg-transparent">
                     <Filter className="w-4 h-4" />
                     <span>Advanced filter</span>
                   </Button>
@@ -590,7 +599,7 @@ export default function MenuManagement() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredItems.map((item) => (
+                      {filteredItems.map((item: any) => (
                         <TableRow key={item.id} className="text-black">
                           <TableCell className="text-black">
                             <img
@@ -606,10 +615,10 @@ export default function MenuManagement() {
                           <TableCell className="text-black">{item.items?.length || 0}</TableCell>
                           <TableCell className="text-black">
                             <div className="flex flex-wrap gap-1">
-                              {item.tags?.slice(0, 2).map((tag, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs text-black">
-                                  {tag}
-                                </Badge>
+                              {item.tags?.slice(0, 2).map((tag: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs text-black">
+                              {tag}
+                              </Badge>
                               ))}
                               {item.tags && item.tags.length > 2 && (
                                 <Badge variant="secondary" className="text-xs text-black">
@@ -624,7 +633,7 @@ export default function MenuManagement() {
                           <TableCell className="text-black">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon">
+                                <Button variant="ghost" size="sm">
                                   <MoreHorizontal className="w-4 h-4" />
                                 </Button>
                               </DropdownMenuTrigger>
@@ -643,30 +652,30 @@ export default function MenuManagement() {
                   <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
                     <div className="text-sm text-gray-500">Page 1 of 30</div>
                     <div className="flex items-center space-x-2">
-                      <Button variant="outline" size="sm" disabled>
-                        <ChevronLeft className="w-4 h-4" />
+                      <Button variant="secondary" size="sm" disabled>
+                      <ChevronLeft className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" size="sm" className="bg-blue-50 text-blue-600">
-                        1
+                      <Button variant="secondary" size="sm" className="bg-blue-50 text-blue-600">
+                      1
                       </Button>
-                      <Button variant="outline" size="sm">
-                        2
+                      <Button variant="secondary" size="sm">
+                      2
                       </Button>
-                      <Button variant="outline" size="sm">
-                        3
+                      <Button variant="secondary" size="sm">
+                      3
                       </Button>
                       <span className="text-gray-400">...</span>
-                      <Button variant="outline" size="sm">
-                        10
+                      <Button variant="secondary" size="sm">
+                      10
                       </Button>
-                      <Button variant="outline" size="sm">
-                        11
+                      <Button variant="secondary" size="sm">
+                      11
                       </Button>
-                      <Button variant="outline" size="sm">
-                        12
+                      <Button variant="secondary" size="sm">
+                      12
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <ChevronRight className="w-4 h-4" />
+                      <Button variant="secondary" size="sm">
+                      <ChevronRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
@@ -698,7 +707,7 @@ export default function MenuManagement() {
                         <p className="text-gray-600 text-sm mb-3">{item.description}</p>
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-lg">{item.price}</span>
-                          <Button variant="link" className="text-teal-600 p-0">
+                          <Button variant="ghost" className="text-teal-600 p-0">
                             View Details
                           </Button>
                         </div>
