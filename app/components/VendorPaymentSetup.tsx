@@ -1,3 +1,4 @@
+"use client";
 import { useState } from 'react';
 import { toast } from '@/app/components/ui/use-toast';
 import { paymentService } from '../lib/api/services/paymentService';

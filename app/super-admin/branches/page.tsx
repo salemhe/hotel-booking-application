@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
 import {
   Search,
@@ -13,15 +12,8 @@ import {
   List,
   MoreHorizontal,
   Star,
-  LayoutDashboard,
-  BookOpen,
   MapPin,
-  MenuIcon,
-  CreditCard,
-  UserCheck,
-  Settings,
-  LogOut,
-  ChevronLeft,
+    ChevronLeft,
   ChevronRight,
   Download as Export,
   X,
@@ -34,13 +26,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
-const sidebarItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/super-admin/dashboard" },
-  { icon: BookOpen, label: "Reservations", href: "/super-admin/reservations" },
-  { icon: MapPin, label: "Branches", href: "/super-admin/branches" },
-  { icon: MenuIcon, label: "Menu Management", href: "/super-admin/menu" },
-  { icon: CreditCard, label: "Payments", href: "/super-admin/payments" },
-];
+// Removed unused sidebarItems
 
 function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onBranchAdded: () => void }) {
   const [formData, setFormData] = useState({
@@ -58,22 +44,22 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     assignedMenu: "",
     importAllMenuItems: false,
   });
-  const [saving, setSaving] = useState(false);
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    // Removed unused variable 'saving'
+  type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+  const days: DayOfWeek[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const countryCodes = ["+234", "+1", "+44", "+91", "+86"];
-  const handleDayChange = (day, checked) => {
+  const handleDayChange = (day: DayOfWeek, checked: boolean) => {
     setFormData((prev) => ({ ...prev, openingDays: { ...prev.openingDays, [day]: checked } }));
   };
-  const handleSubmit = async (action) => {
-    setSaving(true);
-    try {
+  const handleSubmit = async (action: string) => {
+        try {
       // POST to backend
       await axios.post(`${API_URL}/super-admin/branches`, {
         name: formData.branchName,
         address: formData.address,
         city: formData.city,
         phoneNumber: formData.countryCode + formData.phoneNumber,
-        openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day]),
+        openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
         opensAt: formData.opensAt,
         closesAt: formData.closesAt,
         assignedManager: formData.assignedManager,
@@ -100,16 +86,16 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         setIsOpen(false);
       }
     } catch (err) {
-      if (err.response) {
-        console.error('API error:', err.response.data);
-        alert("Failed to save branch: " + (err.response.data?.message || JSON.stringify(err.response.data)));
+      if (axios.isAxiosError(err) && err.response) {
+        const response = err.response;
+        console.error('API error:', response.data);
+        alert("Failed to save branch: " + (response.data?.message || JSON.stringify(response.data)));
       } else {
         console.error('Error:', err);
         alert("Failed to save branch. Please try again.");
       }
     } finally {
-      setSaving(false);
-    }
+          }
   };
   return (
     <>
@@ -117,7 +103,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative max-h-[90vh] overflow-y-auto">
           <div className="flex flex-row items-center justify-between pb-4">
             <div className="text-lg font-semibold">Add New Branch</div>
-            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-6 w-6 rounded-full">
+            <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="h-6 w-6 rounded-full">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -125,7 +111,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
             {/* Branch Name */}
             <div className="space-y-2">
               <label htmlFor="branchName" className="text-sm font-medium">Branch name*</label>
-              <Input id="branchName" placeholder="e.g. Joe's Chicken and Grill - Ikeja" value={formData.branchName} onChange={e => setFormData(prev => ({ ...prev, branchName: e.target.value }))} className="w-full" />
+              <Input id="branchName" placeholder="e.g. Joe&apos;s Chicken and Grill - Ikeja" value={formData.branchName} onChange={e => setFormData(prev => ({ ...prev, branchName: e.target.value }))} className="w-full" />
             </div>
             {/* Address */}
             <div className="space-y-2">
@@ -166,7 +152,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
                 <div className="grid grid-cols-2 gap-2">
                   {days.map(day => (
                     <div key={day} className="flex items-center space-x-2">
-                      <input type="checkbox" id={day} checked={formData.openingDays[day]} onChange={e => handleDayChange(day, e.target.checked)} />
+                      <input type="checkbox" id={day} checked={formData.openingDays[day]} onChange={e => handleDayChange(day as DayOfWeek, e.target.checked)} />
                       <label htmlFor={day} className="text-sm">{day}</label>
                     </div>
                   ))}
@@ -216,8 +202,8 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
             </div>
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={() => setIsOpen(false)} className="flex-1">Cancel</Button>
-              <Button variant="outline" onClick={() => handleSubmit("saveAndAdd")} className="flex-1">Save & Add another</Button>
+              <Button variant="secondary" onClick={() => setIsOpen(false)} className="flex-1">Cancel</Button>
+              <Button variant="secondary" onClick={() => handleSubmit("saveAndAdd")} className="flex-1">Save & Add another</Button>
               <Button onClick={() => handleSubmit("save") } className="flex-1 bg-teal-600 hover:bg-teal-700 text-white">Save Branch</Button>
             </div>
           </div>
@@ -231,13 +217,12 @@ export default function BranchesDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
-  const [branches, setBranches] = useState<any[]>([]);
+   const [branches, setBranches] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAddBranch, setShowAddBranch] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
+  // Removed unused variables 'router' and 'pathname'
 
   useEffect(() => {
     fetchBranches();
@@ -247,13 +232,13 @@ export default function BranchesDashboard() {
   async function fetchBranches() {
     setLoading(true);
     try {
-      const params: any = { page, limit: 12 };
+      const params: Record<string, unknown> = { page, limit: 12 };
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       const res = await axios.get(`${API_URL}/super-admin/branches`, { params });
       setBranches(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
-    } catch (err) {
+    } catch {
       setBranches([]);
       setTotalPages(1);
     } finally {
@@ -265,76 +250,7 @@ export default function BranchesDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-teal-800 text-white flex flex-col">
-        {/* Logo */}
-        <div className="p-6 border-b border-teal-700">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-teal-800 font-bold text-sm">B</span>
-            </div>
-            <span className="text-xl font-bold">Bookies</span>
-          </div>
-        </div>
-        {/* Restaurant Selection */}
-        <div className="p-4 border-b border-teal-700">
-          <div className="flex items-center justify-between bg-teal-700 rounded-lg p-3 cursor-pointer hover:bg-teal-600 transition-colors">
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-orange-500 rounded-full"></div>
-              <div>
-                <div className="text-sm font-medium">Restaurant 1</div>
-                <div className="text-xs text-teal-200">HQ</div>
-              </div>
-            </div>
-            <ChevronDown className="w-4 h-4" />
-          </div>
-        </div>
-        {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {sidebarItems.map((item, index) => {
-              const isActive = pathname.startsWith(item.href);
-              const Icon = item.icon;
-              return (
-                <li key={index}>
-                  <button
-                    onClick={() => router.push(item.href)}
-                    className={`flex items-center space-x-3 p-3 rounded-lg transition-colors w-full text-left ${
-                      isActive ? "bg-teal-700 text-white" : "text-teal-200 hover:bg-teal-700 hover:text-white"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-        {/* Bottom Navigation */}
-        <div className="p-4 border-t border-teal-700">
-          <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => router.push("/super-admin/settings")}
-                className="flex items-center space-x-3 p-3 rounded-lg text-teal-200 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
-              >
-                <Settings className="w-5 h-5" />
-                <span className="text-sm font-medium">Settings</span>
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => router.push("/logout")}
-                className="flex items-center space-x-3 p-3 rounded-lg text-teal-200 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
-              >
-                <LogOut className="w-5 h-5" />
-                <span className="text-sm font-medium">Logout</span>
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
+      {/* Sidebar removed: now handled by layout.tsx */}
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
@@ -353,7 +269,7 @@ export default function BranchesDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="sm">
                 <Bell className="w-5 h-5" />
               </Button>
               <div className="flex items-center space-x-2">
@@ -376,9 +292,8 @@ export default function BranchesDashboard() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">All Branches</h1>
             </div>
-            <AddNewBranchModal />
             <div className="flex items-center space-x-3">
-            <Button variant="outline" size="sm">
+            <Button variant="secondary" size="sm">
             <Export className="w-4 h-4 mr-2" />
             Export
             </Button>
@@ -417,7 +332,7 @@ export default function BranchesDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
+              <Button variant="secondary" size="sm">
                 <Filter className="w-4 h-4 mr-2" />
                 Advanced filter
               </Button>
@@ -452,52 +367,52 @@ export default function BranchesDashboard() {
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {filteredBranches.map((branch) => (
-                <Card key={branch.id} className="relative overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={String(branch.id)} className="relative overflow-hidden hover:shadow-lg transition-shadow">
                   <CardContent className="p-0">
                     {/* Status Badge */}
                     <div className="absolute top-4 left-4 z-10">
                       <Badge variant="secondary" className={`${branch.status === "Opened" ? "bg-green-500" : "bg-red-500"} text-white border-0`}>
-                        {branch.status}
+                        {String(branch.status)}
                       </Badge>
                     </div>
                     {/* More Options */}
                     <div className="absolute top-4 right-4 z-10">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 bg-white/80 hover:bg-white">
+                      <Button variant="ghost" size="sm" className="h-8 w-8 bg-white/80 hover:bg-white">
                         <MoreHorizontal className="w-4 h-4" />
                       </Button>
                     </div>
                     {/* Branch Avatar */}
                     <div className="flex justify-center pt-12 pb-4">
                       <div className="w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xl font-bold">{branch.name.split(" ")[0][0]}</span>
+                        <span className="text-white text-xl font-bold">{String(branch.name).split(" ")[0][0]}</span>
                       </div>
                     </div>
                     {/* Branch Info */}
                     <div className="px-6 pb-6">
-                      <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{branch.name}</h3>
+                      <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{String(branch.name).replace(/'/g, "&apos;")}</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today's Reservation</span>
-                          <span className="text-sm font-semibold">{branch.todayReservation}</span>
+                          <span className="text-sm text-gray-600">Today&apos;s Reservation</span>
+                          <span className="text-sm font-semibold">{String(branch.todayReservation)}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today's Revenue</span>
+                          <span className="text-sm text-gray-600">Today&apos;s Revenue</span>
                           <span className="text-sm font-semibold">₦{branch.todayRevenue?.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">Last Food Today</span>
-                          <span className="text-sm font-semibold">{branch.lastFoodToday}</span>
+                          <span className="text-sm font-semibold">{String(branch.lastFoodToday)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-600">Average Rating</span>
                           <div className="flex items-center space-x-1">
                             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-semibold">{branch.averageRating}</span>
+                            <span className="text-sm font-semibold">{String(branch.averageRating)}</span>
                           </div>
                         </div>
                       </div>
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         className="w-full mt-4 border-teal-600 text-teal-600 hover:bg-teal-50 bg-transparent"
                       >
                         View Branch
@@ -517,13 +432,13 @@ export default function BranchesDashboard() {
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
+              <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).slice(0, 6).map((p) => (
                 <Button
                   key={p}
-                  variant={p === page ? "default" : "outline"}
+                  variant={p === page ? "default" : "secondary"}
                   size="sm"
                   className={p === page ? "bg-teal-600 hover:bg-teal-700" : ""}
                   onClick={() => setPage(p)}
@@ -531,7 +446,7 @@ export default function BranchesDashboard() {
                   {p}
                 </Button>
               ))}
-              <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+              <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>

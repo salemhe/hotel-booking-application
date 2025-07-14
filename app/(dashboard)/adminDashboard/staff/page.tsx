@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import Image from "next/image";
 import { useState } from "react"
 import {
   Search, Users, UserCheck, UserX, UserMinus, MoreHorizontal, ChevronLeft, ChevronRight,
@@ -161,7 +162,7 @@ export default function StaffManagement() {
                     <tr key={staff.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <img className="h-8 w-8 rounded-full" src={staff.avatar || "/placeholder.svg"} alt="" />
+                          <Image className="h-8 w-8 rounded-full" src={staff.avatar || "/placeholder.svg"} alt={staff.name} width={32} height={32} />
                           <div className="ml-3">
                             <div className="text-sm font-medium text-gray-900">{staff.name}</div>
                           </div>

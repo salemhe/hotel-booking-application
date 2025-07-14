@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
+import Image from "next/image";
 import { 
   Plus, 
   Edit, 
@@ -634,10 +635,12 @@ const RoomModal: React.FC<{
               <div className="mt-2 flex flex-wrap gap-2">
                 {imagePreviews.map((src, i) => (
                   <div key={i} className="relative w-20 h-20 rounded overflow-hidden border">
-                    <img
+                    <Image
                       src={src}
                       alt={`Preview ${i + 1}`}
                       className="object-cover w-full h-full"
+                      width={80}
+                      height={80}
                     />
                     <button
                       type="button"
@@ -663,10 +666,12 @@ const RoomModal: React.FC<{
                 <div className="flex flex-wrap gap-2">
                   {room.images.map((img, idx) => (
                     <div key={idx} className="w-20 h-20 rounded overflow-hidden border">
-                      <img
+                      <Image
                         src={img.startsWith("http") ? img : imageBaseUrl + img}
                         alt={`Room image ${idx + 1}`}
                         className="object-cover w-full h-full"
+                        width={80}
+                        height={80}
                       />
                     </div>
                   ))}
@@ -715,10 +720,12 @@ const ImageGalleryModal: React.FC<{ images: string[]; onClose: () => void }> = (
           <X size={24} />
         </button>
         <div className="flex flex-col items-center">
-          <img
+          <Image
             src={images[current].startsWith("http") ? images[current] : imageBaseUrl + images[current]}
             alt={`Room Image ${current + 1}`}
             className="max-h-96 rounded shadow"
+            width={400}
+            height={300}
           />
           <div className="flex items-center justify-center gap-2 mt-3">
             {images.map((img, idx) => (
@@ -729,10 +736,12 @@ const ImageGalleryModal: React.FC<{ images: string[]; onClose: () => void }> = (
                   idx === current ? "border-blue-500" : "border-transparent"
                 } overflow-hidden`}
               >
-                <img
+                <Image
                   src={img.startsWith("http") ? img : imageBaseUrl + img}
                   alt={`Preview ${idx + 1}`}
                   className="object-cover w-full h-full"
+                  width={48}
+                  height={48}
                 />
               </button>
             ))}

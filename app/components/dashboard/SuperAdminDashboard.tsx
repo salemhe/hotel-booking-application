@@ -1,19 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
 import {
   Calendar,
-  Users,
   DollarSign,
   Clock,
-  Home,
-  MapPin,
-  MenuIcon,
-  FileText,
-  Settings,
-  LogOut,
+  Users,
   Bell,
   Search,
   ChevronDown,
@@ -29,7 +22,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -40,13 +32,17 @@ import {
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
+interface Reservation {
+  id: string | number;
+  [key: string]: unknown;
+}
+
 export default function SuperAdminDashboard() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [reservations, setReservations] = useState<any[]>([]);
-  const [chartData, setChartData] = useState<any[]>([]);
+  // Removed unused router and pathname
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [chartData, setChartData] = useState<Array<{ name: string; value: number }>>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>({});
+  const [stats, setStats] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     async function fetchData() {
@@ -63,7 +59,7 @@ export default function SuperAdminDashboard() {
         // Fetch stats (example endpoint, adjust as needed)
         const statsRes = await axios.get(`${API_URL}/super-admin/analytics/summary`);
         setStats(statsRes.data.data || {});
-      } catch (err) {
+      } catch {
         // fallback to empty data
         setReservations([]);
         setChartData([]);
@@ -75,15 +71,7 @@ export default function SuperAdminDashboard() {
     fetchData();
   }, []);
 
-  const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: Home, href: "/super-admin/dashboard" },
-    { id: "reservations", label: "Reservations", icon: Calendar, href: "/super-admin/reservations" },
-    { id: "branches", label: "Branches", icon: MapPin, href: "/super-admin/branches" },
-    { id: "menu", label: "Menu Management", icon: MenuIcon, href: "/super-admin/menu" },
-    { id: "reports", label: "Reports", icon: FileText, href: "/super-admin/reports" },
-        { id: "settings", label: "Settings", icon: Settings, href: "/super-admin/settings" },
-    { id: "logout", label: "Logout", icon: LogOut, href: "/logout" },
-  ];
+  // Removed unused sidebarItems
 
   const SimpleChart = ({ data }: { data: typeof chartData }) => (
     <div className="flex items-end justify-between h-32 gap-1">
@@ -105,7 +93,7 @@ export default function SuperAdminDashboard() {
     </div>
   );
 
-  const DonutChart = ({ percentage, color, label }: { percentage: number; color: string; label: string }) => (
+  const DonutChart = ({ percentage, color }: { percentage: number; color: string }) => (
     <div className="relative w-24 h-24">
       <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
         <path
@@ -152,60 +140,7 @@ export default function SuperAdminDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-teal-800 text-white flex flex-col">
-        <div className="p-6 border-b border-teal-700">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-teal-800 font-bold text-sm">B</span>
-            </div>
-            <span className="text-xl font-bold">Bookies</span>
-          </div>
-        </div>
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {sidebarItems.map((item, index) => {
-              const isActive = pathname.startsWith(item.href);
-              const Icon = item.icon;
-              return (
-                <li key={index}>
-                  <button
-                    onClick={() => router.push(item.href)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors w-full text-left ${
-                      isActive ? "bg-teal-700 text-white" : "text-teal-100 hover:bg-teal-700 hover:text-white"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.label}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-        <div className="p-4 border-t border-teal-700">
-          <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => router.push("/super-admin/settings")}
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-teal-100 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
-              >
-                <Settings className="w-5 h-5" />
-                <span>Settings</span>
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => router.push("/logout")}
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-teal-100 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
-              >
-                <LogOut className="w-5 h-5" />
-                <span>Logout</span>
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
+      {/* Sidebar removed: now handled by layout.tsx */}
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
@@ -271,8 +206,8 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Reservations made today</p>
-                    <p className="text-2xl font-bold">{stats.reservationsToday || 0}</p>
-                    <p className="text-xs text-gray-500">↑ {stats.reservationsChange || 0}% vs last week</p>
+                    <p className="text-2xl font-bold">{typeof stats.reservationsToday === "number" ? stats.reservationsToday : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.reservationsChange === "number" ? stats.reservationsChange : 0}% vs last week</p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Calendar className="w-6 h-6 text-blue-600" />
@@ -285,8 +220,8 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Prepaid Reservations</p>
-                    <p className="text-2xl font-bold">{stats.prepaidReservations || 0}</p>
-                    <p className="text-xs text-gray-500">↑ {stats.prepaidChange || 0}% vs last week</p>
+                    <p className="text-2xl font-bold">{typeof stats.prepaidReservations === "number" ? stats.prepaidReservations : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.prepaidChange === "number" ? stats.prepaidChange : 0}% vs last week</p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-green-600" />
@@ -299,8 +234,8 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Expected Guests Today</p>
-                    <p className="text-2xl font-bold">{stats.guestsToday || 0}</p>
-                    <p className="text-xs text-gray-500">↑ {stats.guestsChange || 0}% vs last week</p>
+                    <p className="text-2xl font-bold">{typeof stats.guestsToday === "number" ? stats.guestsToday : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.guestsChange === "number" ? stats.guestsChange : 0}% vs last week</p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Users className="w-6 h-6 text-purple-600" />
@@ -313,8 +248,8 @@ export default function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Pending Payments</p>
-                    <p className="text-2xl font-bold">${stats.pendingPayments || 0}</p>
-                    <p className="text-xs text-gray-500">↓ {stats.paymentsChange || 0}% vs last week</p>
+                    <p className="text-2xl font-bold">${typeof stats.pendingPayments === "number" ? stats.pendingPayments : 0}</p>
+                    <p className="text-xs text-gray-500">↓ {typeof stats.paymentsChange === "number" ? stats.paymentsChange : 0}% vs last week</p>
                   </div>
                   <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-yellow-600" />
@@ -401,20 +336,22 @@ export default function SuperAdminDashboard() {
                               <div className="flex items-center">
                                 <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center mr-3">
                                   <span className="text-white text-sm font-medium">
-                                    {reservation.name?.split(" ").map((n: string) => n[0]).join("")}
+                                    {typeof reservation.name === "string"
+                                      ? reservation.name.split(" ").map((n: string) => n[0]).join("")
+                                      : ""}
                                   </span>
                                 </div>
                                 <div>
-                                  <div className="text-sm font-medium text-gray-900">{reservation.name}</div>
-                                  <div className="text-sm text-gray-500">{reservation.email}</div>
+                                  <div className="text-sm font-medium text-gray-900">{typeof reservation.name === "string" ? reservation.name : ""}</div>
+                                  <div className="text-sm text-gray-500">{typeof reservation.email === "string" ? reservation.email : ""}</div>
                                 </div>
                               </div>
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{reservation.date}</div>
-                              <div className="text-sm text-gray-500">{reservation.time}</div>
+                              <div className="text-sm text-gray-900">{typeof reservation.date === "string" ? reservation.date : ""}</div>
+                              <div className="text-sm text-gray-500">{typeof reservation.time === "string" ? reservation.time : ""}</div>
                             </td>
-                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{reservation.guests}</td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{typeof reservation.guests === "number" ? reservation.guests : ""}</td>
                             <td className="px-4 py-4 whitespace-nowrap">
                               {reservation.mealPreselected ? (
                                 <Check className="w-5 h-5 text-green-500" />
@@ -432,7 +369,7 @@ export default function SuperAdminDashboard() {
                                     : "bg-gray-100 text-gray-800"
                                 }`}
                               >
-                                {reservation.paymentStatus}
+                                {typeof reservation.paymentStatus === "string" ? reservation.paymentStatus : ""}
                               </span>
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap">
@@ -447,7 +384,7 @@ export default function SuperAdminDashboard() {
                                     : "bg-gray-100 text-gray-800"
                                 }`}
                               >
-                                {reservation.reservationStatus}
+                                {typeof reservation.reservationStatus === "string" ? reservation.reservationStatus : ""}
                               </span>
                             </td>
                             <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -492,10 +429,10 @@ export default function SuperAdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="mb-4">
-                    <div className="text-2xl font-bold">{stats.reservationsThisWeek || 0}</div>
+                    <div className="text-2xl font-bold">{typeof stats.reservationsThisWeek === "number" ? stats.reservationsThisWeek : 0}</div>
                     <div className="text-sm text-gray-500 flex items-center gap-1">
                       <TrendingUp className="w-4 h-4 text-green-500" />
-                      {stats.reservationsTrend || 0}% vs last week
+                      {typeof stats.reservationsTrend === "number" ? stats.reservationsTrend : 0}% vs last week
                     </div>
                   </div>
                   <SimpleChart data={chartData} />
@@ -519,7 +456,7 @@ export default function SuperAdminDashboard() {
               </CardHeader>
               <CardContent className="flex items-center justify-center">
                 <div className="flex items-center gap-4">
-                  <DonutChart percentage={64} color="#3b82f6" label="New Customers" />
+                  <DonutChart percentage={64} color="#3b82f6" />
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
@@ -588,7 +525,7 @@ export default function SuperAdminDashboard() {
               </CardHeader>
               <CardContent className="flex items-center justify-center">
                 <div className="flex items-center gap-4">
-                  <DonutChart percentage={58} color="#10b981" label="Total online orders" />
+                  <DonutChart percentage={58} color="#10b981" />
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-green-500 rounded-full"></div>

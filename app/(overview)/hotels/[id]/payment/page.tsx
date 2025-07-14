@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ArrowLeft, MapPin, Edit2, Star } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { format } from 'date-fns';
@@ -86,9 +87,10 @@ const BookingDetails = () => {
         {/* Hotel Information */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6 sm:mb-8">
           <div className="w-full sm:w-24 h-40 sm:h-20 rounded-lg overflow-hidden flex-shrink-0">
-            <img 
+            <Image 
               src={bookingData.hotelInfo?.profileImages?.[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200&h=160&fit=crop"} 
               alt={bookingData.hotelInfo?.businessName || "Hotel"} 
+              width={384} height={80}
               className="w-full h-full object-cover"
             />
           </div>

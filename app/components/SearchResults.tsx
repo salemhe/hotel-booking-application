@@ -1,4 +1,5 @@
 import React, { useState, useEffect, } from 'react';
+import Image from "next/image";
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
@@ -185,10 +186,12 @@ export const SearchResults = () => {
                      onClick={() => router.push(`/restaurants/${restaurant._id}`)}
                    >
                      <div className="relative">
-                       <img
+                       <Image
                          src={restaurant.profileImage || "/restaurant.jpg"}
                          alt={restaurant.businessName}
                          className="w-full h-48 object-cover"
+                         width={400}
+                         height={192}
                        />
                        <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50">
                          <Heart className="w-4 h-4 text-gray-400" />

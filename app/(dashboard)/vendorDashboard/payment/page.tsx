@@ -4,6 +4,7 @@ import { PaymentBreakdown } from "@/app/components/PaymentBreakdown";
 import { Button } from "@/app/components/ui/button";
 import Link from "next/link";
 import Withdraw from "@/app/components/Withdraw";
+import { VendorPaymentSetup } from "@/app/components/VendorPaymentSetup";
 // import AccountDetails from "@/app/components/AccountDetails";
 
 export default function Payment() {
@@ -39,6 +40,11 @@ export default function Payment() {
       >
         <PaymentStats />
       </Suspense>
+      {/* Payment Info Section */}
+      <div className="my-8">
+        <h2 className="text-lg font-semibold mb-2">Payment Info</h2>
+        <VendorPaymentSetup />
+      </div>
       <Withdraw />
       {/* <AccountDetails /> */}
       <div className="grid gap-4 sm:gap-6 mt-4 sm:mt-6 w-full grid-cols-1">
