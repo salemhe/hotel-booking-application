@@ -319,14 +319,14 @@ export default function MenuManagement() {
                         {["breakfast", "brunch", "lunch", "dinner", "late-night", "all-day"].map((mealType) => (
                           <Button
                             key={mealType}
-                            variant={newMenu.mealTypes.includes(mealType) ? "default" : "secondary"}
+                            variant={(newMenu.mealTypes as string[]).includes(mealType) ? "default" : "secondary"}
                             size="sm"
                             onClick={() => {
                               setNewMenu({
                                 ...newMenu,
-                                mealTypes: newMenu.mealTypes.includes(mealType)
-                                  ? newMenu.mealTypes.filter((type: string) => type !== mealType)
-                                  : [...newMenu.mealTypes, mealType],
+                                mealTypes: (newMenu.mealTypes as string[]).includes(mealType)
+                                  ? (newMenu.mealTypes as string[]).filter((type: string) => type !== mealType)
+                                  : [...(newMenu.mealTypes as string[]), mealType],
                               });
                             }}
                             className={newMenu.mealTypes.includes(mealType) ? "bg-teal-600 hover:bg-teal-700" : ""}

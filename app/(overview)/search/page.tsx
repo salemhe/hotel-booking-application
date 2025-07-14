@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
@@ -232,9 +233,10 @@ const SearchResults = () => {
                     onClick={() => router.push(`/restaurants/${restaurant._id}`)}
                   >
                     <div className="relative">
-                      <img
+                      <Image
                         src={restaurant.profileImage || "/restaurant.jpg"}
                         alt={restaurant.businessName}
+                        width={384} height={192}
                         className="w-full h-48 object-cover"
                       />
                       <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50">

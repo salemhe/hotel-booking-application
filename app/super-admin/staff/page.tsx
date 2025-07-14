@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, UserCheck, UserX } from "lucide-react";
@@ -73,7 +74,7 @@ const SuperAdminStaffPage = () => {
         {staff.map((member) => (
           <Card key={member.id} className="hover:shadow-lg transition-shadow">
             <CardContent className="flex flex-col items-center p-6">
-              <img src={member.avatar || "/placeholder.svg"} alt={member.name} className="w-16 h-16 rounded-full mb-2" />
+              <Image src={member.avatar || "/placeholder.svg"} alt={member.name} width={64} height={64} className="w-16 h-16 rounded-full mb-2" />
               <div className="font-semibold text-lg">{member.name}</div>
               <div className="text-gray-500 mb-1">{member.role}</div>
               <div className="flex gap-2 mb-2">
