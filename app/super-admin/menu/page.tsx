@@ -225,13 +225,13 @@ export default function MenuManagement() {
                         <Input
                           id="menu-name"
                           placeholder="e.g John Platter"
-                          value={newMenu.name}
+                          value={String(newMenu.name)}
                           onChange={e => setNewMenu({ ...newMenu, name: e.target.value })}
                           maxLength={50}
                           className="pr-12"
                         />
                         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
-                          {newMenu.name.length}/50
+                          {String(newMenu.name).length}/50
                         </span>
                       </div>
                     </div>
