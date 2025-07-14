@@ -351,7 +351,7 @@ export default function MenuManagement() {
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-700">Assign to Branches</Label>
                       <select
-                        value={newMenu.branch}
+                        value={String(newMenu.branch)}
                         onChange={e => setNewMenu({ ...newMenu, branch: e.target.value })}
                         className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                       >
