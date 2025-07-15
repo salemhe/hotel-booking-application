@@ -1,5 +1,4 @@
 "use client";
-
 import type React from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/app/components/ui/button";
@@ -97,6 +96,9 @@ interface BusinessData {
   website: string;
   rooms: Room[];
   menuItems: MenuItem[];
+  // New fields for restaurants
+  cuisines: string[];
+  availableSlots: string[];
 }
 
 const ROOM_TYPES = [
@@ -170,6 +172,10 @@ const CUISINE_TYPES = [
   "Moroccan",
   "Turkish",
   "Caribbean",
+  "Nigerian",
+  "Ghanaian",
+  "Kenyan",
+  "South African",
 ];
 
 const DIETARY_INFO = [
@@ -258,6 +264,8 @@ export default function BusinessProfileSetup() {
     website: "",
     rooms: [],
     menuItems: [],
+    cuisines: [], // New field
+    availableSlots: [], // New field
   });
 
   const handleRetry = async () => {
@@ -289,7 +297,8 @@ export default function BusinessProfileSetup() {
     loadBanks();
   }, []);
 
-  const totalSteps = 6; // Images, Payment, Location, Hours, About, Business-specific
+
+  const totalSteps = 6;
 
   const updateFormData = <K extends keyof BusinessData>(
     field: K,
@@ -323,7 +332,7 @@ export default function BusinessProfileSetup() {
         "profileImages",
         [...formData.profileImages, ...newImages].slice(0, 10)
       );
-      setImages(Array.from(files).map((file) => URL.createObjectURL(file)));
+      setImages(prev => [...prev, ...newImages.map((file) => URL.createObjectURL(file))]);
     }
   };
 
@@ -333,6 +342,7 @@ export default function BusinessProfileSetup() {
     setImages(images.filter((_, i) => i !== index));
   };
 
+  // Mock verification function
   async function verifyAccount() {
     setIsVerifying(true);
     setError(null);
@@ -355,6 +365,34 @@ export default function BusinessProfileSetup() {
       setIsVerifying(false);
     }
   }
+
+  // Cuisine management functions
+  const addCuisine = (cuisine: string) => {
+    if (!formData.cuisines.includes(cuisine)) {
+      updateFormData("cuisines", [...formData.cuisines, cuisine]);
+    }
+  };
+
+  const removeCuisine = (cuisine: string) => {
+    updateFormData(
+      "cuisines",
+      formData.cuisines.filter((c) => c !== cuisine)
+    );
+  };
+
+  // Available slots management functions
+  const addTimeSlot = (timeSlot: string) => {
+    if (!formData.availableSlots.includes(timeSlot)) {
+      updateFormData("availableSlots", [...formData.availableSlots, timeSlot]);
+    }
+  };
+
+  const removeTimeSlot = (timeSlot: string) => {
+    updateFormData(
+      "availableSlots",
+      formData.availableSlots.filter((slot) => slot !== timeSlot)
+    );
+  };
 
   // Room management functions
   const addRoom = () => {
@@ -457,19 +495,26 @@ export default function BusinessProfileSetup() {
       },
       {
         title: "Operating Hours",
-        description: "Set your business hours",
+        description: "Set your business hours and availability",
         required: true,
         guidance:
-          "Set your regular operating hours. You can always update these later in settings.",
+          businessType === "restaurant"
+            ? "Set your regular operating hours and available booking slots for customers."
+            : "Set your regular operating hours. You can always update these later in settings.",
       },
       {
         title: `About Your ${
           businessType === "restaurant" ? "Restaurant" : "Hotel"
         }`,
-        description: "Tell customers about your business",
+        description:
+          businessType === "restaurant"
+            ? "Tell customers about your restaurant and cuisines"
+            : "Tell customers about your business",
         required: true,
         guidance:
-          "Write a compelling description that highlights what makes your business special.",
+          businessType === "restaurant"
+            ? "Write a compelling description and select the cuisines you offer to help customers find you."
+            : "Write a compelling description that highlights what makes your business special.",
       },
       {
         title: businessType === "restaurant" ? "Menu Items" : "Room Details",
@@ -484,11 +529,8 @@ export default function BusinessProfileSetup() {
             : "Add at least one room type to get started. You can add more later.",
       },
     ];
-
     return steps[currentStep - 1];
   };
-
-  // const formatNaira = (value: number) => `₦${value.toLocaleString()}`
 
   const isStepValid = () => {
     const stepInfo = getStepInfo();
@@ -512,8 +554,21 @@ export default function BusinessProfileSetup() {
           formData.country
         );
       case 4: // Hours
+        if (businessType === "restaurant") {
+          return (
+            formData.openTime &&
+            formData.closeTime &&
+            formData.availableSlots.length > 0
+          );
+        }
         return formData.openTime && formData.closeTime;
       case 5: // About
+        if (businessType === "restaurant") {
+          return (
+            formData.businessDescription.length > 0 &&
+            formData.cuisines.length > 0
+          );
+        }
         return formData.businessDescription.length > 0;
       case 6: // Business-specific
         return businessType === "restaurant"
@@ -539,6 +594,12 @@ export default function BusinessProfileSetup() {
       // Append profile images
       for (let i = 0; i < formData.profileImages.length; i++) {
         form.append("profileImages", formData.profileImages[i]);
+      }
+      for (let i = 0; i < formData.availableSlots.length; i++) {
+        form.append("availableSlots", formData.availableSlots[i]);
+      }
+      for (let i = 0; i < formData.cuisines.length; i++) {
+        form.append("cuisines", formData.cuisines[i]);
       }
 
       // Append basic fields
@@ -731,7 +792,11 @@ export default function BusinessProfileSetup() {
                     }
                     className="h-10 px-4 w-full bg-blue-600 hover:bg-blue-600/80"
                   >
-                    <CreditCard className="w-4 h-4 mr-2" />
+                    {isVerifying ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <CreditCard className="w-4 h-4 mr-2" />
+                    )}
                     Verify Account Details
                   </Button>
                   {error && (
@@ -825,7 +890,7 @@ export default function BusinessProfileSetup() {
 
           {/* Step 4: Operating Hours */}
           {currentStep === 4 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="opening-time">Opening Time *</Label>
@@ -866,6 +931,65 @@ export default function BusinessProfileSetup() {
                   </Select>
                 </div>
               </div>
+
+              {/* Available Slots for Restaurants */}
+              {businessType === "restaurant" && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Available Booking Slots *</Label>
+                    <div className="flex gap-2">
+                      <Select
+                        onValueChange={(value) => {
+                          addTimeSlot(
+                            timeOptions.find((t) => t.value === value)?.label ||
+                              value
+                          );
+                        }}
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Add available time slot" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {timeOptions
+                            .filter((time) => {
+                              const timeLabel = time.label;
+                              return !formData.availableSlots.includes(
+                                timeLabel
+                              );
+                            })
+                            .map((time) => (
+                              <SelectItem key={time.value} value={time.value}>
+                                {time.label}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {formData.availableSlots.map((slot, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          {slot}
+                          <button
+                            onClick={() => removeTimeSlot(slot)}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {formData.availableSlots.length} slots added (minimum 1
+                      required)
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {(formData.openTime || formData.closeTime) && (
                 <div className="p-4 bg-muted rounded-lg space-y-2">
                   <h4 className="font-medium">Current Selection:</h4>
@@ -894,7 +1018,7 @@ export default function BusinessProfileSetup() {
 
           {/* Step 5: About */}
           {currentStep === 5 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="about">
                   About Your{" "}
@@ -913,6 +1037,50 @@ export default function BusinessProfileSetup() {
                   {formData.businessDescription.length}/500 characters
                 </div>
               </div>
+
+              {/* Cuisines for Restaurants */}
+              {businessType === "restaurant" && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Cuisines Offered *</Label>
+                    <Select onValueChange={(value) => addCuisine(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Add cuisine type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CUISINE_TYPES.filter(
+                          (cuisine) => !formData.cuisines.includes(cuisine)
+                        ).map((cuisine) => (
+                          <SelectItem key={cuisine} value={cuisine}>
+                            {cuisine}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {formData.cuisines.map((cuisine, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          {cuisine}
+                          <button
+                            onClick={() => removeCuisine(cuisine)}
+                            className="ml-1 hover:text-red-500"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {formData.cuisines.length} cuisines selected (minimum 1
+                      required)
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -932,7 +1100,6 @@ export default function BusinessProfileSetup() {
                       Add Room
                     </Button>
                   </div>
-
                   {formData.rooms.map((room, index) => (
                     <Card key={index} className="p-4">
                       <div className="flex justify-between items-center mb-4">
@@ -945,7 +1112,6 @@ export default function BusinessProfileSetup() {
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Room Number *</Label>
@@ -957,7 +1123,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Room Type *</Label>
                           <Select
@@ -978,7 +1143,6 @@ export default function BusinessProfileSetup() {
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Price per Night *</Label>
                           <Input
@@ -990,7 +1154,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Capacity *</Label>
                           <Input
@@ -1006,7 +1169,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Maintenance Status</Label>
                           <Select
@@ -1027,7 +1189,6 @@ export default function BusinessProfileSetup() {
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Star Rating</Label>
                           <div className="flex items-center gap-1">
@@ -1048,7 +1209,6 @@ export default function BusinessProfileSetup() {
                           </div>
                         </div>
                       </div>
-
                       <div className="mt-4 space-y-4">
                         <div className="space-y-2">
                           <Label>Features</Label>
@@ -1084,7 +1244,6 @@ export default function BusinessProfileSetup() {
                             ))}
                           </div>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Amenities</Label>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -1119,7 +1278,6 @@ export default function BusinessProfileSetup() {
                             ))}
                           </div>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Room Description</Label>
                           <Textarea
@@ -1134,7 +1292,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id={`${index}-available`}
@@ -1150,7 +1307,6 @@ export default function BusinessProfileSetup() {
                       </div>
                     </Card>
                   ))}
-
                   {formData.rooms.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
                       No rooms added yet. Click &quot;Add Room&quot; to get
@@ -1171,7 +1327,6 @@ export default function BusinessProfileSetup() {
                       Add Menu Item
                     </Button>
                   </div>
-
                   {formData.menuItems.map((item, index) => (
                     <Card key={index} className="p-4">
                       <div className="flex justify-between items-center mb-4">
@@ -1184,7 +1339,6 @@ export default function BusinessProfileSetup() {
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
-
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label>Dish Name *</Label>
@@ -1196,7 +1350,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Category *</Label>
                           <Select
@@ -1217,7 +1370,6 @@ export default function BusinessProfileSetup() {
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Cuisine Type *</Label>
                           <Select
@@ -1238,7 +1390,6 @@ export default function BusinessProfileSetup() {
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Price *</Label>
                           <Input
@@ -1254,7 +1405,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Discount Price</Label>
                           <Input
@@ -1270,7 +1420,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Preparation Time (minutes)</Label>
                           <Input
@@ -1286,7 +1435,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Portion Size</Label>
                           <Input
@@ -1301,7 +1449,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Spice Level</Label>
                           <Select
@@ -1322,7 +1469,6 @@ export default function BusinessProfileSetup() {
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Stock Quantity</Label>
                           <Input
@@ -1338,7 +1484,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Max Order Per Customer</Label>
                           <Input
@@ -1354,7 +1499,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="space-y-2">
                           <Label>Star Rating</Label>
                           <div className="flex items-center gap-1">
@@ -1377,7 +1521,6 @@ export default function BusinessProfileSetup() {
                           </div>
                         </div>
                       </div>
-
                       <div className="mt-4 space-y-4">
                         <div className="space-y-2">
                           <Label>Add-ons</Label>
@@ -1411,7 +1554,6 @@ export default function BusinessProfileSetup() {
                             ))}
                           </div>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Dietary Information</Label>
                           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -1446,7 +1588,6 @@ export default function BusinessProfileSetup() {
                             ))}
                           </div>
                         </div>
-
                         <div className="space-y-2">
                           <Label>Description</Label>
                           <Textarea
@@ -1461,7 +1602,6 @@ export default function BusinessProfileSetup() {
                             }
                           />
                         </div>
-
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id={`${index}-available`}
@@ -1481,7 +1621,6 @@ export default function BusinessProfileSetup() {
                       </div>
                     </Card>
                   ))}
-
                   {formData.menuItems.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
                       No menu items added yet. Click &quot;Add Menu Item&quot;
@@ -1504,7 +1643,6 @@ export default function BusinessProfileSetup() {
               <ChevronLeft className="w-4 h-4" />
               Previous
             </Button>
-
             <div className="flex gap-2">
               {!stepInfo.required && !skippedSections.includes(currentStep) && (
                 <Button
