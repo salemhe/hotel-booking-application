@@ -1,20 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+// import Link from "next/link";
+// import { usePathname } from "next/navigation";
 import {
   Search,
   Bell,
   ChevronDown,
-  Home,
-  Calendar,
-  Star,
-  Menu as MenuIcon,
-  CreditCard,
-  Users,
-  Settings,
-  LogOut,
+  // Home,
+  // Calendar,
+  // Star,
+  // Menu as MenuIcon,
+  // CreditCard,
+  // Users,
+  // Settings,
+  // LogOut,
   Edit,
   Plus,
   MoreHorizontal,
@@ -28,7 +29,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -36,14 +37,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
-const sidebarItems = [
-  { name: "Dashboard", icon: Home, href: "/super-admin/dashboard" },
-  { name: "Reservations", icon: Calendar, href: "/super-admin/reservations" },
-  { name: "Reviews", icon: Star, href: "/super-admin/reviews" },
-  { name: "Menu Management", icon: MenuIcon, href: "/super-admin/menu" },
-  { name: "Payments", icon: CreditCard, href: "/super-admin/payments" },
-  { name: "Staff", icon: Users, href: "/super-admin/staff" },
-];
+// const sidebarItems = [
+//   { name: "Dashboard", icon: Home, href: "/super-admin/dashboard" },
+//   { name: "Reservations", icon: Calendar, href: "/super-admin/reservations" },
+//   { name: "Reviews", icon: Star, href: "/super-admin/reviews" },
+//   { name: "Menu Management", icon: MenuIcon, href: "/super-admin/menu" },
+//   { name: "Payments", icon: CreditCard, href: "/super-admin/payments" },
+//   { name: "Staff", icon: Users, href: "/super-admin/staff" },
+// ];
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -59,7 +60,7 @@ const getStatusColor = (status: string) => {
 };
 
 export default function BookiesDashboard() {
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const [chartData, setChartData] = useState([]);
   const [transactions, setTransactions] = useState([]);
 
@@ -79,6 +80,7 @@ export default function BookiesDashboard() {
           setTransactions(transJson);
         }
       } catch (err) {
+        console.error(err)
         // Optionally handle error
       }
     };

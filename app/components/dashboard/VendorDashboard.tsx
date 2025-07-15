@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,15 +7,15 @@ import {
   Calendar,
   Users,
   DollarSign,
-  Clock,
+  // Clock,
   TrendingUp,
   Check,
   X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { Badge } from "@/components/ui/badge";
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
@@ -46,6 +47,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
         // Fetch chart data (if available)
         setChartData(vendorRes.data.data.monthlyRevenue || []);
       } catch (err) {
+        console.error(err)
         setVendor(null);
         setReservations([]);
         setStats({});

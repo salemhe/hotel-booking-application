@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -117,6 +118,7 @@ export default function RestaurantDashboard() {
       const res = await axios.get(`${API_URL}/super-admin/analytics/summary`);
       setStats(res.data.data || {});
     } catch (err) {
+      console.error(err)
       setStats({});
     }
   }
@@ -130,6 +132,7 @@ export default function RestaurantDashboard() {
       const res = await axios.get(`${API_URL}/super-admin/reservations/today`, { params });
       setReservations(res.data.data || []);
     } catch (err) {
+      console.error(err)
       setReservations([]);
     } finally {
       setLoading(false);
@@ -145,6 +148,7 @@ export default function RestaurantDashboard() {
       setForm({ name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
       fetchReservations();
     } catch (err) {
+      console.error(err)
       // handle error
     } finally {
       setFormLoading(false);
@@ -157,6 +161,7 @@ export default function RestaurantDashboard() {
       await axios.delete(`${API_URL}/super-admin/reservations/${reservation.id}`);
       fetchReservations();
     } catch (err) {
+      console.error(err)
       // handle error
     }
   }

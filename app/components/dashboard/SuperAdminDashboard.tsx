@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,7 +30,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -43,6 +44,7 @@ const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 export default function SuperAdminDashboard() {
   const router = useRouter();
   const pathname = usePathname();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [reservations, setReservations] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,6 +66,7 @@ export default function SuperAdminDashboard() {
         const statsRes = await axios.get(`${API_URL}/super-admin/analytics/summary`);
         setStats(statsRes.data.data || {});
       } catch (err) {
+        console.error(err)
         // fallback to empty data
         setReservations([]);
         setChartData([]);
@@ -105,7 +108,9 @@ export default function SuperAdminDashboard() {
     </div>
   );
 
-  const DonutChart = ({ percentage, color, label }: { percentage: number; color: string; label: string }) => (
+  const DonutChart = ({ percentage, color, 
+    // label
+   }: { percentage: number; color: string; label: string }) => (
     <div className="relative w-24 h-24">
       <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
         <path

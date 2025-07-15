@@ -136,9 +136,9 @@ function VendorsTable({
                           visible: !vendor.menuVisible,
                         });
                         // Update UI
-                        if (updateVendor) {
-                          updateVendor({ ...vendor, menuVisible: !vendor.menuVisible });
-                        }
+                        // if (updateVendor) {
+                        //   updateVendor({ ...vendor, menuVisible: !vendor.menuVisible });
+                        // }
                       } catch (error) {
                         console.error("Error toggling menu visibility", error);
                       }

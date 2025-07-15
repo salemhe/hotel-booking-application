@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   Search,
   Bell,
@@ -18,7 +19,7 @@ import {
   MapPin,
   MenuIcon,
   CreditCard,
-  UserCheck,
+  // UserCheck,
   Settings,
   LogOut,
   ChevronLeft,
@@ -26,7 +27,7 @@ import {
   Download as Export,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -58,14 +59,16 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     assignedMenu: "",
     importAllMenuItems: false,
   });
-  const [saving, setSaving] = useState(false);
+  // const [saving, setSaving] = useState(false);
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  type Weekday = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+
   const countryCodes = ["+234", "+1", "+44", "+91", "+86"];
-  const handleDayChange = (day, checked) => {
+  const handleDayChange = (day: Weekday, checked: boolean) => {
     setFormData((prev) => ({ ...prev, openingDays: { ...prev.openingDays, [day]: checked } }));
   };
-  const handleSubmit = async (action) => {
-    setSaving(true);
+  const handleSubmit = async (action: string) => {
+    // setSaving(true);
     try {
       // POST to backend
       await axios.post(`${API_URL}/super-admin/branches`, {
@@ -73,7 +76,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         address: formData.address,
         city: formData.city,
         phoneNumber: formData.countryCode + formData.phoneNumber,
-        openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day]),
+        openingDays: Object.keys(formData.openingDays).filter((day) => formData.openingDays[day as Weekday]),
         opensAt: formData.opensAt,
         closesAt: formData.closesAt,
         assignedManager: formData.assignedManager,
@@ -100,15 +103,15 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         setIsOpen(false);
       }
     } catch (err) {
-      if (err.response) {
-        console.error('API error:', err.response.data);
-        alert("Failed to save branch: " + (err.response.data?.message || JSON.stringify(err.response.data)));
+      if (err instanceof AxiosError) {
+        console.error('API error:', err.response?.data);
+        alert("Failed to save branch: " + (err.response?.data?.message || JSON.stringify(err.response?.data)));
       } else {
         console.error('Error:', err);
         alert("Failed to save branch. Please try again.");
       }
     } finally {
-      setSaving(false);
+      // setSaving(false);
     }
   };
   return (
@@ -166,7 +169,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
                 <div className="grid grid-cols-2 gap-2">
                   {days.map(day => (
                     <div key={day} className="flex items-center space-x-2">
-                      <input type="checkbox" id={day} checked={formData.openingDays[day]} onChange={e => handleDayChange(day, e.target.checked)} />
+                      <input type="checkbox" id={day} checked={formData.openingDays[day as Weekday]} onChange={e => handleDayChange(day as Weekday, e.target.checked)} />
                       <label htmlFor={day} className="text-sm">{day}</label>
                     </div>
                   ))}
@@ -254,6 +257,7 @@ export default function BranchesDashboard() {
       setBranches(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
+      console.error(err)
       setBranches([]);
       setTotalPages(1);
     } finally {
@@ -376,7 +380,7 @@ export default function BranchesDashboard() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">All Branches</h1>
             </div>
-            <AddNewBranchModal />
+            {/* <AddNewBranchModal /> */}
             <div className="flex items-center space-x-3">
             <Button variant="outline" size="sm">
             <Export className="w-4 h-4 mr-2" />
@@ -477,11 +481,11 @@ export default function BranchesDashboard() {
                       <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{branch.name}</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today's Reservation</span>
+                          <span className="text-sm text-gray-600">Today&apos;s Reservation</span>
                           <span className="text-sm font-semibold">{branch.todayReservation}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today's Revenue</span>
+                          <span className="text-sm text-gray-600">Today&apos;s Revenue</span>
                           <span className="text-sm font-semibold">₦{branch.todayRevenue?.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between items-center">

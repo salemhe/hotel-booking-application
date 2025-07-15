@@ -20,14 +20,14 @@ import {
   Store,
   CreditCard,
   TrendingUp,
-  Home,
-  Calendar,
-  Settings,
-  LogOut,
+  // Home,
+  // Calendar,
+  // Settings,
+  // LogOut,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useRouter, usePathname } from "next/navigation";
+// import { useRouter, usePathname } from "next/navigation";
 
 interface Data {
   grossSales: number;
@@ -40,7 +40,7 @@ interface Data {
 }
 
 export default function AdminDashboard() {
-  const [initailLoad, setInitialLoad] = useState(false);
+  // const [initailLoad, setInitialLoad] = useState(false);
   const [data, setData] = useState<Data>({
     grossSales: 0,
     totalUsers: 0,
@@ -51,8 +51,8 @@ export default function AdminDashboard() {
     balances: 0,
   });
 
-  const router = useRouter();
-  const pathname = usePathname();
+  // const router = useRouter();
+  // const pathname = usePathname();
 
   useEffect(() => {
     getMetrics();
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
 
   const getMetrics = async () => {
     try {
-      setInitialLoad(true);
+      // setInitialLoad(true);
       const res = await axios.get(
         "https://hotel-booking-app-backend-30q1.onrender.com/api/admin/metrics"
       );
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Failed to fetch metrics:", error);
     } finally {
-      setInitialLoad(false);
+      // setInitialLoad(false);
     }
   };
 
