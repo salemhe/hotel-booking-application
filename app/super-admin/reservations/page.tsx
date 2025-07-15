@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
 
 // Define the Reservation type
@@ -27,12 +26,6 @@ import {
   DollarSign,
   Users,
   CreditCard,
-  Home,
-  Star,
-  MenuIcon,
-  MapPin,
-  Settings,
-  LogOut,
   Filter,
   Download,
   Plus,
@@ -42,17 +35,8 @@ import {
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
-const sidebarItems = [
-  { icon: Home, label: "Dashboard", href: "/super-admin/dashboard" },
-  { icon: Calendar, label: "Reservations", href: "/super-admin/reservations" },
-  { icon: MapPin, label: "Branches", href: "/super-admin/branches" },
-  { icon: Star, label: "Reviews", href: "/super-admin/reviews" },
-  { icon: MenuIcon, label: "Menu Management", href: "/super-admin/menu" },
-  { icon: CreditCard, label: "Payments", href: "/super-admin/payments" },
-  { icon: Users, label: "Staff", href: "/super-admin/staff" },
-];
 
-function ReservationDropdown({ reservation, onView, onEdit, onDelete }: any) {
+function ReservationDropdown({ reservation, onView, onEdit, onDelete }: { reservation: Reservation, onView: (r: Reservation) => void, onEdit: (r: Reservation) => void, onDelete: (r: Reservation) => void }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -91,17 +75,34 @@ function ReservationDropdown({ reservation, onView, onEdit, onDelete }: any) {
 export default function RestaurantDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  const [reservations, setReservations] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>({});
+  interface Stats {
+    reservationsToday: number;
+    reservationsChange: number;
+    prepaidReservations: number;
+    prepaidChange: number;
+    guestsToday: number;
+    guestsChange: number;
+    pendingPayments: number;
+    paymentsChange: number;
+  }
+  const [stats, setStats] = useState<Stats>({
+    reservationsToday: 0,
+    reservationsChange: 0,
+    prepaidReservations: 0,
+    prepaidChange: 0,
+    guestsToday: 0,
+    guestsChange: 0,
+    pendingPayments: 0,
+    paymentsChange: 0,
+  });
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"view"|"edit"|"create"|null>(null);
-  const [selectedReservation, setSelectedReservation] = useState<any>(null);
-  const [form, setForm] = useState<any>({ name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
+  const [selectedReservation, setSelectedReservation] = useState<Reservation|null>(null);
+  const [form, setForm] = useState<Reservation>({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
   const [formLoading, setFormLoading] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
-
+  
   useEffect(() => {
     fetchStats();
     fetchReservations();
@@ -116,52 +117,66 @@ export default function RestaurantDashboard() {
   async function fetchStats() {
     try {
       const res = await axios.get(`${API_URL}/super-admin/analytics/summary`);
-      setStats(res.data.data || {});
-    } catch (err) {
-      console.error(err)
-      setStats({});
+      setStats({
+        reservationsToday: Number(res.data.data?.reservationsToday) || 0,
+        reservationsChange: Number(res.data.data?.reservationsChange) || 0,
+        prepaidReservations: Number(res.data.data?.prepaidReservations) || 0,
+        prepaidChange: Number(res.data.data?.prepaidChange) || 0,
+        guestsToday: Number(res.data.data?.guestsToday) || 0,
+        guestsChange: Number(res.data.data?.guestsChange) || 0,
+        pendingPayments: Number(res.data.data?.pendingPayments) || 0,
+        paymentsChange: Number(res.data.data?.paymentsChange) || 0,
+      });
+    } catch {
+      setStats({
+        reservationsToday: 0,
+        reservationsChange: 0,
+        prepaidReservations: 0,
+        prepaidChange: 0,
+        guestsToday: 0,
+        guestsChange: 0,
+        pendingPayments: 0,
+        paymentsChange: 0,
+      });
     }
   }
 
   async function fetchReservations() {
     setLoading(true);
     try {
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (filterStatus && filterStatus !== "All") params.status = filterStatus;
       const res = await axios.get(`${API_URL}/super-admin/reservations/today`, { params });
       setReservations(res.data.data || []);
-    } catch (err) {
-      console.error(err)
+    } catch {
       setReservations([]);
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleCreateReservation(e: any) {
+  async function handleCreateReservation(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFormLoading(true);
     try {
       await axios.post(`${API_URL}/super-admin/reservations`, form);
       setShowModal(false);
-      setForm({ name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
+      setForm({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
       fetchReservations();
-    } catch (err) {
-      console.error(err)
+    } catch {
       // handle error
     } finally {
       setFormLoading(false);
     }
   }
 
-  async function handleDeleteReservation(reservation: any) {
+  async function handleDeleteReservation(reservation: Reservation) {
     if (!window.confirm("Are you sure you want to delete this reservation?")) return;
     try {
       await axios.delete(`${API_URL}/super-admin/reservations/${reservation.id}`);
       fetchReservations();
-    } catch (err) {
-      console.error(err)
+    } catch {
       // handle error
     }
   }
@@ -194,63 +209,7 @@ export default function RestaurantDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-teal-800 text-white flex flex-col">
-        {/* Logo */}
-        <div className="p-6 border-b border-teal-700">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-teal-800 font-bold text-sm">B</span>
-            </div>
-            <span className="text-xl font-bold">Bookies</span>
-          </div>
-        </div>
-        {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {sidebarItems.map((item, index) => {
-              const isActive = pathname.startsWith(item.href);
-              const Icon = item.icon;
-              return (
-                <li key={index}>
-                  <button
-                    onClick={() => router.push(item.href)}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors w-full text-left ${
-                      isActive ? "bg-teal-700 text-white" : "text-teal-100 hover:bg-teal-700 hover:text-white"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.label}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-        {/* Bottom Navigation */}
-        <div className="p-4 border-t border-teal-700">
-          <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => router.push("/super-admin/settings")}
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-teal-100 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
-              >
-                <Settings className="w-5 h-5" />
-                <span>Settings</span>
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => router.push("/logout")}
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-teal-100 hover:bg-teal-700 hover:text-white transition-colors w-full text-left"
-              >
-                <LogOut className="w-5 h-5" />
-                <span>Logout</span>
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
+      {/* Sidebar removed: now handled by layout.tsx */}
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}

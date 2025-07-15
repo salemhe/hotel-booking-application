@@ -1,6 +1,7 @@
 "use client"
 
 import { Check, Mail, Clock, MapPin, Calendar } from "lucide-react"
+import Image from "next/image";
 import { Button } from "@/app/components/ui/button"
 import { Card, CardContent } from "@/app/components/ui/card"
 import { useRouter } from "next/navigation"
@@ -102,10 +103,12 @@ export default function HotelConfirmationPage() {
               {/* Hotel Info */}
               <div className="flex gap-3 sm:gap-4">
                 <div className="w-16 h-12 sm:w-20 sm:h-16 rounded-lg overflow-hidden flex-shrink-0">
-                  <img 
+                  <Image 
                     src={bookingData.hotelInfo?.profileImages?.[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200&h=160&fit=crop"} 
                     alt={bookingData.hotelInfo?.businessName || "Hotel"} 
                     className="w-full h-full object-cover"
+                    width={80}
+                    height={64}
                   />
                 </div>
                 <div className="flex-1 min-w-0">

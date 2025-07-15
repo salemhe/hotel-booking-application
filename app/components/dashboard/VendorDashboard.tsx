@@ -7,24 +7,21 @@ import {
   Calendar,
   Users,
   DollarSign,
-  // Clock,
   TrendingUp,
   Check,
   X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import { Badge } from "@/components/ui/badge";
+// Removed unused Badge import
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
 export default function VendorDashboard({ vendorId, vendorType }: { vendorId: string; vendorType: string }) {
-  const [vendor, setVendor] = useState<any>(null);
+  const [vendor, setVendor] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [reservations, setReservations] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>({});
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<Array<Record<string, unknown>>>([]);
+  const [stats, setStats] = useState<Record<string, unknown>>({});
+  const [chartData, setChartData] = useState<Array<{ month: string; revenue: number }>>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -46,8 +43,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
         });
         // Fetch chart data (if available)
         setChartData(vendorRes.data.data.monthlyRevenue || []);
-      } catch (err) {
-        console.error(err)
+      } catch {
         setVendor(null);
         setReservations([]);
         setStats({});
@@ -151,7 +147,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
         <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Welcome, {vendor.name}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome, {typeof vendor.name === "string" ? vendor.name : ""}</h1>
               <p className="text-gray-600">Here is your current performance overview.</p>
             </div>
           </div>
@@ -165,7 +161,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
-                    <p className="text-2xl font-bold">${stats.totalRevenue?.toFixed(2) || '0.00'}</p>
+                    <p className="text-2xl font-bold">${typeof stats.totalRevenue === "number" ? stats.totalRevenue.toFixed(2) : '0.00'}</p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-green-600" />
@@ -178,7 +174,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Total Bookings</p>
-                    <p className="text-2xl font-bold">{stats.totalBookings || 0}</p>
+                    <p className="text-2xl font-bold">{typeof stats.totalBookings === "number" ? stats.totalBookings : 0}</p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <Calendar className="w-6 h-6 text-blue-600" />
@@ -191,7 +187,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Active Bookings</p>
-                    <p className="text-2xl font-bold">{stats.activeBookings || 0}</p>
+                    <p className="text-2xl font-bold">{typeof stats.activeBookings === "number" ? stats.activeBookings : 0}</p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Users className="w-6 h-6 text-purple-600" />
@@ -204,7 +200,7 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Monthly Average</p>
-                    <p className="text-2xl font-bold">${stats.monthlyAverage?.toFixed(2) || '0.00'}</p>
+                    <p className="text-2xl font-bold">${typeof stats.monthlyAverage === "number" ? stats.monthlyAverage.toFixed(2) : '0.00'}</p>
                   </div>
                   <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-yellow-600" />
@@ -231,11 +227,11 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-green-500" />
-                    <span>Active: {stats.activeBookings || 0}</span>
+                    <span>Active: {typeof stats.activeBookings === "number" ? stats.activeBookings : 0}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <X className="w-5 h-5 text-red-500" />
-                    <span>Completed: {stats.totalBookings - stats.activeBookings || 0}</span>
+                    <span>Completed: {typeof stats.totalBookings === "number" && typeof stats.activeBookings === "number" ? stats.totalBookings - stats.activeBookings : 0}</span>
                   </div>
                 </div>
               </CardContent>
@@ -254,12 +250,12 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {reservations.map((reservation) => (
-                    <tr key={reservation.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-4 whitespace-nowrap">{reservation.name}</td>
-                      <td className="px-4 py-4 whitespace-nowrap">{reservation.date} {reservation.time}</td>
-                      <td className="px-4 py-4 whitespace-nowrap">{reservation.guests}</td>
-                      <td className="px-4 py-4 whitespace-nowrap">{reservation.status}</td>
+                  {reservations.map((reservation, idx) => (
+                    <tr key={typeof reservation.id === "string" || typeof reservation.id === "number" ? reservation.id : idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.name === "string" ? reservation.name : ""}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.date === "string" ? reservation.date : ""} {typeof reservation.time === "string" ? reservation.time : ""}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.guests === "number" ? reservation.guests : ""}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">{typeof reservation.status === "string" ? reservation.status : ""}</td>
                     </tr>
                   ))}
                   {!reservations.length && (

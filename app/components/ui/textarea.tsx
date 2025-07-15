@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/app/lib/utils"
 
+// No empty interface needed, cleaned up for lint
 const Textarea = React.forwardRef<
   HTMLTextAreaElement,
   React.ComponentProps<"textarea">

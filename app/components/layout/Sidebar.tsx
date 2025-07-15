@@ -34,9 +34,7 @@
 // }
 
 
-import { Home, 
-  // Bed,
-   Calendar, Users, Store, CreditCard, TrendingUp, Settings, LogOut } from 'lucide-react';
+import { Home, Calendar, Users, Store, CreditCard, TrendingUp, Settings, LogOut } from 'lucide-react';
 import Link from "next/link";
 
 interface SidebarProps {

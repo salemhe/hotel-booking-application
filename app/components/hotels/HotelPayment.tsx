@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { ArrowLeft, MapPin, Edit2, Star } from 'lucide-react';
 
 const BookingDetails = () => {
@@ -22,9 +23,10 @@ const BookingDetails = () => {
         {/* Hotel Information */}
         <div className="flex gap-4 mb-8">
           <div className="w-24 h-20 rounded-lg overflow-hidden flex-shrink-0">
-            <img 
+            <Image 
               src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200&h=160&fit=crop" 
               alt="Eko Hotel & Suites" 
+              width={96} height={80}
               className="w-full h-full object-cover"
             />
           </div>

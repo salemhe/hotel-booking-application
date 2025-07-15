@@ -1,5 +1,6 @@
 // "use client"
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Wifi, Users, Bed, Coffee, Car, Building } from 'lucide-react';
 import API from '@/app/lib/api/userAxios';
 interface Room {
@@ -237,9 +238,10 @@ const HotelRoomBooking =  ({id}:{id: string}) => {
             <div key={room.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               {/* Image Section */}
               <div className="relative h-48 bg-gray-200">
-                <img 
+                <Image 
                   src={room.images[currentImageIndex[room.id] || 0]} 
                   alt={room.name}
+                  width={384} height={192}
                   className="w-full h-full object-cover"
                 />
                 
