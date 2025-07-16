@@ -77,7 +77,7 @@ export default function Home() {
     return vendors.map((vendor, index) => {
       console.log('Vendor data:', {
         id: vendor._id,
-        profileImages: vendor.profileImages,
+        profileImages: vendor?.profileImages,
         image: vendor.image
       });
       
@@ -152,7 +152,7 @@ export default function Home() {
   const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => {
     console.log('Converting to TableGrid format:', {
       image: apiRestaurant.image,
-      profileImages: apiRestaurant.profileImages
+      profileImages: apiRestaurant?.profileImages
     });
     
     return {

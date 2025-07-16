@@ -109,7 +109,7 @@ export default function ReservationDetails({
           <div className="flex gap-4">
             <div className="relative w-32 h-24 rounded-2xl overflow-hidden flex-shrink-0">
               <Image
-                src={vendor?.profileImages[0].url || "/hero-bg.png"}
+                src={vendor?.profileImages?.[0]?.url || "/hero-bg.png"}
                 alt="Restaurant interior"
                 fill
                 className="object-cover"

@@ -74,8 +74,8 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
   const router = useRouter();
 
   const getImagesForRestaurant = (restaurant: Restaurant) => {
-    if (restaurant.profileImages && restaurant.profileImages.length > 1) {
-      return restaurant.profileImages.map(image => image.url);
+    if (restaurant?.profileImages && restaurant?.profileImages?.length > 1) {
+      return restaurant?.profileImages?.map(image => image.url);
     }
     // Only return single image if there's only one or no profile images
     return restaurant.image ? [restaurant.image] : ['/placeholder.jpg'];
@@ -281,8 +281,8 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
   const router = useRouter();
   
   const getImagesForRestaurant = (restaurant: Restaurant) => {
-    if (restaurant.profileImages && restaurant.profileImages.length > 1) {
-      return restaurant.profileImages;
+    if (restaurant?.profileImages && restaurant?.profileImages?.length > 1) {
+      return restaurant?.profileImages;
     }
     // Only return single image if there's only one or no profile images
     return restaurant.image ? [restaurant.image] : ['/placeholder.jpg'];

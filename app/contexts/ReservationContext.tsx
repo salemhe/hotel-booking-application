@@ -101,7 +101,7 @@ export function ReservationsProvider({
       businessName: vendor?.businessName,
       location: vendor?.address,
       customerName: `${user?.firstName} ${user?.lastName}`,
-      image: vendor?.profileImages[0].url,
+      image: vendor?.profileImages?.[0].url,
 
     };
     console.log("Reservation Data to be sent:", reservationData);
