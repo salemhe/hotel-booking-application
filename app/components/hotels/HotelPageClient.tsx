@@ -30,7 +30,7 @@ export const HotelsPageClient = ({
             <div className="w-full space-y-6">
              <div className="flex gap-2">
                 <HotelImages
-                images={restaurant.profileImages}
+                images={restaurant?.profileImages ?? []}
                 name={restaurant.businessName}
               />
               {activeTab === "rooms" && (

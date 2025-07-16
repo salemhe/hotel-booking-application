@@ -14,15 +14,15 @@ export type Restaurant = {
   reviews: number;
   // branch: string;
   // role: string;
-  profileImage: string;
-  priceRange: string;
+  profileImage?: string;
+  priceRange?: string;
   // services: string[];
   // price: string;
   // rating: number;
-  businessType: string;
-  branch: string;
-  role: string;
-  profileImages: {
+  businessType?: string;
+  branch?: string;
+  role?: string;
+  profileImages?: {
     id: string;
     url: string;
   }[];

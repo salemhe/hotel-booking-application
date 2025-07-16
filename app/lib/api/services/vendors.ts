@@ -13,6 +13,7 @@ export interface Vendor {
   businessName: string;
   businessType: string;
   branch: string;
+  onboarded: boolean;
   address: string;
   email: string;
   phone: string;

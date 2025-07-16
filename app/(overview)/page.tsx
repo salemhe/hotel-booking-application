@@ -321,7 +321,7 @@ export default function Home() {
             <TableGrid 
               title='Top Rated Restaurants' 
               restaurants={vendors
-                .filter(vendor => vendor.businessType?.toLowerCase() === "restaurant")
+                .filter(v => v.onboarded === true && (v.businessType?.toLowerCase() === "restaurant"))
                 .map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))
               } 
             />
@@ -337,13 +337,22 @@ export default function Home() {
         </div>
       ) : (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <TableGridTwo 
+          {
+           vendors
+              .filter(v => v.onboarded === true && (v.businessType?.toLowerCase() === "hotel")).length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-600">No hotels found</p>
+              </div>
+           ) : (
+             <TableGridTwo 
             title="Popular Guest House Searches"
             restaurants={vendors
-              .filter(vendor => vendor.businessType?.toLowerCase() === "hotel")
+              .filter(v => v.onboarded === true && (v.businessType?.toLowerCase() === "hotel"))
               .map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))
             }
           />
+           )
+          }
         </div>
       )}
     </main>
