@@ -19,9 +19,9 @@ export type Restaurant = {
   // services: string[];
   // price: string;
   // rating: number;
-  businessType?: string;
-  branch?: string;
-  role?: string;
+  businessType: string;
+  branch: string;
+  role: string;
   profileImages?: {
     id: string;
     url: string;
