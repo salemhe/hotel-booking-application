@@ -1,92 +1,126 @@
-'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import React, { useState, useEffect } from 'react'
-// import { useRouter } from 'next/navigation'
-import {SidebarProvider} from "@/app/components/ui/sidebar"
-import axios from 'axios'
-import { useAuth } from '@/app/contexts/AuthContext'
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Calendar,
+  DollarSign,
+  Clock,
+  Users,
+  Bell,
+  Search,
+  ChevronDown,
+  Eye,
+  MoreHorizontal,
+  TrendingUp,
+  Download,
+  Plus,
+  Filter,
+  Check,
+  X,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import SuperAdminSidebar from '../sidebars/SuperAdminSidebar'
-import { Users, DollarSign, Building2, TrendingUp } from 'lucide-react'
+const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 
-const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/'
-
-interface VendorAnalytics {
-  totalVendors: number
-  totalHotels: number
-  totalRestaurants: number
-}
-
-interface RevenueAnalytics {
-  totalRevenue: number
-}
-
-interface Chain {
-  id: string
-  name: string
-  description: string
-  owner: string
-  locationCount: number
-}
-
-interface Location {
-  id: string
-  name: string
-  address: string
-  city: string
-  chain?: { name: string }
+interface Reservation {
+  id: string | number;
+  [key: string]: unknown;
 }
 
 export default function SuperAdminDashboard() {
-  const { token } = useAuth()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [vendorAnalytics, setVendorAnalytics] = useState<VendorAnalytics>({
-    totalVendors: 0,
-    totalHotels: 0,
-    totalRestaurants: 0,
-  })
-  const [revenueAnalytics, setRevenueAnalytics] = useState<RevenueAnalytics>({
-    totalRevenue: 0,
-  })
-  const [chains, setChains] = useState<Chain[]>([])
-  const [locations, setLocations] = useState<Location[]>([])
+  // Removed unused router and pathname
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [chartData, setChartData] = useState<Array<{ name: string; value: number }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
+    async function fetchData() {
+      setLoading(true);
       try {
-        const [
-          vendorRes,
-          revenueRes,
-          chainsRes,
-          locationsRes,
-        ] = await Promise.all([
-          axios.get(`${API_URL}/super-admin/analytics/vendors`),
-          axios.get(`${API_URL}/super-admin/analytics/revenue`),
-          axios.get(`${API_URL}/super-admin/chains`),
-          axios.get(`${API_URL}/super-admin/locations`),
-        ])
-        setVendorAnalytics(vendorRes.data.data)
-        setRevenueAnalytics(revenueRes.data.data)
-        setChains(chainsRes.data.data)
-        setLocations(locationsRes.data.data)
-      } catch (err) {
-        console.error(err)
+        // Fetch reservations
+        const reservationsRes = await axios.get(`${API_URL}/super-admin/reservations/today`);
+        setReservations(reservationsRes.data.data || []);
+
+        // Fetch chart data (example endpoint, adjust as needed)
+        const chartRes = await axios.get(`${API_URL}/super-admin/analytics/reservations-trend`);
+        setChartData(chartRes.data.data || []);
+
+        // Fetch stats (example endpoint, adjust as needed)
+        const statsRes = await axios.get(`${API_URL}/super-admin/analytics/summary`);
+        setStats(statsRes.data.data || {});
+      } catch {
+        // fallback to empty data
+        setReservations([]);
+        setChartData([]);
+        setStats({});
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    fetchData()
-  }, [token])
+    fetchData();
+  }, []);
 
-  // const { SidebarProvider } = require("@/app/components/ui/sidebar")
+  // Removed unused sidebarItems
+
+  const SimpleChart = ({ data }: { data: typeof chartData }) => (
+    <div className="flex items-end justify-between h-32 gap-1">
+      {data.map((item, index) => (
+        <div key={item.name} className="flex flex-col items-center gap-1">
+          <div
+            className={`w-8 rounded-t ${
+              index % 3 === 0
+                ? "bg-blue-500"
+                : index % 3 === 1
+                ? "bg-green-500"
+                : "bg-yellow-500"
+            }`}
+            style={{ height: `${(item.value / 70) * 100}%` }}
+          />
+          <span className="text-xs text-gray-600">{item.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+
+  const DonutChart = ({ percentage, color }: { percentage: number; color: string }) => (
+    <div className="relative w-24 h-24">
+      <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
+        <path
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          fill="none"
+          stroke="#e5e7eb"
+          strokeWidth="3"
+        />
+        <path
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          fill="none"
+          stroke={color}
+          strokeWidth="3"
+          strokeDasharray={`${percentage}, 100`}
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-sm font-semibold">{percentage}%</span>
+      </div>
+    </div>
+  );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen w-full">
-        <svg className="animate-spin h-10 w-10 text-white" viewBox="0 0 24 24">
+        <svg className="animate-spin h-10 w-10 text-teal-600" viewBox="0 0 24 24">
           <circle
             className="opacity-25"
             cx="12"
@@ -102,110 +136,417 @@ export default function SuperAdminDashboard() {
           ></path>
         </svg>
       </div>
-    )
+    );
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex flex-col md:flex-row min-h-screen w-full bg-gradient-to-br from-slate-900 via-teal-900 to-emerald-900 overflow-x-hidden relative">
-        {/* Sidebar */}
-        <div
-          className={`z-30 fixed md:static inset-y-0 left-0 transition-transform duration-200 ${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 w-4/5 max-w-xs md:w-64 bg-slate-900 md:bg-transparent h-full md:h-auto`}
-        >
-          <SuperAdminSidebar />
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col w-full min-h-screen relative">
-          {/* Collapse Button */}
-          <button
-            className="fixed top-4 left-4 z-40 md:hidden bg-slate-800 text-white p-2 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            aria-label="Toggle sidebar"
-          >
-            {sidebarOpen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-            )}
-          </button>
-
-          {/* Animated Background */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
-            <div className="absolute top-40 left-40 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
-          </div>
-
-          <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px] pointer-events-none"></div>
-
-          <div className="relative z-10 w-full px-2 sm:px-4 md:px-6 lg:px-8 py-4 flex-1 flex flex-col">
-            <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mt-16 md:mt-0">
-              Super Admin Dashboard
-            </h1>
-            <p className="text-gray-300 mb-3 sm:mb-4 lg:mb-8 text-xs sm:text-base">
-              Manage your entire platform from one place
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white min-h-[120px]">
-                <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-xs sm:text-sm text-gray-200">Total Vendors</CardTitle>
-                  <Users className="h-4 w-4 text-teal-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-lg sm:text-xl font-bold">
-                    {vendorAnalytics.totalVendors}
-                  </div>
-                  <p className="text-xs text-gray-300 mt-1">
-                    {vendorAnalytics.totalHotels} Hotels, {vendorAnalytics.totalRestaurants} Restaurants
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20 min-h-[120px]">
-                <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-xs sm:text-sm text-gray-200">Total Revenue</CardTitle>
-                  <DollarSign className="h-4 w-4 text-emerald-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-lg sm:text-xl font-bold">
-                    ${revenueAnalytics.totalRevenue.toFixed(2)}
-                  </div>
-                  <p className="text-xs text-gray-300 mt-1">Last 30 days</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/10 backdrop-blur-sm border-white/20 min-h-[120px]">
-                <CardHeader className="flex justify-between pb-2">
-                  <CardTitle className="text-xs sm:text-sm text-gray-200">Total Chains</CardTitle>
-                  <Building2 className="h-4 w-4 text-cyan-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-lg sm:text-xl font-bold">{chains.length}</div>
-                  <p className="text-xs text-gray-300 mt-1">
-                    Across {locations.length} locations
-                  </p>
-                </CardContent>
-              </Card>
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar removed: now handled by layout.tsx */}
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input placeholder="Search" className="pl-10 w-80" />
+              </div>
             </div>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20 mt-3 sm:mt-4 lg:mt-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <TrendingUp className="h-5 w-5 text-emerald-400" />
-                  Recent Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-300 text-xs sm:text-base">No recent activity to display</p>
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm">
+                <Bell className="w-5 h-5" />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src="/placeholder.svg?height=32&width=32" />
+                      <AvatarFallback>JE</AvatarFallback>
+                    </Avatar>
+                    <div className="text-left">
+                      <div className="text-sm font-medium">Joseph Eyebolam</div>
+                      <div className="text-xs text-gray-500">Admin</div>
+                    </div>
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </header>
+        {/* Dashboard Content */}
+        <main className="flex-1 overflow-auto p-6">
+          {/* Alert Banner */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-yellow-600" />
+              <span className="text-yellow-800">{reservations.filter(r => r.status === "In 30 mins").length} Reservations commencing in the next 30 minutes</span>
+            </div>
+            <Button variant="ghost" size="sm" className="text-yellow-600">
+              ×
+            </Button>
+          </div>
+          {/* Welcome Section */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome Back, Joseph!</h1>
+              <p className="text-gray-600">{"Here's what is happening today."}</p>
+            </div>
+            <Button className="bg-teal-600 hover:bg-teal-700">+ New Reservation</Button>
+          </div>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Reservations made today</p>
+                    <p className="text-2xl font-bold">{typeof stats.reservationsToday === "number" ? stats.reservationsToday : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.reservationsChange === "number" ? stats.reservationsChange : 0}% vs last week</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Prepaid Reservations</p>
+                    <p className="text-2xl font-bold">{typeof stats.prepaidReservations === "number" ? stats.prepaidReservations : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.prepaidChange === "number" ? stats.prepaidChange : 0}% vs last week</p>
+                  </div>
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Expected Guests Today</p>
+                    <p className="text-2xl font-bold">{typeof stats.guestsToday === "number" ? stats.guestsToday : 0}</p>
+                    <p className="text-xs text-gray-500">↑ {typeof stats.guestsChange === "number" ? stats.guestsChange : 0}% vs last week</p>
+                  </div>
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Users className="w-6 h-6 text-purple-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Pending Payments</p>
+                    <p className="text-2xl font-bold">${typeof stats.pendingPayments === "number" ? stats.pendingPayments : 0}</p>
+                    <p className="text-xs text-gray-500">↓ {typeof stats.paymentsChange === "number" ? stats.paymentsChange : 0}% vs last week</p>
+                  </div>
+                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-yellow-600" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
-        </div>
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Reservations Table - Responsive and Feature-rich */}
+            <div className="lg:col-span-2">
+              <Card className="overflow-x-auto">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Reservation List</CardTitle>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" className="text-teal-600">
+                      <Download className="w-4 h-4 mr-1" /> Export
+                    </Button>
+                    <Button className="bg-teal-600 hover:bg-teal-700 text-white" size="sm">
+                      <Plus className="w-4 h-4 mr-1" /> New Reservation
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {/* Filters and Search */}
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-4 py-2 border-b border-gray-200 bg-gray-50">
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md">All</Button>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">Upcoming</Button>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">Completed</Button>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">Canceled</Button>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100 rounded-md">No shows</Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 items-center">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <input
+                          type="text"
+                          placeholder="Search by guest name or ID"
+                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent w-48 md:w-64"
+                        />
+                      </div>
+                      <select className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option>Today</option>
+                        <option>This Week</option>
+                        <option>This Month</option>
+                      </select>
+                      <select className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option>Payment Status</option>
+                        <option>Paid</option>
+                        <option>Pending</option>
+                      </select>
+                      <Button size="sm" variant="ghost" className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        <Filter className="w-4 h-4" />
+                        <span>Advanced Filter</span>
+                      </Button>
+                    </div>
+                  </div>
+                  {/* Table */}
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <input type="checkbox" className="rounded border-gray-300" />
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guest Name</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No of Guests</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meal Preselected</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservation Status</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {reservations.map((reservation) => (
+                          <tr key={reservation.id} className="hover:bg-gray-50">
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <input type="checkbox" className="rounded border-gray-300" />
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center mr-3">
+                                  <span className="text-white text-sm font-medium">
+                                    {typeof reservation.name === "string"
+                                      ? reservation.name.split(" ").map((n: string) => n[0]).join("")
+                                      : ""}
+                                  </span>
+                                </div>
+                                <div>
+                                  <div className="text-sm font-medium text-gray-900">{typeof reservation.name === "string" ? reservation.name : ""}</div>
+                                  <div className="text-sm text-gray-500">{typeof reservation.email === "string" ? reservation.email : ""}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{typeof reservation.date === "string" ? reservation.date : ""}</div>
+                              <div className="text-sm text-gray-500">{typeof reservation.time === "string" ? reservation.time : ""}</div>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{typeof reservation.guests === "number" ? reservation.guests : ""}</td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              {reservation.mealPreselected ? (
+                                <Check className="w-5 h-5 text-green-500" />
+                              ) : (
+                                <X className="w-5 h-5 text-red-500" />
+                              )}
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <span
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                  reservation.paymentStatus === "Paid"
+                                    ? "bg-green-100 text-green-800"
+                                    : reservation.paymentStatus === "Pay at Restaurant"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {typeof reservation.paymentStatus === "string" ? reservation.paymentStatus : ""}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <span
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                  reservation.reservationStatus === "Upcoming"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : reservation.reservationStatus === "In 30 mins"
+                                    ? "bg-orange-100 text-orange-800"
+                                    : reservation.reservationStatus === "In 1 hour"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {typeof reservation.reservationStatus === "string" ? reservation.reservationStatus : ""}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                              <button className="text-gray-400 hover:text-gray-600">
+                                <MoreHorizontal className="w-5 h-5" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {/* Pagination */}
+                  <div className="px-6 py-3 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-2">
+                    <div className="text-sm text-gray-500">Page 1 of 20</div>
+                    <div className="flex flex-wrap items-center space-x-2">
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50">1</Button>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-50">2</Button>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-50">3</Button>
+                      <span className="px-3 py-1 text-sm text-gray-500">...</span>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-50">10</Button>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-50">11</Button>
+                      <Button size="sm" variant="ghost" className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-50">12</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            {/* Reservations Trends */}
+            <div>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>Reservations Trends</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm">
+                      Weekly
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <div className="text-2xl font-bold">{typeof stats.reservationsThisWeek === "number" ? stats.reservationsThisWeek : 0}</div>
+                    <div className="text-sm text-gray-500 flex items-center gap-1">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      {typeof stats.reservationsTrend === "number" ? stats.reservationsTrend : 0}% vs last week
+                    </div>
+                  </div>
+                  <SimpleChart data={chartData} />
+                  <div className="mt-4 flex justify-between text-xs text-gray-500">
+                    <span>This week</span>
+                    <span>Last week</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+          {/* Bottom Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            {/* Customer Frequency */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Customer Frequency</CardTitle>
+                <Button variant="ghost" size="sm">
+                  Weekly
+                </Button>
+              </CardHeader>
+              <CardContent className="flex items-center justify-center">
+                <div className="flex items-center gap-4">
+                  <DonutChart percentage={64} color="#3b82f6" />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm">New Customers</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <span className="text-sm">Return</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            {/* Revenue Menu Category */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Revenue (Menu Category)</CardTitle>
+                <Button variant="ghost" size="sm">
+                  Weekly
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="text-lg font-bold">#220,500</div>
+                  <div className="text-sm text-gray-500">8.4% vs last week</div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Main Dish</span>
+                      <span>50% (₦110,250)</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: "50%" }}></div>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Drinks</span>
+                      <span>22.7% (₦50,000)</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full" style={{ width: "22.7%" }}></div>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Starters</span>
+                      <span>18.6% (₦41,013)</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-red-500 h-2 rounded-full" style={{ width: "18.6%" }}></div>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Desserts</span>
+                      <span>8.2% (₦18,081)</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-yellow-500 h-2 rounded-full" style={{ width: "8.2%" }}></div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            {/* Reservation Source */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>Reservation Source</CardTitle>
+                <Button variant="ghost" size="sm">
+                  Weekly
+                </Button>
+              </CardHeader>
+              <CardContent className="flex items-center justify-center">
+                <div className="flex items-center gap-4">
+                  <DonutChart percentage={58} color="#10b981" />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">58% website</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <span className="text-sm">30 mobile</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm">20 walk in</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
       </div>
-    </SidebarProvider>
-  )
+    </div>
+  );
 }

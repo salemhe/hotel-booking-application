@@ -64,7 +64,7 @@ const data = {
       title: "Dashboard",
       url: "/adminDashboard",
       icon: LayoutDashboard,
-      isActive: true,
+       isActive: true,
       items: [
         {
           title: "History",
