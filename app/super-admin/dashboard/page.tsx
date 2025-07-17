@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import SuperAdminDashboard from '../../components/dashboard/SuperAdminDashboard';
-import { Box } from '@mui/material';
+import React from "react";
+import SuperAdminDashboard from "@/app/components/dashboard/SuperAdminDashboard";
+import { Box } from "@mui/material";
 
 export default function DashboardPage() {
   return (
