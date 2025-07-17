@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { Switch } from "@/app/components/ui/switch"
+import { Switch } from "@/app/components/ui/switch";
 import { Label } from "@/app/components/ui/label";
 
 const schema = z.object({
@@ -22,7 +22,7 @@ const schema = z.object({
     .min(0, "Discount price must be a positive number")
     .optional(),
   preparationTime: z.string().min(1, "Preparation time is required"),
-  availabilityStatus: z.literal(true, { errorMap: () => ({ message: "Availability status must be true" }) }),
+  availabilityStatus: z.boolean().default(true),
 });
 
 type PricingAvailabilityProps = {
@@ -88,13 +88,19 @@ export function PricingAvailability({
           name="availabilityStatus"
           control={control}
           render={({ field }) => (
-            <Switch id="availabilityStatus" onCheckedChange={field.onChange} checked={field.value} />
+            <Switch
+              id="availabilityStatus"
+              onCheckedChange={field.onChange}
+              checked={field.value}
+            />
           )}
         />
         <Label htmlFor="availabilityStatus">Available</Label>
       </div>
       <div className="flex items-center space-x-2">
-        <p className="text-gray-700">Menu must be Available</p>
+        <p className="text-gray-600 text-sm">
+          Toggle to make menu item available to customers
+        </p>
       </div>
       <div>
         <Label htmlFor="preparationTime">Preparation Time</Label>
