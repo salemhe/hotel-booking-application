@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown,  } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import {
 // import AccountTypeModal from "./AccountTypeModal";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import  { SearchSectionTwo } from "./SearchSection";
+import { SearchSectionTwo } from "./SearchSection";
 export interface UserProfile {
   id: string;
   email: string;
@@ -25,27 +25,32 @@ export interface UserProfile {
 }
 
 const Navigation = () => {
-  
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [isHomePage, setIsHomePage] = useState(pathname === '/');
-  const [isSearchPage, setIsSearchPage] = useState(pathname?.startsWith('/search'));
-  const [isLoginSlug, setIsLoginSlug] = useState(pathname?.startsWith('-login'));
-  const[ishotelPaymentPage, setIsHotelPaymentPage] = useState(pathname?.startsWith('/hotels/:id/payment'));
-  const [onboarding, setOnboarding] = useState(pathname === '/onboarding');
-
+  const [isHomePage, setIsHomePage] = useState(pathname === "/");
+  const [isSearchPage, setIsSearchPage] = useState(
+    pathname?.startsWith("/search"),
+  );
+  const [isLoginSlug, setIsLoginSlug] = useState(
+    pathname?.startsWith("-login"),
+  );
+  const [ishotelPaymentPage, setIsHotelPaymentPage] = useState(
+    pathname?.startsWith("/hotels/:id/payment"),
+  );
+  const [onboarding, setOnboarding] = useState(pathname === "/onboarding");
 
   // Check if the current path is a login slug
   useEffect(() => {
-
-    setIsLoginSlug(pathname?.endsWith('-login'));
-    setIsHotelPaymentPage(pathname?.startsWith('/hotels/') && pathname.endsWith('/payment'));
-    setOnboarding(pathname === '/onboarding');
+    setIsLoginSlug(pathname?.endsWith("-login"));
+    setIsHotelPaymentPage(
+      pathname?.startsWith("/hotels/") && pathname.endsWith("/payment"),
+    );
+    setOnboarding(pathname === "/onboarding");
   }, [pathname]);
 
   useEffect(() => {
-    setIsHomePage(pathname === '/');
-    setIsSearchPage(pathname?.startsWith('/search'));
+    setIsHomePage(pathname === "/");
+    setIsSearchPage(pathname?.startsWith("/search"));
   }, [pathname]);
 
   // Auth state management
@@ -68,20 +73,27 @@ const Navigation = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        if (await AuthService.isAuthenticated()) {
+        const isAuth = await AuthService.isAuthenticated();
+        if (isAuth) {
           const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!)
-          setProfile(await AuthService.getUser(id!));
+          if (token) {
+            const id = AuthService.extractUserId(token);
+            if (id) {
+              const user = await AuthService.getUser(id);
+              setProfile(user);
+            }
+          }
         }
       } catch (error) {
-        console.log(error)
+        console.warn("Auth check failed:", error);
+        // Don't show error to user, just continue without auth
       } finally {
         setLoading(false);
       }
@@ -95,7 +107,7 @@ const Navigation = () => {
     setProfile(null);
   };
 
-  const hideNavigation = !isLoginSlug && !ishotelPaymentPage && !onboarding ;
+  const hideNavigation = !isLoginSlug && !ishotelPaymentPage && !onboarding;
 
   const renderAuthButtons = () => {
     if (loading) {
@@ -121,8 +133,11 @@ const Navigation = () => {
               <ChevronDown size={18} className="text-gray-600" />
             </div>
           </DropdownMenuTrigger>
-    
-          <DropdownMenuContent align="end" className="w-72 bg-gray-50 rounded-2xl">
+
+          <DropdownMenuContent
+            align="end"
+            className="w-72 bg-gray-50 rounded-2xl"
+          >
             {/* Header */}
             <div className="flex items-center px-4 py-4">
               <Avatar className="w-10 h-10 mr-3">
@@ -138,25 +153,25 @@ const Navigation = () => {
                 <p className="text-xs text-gray-500">{profile.email}</p>
               </div>
             </div>
-    
+
             <DropdownMenuSeparator />
-    
+
             {/* Primary links */}
-                <DropdownMenuItem asChild className="  px-4 py-2">
-                  <Link href="/messages">Messages</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="  px-4 py-2">
-                  <Link href="/bookings">Bookings/Reservation</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="  px-4 py-2" >
-                  <Link href="/wishlist">Wishlist</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="  px-4 py-2">
-                  <Link href="/payments">Payments/Transaction</Link>
-                </DropdownMenuItem>
-    
+            <DropdownMenuItem asChild className="  px-4 py-2">
+              <Link href="/messages">Messages</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="  px-4 py-2">
+              <Link href="/bookings">Bookings/Reservation</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="  px-4 py-2">
+              <Link href="/wishlist">Wishlist</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="  px-4 py-2">
+              <Link href="/payments">Payments/Transaction</Link>
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
-    
+
             {/* Secondary links */}
             <DropdownMenuItem asChild className="  px-4 py-2">
               <Link href="/account">Account</Link>
@@ -164,9 +179,9 @@ const Navigation = () => {
             <DropdownMenuItem asChild className="  px-4 py-2">
               <Link href="/help">Help Center</Link>
             </DropdownMenuItem>
-    
+
             <DropdownMenuSeparator />
-    
+
             {/* Sign out */}
             <DropdownMenuItem
               onClick={handleLogout}
@@ -178,11 +193,14 @@ const Navigation = () => {
         </DropdownMenu>
       );
     }
-    
 
     return (
       <>
-        <Button className="cursor-pointer rounded-full" variant={scrolled || !isHomePage ? "ghost" : "default"} asChild>
+        <Button
+          className="cursor-pointer rounded-full"
+          variant={scrolled || !isHomePage ? "ghost" : "default"}
+          asChild
+        >
           <Link href="/user-login">Login</Link>
         </Button>
         <Button
@@ -266,62 +284,63 @@ const Navigation = () => {
     timestamp: string;
   }) => {
     if (!searchData.query.trim()) return;
-    localStorage.setItem('searchData', JSON.stringify(searchData));
-    if (typeof window !== 'undefined') {
+    localStorage.setItem("searchData", JSON.stringify(searchData));
+    if (typeof window !== "undefined") {
       window.location.href = `/search`;
     }
   };
 
-  return (
-     hideNavigation ? (
-      <nav className={`fixed top-0 z-90 w-full transition-all duration-300 ${scrolled || !isHomePage ? 'bg-[#F9FAFB] ' : 'bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex">
-              <div className="shrink-0 flex items-center">
-                <Link href="/" className="flex items-center space-x-2">
-                  <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
-                  <span className={`text-2xl font-bold ${scrolled || !isHomePage ? 'text-gray-900' : 'text-[#F9FAFB]'}`}>
-                    Bookies
-                  </span>
-                </Link>
-              </div>
+  return hideNavigation ? (
+    <nav
+      className={`fixed top-0 z-90 w-full transition-all duration-300 ${scrolled || !isHomePage ? "bg-[#F9FAFB] " : "bg-transparent"}`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex justify-between h-16 items-center">
+          <div className="flex">
+            <div className="shrink-0 flex items-center">
+              <Link href="/" className="flex items-center space-x-2">
+                <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
+                <span
+                  className={`text-2xl font-bold ${scrolled || !isHomePage ? "text-gray-900" : "text-[#F9FAFB]"}`}
+                >
+                  Bookies
+                </span>
+              </Link>
             </div>
-            {
-              !isSearchPage ? (
-                <div className="hidden md:ml-6 md:flex sm:space-x-8">
-                  {navItems.map((item) => {
-                    const isActive =
-                      item.href === "/"
-                        ? pathname === "/"
-                        : pathname?.startsWith(item.href);
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className={`${scrolled || !isHomePage ? 'text-gray-700' : 'text-[#F9FAFB]'} 
+          </div>
+          {!isSearchPage ? (
+            <div className="hidden md:ml-6 md:flex sm:space-x-8">
+              {navItems.map((item) => {
+                const isActive =
+                  item.href === "/"
+                    ? pathname === "/"
+                    : pathname?.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`${scrolled || !isHomePage ? "text-gray-700" : "text-[#F9FAFB]"} 
                           text-[1rem] hover:text-blue-500 font-bold px-3 py-2 transition-colors
                           relative group`}
-                      >
-                        {item.name}
-                        <span
-                          className={`absolute h-0.5 w-0 bg-blue-500 left-1/2 -translate-x-1/2 bottom-0 rounded-full
-                          ${isActive ? 'w-[24px] h-2' : 'group-hover:w-[24px] h-2'} transition-all duration-300`}
-                        />
-                      </Link>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="sm:flex hidden">
-          <SearchSectionTwo onSearch={handleSearch} />
-                </div>
-              )
-            }
-            <div className="hidde md:ml-6 flex items-center space-x-4">
-              {renderAuthButtons()}
+                  >
+                    {item.name}
+                    <span
+                      className={`absolute h-0.5 w-0 bg-blue-500 left-1/2 -translate-x-1/2 bottom-0 rounded-full
+                          ${isActive ? "w-[24px] h-2" : "group-hover:w-[24px] h-2"} transition-all duration-300`}
+                    />
+                  </Link>
+                );
+              })}
             </div>
-            {/* <div className="md:hidden flex items-center">
+          ) : (
+            <div className="sm:flex hidden">
+              <SearchSectionTwo onSearch={handleSearch} />
+            </div>
+          )}
+          <div className="hidde md:ml-6 flex items-center space-x-4">
+            {renderAuthButtons()}
+          </div>
+          {/* <div className="md:hidden flex items-center">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className={`${scrolled || isSearchPage ? 'text-gray-700' : 'text-white'}`}>
@@ -350,11 +369,10 @@ const Navigation = () => {
                 </SheetContent>
               </Sheet>
             </div> */}
-          </div>
         </div>
-      </nav>
-    ): null
-  );
+      </div>
+    </nav>
+  ) : null;
 };
 
 export default Navigation;

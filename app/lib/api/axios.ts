@@ -11,10 +11,15 @@ const API = axios.create({
 
 // Attach token dynamically
 API.interceptors.request.use(async (config) => {
-  const token = await AuthService.getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    API.defaults.headers.common["x-api-secret"] = "diys684iyu2hpre87u386";
+  try {
+    const token = await AuthService.getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      API.defaults.headers.common["x-api-secret"] = "diys684iyu2hpre87u386";
+    }
+  } catch (error) {
+    console.warn("Failed to get token for request:", error);
+    // Continue without token
   }
   return config;
 });

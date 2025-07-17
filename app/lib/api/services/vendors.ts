@@ -1,5 +1,5 @@
 // src/services/VendorService.ts
-import API from '../axios';
+import API from "../axios";
 
 // interface VendorParams {
 //   businessName?: string;
@@ -8,7 +8,7 @@ import API from '../axios';
 // }
 
 export interface Vendor {
-  id?:number;
+  id?: number;
   _id: string;
   businessName: string;
   businessType: string;
@@ -34,14 +34,14 @@ export class VendorService {
    */
   static async getVendors(): Promise<Vendor[]> {
     try {
-      const response = await API.get('/vendors');
-      return response.data;
+      const response = await API.get("/vendors");
+      return response.data || [];
     } catch (error) {
-      console.error('Error fetching vendors:', error);
-      throw error;
+      console.warn("Error fetching vendors:", error);
+      // Return empty array instead of throwing to prevent app crashes
+      return [];
     }
   }
 }
-
 
 // In your VendorService, make sure the endpoint is correct

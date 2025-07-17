@@ -56,7 +56,6 @@ interface PaymentDetalsProps {
   paystackSubAccount: string;
   percentageCharge: number;
   recipientCode: string;
-
 }
 
 export interface AuthUser {
@@ -82,7 +81,7 @@ export interface AuthUser {
 export class AuthService {
   private static BASE_URL =
     "https://hotel-booking-app-backend-30q1.onrender.com";
-    // "localhost:5000";
+  // "localhost:5000";
   private static TOKEN_KEY = "auth_token";
   private static USER_KEY = "auth_user";
   private static SESSION_ID_KEY = "session_id";
@@ -122,7 +121,7 @@ export class AuthService {
 
   static async verifyOTP(
     email: string,
-    otp: string
+    otp: string,
   ): Promise<{ message: string }> {
     const response = await fetch(`${this.BASE_URL}/api/vendors/verify-otp`, {
       method: "POST",
@@ -167,12 +166,12 @@ export class AuthService {
 
       // Create session
       const expiresAt = new Date(
-        Date.now() + 24 * 60 * 60 * 1000
+        Date.now() + 24 * 60 * 60 * 1000,
       ).toISOString();
       const session = await SessionService.createSession(
         data.profile.id,
         data.profile.token,
-        expiresAt
+        expiresAt,
       );
 
       // Store session ID
@@ -193,7 +192,7 @@ export class AuthService {
     }
   }
 
-    static async fetchMyProfile(id: string): Promise<UserProfile | null> {
+  static async fetchMyProfile(id: string): Promise<UserProfile | null> {
     try {
       const response = await API.get(`/vendors/${id}`);
       if (response.status === 200) {
@@ -208,13 +207,12 @@ export class AuthService {
     }
   }
 
-  
-    static async getId() {
-      const token = await this.getToken();
-      if (!token) return null;
-      const decodedToken = jwtDecode<DecodedToken>(token);
-      return decodedToken.id || null;
-    }
+  static async getId() {
+    const token = await this.getToken();
+    if (!token) return null;
+    const decodedToken = jwtDecode<DecodedToken>(token);
+    return decodedToken.id || null;
+  }
 
   static async resendOTP(email: string): Promise<{ message: string }> {
     const response = await fetch(`${this.BASE_URL}/api/vendors/resend-otp`, {
@@ -234,18 +232,37 @@ export class AuthService {
   }
 
   static async setToken(token: string) {
-    await fetch(`${getFrontendUrl()}/api/auth/set-vendor-token`, {
-      method: "POST",
-      body: JSON.stringify({ token }),
-    });
+    try {
+      await fetch(`${getFrontendUrl()}/api/auth/set-vendor-token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+    } catch (error) {
+      console.warn("Error setting vendor token:", error);
+    }
   }
 
   static async getToken(): Promise<string | null> {
-    const response = await fetch(`${getFrontendUrl()}/api/auth/get-vendor-token`, {
-      method: "GET",
-    });
-    const data = await response.json();
-    return data.token;
+    try {
+      const response = await fetch(
+        `${getFrontendUrl()}/api/auth/get-vendor-token`,
+        {
+          method: "GET",
+        },
+      );
+      if (!response.ok) {
+        console.warn("Failed to fetch vendor token from API route");
+        return null;
+      }
+      const data = await response.json();
+      return data.token;
+    } catch (error) {
+      console.warn("Error fetching vendor token:", error);
+      return null;
+    }
   }
   static getUser(): AuthUser | null {
     if (typeof window !== "undefined") {
@@ -267,7 +284,7 @@ export class AuthService {
       if (sessionId) {
         await SessionService.deleteSession(sessionId);
       }
-      await this.clearAuth()
+      await this.clearAuth();
     } catch (error) {
       console.error("Error deleting session:", error);
     } finally {
@@ -275,10 +292,14 @@ export class AuthService {
     }
   }
 
-  private static async clearAuth():  Promise<void> {
-    await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
-      method: "GET",
-    });
+  private static async clearAuth(): Promise<void> {
+    try {
+      await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+        method: "GET",
+      });
+    } catch (error) {
+      console.warn("Error clearing auth:", error);
+    }
   }
 
   static async checkSession(): Promise<boolean> {

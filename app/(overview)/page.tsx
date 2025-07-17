@@ -1,15 +1,18 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import { VendorService, Vendor } from '@/app/lib/api/services/vendors';
+"use client";
+import React, { useEffect, useState } from "react";
+import { VendorService, Vendor } from "@/app/lib/api/services/vendors";
 import SearchSection from "@/app/components/SearchSection";
-import TableGrid, { TableGridTwo, Restaurant } from "@/app/components/TableGrid";
+import TableGrid, {
+  TableGridTwo,
+  Restaurant,
+} from "@/app/components/TableGrid";
 
 interface ApiRestaurant {
   _id: string;
   name: string;
   cuisine: string;
   badge?: string;
-  id?:number;
+  id?: number;
   businessName: string;
   businessType: string;
   branch: string;
@@ -53,8 +56,11 @@ export default function Home() {
         const data = await VendorService.getVendors();
         setVendors(data);
       } catch (err) {
-        console.error('Error fetching vendors:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch vendors');
+        console.warn("Error fetching vendors:", err);
+        // Set a user-friendly error message but don't show the full error
+        setError("Unable to load restaurants at the moment");
+        // Set some default vendors so the page still works
+        setVendors([]);
       } finally {
         setIsLoading(false);
       }
@@ -70,105 +76,117 @@ export default function Home() {
     if (mounted) {
       localStorage.setItem("activeTab", tab);
     }
-  }
+  };
 
   // Convert vendors to restaurant format with better error handling
   const convertVendorsToRestaurants = (vendors: Vendor[]): ApiRestaurant[] => {
     return vendors.map((vendor, index) => {
-      console.log('Vendor data:', {
+      console.log("Vendor data:", {
         id: vendor._id,
         profileImages: vendor.profileImages,
-        image: vendor.image
+        image: vendor.image,
       });
-      
+
       try {
         // Ensure profileImages are valid URLs or relative paths
-        const sanitizedProfileImages = vendor.profileImages?.map(imgOrString => {
-          // if it's a string, use it; otherwise assume it's { url: string }
-          const url = typeof imgOrString === 'string'
-            ? imgOrString
-            : (imgOrString as { url?: string }).url || '';
-    
-          // only accept http or /-prefixed URLs
-          return (url.startsWith('http') || url.startsWith('/'))
-            ? url
-            : '/placeholder.jpg';
-        }) || [];
+        const sanitizedProfileImages =
+          vendor.profileImages?.map((imgOrString) => {
+            // if it's a string, use it; otherwise assume it's { url: string }
+            const url =
+              typeof imgOrString === "string"
+                ? imgOrString
+                : (imgOrString as { url?: string }).url || "";
+
+            // only accept http or /-prefixed URLs
+            return url.startsWith("http") || url.startsWith("/")
+              ? url
+              : "/placeholder.jpg";
+          }) || [];
 
         // Ensure main image is a valid URL or relative path
-        const mainImage = sanitizedProfileImages[0]
-        || (typeof vendor.image === 'string' && (vendor.image.startsWith('http') || vendor.image.startsWith('/'))
+        const mainImage =
+          sanitizedProfileImages[0] ||
+          (typeof vendor.image === "string" &&
+          (vendor.image.startsWith("http") || vendor.image.startsWith("/"))
             ? vendor.image
-            : '/placeholder.jpg');
+            : "/placeholder.jpg");
 
         return {
           _id: vendor._id || `vendor-${index + 1}`,
-          name: vendor.businessName || 'Unknown Business',
-          businessName: vendor.businessName || 'Unknown Business',
-          businessType: vendor.businessType || 'Various',
-          branch: vendor.branch || '',
-          address: vendor.address || '',
-          email: vendor.email || '',
-          phone: vendor.phone || '',
+          name: vendor.businessName || "Unknown Business",
+          businessName: vendor.businessName || "Unknown Business",
+          businessType: vendor.businessType || "Various",
+          branch: vendor.branch || "",
+          address: vendor.address || "",
+          email: vendor.email || "",
+          phone: vendor.phone || "",
           services: vendor.services || [],
-          image:           mainImage,
-          profileImages:   sanitizedProfileImages,
-          description: vendor.description || '',
-          rating: typeof vendor.rating === 'number' ? vendor.rating : 4.5,
+          image: mainImage,
+          profileImages: sanitizedProfileImages,
+          description: vendor.description || "",
+          rating: typeof vendor.rating === "number" ? vendor.rating : 4.5,
           reviews: vendor.reviews || [],
           createdAt: vendor.createdAt || new Date().toISOString(),
           updatedAt: vendor.updatedAt || new Date().toISOString(),
           featured: vendor.featured || false,
-          location: vendor.address || 'Location not specified',
-          cuisine: vendor.businessType || 'Various',
+          location: vendor.address || "Location not specified",
+          cuisine: vendor.businessType || "Various",
         };
       } catch (error) {
-        console.error('Error converting vendor to restaurant:', vendor, error);
+        console.error("Error converting vendor to restaurant:", vendor, error);
         return {
           _id: String(index + 1),
-          name: 'Error loading restaurant',
-          businessName: 'Error loading restaurant',
-          businessType: 'Unknown',
-          branch: '',
-          address: 'Unknown',
-          email: '',
-          phone: '',
+          name: "Error loading restaurant",
+          businessName: "Error loading restaurant",
+          businessType: "Unknown",
+          branch: "",
+          address: "Unknown",
+          email: "",
+          phone: "",
           services: [],
-          image: '/placeholder.jpg',
+          image: "/placeholder.jpg",
           profileImages: [],
-          description: '',
+          description: "",
           rating: 0,
           reviews: [],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           featured: false,
-          location: 'Unknown',
-          cuisine: 'Unknown',
+          location: "Unknown",
+          cuisine: "Unknown",
         };
       }
     });
   };
-  
-  const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => {
-    console.log('Converting to TableGrid format:', {
+
+  const convertToTableGridRestaurant = (
+    apiRestaurant: ApiRestaurant,
+  ): Restaurant => {
+    console.log("Converting to TableGrid format:", {
       image: apiRestaurant.image,
-      profileImages: apiRestaurant.profileImages
+      profileImages: apiRestaurant.profileImages,
     });
-    
+
     return {
       _id: apiRestaurant._id,
-      name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
-      image: apiRestaurant.image || '/placeholder.jpg',
-      profileImages: apiRestaurant?.profileImages?.map(img => ({ 
-        url: typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) 
-          ? img 
-          : '/placeholder.jpg'
+      name:
+        apiRestaurant.name ||
+        apiRestaurant.businessName ||
+        "Unknown Restaurant",
+      image: apiRestaurant.image || "/placeholder.jpg",
+      profileImages: apiRestaurant?.profileImages?.map((img) => ({
+        url:
+          typeof img === "string" &&
+          (img.startsWith("http") || img.startsWith("/"))
+            ? img
+            : "/placeholder.jpg",
       })),
       rating: apiRestaurant.rating || 4.5,
       reviews: apiRestaurant.reviews?.length || 0,
-      cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
-      location: apiRestaurant.location || apiRestaurant.address || 'Location Unknown',
-      badge: apiRestaurant.featured ? 'Featured' : undefined
+      cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || "Various",
+      location:
+        apiRestaurant.location || apiRestaurant.address || "Location Unknown",
+      badge: apiRestaurant.featured ? "Featured" : undefined,
     };
   };
 
@@ -198,36 +216,36 @@ export default function Home() {
       ></path>
     </svg>
   );
-  
+
   const SvgIcon2: React.FC<{ activeTab: string }> = ({ activeTab }) => (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        fill="none"
-        viewBox="0 0 18 18"
-      >
-        <path
-           fill={activeTab === "restaurants" ? "#ffffff" : "#111827"}
-          fillRule="evenodd"
-          d="M7.96.83a1.67 1.67 0 0 0-1.384.153l-3.433 2.06a1.67 1.67 0 0 0-.81 1.429v11.195H1.5a.833.833 0 0 0 0 1.666h15a.833.833 0 1 0 0-1.666h-.833V4.6a1.67 1.67 0 0 0-1.14-1.58zM14 15.668V4.6L8.167 2.657v13.01zM6.5 2.972 4 4.472v11.195h2.5z"
-          clipRule="evenodd"
-        ></path>
-      </svg>
-    );
-    
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      fill="none"
+      viewBox="0 0 18 18"
+    >
+      <path
+        fill={activeTab === "restaurants" ? "#ffffff" : "#111827"}
+        fillRule="evenodd"
+        d="M7.96.83a1.67 1.67 0 0 0-1.384.153l-3.433 2.06a1.67 1.67 0 0 0-.81 1.429v11.195H1.5a.833.833 0 0 0 0 1.666h15a.833.833 0 1 0 0-1.666h-.833V4.6a1.67 1.67 0 0 0-1.14-1.58zM14 15.668V4.6L8.167 2.657v13.01zM6.5 2.972 4 4.472v11.195h2.5z"
+        clipRule="evenodd"
+      ></path>
+    </svg>
+  );
+
   const tabs = [
     {
       name: "Restaurants",
       value: "restaurants",
-      img: <SvgIcon activeTab={activeTab}/>,
+      img: <SvgIcon activeTab={activeTab} />,
     },
     {
-      name: "Hotels", 
+      name: "Hotels",
       value: "hotels",
-      img: <SvgIcon2 activeTab={activeTab}/>,
+      img: <SvgIcon2 activeTab={activeTab} />,
     },
-  ]
+  ];
 
   const handleSearch = (searchData: {
     query: string;
@@ -238,8 +256,8 @@ export default function Home() {
     timestamp: string;
   }) => {
     if (!searchData.query.trim()) return;
-    localStorage.setItem('searchData', JSON.stringify(searchData));
-    if (typeof window !== 'undefined') {
+    localStorage.setItem("searchData", JSON.stringify(searchData));
+    if (typeof window !== "undefined") {
       window.location.href = `/search`;
     }
   };
@@ -247,10 +265,13 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white">
       <div className="relative min-h-[400px]">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-br-[20px] rounded-bl-[20px]"
           style={{
-            backgroundImage: activeTab === "restaurants" ? "url('/find.png')" : "url('/find-hotel.jpg')",
+            backgroundImage:
+              activeTab === "restaurants"
+                ? "url('/find.png')"
+                : "url('/find-hotel.jpg')",
           }}
         />
         <div className="absolute inset-0 bg-black/70 rounded-br-[20px] rounded-bl-[20px]"></div>
@@ -278,20 +299,20 @@ export default function Home() {
 
             <div className="flex justify-center items-center gap-4">
               {tabs.map((tab) => (
-                <button 
-                  key={tab.value} 
+                <button
+                  key={tab.value}
                   className={`px-4 py-2 rounded-[36px] gap-2.5 cursor-pointer text-sm flex font-medium leading-none transition-colors duration-200 ${
-                    activeTab === tab.value 
-                      ? "bg-slate-200 text-gray-900" 
+                    activeTab === tab.value
+                      ? "bg-slate-200 text-gray-900"
                       : "bg-transparent text-gray-50 hover:bg-white/10"
-                  }`} 
+                  }`}
                   onClick={() => handleTabChange(tab.value)}
                 >
-                <figure>{tab.img}</figure>  <span>{tab.name}</span> 
+                  <figure>{tab.img}</figure> <span>{tab.name}</span>
                 </button>
               ))}
             </div>
-            
+
             <div className="relative">
               <SearchSection activeTab={activeTab} onSearch={handleSearch} />
             </div>
@@ -307,23 +328,35 @@ export default function Home() {
               <span className="ml-2 text-gray-600">Loading restaurants...</span>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-              <p className="text-red-600 font-medium">Error loading restaurants</p>
-              <p className="text-red-500 text-sm mt-1">{error}</p>
-              <button 
-                onClick={() => window.location.reload()} 
-                className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+              <p className="text-yellow-600 font-medium">
+                Unable to load restaurants
+              </p>
+              <p className="text-yellow-500 text-sm mt-1">
+                Please check your connection and try again
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-2 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors"
               >
-                Try Again
+                Retry
               </button>
             </div>
-          ) : vendors.filter(v => v.businessType?.toLowerCase() === "restaurant").length > 0 ? (
-            <TableGrid 
-              title='Top Rated Restaurants' 
+          ) : vendors.filter(
+              (v) => v.businessType?.toLowerCase() === "restaurant",
+            ).length > 0 ? (
+            <TableGrid
+              title="Top Rated Restaurants"
               restaurants={vendors
-                .filter(vendor => vendor.businessType?.toLowerCase() === "restaurant")
-                .map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))
-              } 
+                .filter(
+                  (vendor) =>
+                    vendor.businessType?.toLowerCase() === "restaurant",
+                )
+                .map((vendor) =>
+                  convertToTableGridRestaurant(
+                    convertVendorsToRestaurants([vendor])[0],
+                  ),
+                )}
             />
           ) : (
             <div className="text-center py-12">
@@ -337,12 +370,17 @@ export default function Home() {
         </div>
       ) : (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <TableGridTwo 
+          <TableGridTwo
             title="Popular Guest House Searches"
             restaurants={vendors
-              .filter(vendor => vendor.businessType?.toLowerCase() === "hotel")
-              .map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))
-            }
+              .filter(
+                (vendor) => vendor.businessType?.toLowerCase() === "hotel",
+              )
+              .map((vendor) =>
+                convertToTableGridRestaurant(
+                  convertVendorsToRestaurants([vendor])[0],
+                ),
+              )}
           />
         </div>
       )}

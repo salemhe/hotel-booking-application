@@ -1,5 +1,12 @@
 import { useBookings } from "@/app/contexts/BookingsContext";
-import { Search } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Calendar,
+  Users,
+  Clock,
+  MoreVertical,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { IoFilter } from "react-icons/io5";
 import {
@@ -8,6 +15,10 @@ import {
   DropdownMenuContent,
 } from "../ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import Image from "next/image";
 import BookingsCard from "./BookingsCard";
 
 const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
@@ -68,130 +79,92 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
 
   const bookings = [
     {
-      name: "Eko Hotel & Suites",
-      type: "Hotel",
-      status: "Past",
+      name: "Kapadoccia",
+      type: "Restaurant",
+      status: "Confirmed",
       location: "Victoria Island, Lagos State",
       guests: 2,
       rooms: 1,
       startTime: "Monday 12:00 pm",
-      endTime: "Tuesday 12:00 pm",
-      image: "/images/eko-hotel.jpg",
+      endTime: "Tuesday 12:00pm",
+      image:
+        "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fc472369a51c9438c94727aae6c4b95e4?format=webp&width=800",
     },
     {
-      name: "The Yellow Chilli",
+      name: "Kapadoccia",
       type: "Restaurant",
-      status: "Upcoming",
-      location: "Ikeja, Lagos State",
-      guests: 4,
-      rooms: 0,
-      startTime: "Friday 7:00 pm",
-      endTime: "Friday 9:00 pm",
-      image: "/images/yellow-chilli.jpg",
-    },
-    {
-      name: "Radisson Blu Anchorage",
-      type: "Hotel",
-      status: "Upcoming",
-      location: "Ozumba Mbadiwe, Lagos State",
-      guests: 1,
-      rooms: 1,
-      startTime: "Wednesday 2:00 pm",
-      endTime: "Thursday 11:00 am",
-      image: "/images/radisson-blu.jpg",
-    },
-    {
-      name: "Sheraton Lagos Hotel",
-      type: "Hotel",
-      status: "Past",
-      location: "Ikeja, Lagos State",
-      guests: 2,
-      rooms: 1,
-      startTime: "Sunday 3:00 pm",
-      endTime: "Monday 11:00 am",
-      image: "/images/sheraton.jpg",
-    },
-    {
-      name: "RSVP Lagos",
-      type: "Restaurant",
-      status: "Upcoming",
+      status: "Pending",
       location: "Victoria Island, Lagos State",
       guests: 2,
-      rooms: 0,
-      startTime: "Saturday 6:30 pm",
-      endTime: "Saturday 9:00 pm",
-      image: "/images/rsvp.jpg",
+      rooms: 1,
+      startTime: "Monday 12:00 pm",
+      endTime: "Tuesday 12:00pm",
+      image:
+        "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fc472369a51c9438c94727aae6c4b95e4?format=webp&width=800",
     },
     {
-      name: "Bon Hotel Grand Towers",
-      type: "Hotel",
-      status: "Upcoming",
-      location: "Abuja, FCT",
-      guests: 3,
-      rooms: 2,
-      startTime: "Thursday 1:00 pm",
-      endTime: "Friday 11:00 am",
-      image: "/images/bon-hotel.jpg",
-    },
-    {
-      name: "The Grill by Delis",
+      name: "Kapadoccia",
       type: "Restaurant",
-      status: "Past",
+      status: "Confirmed",
       location: "Victoria Island, Lagos State",
       guests: 2,
-      rooms: 0,
-      startTime: "Last Saturday 7:00 pm",
-      endTime: "Last Saturday 9:30 pm",
-      image: "/images/the-grill.jpg",
-    },
-    {
-      name: "Transcorp Hilton Abuja",
-      type: "Hotel",
-      status: "Past",
-      location: "Maitama, Abuja",
-      guests: 2,
       rooms: 1,
-      startTime: "Tuesday 4:00 pm",
-      endTime: "Wednesday 11:00 am",
-      image: "/images/transcorp.jpg",
+      startTime: "Monday 12:00 pm",
+      endTime: "Tuesday 12:00pm",
+      image:
+        "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fc472369a51c9438c94727aae6c4b95e4?format=webp&width=800",
     },
     {
-      name: "Ocean Basket",
+      name: "Kapadoccia",
       type: "Restaurant",
-      status: "Upcoming",
-      location: "Lekki Phase 1, Lagos State",
-      guests: 3,
-      rooms: 0,
-      startTime: "Next Sunday 1:00 pm",
-      endTime: "Next Sunday 3:00 pm",
-      image: "/images/ocean-basket.jpg",
-    },
-    {
-      name: "Four Points by Sheraton",
-      type: "Hotel",
-      status: "Upcoming",
-      location: "Oniru, Victoria Island",
+      status: "Confirmed",
+      location: "Victoria Island, Lagos State",
       guests: 2,
       rooms: 1,
-      startTime: "Next Monday 12:00 pm",
-      endTime: "Next Tuesday 12:00 pm",
-      image: "/images/four-points.jpg",
+      startTime: "Monday 12:00 pm",
+      endTime: "Tuesday 12:00pm",
+      image:
+        "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fc472369a51c9438c94727aae6c4b95e4?format=webp&width=800",
+    },
+    {
+      name: "Eko Hotel & Suites",
+      type: "Hotel",
+      status: "Completed",
+      location: "Victoria Island, Lagos State",
+      guests: 2,
+      rooms: 1,
+      startTime: "Monday 12:00 pm",
+      endTime: "Tuesday 12:00pm",
+      image:
+        "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fc472369a51c9438c94727aae6c4b95e4?format=webp&width=800",
+    },
+    {
+      name: "Vangaa Apartments",
+      type: "Apartments",
+      status: "Cancelled",
+      location: "Victoria Island, Lagos State",
+      guests: 2,
+      rooms: 1,
+      startTime: "Monday 12:00 pm",
+      endTime: "Tuesday 12:00pm",
+      image:
+        "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fc472369a51c9438c94727aae6c4b95e4?format=webp&width=800",
     },
   ];
 
   const fetchMetrics = async () => {
-    setMetLoading(true)
+    setMetLoading(true);
     const upcomingBookings = bookings.filter(
-      (c) => c.status === "Upcoming" && c.type === "Hotel"
+      (c) => c.status === "Upcoming" && c.type === "Hotel",
     );
     const pastBookings = bookings.filter(
-      (c) => c.status === "Past" && c.type === "Hotel"
+      (c) => c.status === "Past" && c.type === "Hotel",
     );
     const upcomingReservations = bookings.filter(
-      (c) => c.status === "Upcoming" && c.type === "Restaurant"
+      (c) => c.status === "Upcoming" && c.type === "Restaurant",
     );
     const pastReservations = bookings.filter(
-      (c) => c.status === "Past" && c.type === "Restaurant"
+      (c) => c.status === "Past" && c.type === "Restaurant",
     );
     const data = new Promise<{
       upcomingBookings: number;
@@ -209,22 +182,22 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
       }, 500);
     });
     setData(await data);
-    setMetLoading(false)
+    setMetLoading(false);
   };
 
   const fetchData = async () => {
     setIsLoading(true);
     const upcomingBookings = bookings.filter(
-      (c) => c.status === "Upcoming" && c.type === "Hotel"
+      (c) => c.status === "Upcoming" && c.type === "Hotel",
     );
     const pastBookings = bookings.filter(
-      (c) => c.status === "Past" && c.type === "Hotel"
+      (c) => c.status === "Past" && c.type === "Hotel",
     );
     const upcomingReservations = bookings.filter(
-      (c) => c.status === "Upcoming" && c.type === "Restaurant"
+      (c) => c.status === "Upcoming" && c.type === "Restaurant",
     );
     const pastReservations = bookings.filter(
-      (c) => c.status === "Past" && c.type === "Restaurant"
+      (c) => c.status === "Past" && c.type === "Restaurant",
     );
 
     const data = new Promise<
@@ -245,10 +218,10 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
           activeType === "upcoming" && type === "bookings"
             ? upcomingBookings
             : activeType === "past" && type === "bookings"
-            ? pastBookings
-            : activeType === "upcoming" && type === "reservations"
-            ? upcomingReservations
-            : pastReservations;
+              ? pastBookings
+              : activeType === "upcoming" && type === "reservations"
+                ? upcomingReservations
+                : pastReservations;
         resolve(items);
       }, 1000);
     });
@@ -319,15 +292,107 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
         </div>
       </div>
       {isLoading ? (
-      <div className="flex justify-center items-center h-64">
-        <span className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0A6C6D]" />
-        <span className="ml-4 text-[#0A6C6D] font-medium">Loading...</span>
-      </div>
+        <div className="flex justify-center items-center h-64">
+          <span className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0A6C6D]" />
+          <span className="ml-4 text-[#0A6C6D] font-medium">Loading...</span>
+        </div>
       ) : (
         datas && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {datas.map((booking, i) => (
-              <BookingsCard key={i} data={booking} />
+              <Card key={i} className="overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="relative h-48">
+                    <Image
+                      src={booking.image}
+                      alt={booking.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          {booking.name}
+                        </h3>
+                        <div className="flex items-center text-sm text-gray-600 mt-1">
+                          <span className="mr-2">
+                            {booking.type === "Restaurant" ? "🍽️" : "🏨"}
+                          </span>
+                          <span>{booking.type}</span>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuCheckboxItem>
+                            View Details
+                          </DropdownMenuCheckboxItem>
+                          <DropdownMenuCheckboxItem>
+                            Leave Review
+                          </DropdownMenuCheckboxItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span>
+                          {booking.startTime} - {booking.endTime}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <MapPin className="h-4 w-4 mr-2" />
+                        <span>{booking.location}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Users className="h-4 w-4 mr-2" />
+                        <span>
+                          {booking.guests} Guests, {booking.rooms} Room
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2">
+                      <Badge
+                        variant={
+                          booking.status === "Confirmed"
+                            ? "default"
+                            : booking.status === "Pending"
+                              ? "secondary"
+                              : booking.status === "Completed"
+                                ? "default"
+                                : "destructive"
+                        }
+                        className={
+                          booking.status === "Confirmed"
+                            ? "bg-green-100 text-green-700"
+                            : booking.status === "Pending"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : booking.status === "Completed"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                        }
+                      >
+                        {booking.status}
+                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-teal-600 text-white border-teal-600 hover:bg-teal-700"
+                      >
+                        View Details
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )
