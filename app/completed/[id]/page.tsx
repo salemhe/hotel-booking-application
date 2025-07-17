@@ -1,6 +1,6 @@
 import { Check, Mail, Clock } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import API from "../../lib/api/userServerAxios";
+import API from "@/app/lib/api/userServerAxios";
 import { redirect } from "next/navigation";
 import { BookingDetails } from "@/app/lib/types/restaurant";
 import { AxiosError } from "axios";
@@ -16,7 +16,7 @@ const fetchBookingDetails = async (id: string) => {
         (error.response.status === 401 || error.response.status === 403)
       ) {
         redirect(
-          `/user-login?redirect=${encodeURIComponent(`/completed/${id}`)}`
+          `/user-login?redirect=${encodeURIComponent(`/completed/${id}`)}`,
         );
       }
     }
@@ -98,7 +98,7 @@ export default async function CompletedPage({
                     hour: "numeric",
                     minute: "2-digit",
                     hour12: true,
-                  }
+                  },
                 )}
               </p>
             </div>
