@@ -328,16 +328,18 @@ export default function Home() {
               <span className="ml-2 text-gray-600">Loading restaurants...</span>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-              <p className="text-red-600 font-medium">
-                Error loading restaurants
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+              <p className="text-yellow-600 font-medium">
+                Unable to load restaurants
               </p>
-              <p className="text-red-500 text-sm mt-1">{error}</p>
+              <p className="text-yellow-500 text-sm mt-1">
+                Please check your connection and try again
+              </p>
               <button
                 onClick={() => window.location.reload()}
-                className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                className="mt-2 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors"
               >
-                Try Again
+                Retry
               </button>
             </div>
           ) : vendors.filter(
