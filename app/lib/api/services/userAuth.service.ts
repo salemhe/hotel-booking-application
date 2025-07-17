@@ -53,25 +53,43 @@ export class AuthService {
     }
   }
 
-
   static async setToken(token: string) {
-    await fetch(`${getFrontendUrl()}/api/auth/set-user-token`, {
-      method: "POST",
-      body: JSON.stringify({ token }),
-    });
+    try {
+      await fetch(`${getFrontendUrl()}/api/auth/set-user-token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
+    } catch (error) {
+      console.warn("Error setting token:", error);
+    }
   }
 
   static async getToken(): Promise<string | null> {
-    const response = await fetch(`${getFrontendUrl()}/api/auth/get-user-token`, {
-      method: "GET",
-    });
-    const data = await response.json();
-    return data.token;
+    try {
+      const response = await fetch(
+        `${getFrontendUrl()}/api/auth/get-user-token`,
+        {
+          method: "GET",
+        },
+      );
+      if (!response.ok) {
+        console.warn("Failed to fetch token from API route");
+        return null;
+      }
+      const data = await response.json();
+      return data.token;
+    } catch (error) {
+      console.warn("Error fetching token:", error);
+      return null;
+    }
   }
 
   static async getUser(id: string): Promise<UserProfile | null> {
-      const response = await API.get(`/users/profile/${id}`);
-      return response.data;
+    const response = await API.get(`/users/profile/${id}`);
+    return response.data;
   }
 
   static setUser(user: UserProfile): void {
@@ -81,9 +99,13 @@ export class AuthService {
   }
 
   static async clearToken() {
-    await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
-      method: "GET",
-    });
+    try {
+      await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+        method: "GET",
+      });
+    } catch (error) {
+      console.warn("Error clearing token:", error);
+    }
   }
 
   static async getId() {
@@ -94,8 +116,13 @@ export class AuthService {
   }
 
   static async isAuthenticated(): Promise<boolean> {
-    const token = await this.getToken();
-    return !!token && this.validateToken(token);
+    try {
+      const token = await this.getToken();
+      return !!token && this.validateToken(token);
+    } catch (error) {
+      console.warn("Error checking authentication:", error);
+      return false;
+    }
   }
 
   static validateToken(token: string): boolean {
@@ -133,7 +160,7 @@ export class AuthService {
     const session = await SessionService.createSession(
       userId,
       token,
-      expiresAt.toISOString()
+      expiresAt.toISOString(),
     );
 
     localStorage.setItem(this.SESSION_ID_KEY, userId);
@@ -152,7 +179,7 @@ export class AuthService {
 
   static async login(
     email: string,
-    password: string
+    password: string,
   ): Promise<{ data: { token: string } }> {
     try {
       const res = await api.post<LoginResponse>("users/login", {
