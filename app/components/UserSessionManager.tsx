@@ -31,8 +31,7 @@ const SessionManager = ({ children }: { children: ReactNode }) => {
   if (isLoading && !isAuthenticated) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin">
-        </div>
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -46,7 +45,7 @@ export default SessionManager;
 // import { createContext, useContext, useEffect, useState } from 'react';
 // import { useRouter, usePathname } from 'next/navigation';
 // import { AuthService, UserProfile } from '@/services/userAuth.services';
-// import { toast } from '@/app/components/ui/use-toast';
+// import { toast } from '@/hooks/use-toast';
 
 // interface SessionContextProps {
 //   user: UserProfile | null;
