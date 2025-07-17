@@ -8,10 +8,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 
 const schema = z.object({
-  stockQuantity: z
-    .number()
-    .int()
-    .min(1, "Stock quantity must be at least 1"),
+  stockQuantity: z.number().int().min(1, "Stock quantity must be at least 1"),
   maxOrderPerCustomer: z
     .number()
     .int()
@@ -24,6 +21,7 @@ type InventoryOrderSettingsProps = {
   initialData: Partial<z.infer<typeof schema>>;
   isSubmitting: boolean;
   save: () => void;
+  isEditing?: boolean;
 };
 
 export function InventoryOrderSettings({
@@ -32,6 +30,7 @@ export function InventoryOrderSettings({
   initialData,
   isSubmitting,
   save,
+  isEditing = false,
 }: InventoryOrderSettingsProps) {
   const {
     register,
@@ -82,7 +81,13 @@ export function InventoryOrderSettings({
             Save as Draft
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Publising..." : "Publish"}
+            {isSubmitting
+              ? isEditing
+                ? "Updating..."
+                : "Publishing..."
+              : isEditing
+                ? "Update Menu Item"
+                : "Publish"}
           </Button>
         </div>
       </div>
