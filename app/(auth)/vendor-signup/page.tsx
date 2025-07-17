@@ -61,9 +61,9 @@ export default function VendorRegistration() {
     role: "vendor",
   });
   const [loading, setLoading] = useState(false);
-    const [showOTPInput, setShowOTPInput] = useState(false);
+  const [showOTPInput, setShowOTPInput] = useState(false);
   const [otp, setOTP] = useState("");
-    const router = useRouter();
+  const router = useRouter();
   //Expanded errors state to accommodate all fields
   const [errors, setErrors] = useState<Partial<typeof formData>>({});
 
@@ -95,21 +95,10 @@ export default function VendorRegistration() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-       const data = await AuthService.register(formData);
-       if (data.success !== false) {
-         localStorage.setItem("accountType", formData.adminType);
-         // Instantly redirect to the correct dashboard
-         if (formData.businessType === "hotel") {
-           router.push("/vendor-dashboard/hotel");
-          } else if (formData.businessType === "restaurant") {
-            router.push("/vendor-dashboard/restaurant");
-          } else if (formData.businessType === "club") {
-            router.push("/vendor-dashboard/club");
-          } else {
-            router.push("/vendor-dashboard");
-          }
-          setShowOTPInput(true);
-          toast.success("Please check your email for the OTP verification code.");
+      const data = await AuthService.register(formData);
+      if (data.success !== false) {
+        setShowOTPInput(true);
+        toast.success("Please check your email for the OTP verification code.");
       } else {
         toast.error(data.message || "Registration failed");
       }
@@ -124,13 +113,24 @@ export default function VendorRegistration() {
     }
   };
 
-    const handleOTPVerification = async (e: React.FormEvent) => {
+  const handleOTPVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await AuthService.verifyOTP(formData.email, otp);
       toast.success("Your account has been verified. Please log in.");
       router.push("/vendor-login");
+      // localStorage.setItem("accountType", formData.adminType);
+      // // Instantly redirect to the correct dashboard
+      // if (formData.businessType === "hotel") {
+      //   router.push("/vendor-dashboard/hotel");
+      // } else if (formData.businessType === "restaurant") {
+      //   router.push("/vendor-dashboard/restaurant");
+      // } else if (formData.businessType === "club") {
+      //   router.push("/vendor-dashboard/club");
+      // } else {
+      //   router.push("/vendor-dashboard");
+      // }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -228,7 +228,7 @@ export default function VendorRegistration() {
       <Card className="w-full max-w-2xl pb-6 px-2 sm:px-4">
         <CardHeader className="space-y-3 pb-6 px-6">
           <CardTitle className="text-2xl sm:text-3xl font-semibold text-center text-[#222]">
-             {showOTPInput ? "Verify Your Email" : "Create Business Account 🔐"}
+            {showOTPInput ? "Verify Your Email" : "Create Business Account 🔐"}
             <CardDescription className="mt-2 text-center text-gray-600 text-sm sm:text-base">
               Access your dashboard to manage bookings, monitor performance, and
               grow your hospitality business
@@ -597,7 +597,7 @@ export default function VendorRegistration() {
             </CardContent>
           </>
         )}
-        </Card>
+      </Card>
     </div>
   );
 }
