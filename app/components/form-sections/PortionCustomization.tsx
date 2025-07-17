@@ -17,8 +17,8 @@ import { Label } from "@/app/components/ui/label";
 const schema = z.object({
   portionSize: z.string().min(1, "Portion size is required"),
   spiceLevel: z.string().min(1, "Spice level is required"),
-  addOns: z.array(z.string()).min(1, "Add-ons are required"),
-  dietaryInfo: z.array(z.string()).min(1, "Dietary information is required"),
+  addOns: z.array(z.string()).optional().default([]),
+  dietaryInfo: z.array(z.string()).optional().default([]),
 });
 
 type PortionCustomizationProps = {
@@ -40,9 +40,9 @@ export function PortionCustomization({
     resolver: zodResolver(schema),
     defaultValues: {
       portionSize: initialData.portionSize ?? "", // Ensure it's always a string
-      spiceLevel: initialData.spiceLevel ?? "",   // Ensure it's always a string
-      addOns: initialData.addOns ?? [],          // Ensure it's always an array
-      dietaryInfo: initialData.dietaryInfo ?? [],// Ensure it's always an array
+      spiceLevel: initialData.spiceLevel ?? "", // Ensure it's always a string
+      addOns: initialData.addOns ?? [], // Ensure it's always an array
+      dietaryInfo: initialData.dietaryInfo ?? [], // Ensure it's always an array
     },
   });
 
@@ -120,14 +120,14 @@ export function PortionCustomization({
                           const updatedValue = checked
                             ? [...(field.value || []), addon]
                             : (field.value || []).filter(
-                                (value: string) => value !== addon
+                                (value: string) => value !== addon,
                               );
                           field.onChange(updatedValue);
                         }}
                       />
                       <Label htmlFor={addon}>{addon}</Label>
                     </div>
-                  )
+                  ),
                 )}
               </>
             )}
@@ -157,7 +157,7 @@ export function PortionCustomization({
                         const updatedValue = checked
                           ? [...(field.value || []), diet]
                           : (field.value || []).filter(
-                              (value: string) => value !== diet
+                              (value: string) => value !== diet,
                             );
                         field.onChange(updatedValue);
                       }}
