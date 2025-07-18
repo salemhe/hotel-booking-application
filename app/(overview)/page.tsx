@@ -377,15 +377,7 @@ export default function Home() {
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <TableGridTwo
             title="Popular Guest House Searches"
-            restaurants={vendors
-              .filter(
-                (vendor) => vendor.businessType?.toLowerCase() === "hotel",
-              )
-              .map((vendor) =>
-                convertToTableGridRestaurant(
-                  convertVendorsToRestaurants([vendor])[0],
-                ),
-              )}
+            restaurants={convertedHotels}
           />
         </div>
       )}
