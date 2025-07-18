@@ -53,11 +53,21 @@ interface BranchForm {
   id: string;
 }
 
+interface Branch {
+  id: string;
+  name: string;
+  status: string;
+  todayReservation: number;
+  todayRevenue: number;
+  lastFoodToday: string;
+  averageRating: number;
+}
+
 export default function BranchesDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
-  const [branches, setBranches] = useState<any[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -87,7 +97,7 @@ export default function BranchesDashboard() {
   async function fetchBranches() {
     setLoading(true);
     try {
-      const params: Record<string, any> = { page, limit: 12 };
+      const params: Record<string, string | number> = { page, limit: 12 };
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       const res = await axios.get("/api/vendor/branches", { params });
@@ -133,7 +143,7 @@ export default function BranchesDashboard() {
     }
   }
 
-  async function handleDeleteBranch(branch: any) {
+  async function handleDeleteBranch(branch: Branch) {
     if (!window.confirm("Are you sure you want to delete this branch?")) return;
     try {
       await axios.delete(`/api/vendor/branches/${branch.id}`);

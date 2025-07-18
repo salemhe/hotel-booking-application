@@ -38,18 +38,56 @@ const getStatusColor = (status: string) => {
   }
 };
 
+interface Account {
+  id: string;
+  bankName: string;
+  bankCode: string;
+  accountNumber: string;
+  type: string;
+  accountName: string;
+  bankLogoUrl?: string;
+}
+
+interface Stats {
+  totalEarnings?: number;
+  earningsVsLastYear?: string;
+  earningsThisWeek?: number;
+  earningsVsLastWeek?: string;
+  completedPayments?: number;
+  completedVsLastWeek?: string;
+  pendingPayments?: number;
+  pendingVsLastWeek?: string;
+  availableBalance?: number;
+  lastPaymentProcessed?: string;
+  chartData?: ChartData[];
+}
+
+interface Transaction {
+  date: string;
+  transactionId: string;
+  customer: string;
+  branch: string;
+  method: string;
+  status: string;
+}
+
+interface ChartData {
+  name: string;
+  value: number;
+}
+
 export default function RestaurantPayments() {
   // Real-time state
-  const [accounts, setAccounts] = useState<any[]>([]);
-  const [selectedAccount, setSelectedAccount] = useState<any | null>(null);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [accountForm, setAccountForm] = useState({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
+  const [accountForm, setAccountForm] = useState<Account>({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState('');
-  const [stats, setStats] = useState<any>({});
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [stats, setStats] = useState<Stats>({});
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [chartData, setChartData] = useState<ChartData[]>([]);
 
   useEffect(() => {
     fetchAll();
@@ -112,7 +150,7 @@ export default function RestaurantPayments() {
     } catch {}
   };
 
-  const AccountCard = ({ account }: { account: any }) => (
+  const AccountCard = ({ account }: { account: Account }) => (
     <Card className="relative overflow-hidden mb-4">
       <CardHeader>
         <div className="flex items-center justify-between">

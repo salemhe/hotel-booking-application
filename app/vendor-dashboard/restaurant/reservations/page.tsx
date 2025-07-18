@@ -24,15 +24,27 @@ import {
 // PUT /api/vendor/reservations/:id
 // DELETE /api/vendor/reservations/:id
 
+interface Reservation {
+  id: string;
+  name: string;
+  email: string;
+  date: string;
+  time: string;
+  guests: number;
+  mealPreselected: boolean;
+  paymentStatus: string;
+  reservationStatus: string;
+}
+
 export default function RestaurantReservations() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  const [reservations, setReservations] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"view"|"edit"|"create"|null>(null);
-  const [selectedReservation, setSelectedReservation] = useState<any|null>(null);
-  const [form, setForm] = useState<any>({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
+  const [selectedReservation, setSelectedReservation] = useState<Reservation|null>(null);
+  const [form, setForm] = useState<Reservation>({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
   const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
@@ -73,7 +85,7 @@ export default function RestaurantReservations() {
     }
   }
 
-  async function handleDeleteReservation(reservation: any) {
+  async function handleDeleteReservation(reservation: Reservation) {
     if (!window.confirm("Are you sure you want to delete this reservation?")) return;
     try {
       await axios.delete(`/api/vendor/reservations/${reservation.id}`);

@@ -7,8 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 
+interface StaffMember {
+  id: string;
+  name: string;
+  role: string;
+  status: string;
+  dateAdded: string;
+  phone: string;
+  email: string;
+}
+
 export default function RestaurantStaffPage() {
-  const [staff, setStaff] = useState<any[]>([]);
+  const [staff, setStaff] = useState<StaffMember[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"all" | "active" | "inactive">("all");
@@ -37,7 +47,7 @@ export default function RestaurantStaffPage() {
   const noShowStaff = staff.filter((s) => s.status === "no-show");
 
   // Staff card for list
-  const StaffCard = ({ member }: { member: any }) => (
+  const StaffCard = ({ member }: { member: StaffMember }) => (
     <div className="flex flex-col items-center bg-white rounded-lg shadow p-4 min-w-[180px] max-w-[180px] mx-2 border border-gray-100 hover:shadow-lg transition">
       <Avatar className="w-12 h-12 mb-2" />
       <div className="font-semibold text-base text-gray-900 text-center">{member.name}</div>
@@ -54,7 +64,7 @@ export default function RestaurantStaffPage() {
   );
 
   // Tab content
-  let tabStaff: any[] = staff;
+  let tabStaff: StaffMember[] = staff;
   if (activeTab === "active") tabStaff = activeStaff;
   if (activeTab === "inactive") tabStaff = inactiveStaff;
 

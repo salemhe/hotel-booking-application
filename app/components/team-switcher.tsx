@@ -27,8 +27,7 @@ export function TeamSwitcher({
   teams: {
     name: string
     logo: React.ElementType
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    logo2?: any;
+    logo2?: string;
     plan: string
   }[]
 }) {
