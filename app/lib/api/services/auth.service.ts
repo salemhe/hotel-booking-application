@@ -336,8 +336,14 @@ export class AuthService {
     }
   }
 
-  static isAuthenticated(): boolean {
-    return !!this.getToken();
+  static async isAuthenticated(): Promise<boolean> {
+    try {
+      const token = await this.getToken();
+      return !!token;
+    } catch (error) {
+      console.warn("Error checking vendor authentication:", error);
+      return false;
+    }
   }
 
   static getUserRole(): string | null {
