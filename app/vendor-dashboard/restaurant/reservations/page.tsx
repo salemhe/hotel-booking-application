@@ -7,10 +7,6 @@ import {
   Bell,
   ChevronDown,
   MoreHorizontal,
-  Calendar,
-  DollarSign,
-  Users,
-  CreditCard,
   Filter,
   Download,
   Plus,
@@ -85,16 +81,7 @@ export default function RestaurantReservations() {
     }
   }
 
-  async function handleDeleteReservation(reservation: Reservation) {
-    if (!window.confirm("Are you sure you want to delete this reservation?")) return;
-    try {
-      await axios.delete(`/api/vendor/reservations/${reservation.id}`);
-      fetchReservations();
-    } catch {
-      // handle error
-    }
-  }
-
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Paid":

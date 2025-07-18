@@ -12,7 +12,6 @@ import {
   List,
   MoreHorizontal,
   Star,
-  MapPin,
   ChevronLeft,
   ChevronRight,
   Download as Export,
@@ -143,16 +142,7 @@ export default function BranchesDashboard() {
     }
   }
 
-  async function handleDeleteBranch(branch: Branch) {
-    if (!window.confirm("Are you sure you want to delete this branch?")) return;
-    try {
-      await axios.delete(`/api/vendor/branches/${branch.id}`);
-      fetchBranches();
-    } catch {
-      // handle error
-    }
-  }
-
+  
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="flex-1 flex flex-col overflow-hidden">

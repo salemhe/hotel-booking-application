@@ -20,7 +20,6 @@ interface StaffMember {
 export default function RestaurantStaffPage() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"all" | "active" | "inactive">("all");
 
   useEffect(() => {
@@ -28,7 +27,6 @@ export default function RestaurantStaffPage() {
   }, [searchTerm]);
 
   async function fetchStaff() {
-    setLoading(true);
     try {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
@@ -37,8 +35,6 @@ export default function RestaurantStaffPage() {
       setStaff(data || []);
     } catch {
       setStaff([]);
-    } finally {
-      setLoading(false);
     }
   }
 
