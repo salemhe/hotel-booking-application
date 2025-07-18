@@ -161,7 +161,10 @@ const Navigation = () => {
               <Link href="/messages">Messages</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="  px-4 py-2">
-              <Link href="/bookings">Bookings/Reservation</Link>
+              <Link href="/bookings">Bookings</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="  px-4 py-2">
+              <Link href="/reservations">Reservations</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="  px-4 py-2">
               <Link href="/wishlist">Wishlist</Link>
