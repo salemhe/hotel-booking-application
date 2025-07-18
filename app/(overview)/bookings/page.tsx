@@ -118,8 +118,17 @@ const getStatusBadge = (status: string) => {
 };
 
 const ReservationCard = ({ reservation }: { reservation: Reservation }) => {
+  const router = useRouter();
+
+  const handleViewDetails = () => {
+    router.push(`/bookings/${reservation.id}`);
+  };
+
   return (
-    <Card className="mb-4">
+    <Card
+      className="mb-4 cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={handleViewDetails}
+    >
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
           <div className="w-24 h-24 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
