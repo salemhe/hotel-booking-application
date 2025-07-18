@@ -1,11 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
-import {
-  FiStar,
-  FiHeart,
-  FiChevronRight,
-  FiChevronsDown,
-} from "react-icons/fi";
+import { FiStar, FiHeart, FiChevronRight, FiChevronsDown } from "react-icons/fi";
 // import rest from "@/public/restaurant.jpg";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
@@ -22,7 +17,7 @@ export interface Restaurant {
   location?: string;
   badge?: string;
   price?: number;
-
+  
   discount?: number;
 }
 
@@ -38,7 +33,7 @@ interface Hotel {
   location?: string;
   badge?: string;
   discount?: number;
-
+  
   profileImages?: { url: string }[];
 }
 
@@ -73,21 +68,17 @@ const DUMMY_HOTEL_DATA: Hotel[] = Array.from({ length: 8 }, (_, i) => ({
 }));
 
 const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
-  const [currentIndices, setCurrentIndices] = useState<{
-    [key: string]: number;
-  }>({});
-  const [resetTimeouts, setResetTimeouts] = useState<{
-    [key: string]: NodeJS.Timeout;
-  }>({});
+  const [currentIndices, setCurrentIndices] = useState<{ [key: string]: number }>({});
+  const [resetTimeouts, setResetTimeouts] = useState<{ [key: string]: NodeJS.Timeout }>({});
   const [isHovering, setIsHovering] = useState<{ [key: string]: boolean }>({});
   const router = useRouter();
 
   const getImagesForRestaurant = (restaurant: Restaurant) => {
     if (restaurant.profileImages && restaurant.profileImages.length > 1) {
-      return restaurant.profileImages.map((image) => image.url);
+      return restaurant.profileImages.map(image => image.url);
     }
     // Only return single image if there's only one or no profile images
-    return restaurant.image ? [restaurant.image] : ["/placeholder.jpg"];
+    return restaurant.image ? [restaurant.image] : ['/placeholder.jpg'];
   };
 
   const hasMultipleImages = (restaurant: Restaurant) => {
@@ -96,16 +87,14 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
   };
 
   const handleMouseEnter = (restaurantId: string) => {
-    const restaurant = restaurants.find(
-      (r) => (r._id || String(r.id)) === restaurantId,
-    );
+    const restaurant = restaurants.find(r => (r._id || String(r.id)) === restaurantId);
     if (!restaurant || !hasMultipleImages(restaurant)) return;
 
-    setIsHovering((prev) => ({ ...prev, [restaurantId]: true }));
-
+    setIsHovering(prev => ({ ...prev, [restaurantId]: true }));
+    
     if (resetTimeouts[restaurantId]) {
       clearTimeout(resetTimeouts[restaurantId]);
-      setResetTimeouts((prev) => {
+      setResetTimeouts(prev => {
         const newTimeouts = { ...prev };
         delete newTimeouts[restaurantId];
         return newTimeouts;
@@ -113,65 +102,49 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
     }
   };
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>, restaurantId: string) => {
-      const restaurant = restaurants.find(
-        (r) => (r._id || String(r.id)) === restaurantId,
-      );
-      if (!restaurant || !hasMultipleImages(restaurant)) return;
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>, restaurantId: string) => {
+    const restaurant = restaurants.find(r => (r._id || String(r.id)) === restaurantId);
+    if (!restaurant || !hasMultipleImages(restaurant)) return;
 
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const xPercent = (x / rect.width) * 100;
-      const images = getImagesForRestaurant(restaurant);
-      const imageIndex = Math.min(
-        Math.max(Math.floor(xPercent / (100 / images.length)), 0),
-        images.length - 1,
-      );
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const xPercent = (x / rect.width) * 100;
+    const images = getImagesForRestaurant(restaurant);
+    const imageIndex = Math.min(Math.max(Math.floor(xPercent / (100 / images.length)), 0), images.length - 1);
+    
+    setCurrentIndices(prev => ({
+      ...prev,
+      [restaurantId]: imageIndex
+    }));
+  }, [restaurants]);
 
-      setCurrentIndices((prev) => ({
+  const handleMouseLeave = useCallback((restaurantId: string) => {
+    const restaurant = restaurants.find(r => (r._id || String(r.id)) === restaurantId);
+    if (!restaurant || !hasMultipleImages(restaurant)) return;
+
+    setIsHovering(prev => ({ ...prev, [restaurantId]: false }));
+
+    const timeout = setTimeout(() => {
+      setCurrentIndices(prev => ({
         ...prev,
-        [restaurantId]: imageIndex,
+        [restaurantId]: 0
       }));
-    },
-    [restaurants],
-  );
+    }, 300); // Reduced timeout for smoother experience
 
-  const handleMouseLeave = useCallback(
-    (restaurantId: string) => {
-      const restaurant = restaurants.find(
-        (r) => (r._id || String(r.id)) === restaurantId,
-      );
-      if (!restaurant || !hasMultipleImages(restaurant)) return;
-
-      setIsHovering((prev) => ({ ...prev, [restaurantId]: false }));
-
-      const timeout = setTimeout(() => {
-        setCurrentIndices((prev) => ({
-          ...prev,
-          [restaurantId]: 0,
-        }));
-      }, 300); // Reduced timeout for smoother experience
-
-      setResetTimeouts((prev) => ({
-        ...prev,
-        [restaurantId]: timeout,
-      }));
-    },
-    [restaurants],
-  );
+    setResetTimeouts(prev => ({
+      ...prev,
+      [restaurantId]: timeout
+    }));
+  }, [restaurants]);
 
   useEffect(() => {
     return () => {
-      Object.values(resetTimeouts).forEach((timeout) => clearTimeout(timeout));
+      Object.values(resetTimeouts).forEach(timeout => clearTimeout(timeout));
     };
-  }, []); // Remove resetTimeouts dependency to prevent infinite re-renders
+  }, [resetTimeouts]);
   return (
     <div className="mb-[92px]">
-      <Button
-        variant="outline"
-        className="flex justify-between items-center mb-6 text-gray-900 text-sm font-medium leading-none"
-      >
+      <Button variant="outline" className="flex justify-between items-center mb-6 text-gray-900 text-sm font-medium leading-none">
         <h2 className="">{title}</h2>
         <FiChevronRight className="ml-1" />
       </Button>
@@ -193,14 +166,10 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
               }}
               className="h-80 px-2 cursor-pointer pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
             >
-              <div
+              <div 
                 className={`relative h-52 w-full cursor-pointer`}
                 onMouseEnter={() => handleMouseEnter(restaurantId)}
-                onMouseMove={
-                  multipleImages
-                    ? (e) => handleMouseMove(e, restaurantId)
-                    : undefined
-                }
+                onMouseMove={multipleImages ? (e) => handleMouseMove(e, restaurantId) : undefined}
                 onMouseLeave={() => handleMouseLeave(restaurantId)}
               >
                 <div className="relative h-full w-full overflow-hidden rounded-xl">
@@ -212,26 +181,21 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
                       layout="fill"
                       objectFit="cover"
                       className={`absolute transition-all duration-300 ease-out ${
-                        multipleImages
-                          ? `will-change-transform ${hovering ? "brightness-105" : ""}`
-                          : "hover:scale-105"
+                        multipleImages 
+                          ? `will-change-transform ${hovering ? 'brightness-105' : ''}` 
+                          : 'hover:scale-105'
                       }`}
-                      style={
-                        multipleImages
-                          ? {
-                              transform: `translateX(${(index - currentIndex) * 100}%)`,
-                              transition: hovering
-                                ? "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), brightness 0.3s ease"
-                                : "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), brightness 0.3s ease",
-                            }
-                          : {
-                              transition:
-                                "transform 0.3s ease, brightness 0.3s ease",
-                            }
-                      }
+                      style={multipleImages ? {
+                        transform: `translateX(${(index - currentIndex) * 100}%)`,
+                        transition: hovering 
+                          ? 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), brightness 0.3s ease'
+                          : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), brightness 0.3s ease'
+                      } : {
+                        transition: 'transform 0.3s ease, brightness 0.3s ease'
+                      }}
                     />
                   ))}
-
+                  
                   {/* Subtle overlay for better text readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none" />
                 </div>
@@ -253,9 +217,9 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
                       <span
                         key={index}
                         className={`block rounded-full transition-all duration-300 ease-out ${
-                          index === currentIndex
-                            ? "bg-white scale-125 w-6 h-2 shadow-md"
-                            : "bg-white/70 w-2 h-2 hover:bg-white/90"
+                          index === currentIndex 
+                            ? 'bg-white scale-125 w-6 h-2 shadow-md' 
+                            : 'bg-white/70 w-2 h-2 hover:bg-white/90'
                         }`}
                       />
                     ))}
@@ -310,28 +274,18 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
 
 export default TableGrid;
 
-export const TableGridTwo = ({
-  title,
-  restaurants,
-}: {
-  title: string;
-  restaurants: Hotel[];
-}) => {
-  const [currentIndices, setCurrentIndices] = useState<{
-    [key: number]: number;
-  }>({});
-  const [resetTimeouts, setResetTimeouts] = useState<{
-    [key: number]: NodeJS.Timeout;
-  }>({});
+export const TableGridTwo = ({ title, restaurants }: { title: string; restaurants: Hotel[] }) => {
+  const [currentIndices, setCurrentIndices] = useState<{ [key: number]: number }>({});
+  const [resetTimeouts, setResetTimeouts] = useState<{ [key: number]: NodeJS.Timeout }>({});
   const [isHovering, setIsHovering] = useState<{ [key: number]: boolean }>({});
   const router = useRouter();
-
+  
   const getImagesForRestaurant = (restaurant: Restaurant) => {
     if (restaurant.profileImages && restaurant.profileImages.length > 1) {
       return restaurant.profileImages;
     }
     // Only return single image if there's only one or no profile images
-    return restaurant.image ? [restaurant.image] : ["/placeholder.jpg"];
+    return restaurant.image ? [restaurant.image] : ['/placeholder.jpg'];
   };
 
   const hasMultipleImages = (restaurant: Restaurant) => {
@@ -340,14 +294,14 @@ export const TableGridTwo = ({
   };
 
   const handleMouseEnter = (restaurantId: number) => {
-    const restaurant = DUMMY_HOTEL_DATA.find((r) => r.id === restaurantId);
+    const restaurant = DUMMY_HOTEL_DATA.find(r => r.id === restaurantId);
     if (!restaurant || !hasMultipleImages(restaurant)) return;
 
-    setIsHovering((prev) => ({ ...prev, [restaurantId]: true }));
-
+    setIsHovering(prev => ({ ...prev, [restaurantId]: true }));
+    
     if (resetTimeouts[restaurantId]) {
       clearTimeout(resetTimeouts[restaurantId]);
-      setResetTimeouts((prev) => {
+      setResetTimeouts(prev => {
         const newTimeouts = { ...prev };
         delete newTimeouts[restaurantId];
         return newTimeouts;
@@ -355,59 +309,50 @@ export const TableGridTwo = ({
     }
   };
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>, restaurantId: number) => {
-      const restaurant = DUMMY_HOTEL_DATA.find((r) => r.id === restaurantId);
-      if (!restaurant || !hasMultipleImages(restaurant)) return;
-
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const xPercent = (x / rect.width) * 100;
-      const images = getImagesForRestaurant(restaurant);
-      const imageIndex = Math.min(
-        Math.max(Math.floor(xPercent / (100 / images.length)), 0),
-        images.length - 1,
-      );
-
-      setCurrentIndices((prev) => ({
-        ...prev,
-        [restaurantId]: imageIndex,
-      }));
-    },
-    [],
-  );
-
-  const handleMouseLeave = useCallback((restaurantId: number) => {
-    const restaurant = DUMMY_HOTEL_DATA.find((r) => r.id === restaurantId);
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>, restaurantId: number) => {
+    const restaurant = DUMMY_HOTEL_DATA.find(r => r.id === restaurantId);
     if (!restaurant || !hasMultipleImages(restaurant)) return;
 
-    setIsHovering((prev) => ({ ...prev, [restaurantId]: false }));
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const xPercent = (x / rect.width) * 100;
+    const images = getImagesForRestaurant(restaurant);
+    const imageIndex = Math.min(Math.max(Math.floor(xPercent / (100 / images.length)), 0), images.length - 1);
+    
+    setCurrentIndices(prev => ({
+      ...prev,
+      [restaurantId]: imageIndex
+    }));
+  }, []);
+
+  const handleMouseLeave = useCallback((restaurantId: number) => {
+    const restaurant = DUMMY_HOTEL_DATA.find(r => r.id === restaurantId);
+    if (!restaurant || !hasMultipleImages(restaurant)) return;
+
+    setIsHovering(prev => ({ ...prev, [restaurantId]: false }));
 
     const timeout = setTimeout(() => {
-      setCurrentIndices((prev) => ({
+      setCurrentIndices(prev => ({
         ...prev,
-        [restaurantId]: 0,
+        [restaurantId]: 0
       }));
     }, 300);
 
-    setResetTimeouts((prev) => ({
+    setResetTimeouts(prev => ({
       ...prev,
-      [restaurantId]: timeout,
+      [restaurantId]: timeout
     }));
   }, []);
 
   useEffect(() => {
     return () => {
-      Object.values(resetTimeouts).forEach((timeout) => clearTimeout(timeout));
+      Object.values(resetTimeouts).forEach(timeout => clearTimeout(timeout));
     };
-  }, []); // Remove resetTimeouts dependency to prevent infinite re-renders
+  }, [resetTimeouts]);
 
   return (
     <div className="mb-[92px]">
-      <Button
-        variant="outline"
-        className="flex justify-between items-center mb-6 text-gray-900 text-sm font-medium leading-none"
-      >
+      <Button variant="outline" className="flex justify-between items-center mb-6 text-gray-900 text-sm font-medium leading-none">
         <h2 className="">{title}</h2>
         <FiChevronRight className="ml-1" />
       </Button>
@@ -427,45 +372,36 @@ export const TableGridTwo = ({
               }}
               className="h-80 px-2 pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
             >
-              <div
+              <div 
                 className={`relative h-52 w-full  cursor-pointer`}
                 onMouseEnter={() => handleMouseEnter(restaurant.id || 0)}
-                onMouseMove={
-                  multipleImages
-                    ? (e) => handleMouseMove(e, restaurant.id || 0)
-                    : undefined
-                }
+                onMouseMove={multipleImages ? (e) => handleMouseMove(e, restaurant.id || 0) : undefined}
                 onMouseLeave={() => handleMouseLeave(restaurant.id || 0)}
               >
                 <div className="relative h-full w-full overflow-hidden rounded-xl">
                   {images.map((image, index) => (
                     <Image
                       key={index}
-                      src={typeof image === "string" ? image : image.url}
+                      src={typeof image === 'string' ? image : image.url}
                       alt={restaurant.name}
                       layout="fill"
                       objectFit="cover"
                       className={`absolute transition-all duration-300 ease-out ${
-                        multipleImages
-                          ? `will-change-transform ${hovering ? "brightness-105" : ""}`
-                          : "hover:scale-105"
+                        multipleImages 
+                          ? `will-change-transform ${hovering ? 'brightness-105' : ''}` 
+                          : 'hover:scale-105'
                       }`}
-                      style={
-                        multipleImages
-                          ? {
-                              transform: `translateX(${(index - currentIndex) * 100}%)`,
-                              transition: hovering
-                                ? "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), brightness 0.3s ease"
-                                : "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), brightness 0.3s ease",
-                            }
-                          : {
-                              transition:
-                                "transform 0.3s ease, brightness 0.3s ease",
-                            }
-                      }
+                      style={multipleImages ? {
+                        transform: `translateX(${(index - currentIndex) * 100}%)`,
+                        transition: hovering 
+                          ? 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), brightness 0.3s ease'
+                          : 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), brightness 0.3s ease'
+                      } : {
+                        transition: 'transform 0.3s ease, brightness 0.3s ease'
+                      }}
                     />
                   ))}
-
+                  
                   <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none" />
                 </div>
 
@@ -478,7 +414,7 @@ export const TableGridTwo = ({
                 <button className="absolute top-2 right-2 text-white cursor-pointer text-lg transition-all duration-300 hover:scale-110 hover:text-red-400 drop-shadow-md">
                   <FiHeart />
                 </button>
-                {/* 
+{/* 
                 {multipleImages && (
                   <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1.5">
                     {images.map((_, index) => (
@@ -526,28 +462,20 @@ export const TableGridTwo = ({
                 <div className="mt-2">
                   <div className="flex justify-between items-center">
                     <div className="flex justify-start items-center gap-1">
-                      <div className="justify-start text-gray-900 text-sm font-medium font-['Inter'] leading-none">
-                        ${restaurant.price}
-                      </div>
-                      <div className="justify-start text-zinc-600 text-xs font-normal font-['Inter'] leading-none">
-                        /night
-                      </div>
+                      <div className="justify-start text-gray-900 text-sm font-medium font-['Inter'] leading-none">${restaurant.price}</div>
+                      <div className="justify-start text-zinc-600 text-xs font-normal font-['Inter'] leading-none">/night</div>
                     </div>
                     <div className="h-7 px-2 rounded-lg outline-1 outline-offset-[-1px] outline-yellow-500 inline-flex flex-col justify-center items-center gap-2">
                       <div className="inline-flex justify-start items-center gap-1.5">
                         <div className="w-4 h-4 relative overflow-hidden">
                           <div className="w-4 h-4 left-0 top-0 absolute">
-                            <Image
+                            <Image 
                               width={100}
-                              height={100}
-                              src="/sale_fill.svg"
-                              alt="discount"
-                            />
-                          </div>
+                              height={100} src="/sale_fill.svg" alt="discount"
+                             />
+                                  </div>
                         </div>
-                        <div className="justify-start text-gray-900 text-xs font-medium font-['Inter'] leading-none tracking-tight">
-                          {restaurant.discount}% off
-                        </div>
+                        <div className="justify-start text-gray-900 text-xs font-medium font-['Inter'] leading-none tracking-tight">{restaurant.discount}% off</div>
                       </div>
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { VendorService, Vendor } from "@/app/lib/api/services/vendors";
 import SearchSection from "@/app/components/SearchSection";
 import TableGrid, {
@@ -81,6 +81,12 @@ export default function Home() {
   // Convert vendors to restaurant format with better error handling
   const convertVendorsToRestaurants = (vendors: Vendor[]): ApiRestaurant[] => {
     return vendors.map((vendor, index) => {
+      console.log("Vendor data:", {
+        id: vendor._id,
+        profileImages: vendor.profileImages,
+        image: vendor.image,
+      });
+
       try {
         // Ensure profileImages are valid URLs or relative paths
         const sanitizedProfileImages =
@@ -156,6 +162,11 @@ export default function Home() {
   const convertToTableGridRestaurant = (
     apiRestaurant: ApiRestaurant,
   ): Restaurant => {
+    console.log("Converting to TableGrid format:", {
+      image: apiRestaurant.image,
+      profileImages: apiRestaurant.profileImages,
+    });
+
     return {
       _id: apiRestaurant._id,
       name:
@@ -235,33 +246,6 @@ export default function Home() {
       img: <SvgIcon2 activeTab={activeTab} />,
     },
   ];
-
-  // Memoize converted restaurant data to prevent redundant conversions
-  const restaurantVendors = useMemo(
-    () => vendors.filter((v) => v.businessType?.toLowerCase() === "restaurant"),
-    [vendors],
-  );
-
-  const hotelVendors = useMemo(
-    () => vendors.filter((v) => v.businessType?.toLowerCase() === "hotel"),
-    [vendors],
-  );
-
-  const convertedRestaurants = useMemo(
-    () =>
-      restaurantVendors.map((vendor) =>
-        convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]),
-      ),
-    [restaurantVendors],
-  );
-
-  const convertedHotels = useMemo(
-    () =>
-      hotelVendors.map((vendor) =>
-        convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]),
-      ),
-    [hotelVendors],
-  );
 
   const handleSearch = (searchData: {
     query: string;
@@ -358,10 +342,21 @@ export default function Home() {
                 Retry
               </button>
             </div>
-          ) : restaurantVendors.length > 0 ? (
+          ) : vendors.filter(
+              (v) => v.businessType?.toLowerCase() === "restaurant",
+            ).length > 0 ? (
             <TableGrid
               title="Top Rated Restaurants"
-              restaurants={convertedRestaurants}
+              restaurants={vendors
+                .filter(
+                  (vendor) =>
+                    vendor.businessType?.toLowerCase() === "restaurant",
+                )
+                .map((vendor) =>
+                  convertToTableGridRestaurant(
+                    convertVendorsToRestaurants([vendor])[0],
+                  ),
+                )}
             />
           ) : (
             <div className="text-center py-12">
@@ -377,7 +372,15 @@ export default function Home() {
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <TableGridTwo
             title="Popular Guest House Searches"
-            restaurants={convertedHotels}
+            restaurants={vendors
+              .filter(
+                (vendor) => vendor.businessType?.toLowerCase() === "hotel",
+              )
+              .map((vendor) =>
+                convertToTableGridRestaurant(
+                  convertVendorsToRestaurants([vendor])[0],
+                ),
+              )}
           />
         </div>
       )}
