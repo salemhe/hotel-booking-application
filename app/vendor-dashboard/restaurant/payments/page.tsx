@@ -41,7 +41,6 @@ const getStatusColor = (status: string) => {
 interface Account {
   id: string;
   bankName: string;
-  bankCode: string;
   accountNumber: string;
   type: string;
   accountName: string;
@@ -79,10 +78,9 @@ interface ChartData {
 export default function RestaurantPayments() {
   // Real-time state
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [accountForm, setAccountForm] = useState<Account>({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
+  const [accountForm, setAccountForm] = useState<Account>({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState('');
   const [stats, setStats] = useState<Stats>({});
@@ -106,14 +104,14 @@ export default function RestaurantPayments() {
     } catch {}
   };
 
-  const verifyAccount = async (bankCode: string, accountNumber: string) => {
+  const verifyAccount = async (accountNumber: string) => {
     setVerifying(true);
     setVerifyError('');
     try {
       const res = await fetch("/api/vendor/accounts/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bankCode, accountNumber })
+        body: JSON.stringify({ accountNumber })
       });
       const data = await res.json();
       if (data.accountName) {
@@ -145,7 +143,7 @@ export default function RestaurantPayments() {
       }
       setShowEditModal(false);
       setShowAddModal(false);
-      setAccountForm({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
+      setAccountForm({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
       fetchAll();
     } catch {}
   };
@@ -162,10 +160,10 @@ export default function RestaurantPayments() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={() => { setSelectedAccount(account); setAccountForm(account); setShowEditModal(true); }}>
+            <Button variant="ghost" size="sm" onClick={() => { setAccountForm(account); setShowEditModal(true); }}>
               <Edit className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => { setAccountForm({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
+            <Button variant="ghost" size="sm" onClick={() => { setAccountForm({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
               <Plus className="h-4 w-4" />
             </Button>
           </div>
@@ -186,9 +184,9 @@ export default function RestaurantPayments() {
           <h2 className="text-xl font-bold mb-4">{isEdit ? "Edit Account" : "Add Account"}</h2>
           <div className="space-y-4">
             <Input placeholder="Bank Name" value={accountForm.bankName} onChange={e => setAccountForm(f => ({ ...f, bankName: e.target.value }))} />
-            <Input placeholder="Bank Code" value={accountForm.bankCode} onChange={e => setAccountForm(f => ({ ...f, bankCode: e.target.value }))} />
+            {/* <Input placeholder="Bank Code" value={accountForm.bankCode} onChange={e => setAccountForm(f => ({ ...f, bankCode: e.target.value }))} /> */}
             <Input placeholder="Account Number" value={accountForm.accountNumber} onChange={e => setAccountForm(f => ({ ...f, accountNumber: e.target.value }))} />
-            <Button onClick={() => verifyAccount(accountForm.bankCode, accountForm.accountNumber)} disabled={verifying}>
+            <Button onClick={() => verifyAccount(accountForm.accountNumber)} disabled={verifying}>
               {verifying ? "Verifying..." : "Verify Account"}
             </Button>
             {accountForm.accountName && <div className="text-green-600 font-semibold">{accountForm.accountName}</div>}
@@ -241,9 +239,9 @@ export default function RestaurantPayments() {
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
-              <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => { setAccountForm({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Account
+              <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => { setAccountForm({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Account
               </Button>
             </div>
           </div>
@@ -317,7 +315,7 @@ export default function RestaurantPayments() {
                 <p className="text-sm text-gray-500 mb-6">{stats.lastPaymentProcessed || "-"}</p>
                 {/* Account Cards */}
                 {accounts.map(account => <AccountCard key={account.id} account={account} />)}
-                <Button className="w-full mt-4 bg-teal-600 hover:bg-teal-700" onClick={() => { setAccountForm({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
+                <Button className="w-full mt-4 bg-teal-600 hover:bg-teal-700" onClick={() => { setAccountForm({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Account
                 </Button>

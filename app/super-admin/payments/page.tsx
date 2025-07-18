@@ -42,12 +42,46 @@ const getStatusColor = (status: string) => {
   }
 };
 
+interface Vendor {
+  id: string;
+  name: string;
+}
+
+interface Stats {
+  totalEarnings?: number;
+  earningsVsLastYear?: string;
+  earningsThisWeek?: number;
+  earningsVsLastWeek?: string;
+  completedPayments?: number;
+  completedVsLastWeek?: string;
+  pendingPayments?: number;
+  pendingVsLastWeek?: string;
+  availableBalance?: number;
+  lastPaymentProcessed?: string;
+  chartData?: ChartData[];
+}
+
+interface Transaction {
+  date: string;
+  transactionId: string;
+  vendorName: string;
+  customer: string;
+  branch: string;
+  method: string;
+  status: string;
+}
+
+interface ChartData {
+  name: string;
+  value: number;
+}
+
 export default function SuperAdminPayments() {
-  const [vendors, setVendors] = useState<any[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   const [selectedVendor, setSelectedVendor] = useState<string>("");
-  const [stats, setStats] = useState<any>({});
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [stats, setStats] = useState<Stats>({});
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [chartData, setChartData] = useState<ChartData[]>([]);
 
   useEffect(() => {
     fetchVendors();
@@ -101,7 +135,7 @@ export default function SuperAdminPayments() {
                 onChange={e => setSelectedVendor(e.target.value)}
               >
                 <option value="">All Vendors</option>
-                {vendors.map((vendor: any) => (
+                {vendors.map((vendor) => (
                   <option key={vendor.id} value={vendor.id}>{vendor.name}</option>
                 ))}
               </select>
@@ -317,7 +351,7 @@ export default function SuperAdminPayments() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transactions.map((transaction: any, index: number) => (
+                    {transactions.map((transaction, index: number) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium">{transaction.date}</TableCell>
                         <TableCell>{transaction.transactionId}</TableCell>

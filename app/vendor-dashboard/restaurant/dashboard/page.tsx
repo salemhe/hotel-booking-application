@@ -14,12 +14,47 @@ import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
 // GET /api/vendor/staff
 
 export default function RestaurantDashboard() {
+  // Types
+  interface Overview {
+    totalBookings?: number;
+    totalPayments?: number;
+    totalBranches?: number;
+    totalStaff?: number;
+  }
+  interface Booking {
+    id: string;
+    guest: string;
+    branch: string;
+    date: string;
+    status: string;
+  }
+  interface Payment {
+    id: string;
+    payer: string;
+    branch: string;
+    amount: number;
+    status: string;
+    date: string;
+  }
+  interface Branch {
+    id: string;
+    name: string;
+    location: string;
+    status: string;
+  }
+  interface Staff {
+    id: string;
+    name: string;
+    role: string;
+    branch: string;
+    status: string;
+  }
   // Real-time state
-  const [overview, setOverview] = useState<any>({});
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [payments, setPayments] = useState<any[]>([]);
-  const [branches, setBranches] = useState<any[]>([]);
-  const [staff, setStaff] = useState<any[]>([]);
+  const [overview, setOverview] = useState<Overview>({});
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [staff, setStaff] = useState<Staff[]>([]);
 
   useEffect(() => {
     fetchAll();
