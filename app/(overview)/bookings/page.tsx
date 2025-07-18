@@ -236,6 +236,7 @@ const ReservationCard = ({ reservation }: { reservation: Reservation }) => {
 
 export default function BookingsPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("bookings");
 
