@@ -37,7 +37,7 @@ export default function ReservationDetailsPage({
 
   const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Others"];
 
-  React.useEffect(() => {
+  useEffect(() => {
     const getParams = async () => {
       const resolvedParams = await params;
       setRestaurantId(resolvedParams.id);
