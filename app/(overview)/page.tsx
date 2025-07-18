@@ -100,7 +100,7 @@ export default function Home() {
             // only accept http or /-prefixed URLs
             return url.startsWith("http") || url.startsWith("/")
               ? url
-              : "/placeholder.jpg";
+              : "/placeholder.svg";
           }) || [];
 
         // Ensure main image is a valid URL or relative path
