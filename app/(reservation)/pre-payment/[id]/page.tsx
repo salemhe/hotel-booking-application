@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Plus,
@@ -107,7 +107,7 @@ export default function PrePaymentPage({ params }: PrePaymentPageProps) {
     }, 0);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const getParams = async () => {
       const resolvedParams = await params;
       setRestaurantId(resolvedParams.id);
