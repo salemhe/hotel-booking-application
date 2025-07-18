@@ -193,18 +193,36 @@ const ReservationCard = ({ reservation }: { reservation: Reservation }) => {
 
             <div className="flex gap-2">
               {reservation.status === "confirmed" && (
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">
+                <Button
+                  className="bg-teal-600 hover:bg-teal-700 text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails();
+                  }}
+                >
                   View Details
                 </Button>
               )}
               {reservation.status === "pending" && (
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">
+                <Button
+                  className="bg-teal-600 hover:bg-teal-700 text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails();
+                  }}
+                >
                   View Details
                 </Button>
               )}
               {(reservation.status === "completed" ||
                 reservation.status === "cancelled") && (
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">
+                <Button
+                  className="bg-teal-600 hover:bg-teal-700 text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails();
+                  }}
+                >
                   Leave Review
                 </Button>
               )}
