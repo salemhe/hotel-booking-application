@@ -30,6 +30,29 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 // PUT /api/vendor/branches/:id
 // DELETE /api/vendor/branches/:id
 
+interface BranchForm {
+  branchName: string;
+  address: string;
+  city: string;
+  phoneNumber: string;
+  countryCode: string;
+  openingDays: {
+    Monday: boolean;
+    Tuesday: boolean;
+    Wednesday: boolean;
+    Thursday: boolean;
+    Friday: boolean;
+    Saturday: boolean;
+    Sunday: boolean;
+  };
+  opensAt: string;
+  closesAt: string;
+  assignedManager: string;
+  assignedMenu: string;
+  importAllMenuItems: boolean;
+  id: string;
+}
+
 export default function BranchesDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
@@ -39,7 +62,7 @@ export default function BranchesDashboard() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAddBranch, setShowAddBranch] = useState(false);
-  const [form, setForm] = useState<any>({
+  const [form, setForm] = useState<BranchForm>({
     branchName: "",
     address: "",
     city: "",
