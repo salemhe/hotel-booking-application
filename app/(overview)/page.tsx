@@ -156,11 +156,6 @@ export default function Home() {
   const convertToTableGridRestaurant = (
     apiRestaurant: ApiRestaurant,
   ): Restaurant => {
-    console.log("Converting to TableGrid format:", {
-      image: apiRestaurant.image,
-      profileImages: apiRestaurant.profileImages,
-    });
-
     return {
       _id: apiRestaurant._id,
       name:
