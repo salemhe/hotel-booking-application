@@ -109,7 +109,7 @@ export default function Home() {
           (typeof vendor.image === "string" &&
           (vendor.image.startsWith("http") || vendor.image.startsWith("/"))
             ? vendor.image
-            : "/placeholder.jpg");
+            : "/placeholder.svg");
 
         return {
           _id: vendor._id || `vendor-${index + 1}`,
