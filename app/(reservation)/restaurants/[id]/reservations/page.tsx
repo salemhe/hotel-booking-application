@@ -33,12 +33,21 @@ export default function ReservationDetailsPage({
     time: "07:30 pm",
     guests: "2 people",
   });
+  const [restaurantId, setRestaurantId] = useState<string>("");
 
   const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Others"];
 
+  React.useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setRestaurantId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
+
   const handleContinue = () => {
     // Navigate to meal pre-selection page
-    router.push(`/restaurants/${params}/reservations/pre-select`);
+    router.push(`/pre-payment/${restaurantId}`);
   };
 
   return (
