@@ -358,21 +358,10 @@ export default function Home() {
                 Retry
               </button>
             </div>
-          ) : vendors.filter(
-              (v) => v.businessType?.toLowerCase() === "restaurant",
-            ).length > 0 ? (
+          ) : restaurantVendors.length > 0 ? (
             <TableGrid
               title="Top Rated Restaurants"
-              restaurants={vendors
-                .filter(
-                  (vendor) =>
-                    vendor.businessType?.toLowerCase() === "restaurant",
-                )
-                .map((vendor) =>
-                  convertToTableGridRestaurant(
-                    convertVendorsToRestaurants([vendor])[0],
-                  ),
-                )}
+              restaurants={convertedRestaurants}
             />
           ) : (
             <div className="text-center py-12">
