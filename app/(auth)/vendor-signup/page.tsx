@@ -49,8 +49,7 @@ interface FormData {
 }
 
 export default function VendorRegistration() {
-  const [showOTPInput, setShowOTPInput] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     businessName: "",
     email: "",
@@ -108,7 +107,7 @@ export default function VendorRegistration() {
           } else {
             router.push("/vendor-dashboard");
           }
-          setShowOTPInput(true);
+          // setShowOTPInput(true);
           toast.success("Please check your email for the OTP verification code.");
       } else {
         toast.error(data.message || "Registration failed");
