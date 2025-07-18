@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { VendorService, Vendor } from "@/app/lib/api/services/vendors";
 import SearchSection from "@/app/components/SearchSection";
 import TableGrid, {
