@@ -9,17 +9,24 @@ const nextConfig: NextConfig = {
         hostname: "hotel-booking-app-backend-30q1.onrender.com",
       },
       {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com'
+        protocol: "https",
+        hostname: "res.cloudinary.com",
       },
       {
-        protocol: 'http',
-        hostname:'http://localhost:5000/uploads/'
-      }
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "5000",
+        pathname: "/uploads/**",
+      },
     ],
+    unoptimized: process.env.NODE_ENV === "development",
   },
   experimental: {
-    useLightningcss: false
+    useLightningcss: false,
   },
 };
 
