@@ -236,6 +236,33 @@ export default function Home() {
     },
   ];
 
+  // Memoize converted restaurant data to prevent redundant conversions
+  const restaurantVendors = useMemo(
+    () => vendors.filter((v) => v.businessType?.toLowerCase() === "restaurant"),
+    [vendors],
+  );
+
+  const hotelVendors = useMemo(
+    () => vendors.filter((v) => v.businessType?.toLowerCase() === "hotel"),
+    [vendors],
+  );
+
+  const convertedRestaurants = useMemo(
+    () =>
+      restaurantVendors.map((vendor) =>
+        convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]),
+      ),
+    [restaurantVendors],
+  );
+
+  const convertedHotels = useMemo(
+    () =>
+      hotelVendors.map((vendor) =>
+        convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]),
+      ),
+    [hotelVendors],
+  );
+
   const handleSearch = (searchData: {
     query: string;
     tab: string;
