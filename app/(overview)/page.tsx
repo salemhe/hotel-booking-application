@@ -81,12 +81,6 @@ export default function Home() {
   // Convert vendors to restaurant format with better error handling
   const convertVendorsToRestaurants = (vendors: Vendor[]): ApiRestaurant[] => {
     return vendors.map((vendor, index) => {
-      console.log("Vendor data:", {
-        id: vendor._id,
-        profileImages: vendor.profileImages,
-        image: vendor.image,
-      });
-
       try {
         // Ensure profileImages are valid URLs or relative paths
         const sanitizedProfileImages =
