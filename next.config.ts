@@ -30,11 +30,11 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     useLightningcss: false,
-    serverComponentsExternalPackages: ["sharp"],
   },
   // Add performance optimizations
   compress: true,
   poweredByHeader: false,
+  serverExternalPackages: ["sharp"],
 };
 
 export default nextConfig;
