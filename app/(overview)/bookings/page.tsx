@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Search,
   Filter,
@@ -117,8 +118,17 @@ const getStatusBadge = (status: string) => {
 };
 
 const ReservationCard = ({ reservation }: { reservation: Reservation }) => {
+  const router = useRouter();
+
+  const handleViewDetails = () => {
+    router.push(`/bookings/${reservation.id}`);
+  };
+
   return (
-    <Card className="mb-4">
+    <Card
+      className="mb-4 cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={handleViewDetails}
+    >
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
           <div className="w-24 h-24 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0">
@@ -183,18 +193,36 @@ const ReservationCard = ({ reservation }: { reservation: Reservation }) => {
 
             <div className="flex gap-2">
               {reservation.status === "confirmed" && (
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">
+                <Button
+                  className="bg-teal-600 hover:bg-teal-700 text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails();
+                  }}
+                >
                   View Details
                 </Button>
               )}
               {reservation.status === "pending" && (
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">
+                <Button
+                  className="bg-teal-600 hover:bg-teal-700 text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails();
+                  }}
+                >
                   View Details
                 </Button>
               )}
               {(reservation.status === "completed" ||
                 reservation.status === "cancelled") && (
-                <Button className="bg-teal-600 hover:bg-teal-700 text-white">
+                <Button
+                  className="bg-teal-600 hover:bg-teal-700 text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewDetails();
+                  }}
+                >
                   Leave Review
                 </Button>
               )}
@@ -207,8 +235,17 @@ const ReservationCard = ({ reservation }: { reservation: Reservation }) => {
 };
 
 export default function BookingsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("bookings");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "reservations") {
+      setActiveTab("reservations");
+    }
+  }, [searchParams]);
 
   const upcomingReservations = mockReservations.filter(
     (r) => r.status === "confirmed" || r.status === "pending",
