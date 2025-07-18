@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -11,6 +10,7 @@ import {
 } from "@/app/components/ui/card";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import { Textarea } from "@/app/components/ui/textarea";
 import {
@@ -29,6 +29,7 @@ import {
 // import Link from "next/link";
 // import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
+import { useState } from "react";
 // import { FaStore } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 
@@ -48,6 +49,7 @@ interface FormData {
 }
 
 export default function VendorRegistration() {
+  const [showOTPInput, setShowOTPInput] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     businessName: "",
