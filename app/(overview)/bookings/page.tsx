@@ -208,8 +208,16 @@ const ReservationCard = ({ reservation }: { reservation: Reservation }) => {
 };
 
 export default function BookingsPage() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("bookings");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "reservations") {
+      setActiveTab("reservations");
+    }
+  }, [searchParams]);
 
   const upcomingReservations = mockReservations.filter(
     (r) => r.status === "confirmed" || r.status === "pending",
