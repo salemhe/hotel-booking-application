@@ -21,21 +21,24 @@ const BookingForm = ({ id }: { id: string }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const params = new URLSearchParams({
-      date: date ? date.toISOString() : "",
-      time,
-      guests,
-      specialRequest: request,
-    });
-    router.push(`/restaurants/${id}/reservations?${params.toString()}`);
-    e.preventDefault();
     setIsLoading(true);
+
     try {
       if (!date || !time) {
         throw new Error("Date and Time are required");
       }
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      toast.success("Booked Succesfully");
+
+      // Store reservation data in localStorage for the reservation page
+      const reservationData = {
+        date: date.toLocaleDateString(),
+        time,
+        guests,
+        specialRequest: request,
+      };
+      localStorage.setItem("reservationData", JSON.stringify(reservationData));
+
+      // Navigate to reservation details page
+      router.push(`/restaurants/${id}/reservations`);
     } catch (err) {
       if (err instanceof AxiosError) {
         const errorMessage =
@@ -57,7 +60,7 @@ const BookingForm = ({ id }: { id: string }) => {
         <DatePicker value={date} onChange={setDate} />
         <TimePicker value={time} onChange={setTime} />
       </div>
-        <GuestPicker value={guests} onChange={setGuests} />
+      <GuestPicker value={guests} onChange={setGuests} />
       <div className="flex flex-col gap-y-3">
         <Label htmlFor="special-request">Special Request</Label>
         <Textarea

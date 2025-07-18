@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Plus,
@@ -79,6 +79,7 @@ export default function PrePaymentPage({ params }: PrePaymentPageProps) {
   );
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [activeTab, setActiveTab] = useState("starters");
+  const [restaurantId, setRestaurantId] = useState<string>("");
 
   const updateQuantity = (itemId: string, change: number) => {
     setSelectedItems((prev) => {
@@ -106,8 +107,16 @@ export default function PrePaymentPage({ params }: PrePaymentPageProps) {
     }, 0);
   };
 
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params;
+      setRestaurantId(resolvedParams.id);
+    };
+    getParams();
+  }, [params]);
+
   const handleContinue = () => {
-    router.push(`/payment/${params}/meal-selection`);
+    router.push(`/payment/${restaurantId}/meal-selection`);
   };
 
   const MenuItemCard = ({ item }: { item: MenuItem }) => {

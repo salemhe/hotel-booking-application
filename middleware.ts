@@ -13,7 +13,10 @@ export function middleware(request: NextRequest) {
   const redirectPath = request.nextUrl.pathname + request.nextUrl.search;
 
   if (!token) {
-    const redirectUrl = new URL(isVendor ? "/vendor-login" : "/user-login", origin);
+    const redirectUrl = new URL(
+      isVendor ? "/vendor-login" : "/user-login",
+      origin,
+    );
     redirectUrl.searchParams.set("redirect", redirectPath);
     return NextResponse.redirect(redirectUrl);
   }
@@ -22,7 +25,10 @@ export function middleware(request: NextRequest) {
   const currentTime = Math.floor(Date.now() / 1000);
 
   if (!decoded?.exp || decoded.exp < currentTime) {
-    const redirectUrl = new URL(isVendor ? "/vendor-login" : "/user-login", origin);
+    const redirectUrl = new URL(
+      isVendor ? "/vendor-login" : "/user-login",
+      origin,
+    );
     redirectUrl.searchParams.set("redirect", redirectPath);
     return NextResponse.redirect(redirectUrl);
   }
@@ -34,6 +40,7 @@ export const config = {
   matcher: [
     "/vendorDashboard/:path*",
     "/userDashboard/:path*",
-    "/restaurants/:id/reservations",
+    "/restaurants/:id/reservations/:path*",
+    "/pre-payment/:path*",
   ],
 };
