@@ -93,34 +93,21 @@ export default function VendorRegistration() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const res = await fetch("/api/vendor/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          businessName: formData.businessName,
-          email: formData.email,
-          address: formData.address,
-          phone: formData.phone,
-          businessType: formData.businessType,
-          adminType: formData.adminType,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          role: formData.adminType,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success !== false) {
-        localStorage.setItem("accountType", formData.adminType);
-        // Instantly redirect to the correct dashboard
-        if (formData.businessType === "hotel") {
-          router.push("/vendor-dashboard/hotel");
-        } else if (formData.businessType === "restaurant") {
-          router.push("/vendor-dashboard/restaurant");
-        } else if (formData.businessType === "club") {
-          router.push("/vendor-dashboard/club");
-        } else {
-          router.push("/vendor-dashboard");
-        }
+       const data = await AuthService.register(formData);
+       if (data.success !== false) {
+         localStorage.setItem("accountType", formData.adminType);
+         // Instantly redirect to the correct dashboard
+         if (formData.businessType === "hotel") {
+           router.push("/vendor-dashboard/hotel");
+          } else if (formData.businessType === "restaurant") {
+            router.push("/vendor-dashboard/restaurant");
+          } else if (formData.businessType === "club") {
+            router.push("/vendor-dashboard/club");
+          } else {
+            router.push("/vendor-dashboard");
+          }
+          setShowOTPInput(true);
+          toast.success("Please check your email for the OTP verification code.");
       } else {
         toast.error(data.message || "Registration failed");
       }

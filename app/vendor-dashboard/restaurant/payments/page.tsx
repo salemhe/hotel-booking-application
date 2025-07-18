@@ -25,11 +25,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
-// API endpoints to be implemented by backend:
-// GET /api/super-admin/vendors (list all vendors)
-// GET /api/super-admin/payments (all vendor payments, filterable)
-// GET /api/super-admin/payments?vendorId=... (payments for a specific vendor)
-
 const getStatusColor = (status: string) => {
   switch (status) {
     case "Paid":
@@ -43,47 +38,129 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export default function SuperAdminPayments() {
-  const [vendors, setVendors] = useState<any[]>([]);
-  const [selectedVendor, setSelectedVendor] = useState<string>("");
+export default function RestaurantPayments() {
+  // Real-time state
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<any | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [accountForm, setAccountForm] = useState({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState('');
   const [stats, setStats] = useState<any>({});
   const [transactions, setTransactions] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchVendors();
-    fetchPayments();
+    fetchAll();
   }, []);
-
-  useEffect(() => {
-    fetchPayments();
-  }, [selectedVendor]);
-
-  async function fetchVendors() {
+  const fetchAll = async () => {
     try {
-      const res = await fetch("/api/super-admin/vendors");
-      const data = await res.json();
-      setVendors(data || []);
-    } catch {
-      setVendors([]);
-    }
-  }
+      const [accRes, statsRes, transRes] = await Promise.all([
+        fetch("/api/vendor/accounts").then(r => r.json()),
+        fetch("/api/vendor/payments/stats").then(r => r.json()),
+        fetch("/api/vendor/payments/transactions").then(r => r.json()),
+      ]);
+      setAccounts(accRes);
+      setStats(statsRes);
+      setTransactions(transRes);
+      setChartData(statsRes.chartData || []);
+    } catch {}
+  };
 
-  async function fetchPayments() {
+  const verifyAccount = async (bankCode: string, accountNumber: string) => {
+    setVerifying(true);
+    setVerifyError('');
     try {
-      let url = "/api/super-admin/payments";
-      if (selectedVendor) url += `?vendorId=${selectedVendor}`;
-      const res = await fetch(url);
+      const res = await fetch("/api/vendor/accounts/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bankCode, accountNumber })
+      });
       const data = await res.json();
-      setStats(data.stats || {});
-      setTransactions(data.transactions || []);
-      setChartData(data.chartData || []);
+      if (data.accountName) {
+        setAccountForm(f => ({ ...f, accountName: data.accountName, bankLogoUrl: data.bankLogoUrl }));
+      } else {
+        setVerifyError("Account verification failed");
+      }
     } catch {
-      setStats({});
-      setTransactions([]);
-      setChartData([]);
+      setVerifyError("Account verification failed");
+    } finally {
+      setVerifying(false);
     }
-  }
+  };
+
+  const saveAccount = async () => {
+    try {
+      if (accountForm.id) {
+        await fetch(`/api/vendor/accounts/${accountForm.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(accountForm)
+        });
+      } else {
+        await fetch(`/api/vendor/accounts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(accountForm)
+        });
+      }
+      setShowEditModal(false);
+      setShowAddModal(false);
+      setAccountForm({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
+      fetchAll();
+    } catch {}
+  };
+
+  const AccountCard = ({ account }: { account: any }) => (
+    <Card className="relative overflow-hidden mb-4">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {account.bankLogoUrl && <img src={account.bankLogoUrl} alt={account.bankName} className="w-10 h-10 rounded" />}
+            <div>
+              <div className="font-semibold text-lg">{account.accountName}</div>
+              <div className="text-sm text-gray-400">{account.bankName} ({account.type})</div>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={() => { setSelectedAccount(account); setAccountForm(account); setShowEditModal(true); }}>
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => { setAccountForm({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-lg font-mono mb-1">••••••{account.accountNumber.slice(-4)}</div>
+        <div className="text-xs text-gray-500">{account.accountNumber}</div>
+      </CardContent>
+    </Card>
+  );
+
+  const AccountModal = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) => (
+    open ? (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+          <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={onClose}>&times;</button>
+          <h2 className="text-xl font-bold mb-4">{isEdit ? "Edit Account" : "Add Account"}</h2>
+          <div className="space-y-4">
+            <Input placeholder="Bank Name" value={accountForm.bankName} onChange={e => setAccountForm(f => ({ ...f, bankName: e.target.value }))} />
+            <Input placeholder="Bank Code" value={accountForm.bankCode} onChange={e => setAccountForm(f => ({ ...f, bankCode: e.target.value }))} />
+            <Input placeholder="Account Number" value={accountForm.accountNumber} onChange={e => setAccountForm(f => ({ ...f, accountNumber: e.target.value }))} />
+            <Button onClick={() => verifyAccount(accountForm.bankCode, accountForm.accountNumber)} disabled={verifying}>
+              {verifying ? "Verifying..." : "Verify Account"}
+            </Button>
+            {accountForm.accountName && <div className="text-green-600 font-semibold">{accountForm.accountName}</div>}
+            {verifyError && <div className="text-red-600">{verifyError}</div>}
+            <Button className="w-full bg-teal-600 hover:bg-teal-700" onClick={saveAccount}>{isEdit ? "Save Changes" : "Add Account"}</Button>
+          </div>
+        </div>
+      </div>
+    ) : null
+  );
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -95,17 +172,6 @@ export default function SuperAdminPayments() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input placeholder="Search" className="pl-10 w-80" />
               </div>
-              {/* Vendor Filter Dropdown */}
-              <select
-                className="ml-4 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                value={selectedVendor}
-                onChange={e => setSelectedVendor(e.target.value)}
-              >
-                <option value="">All Vendors</option>
-                {vendors.map((vendor: any) => (
-                  <option key={vendor.id} value={vendor.id}>{vendor.name}</option>
-                ))}
-              </select>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="sm">
@@ -114,11 +180,11 @@ export default function SuperAdminPayments() {
               <div className="flex items-center space-x-2">
                 <Avatar>
                   <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                  <AvatarFallback>SA</AvatarFallback>
+                  <AvatarFallback>JE</AvatarFallback>
                 </Avatar>
                 <div className="text-sm">
-                  <div className="font-medium">Super Admin</div>
-                  <div className="text-gray-500">Admin</div>
+                  <div className="font-medium">Vendor Name</div>
+                  <div className="text-gray-500">Vendor</div>
                 </div>
                 <ChevronDown className="h-4 w-4 text-gray-400" />
               </div>
@@ -137,9 +203,9 @@ export default function SuperAdminPayments() {
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
-              <Button size="sm" className="bg-teal-600 hover:bg-teal-700">
+              <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => { setAccountForm({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
                 <Plus className="h-4 w-4 mr-2" />
-                Withdraw
+                Add Account
               </Button>
             </div>
           </div>
@@ -202,9 +268,25 @@ export default function SuperAdminPayments() {
               </div>
             </Card>
           </div>
-          {/* Earnings Trends Chart */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <Card className="lg:col-span-3">
+            {/* Available Balance Card */}
+            <Card className="lg:col-span-1">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Available Balance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900 mb-4">{stats.availableBalance ? `₦${stats.availableBalance.toLocaleString()}` : "-"}</div>
+                <p className="text-sm text-gray-500 mb-6">{stats.lastPaymentProcessed || "-"}</p>
+                {/* Account Cards */}
+                {accounts.map(account => <AccountCard key={account.id} account={account} />)}
+                <Button className="w-full mt-4 bg-teal-600 hover:bg-teal-700" onClick={() => { setAccountForm({ bankName: '', bankCode: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Account
+                </Button>
+              </CardContent>
+            </Card>
+            {/* Earnings Trends Chart */}
+            <Card className="lg:col-span-2">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-semibold">Earnings Trends</CardTitle>
@@ -309,7 +391,6 @@ export default function SuperAdminPayments() {
                     <TableRow>
                       <TableHead>Date</TableHead>
                       <TableHead>Transaction ID</TableHead>
-                      <TableHead>Vendor</TableHead>
                       <TableHead>Customer Name</TableHead>
                       <TableHead>Branch</TableHead>
                       <TableHead>Payment Method</TableHead>
@@ -318,11 +399,10 @@ export default function SuperAdminPayments() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transactions.map((transaction: any, index: number) => (
+                    {transactions.map((transaction, index: number) => (
                       <TableRow key={index}>
                         <TableCell className="font-medium">{transaction.date}</TableCell>
                         <TableCell>{transaction.transactionId}</TableCell>
-                        <TableCell>{transaction.vendorName}</TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-2">
                             <Avatar className="h-6 w-6">
@@ -348,6 +428,8 @@ export default function SuperAdminPayments() {
               </div>
             </CardContent>
           </Card>
+          <AccountModal open={showEditModal} onClose={() => setShowEditModal(false)} isEdit={true} />
+          <AccountModal open={showAddModal} onClose={() => setShowAddModal(false)} isEdit={false} />
         </main>
       </div>
     </div>
