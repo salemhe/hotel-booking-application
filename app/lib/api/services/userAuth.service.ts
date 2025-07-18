@@ -55,34 +55,44 @@ export class AuthService {
 
   static async setToken(token: string) {
     try {
-      await fetch(`${getFrontendUrl()}/api/auth/set-user-token`, {
+      const frontendUrl = getFrontendUrl();
+      const response = await fetch(`${frontendUrl}/api/auth/set-user-token`, {
         method: "POST",
+        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ token }),
       });
+      if (!response.ok) {
+        console.warn("Failed to set user token, status:", response.status);
+      }
     } catch (error) {
-      console.warn("Error setting token:", error);
+      console.warn("Error setting user token:", error);
     }
   }
 
   static async getToken(): Promise<string | null> {
     try {
-      const response = await fetch(
-        `${getFrontendUrl()}/api/auth/get-user-token`,
-        {
-          method: "GET",
+      const frontendUrl = getFrontendUrl();
+      const response = await fetch(`${frontendUrl}/api/auth/get-user-token`, {
+        method: "GET",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+      });
       if (!response.ok) {
-        console.warn("Failed to fetch token from API route");
+        console.warn(
+          "Failed to fetch user token from API route, status:",
+          response.status,
+        );
         return null;
       }
       const data = await response.json();
-      return data.token;
+      return data.token || null;
     } catch (error) {
-      console.warn("Error fetching token:", error);
+      console.warn("Error fetching user token:", error);
       return null;
     }
   }
@@ -100,9 +110,14 @@ export class AuthService {
 
   static async clearToken() {
     try {
-      await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+      const frontendUrl = getFrontendUrl();
+      const response = await fetch(`${frontendUrl}/api/auth/clear-token`, {
         method: "GET",
+        credentials: "same-origin",
       });
+      if (!response.ok) {
+        console.warn("Failed to clear token, status:", response.status);
+      }
     } catch (error) {
       console.warn("Error clearing token:", error);
     }
