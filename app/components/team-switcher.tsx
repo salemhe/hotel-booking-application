@@ -45,7 +45,7 @@ export function TeamSwitcher({
         >
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
             {/* <activeTeam.logo className="size-4" /> */}
-            <Image src={activeTeam.logo2} alt="Logo" height={40} width={40} />
+            <Image src={activeTeam.logo2 || "/placeholder.svg"} alt="Logo" height={40} width={40} />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate text-gray-200 font-semibold">
