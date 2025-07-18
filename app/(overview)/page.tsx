@@ -100,7 +100,7 @@ export default function Home() {
             // only accept http or /-prefixed URLs
             return url.startsWith("http") || url.startsWith("/")
               ? url
-              : "/placeholder.jpg";
+              : "/placeholder.svg";
           }) || [];
 
         // Ensure main image is a valid URL or relative path
@@ -109,7 +109,7 @@ export default function Home() {
           (typeof vendor.image === "string" &&
           (vendor.image.startsWith("http") || vendor.image.startsWith("/"))
             ? vendor.image
-            : "/placeholder.jpg");
+            : "/placeholder.svg");
 
         return {
           _id: vendor._id || `vendor-${index + 1}`,
@@ -144,7 +144,7 @@ export default function Home() {
           email: "",
           phone: "",
           services: [],
-          image: "/placeholder.jpg",
+          image: "/placeholder.svg",
           profileImages: [],
           description: "",
           rating: 0,
@@ -173,13 +173,13 @@ export default function Home() {
         apiRestaurant.name ||
         apiRestaurant.businessName ||
         "Unknown Restaurant",
-      image: apiRestaurant.image || "/placeholder.jpg",
+      image: apiRestaurant.image || "/placeholder.svg",
       profileImages: apiRestaurant?.profileImages?.map((img) => ({
         url:
           typeof img === "string" &&
           (img.startsWith("http") || img.startsWith("/"))
             ? img
-            : "/placeholder.jpg",
+            : "/placeholder.svg",
       })),
       rating: apiRestaurant.rating || 4.5,
       reviews: apiRestaurant.reviews?.length || 0,

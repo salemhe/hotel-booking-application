@@ -233,13 +233,18 @@ export class AuthService {
 
   static async setToken(token: string) {
     try {
-      await fetch(`${getFrontendUrl()}/api/auth/set-vendor-token`, {
+      const frontendUrl = getFrontendUrl();
+      const response = await fetch(`${frontendUrl}/api/auth/set-vendor-token`, {
         method: "POST",
+        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ token }),
       });
+      if (!response.ok) {
+        console.warn("Failed to set vendor token, status:", response.status);
+      }
     } catch (error) {
       console.warn("Error setting vendor token:", error);
     }
@@ -247,18 +252,23 @@ export class AuthService {
 
   static async getToken(): Promise<string | null> {
     try {
-      const response = await fetch(
-        `${getFrontendUrl()}/api/auth/get-vendor-token`,
-        {
-          method: "GET",
+      const frontendUrl = getFrontendUrl();
+      const response = await fetch(`${frontendUrl}/api/auth/get-vendor-token`, {
+        method: "GET",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+      });
       if (!response.ok) {
-        console.warn("Failed to fetch vendor token from API route");
+        console.warn(
+          "Failed to fetch vendor token from API route, status:",
+          response.status,
+        );
         return null;
       }
       const data = await response.json();
-      return data.token;
+      return data.token || null;
     } catch (error) {
       console.warn("Error fetching vendor token:", error);
       return null;
@@ -294,9 +304,14 @@ export class AuthService {
 
   private static async clearAuth(): Promise<void> {
     try {
-      await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+      const frontendUrl = getFrontendUrl();
+      const response = await fetch(`${frontendUrl}/api/auth/clear-token`, {
         method: "GET",
+        credentials: "same-origin",
       });
+      if (!response.ok) {
+        console.warn("Failed to clear auth, status:", response.status);
+      }
     } catch (error) {
       console.warn("Error clearing auth:", error);
     }
@@ -321,8 +336,14 @@ export class AuthService {
     }
   }
 
-  static isAuthenticated(): boolean {
-    return !!this.getToken();
+  static async isAuthenticated(): Promise<boolean> {
+    try {
+      const token = await this.getToken();
+      return !!token;
+    } catch (error) {
+      console.warn("Error checking vendor authentication:", error);
+      return false;
+    }
   }
 
   static getUserRole(): string | null {
