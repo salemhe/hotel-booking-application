@@ -144,7 +144,7 @@ export default function Home() {
           email: "",
           phone: "",
           services: [],
-          image: "/placeholder.jpg",
+          image: "/placeholder.svg",
           profileImages: [],
           description: "",
           rating: 0,
@@ -173,13 +173,13 @@ export default function Home() {
         apiRestaurant.name ||
         apiRestaurant.businessName ||
         "Unknown Restaurant",
-      image: apiRestaurant.image || "/placeholder.jpg",
+      image: apiRestaurant.image || "/placeholder.svg",
       profileImages: apiRestaurant?.profileImages?.map((img) => ({
         url:
           typeof img === "string" &&
           (img.startsWith("http") || img.startsWith("/"))
             ? img
-            : "/placeholder.jpg",
+            : "/placeholder.svg",
       })),
       rating: apiRestaurant.rating || 4.5,
       reviews: apiRestaurant.reviews?.length || 0,
