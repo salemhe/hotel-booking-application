@@ -39,7 +39,7 @@ export default function RestaurantDashboard() {
         const data = await res.json()
         setBranches(data)
       }
-    } catch (e) {
+    } catch {
       // Optionally handle error
     }
   }
@@ -125,7 +125,7 @@ export default function RestaurantDashboard() {
               <span className="text-green-600 font-semibold">JC</span>
             </div>
             <div>
-              <h2 className="font-semibold text-lg">Josh Chicken & Grill - Ikeja</h2>
+              <h2 className="font-semibold text-lg">Josh Chicken &amp; Grill - Ikeja</h2>
               <p className="text-gray-500 text-sm">📍 123 Ikeja Street, Lagos</p>
             </div>
           </div>
@@ -261,7 +261,7 @@ export default function RestaurantDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {reservationTrends.map((item, index) => (
+                  {reservationTrends.map((item) => (
                     <div key={item.day} className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">{item.day}</span>
                       <div className="flex items-center space-x-2">
@@ -357,7 +357,7 @@ export default function RestaurantDashboard() {
               <div className="text-2xl font-bold mb-2">$220,500</div>
               <p className="text-sm text-gray-500 mb-4">↑ 15% vs last week</p>
               <div className="space-y-3">
-                {menuCategories.map((item, index) => (
+                {menuCategories.map((item, idx) => (
                   <div key={item.category} className="space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">{item.category}</span>
@@ -368,11 +368,11 @@ export default function RestaurantDashboard() {
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
                         className={`h-2 rounded-full ${
-                          index === 0
+                          idx === 0
                             ? "bg-blue-500"
-                            : index === 1
+                            : idx === 1
                               ? "bg-green-500"
-                              : index === 2
+                              : idx === 2
                                 ? "bg-yellow-500"
                                 : "bg-purple-500"
                         }`}

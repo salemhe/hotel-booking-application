@@ -1,7 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 // In-memory store for demo purposes (replace with DB in production)
-let branches: any[] = [
+interface Branch {
+  id: number;
+  branchName: string;
+  address: string;
+  city: string;
+  state: string;
+  phone: string;
+  opensAt: string;
+  closesAt: string;
+  selectedDays: string[];
+  manager: string;
+  menu: string;
+  importMenuItems: boolean;
+}
+
+const branches: Branch[] = [
   {
     id: 1,
     branchName: "Josh Chicken & Grill - Ikeja",
