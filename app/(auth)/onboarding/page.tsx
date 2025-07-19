@@ -102,16 +102,13 @@ interface BusinessData {
 }
 
 const ROOM_TYPES = [
-  "Standard",
   "Deluxe",
   "Suite",
-  "Presidential Suite",
-  "Family Room",
-  "Twin Room",
-  "Single Room",
-  "Double Room",
+  "Presidential",
+  "Twin",
+  "Single",
+  "Double",
 ];
-
 const ROOM_FEATURES = [
   "Air Conditioning",
   "Balcony",
@@ -138,7 +135,7 @@ const ROOM_AMENITIES = [
   "Parking",
 ];
 
-const MAINTENANCE_STATUS = ["Good", "Needs Attention", "Under Maintenance"];
+const MAINTENANCE_STATUS = ['available', 'occupied', 'maintenance', 'cleaning'];
 
 const MENU_CATEGORIES = [
   "Appetizers",
