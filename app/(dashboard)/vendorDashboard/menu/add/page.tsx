@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowLeft, Upload, X, Plus, Minus } from "lucide-react";
+import { ArrowLeft, Upload, Check } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -11,585 +11,445 @@ import {
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
-import { Badge } from "@/app/components/ui/badge";
+import { Switch } from "@/app/components/ui/switch";
 import { useRouter } from "next/navigation";
 
-interface MenuItemForm {
+interface MenuFormData {
   name: string;
   description: string;
+  image: File | null;
+  imagePreview: string;
+  menuType: string[];
+  mealTimes: string[];
   price: string;
-  category: string;
-  images: File[];
-  ingredients: string[];
-  allergens: string[];
-  dietary: string[];
-  preparationTime: string;
-  status: "available" | "unavailable";
-  isSpecialOffer: boolean;
-  originalPrice: string;
+  priceType: "fixed" | "per-item";
+  availability: boolean;
+  branches: string[];
 }
 
-export default function AddMenuItemPage() {
+export default function CreateMenuPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState<MenuItemForm>({
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<MenuFormData>({
     name: "",
     description: "",
+    image: null,
+    imagePreview: "",
+    menuType: [],
+    mealTimes: [],
     price: "",
-    category: "",
-    images: [],
-    ingredients: [],
-    allergens: [],
-    dietary: [],
-    preparationTime: "",
-    status: "available",
-    isSpecialOffer: false,
-    originalPrice: "",
+    priceType: "fixed",
+    availability: true,
+    branches: [],
   });
 
-  const [newIngredient, setNewIngredient] = useState("");
-  const [newAllergen, setNewAllergen] = useState("");
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-
-  const categories = [
-    "Starters",
-    "Main Course",
-    "Desserts",
-    "Beverages",
-    "Appetizers",
-    "Salads",
-    "Soups",
+  const steps = [
+    { id: 1, title: "Menu", icon: "1" },
+    { id: 2, title: "Add menu items", icon: "2" },
+    { id: 3, title: "Payment", icon: "3" },
   ];
 
-  const dietaryOptions = [
-    "Vegetarian",
-    "Vegan",
-    "Gluten-Free",
-    "Dairy-Free",
-    "Nut-Free",
-    "Halal",
-    "Kosher",
+  const menuTypes = [
+    "A la Carte",
+    "Buffet",
+    "Set Menu",
+    "Tasting Menu",
+    "Takeaway",
+  ];
+
+  const mealTimes = [
+    "Breakfast",
+    "Brunch",
+    "Lunch",
+    "Dinner",
+    "Late Night",
+    "All Day",
+  ];
+
+  const branches = [
+    "Main Branch",
+    "Victoria Island",
+    "Lekki Branch",
+    "Ikeja Branch",
   ];
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    if (files.length > 0) {
+    const file = event.target.files?.[0];
+    if (file) {
       setFormData((prev) => ({
         ...prev,
-        images: [...prev.images, ...files].slice(0, 4), // Max 4 images
+        image: file,
+        imagePreview: URL.createObjectURL(file),
       }));
-
-      // Create preview URLs
-      const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
-      setPreviewUrls((prev) => [...prev, ...newPreviewUrls].slice(0, 4));
     }
   };
 
-  const removeImage = (index: number) => {
+  const toggleMenuType = (type: string) => {
     setFormData((prev) => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index),
+      menuType: prev.menuType.includes(type)
+        ? prev.menuType.filter((t) => t !== type)
+        : [...prev.menuType, type],
     }));
-
-    setPreviewUrls((prev) => {
-      URL.revokeObjectURL(prev[index]); // Clean up URL
-      return prev.filter((_, i) => i !== index);
-    });
   };
 
-  const addIngredient = () => {
-    if (
-      newIngredient.trim() &&
-      !formData.ingredients.includes(newIngredient.trim())
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        ingredients: [...prev.ingredients, newIngredient.trim()],
-      }));
-      setNewIngredient("");
+  const toggleMealTime = (time: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      mealTimes: prev.mealTimes.includes(time)
+        ? prev.mealTimes.filter((t) => t !== time)
+        : [...prev.mealTimes, time],
+    }));
+  };
+
+  const handleNext = () => {
+    if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      // Submit form
+      console.log("Form submitted:", formData);
+      router.push("/vendorDashboard/menu");
     }
   };
 
-  const removeIngredient = (ingredient: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      ingredients: prev.ingredients.filter((item) => item !== ingredient),
-    }));
-  };
-
-  const addAllergen = () => {
-    if (
-      newAllergen.trim() &&
-      !formData.allergens.includes(newAllergen.trim())
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        allergens: [...prev.allergens, newAllergen.trim()],
-      }));
-      setNewAllergen("");
-    }
-  };
-
-  const removeAllergen = (allergen: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      allergens: prev.allergens.filter((item) => item !== allergen),
-    }));
-  };
-
-  const toggleDietary = (option: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      dietary: prev.dietary.includes(option)
-        ? prev.dietary.filter((item) => item !== option)
-        : [...prev.dietary, option],
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log("Form data:", formData);
-    router.push("/vendorDashboard/menu");
-  };
-
-  return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Add New Menu Item
-          </h1>
-          <p className="text-gray-600">
-            Create a new item for your restaurant menu
-          </p>
+  const renderStepIndicator = () => (
+    <div className="flex items-center justify-center space-x-4 mb-8">
+      {steps.map((step, index) => (
+        <div key={step.id} className="flex items-center">
+          <div
+            className={`flex items-center justify-center w-10 h-10 rounded-full ${
+              step.id <= currentStep
+                ? "bg-teal-600 text-white"
+                : "bg-gray-200 text-gray-600"
+            }`}
+          >
+            {step.id < currentStep ? (
+              <Check className="w-5 h-5" />
+            ) : (
+              <span className="text-sm font-medium">{step.icon}</span>
+            )}
+          </div>
+          <span
+            className={`ml-2 text-sm font-medium ${
+              step.id <= currentStep ? "text-teal-600" : "text-gray-600"
+            }`}
+          >
+            {step.title}
+          </span>
+          {index < steps.length - 1 && (
+            <div
+              className={`w-16 h-0.5 mx-4 ${
+                step.id < currentStep ? "bg-teal-600" : "bg-gray-200"
+              }`}
+            />
+          )}
         </div>
-      </div>
+      ))}
+    </div>
+  );
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Form */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Item Name *
-                  </label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, name: e.target.value }))
-                    }
-                    placeholder="Enter item name"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
-                  </label>
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }))
-                    }
-                    placeholder="Describe your menu item"
-                    className="min-h-[100px]"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category *
-                    </label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          category: e.target.value,
-                        }))
-                      }
-                      className="w-full p-2 border border-gray-300 rounded-md bg-white"
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map((category) => (
-                        <option
-                          key={category}
-                          value={category.toLowerCase().replace(" ", "-")}
-                        >
-                          {category}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Preparation Time (minutes)
-                    </label>
-                    <Input
-                      type="number"
-                      value={formData.preparationTime}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          preparationTime: e.target.value,
-                        }))
-                      }
-                      placeholder="e.g., 15"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Pricing */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Pricing</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2 mb-4">
-                  <input
-                    type="checkbox"
-                    id="special-offer"
-                    checked={formData.isSpecialOffer}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        isSpecialOffer: e.target.checked,
-                      }))
-                    }
-                    className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
-                  />
-                  <label
-                    htmlFor="special-offer"
-                    className="text-sm font-medium"
-                  >
-                    This is a special offer
-                  </label>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price (₦) *
-                    </label>
-                    <Input
-                      type="number"
-                      value={formData.price}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          price: e.target.value,
-                        }))
-                      }
-                      placeholder="0"
-                      required
-                    />
-                  </div>
-
-                  {formData.isSpecialOffer && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Original Price (₦)
-                      </label>
-                      <Input
-                        type="number"
-                        value={formData.originalPrice}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            originalPrice: e.target.value,
-                          }))
-                        }
-                        placeholder="0"
-                      />
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Images */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Images</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {previewUrls.map((url, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={url}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeImage(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-
-                    {previewUrls.length < 4 && (
-                      <label className="border-2 border-dashed border-gray-300 rounded-lg p-4 h-24 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
-                        <Upload className="h-6 w-6 text-gray-400 mb-1" />
-                        <span className="text-xs text-gray-500">
-                          Upload Image
-                        </span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          onChange={handleImageUpload}
-                          className="hidden"
-                        />
-                      </label>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-500">
-                    Upload up to 4 images. First image will be the main display
-                    image.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Ingredients & Allergens */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Ingredients & Allergens</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ingredients
-                  </label>
-                  <div className="flex gap-2 mb-2">
-                    <Input
-                      value={newIngredient}
-                      onChange={(e) => setNewIngredient(e.target.value)}
-                      placeholder="Add ingredient"
-                      onKeyPress={(e) =>
-                        e.key === "Enter" &&
-                        (e.preventDefault(), addIngredient())
-                      }
-                    />
-                    <Button type="button" onClick={addIngredient} size="sm">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.ingredients.map((ingredient) => (
-                      <Badge
-                        key={ingredient}
-                        variant="secondary"
-                        className="flex items-center gap-1"
-                      >
-                        {ingredient}
-                        <X
-                          className="h-3 w-3 cursor-pointer"
-                          onClick={() => removeIngredient(ingredient)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Allergens
-                  </label>
-                  <div className="flex gap-2 mb-2">
-                    <Input
-                      value={newAllergen}
-                      onChange={(e) => setNewAllergen(e.target.value)}
-                      placeholder="Add allergen"
-                      onKeyPress={(e) =>
-                        e.key === "Enter" && (e.preventDefault(), addAllergen())
-                      }
-                    />
-                    <Button type="button" onClick={addAllergen} size="sm">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.allergens.map((allergen) => (
-                      <Badge
-                        key={allergen}
-                        variant="destructive"
-                        className="flex items-center gap-1"
-                      >
-                        {allergen}
-                        <X
-                          className="h-3 w-3 cursor-pointer"
-                          onClick={() => removeAllergen(allergen)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Dietary Information
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {dietaryOptions.map((option) => (
-                      <div key={option} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={option}
-                          checked={formData.dietary.includes(option)}
-                          onChange={() => toggleDietary(option)}
-                          className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
-                        />
-                        <label htmlFor={option} className="text-sm">
-                          {option}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+  const renderStep1 = () => (
+    <div className="max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Menu name*
+            </label>
+            <Input
+              value={formData.name}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, name: e.target.value }))
+              }
+              placeholder="e.g Joe's Platter"
+              className="bg-gray-50"
+            />
+            <div className="text-right text-sm text-gray-500 mt-1">0/50</div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Status */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Availability</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      id="available"
-                      name="status"
-                      value="available"
-                      checked={formData.status === "available"}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          status: e.target.value as "available",
-                        }))
-                      }
-                    />
-                    <label htmlFor="available" className="text-sm">
-                      Available
-                    </label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      id="unavailable"
-                      name="status"
-                      value="unavailable"
-                      checked={formData.status === "unavailable"}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          status: e.target.value as "unavailable",
-                        }))
-                      }
-                    />
-                    <label htmlFor="unavailable" className="text-sm">
-                      Unavailable
-                    </label>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Menu Description (Optional)
+            </label>
+            <Textarea
+              value={formData.description}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+              placeholder="Add a short description or notes about this menu"
+              className="bg-gray-50 min-h-[120px] resize-none"
+            />
+          </div>
 
-            {/* Preview */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Preview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {previewUrls[0] && (
-                    <img
-                      src={previewUrls[0]}
-                      alt="Main preview"
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                  )}
-                  <div>
-                    <h3 className="font-semibold">
-                      {formData.name || "Item Name"}
-                    </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {formData.description || "Item description"}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      {formData.isSpecialOffer && formData.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          ₦{parseInt(formData.originalPrice).toLocaleString()}
-                        </span>
-                      )}
-                      <span className="font-bold">
-                        ���
-                        {formData.price
-                          ? parseInt(formData.price).toLocaleString()
-                          : "0"}
-                      </span>
-                    </div>
-                  </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-4">
+              Menu Type
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {menuTypes.map((type) => (
+                <div key={type} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={type}
+                    checked={formData.menuType.includes(type)}
+                    onChange={() => toggleMenuType(type)}
+                    className="rounded border-gray-300"
+                  />
+                  <label htmlFor={type} className="text-sm">
+                    {type}
+                  </label>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+          </div>
 
-            {/* Actions */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-3">
-                  <Button
-                    type="submit"
-                    className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-                  >
-                    Add Menu Item
-                  </Button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-4">
+              Menu Availability (Meal Time)
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {mealTimes.map((time) => (
+                <div key={time} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={time}
+                    checked={formData.mealTimes.includes(time)}
+                    onChange={() => toggleMealTime(time)}
+                    className="rounded border-gray-300"
+                  />
+                  <label htmlFor={time} className="text-sm">
+                    {time}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-4">
+              Price*
+            </label>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  id="fixed-price"
+                  name="price-type"
+                  value="fixed"
+                  checked={formData.priceType === "fixed"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      priceType: e.target.value as "fixed",
+                    }))
+                  }
+                />
+                <label htmlFor="fixed-price" className="text-sm font-medium">
+                  Fixed Price
+                </label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <span className="text-lg font-medium">₦</span>
+                <Input
+                  type="number"
+                  value={formData.price}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, price: e.target.value }))
+                  }
+                  placeholder="10,000"
+                  className="w-32"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  id="per-item"
+                  name="price-type"
+                  value="per-item"
+                  checked={formData.priceType === "per-item"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      priceType: e.target.value as "per-item",
+                    }))
+                  }
+                />
+                <label htmlFor="per-item" className="text-sm">
+                  Price per Item
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Cover Image (Optional)
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              {formData.imagePreview ? (
+                <div className="relative">
+                  <img
+                    src={formData.imagePreview}
+                    alt="Menu cover"
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full"
-                    onClick={() => router.back()}
+                    size="sm"
+                    className="mt-2"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        image: null,
+                        imagePreview: "",
+                      }))
+                    }
                   >
-                    Cancel
+                    Remove Image
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              ) : (
+                <div>
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Upload className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Drag and drop an image here, or
+                  </p>
+                  <label className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
+                    Browse Files
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  <p className="text-xs text-gray-500 mt-2">
+                    JPG, PNG or GIF • Max 5MB
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-4">
+              Menu Availability
+            </label>
+            <div className="flex items-center justify-between p-4 border rounded-lg">
+              <div>
+                <div className="font-medium">Show menu on this app</div>
+                <div className="text-sm text-gray-600">
+                  Make this menu visible to customers
+                </div>
+              </div>
+              <Switch
+                checked={formData.availability}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, availability: checked }))
+                }
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Assign to Branches
+            </label>
+            <select className="w-full p-3 border border-gray-300 rounded-lg bg-white">
+              <option>Select branches</option>
+              {branches.map((branch) => (
+                <option key={branch} value={branch}>
+                  {branch}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-      </form>
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="max-w-2xl mx-auto text-center py-12">
+      <h2 className="text-2xl font-bold mb-4">Add Menu Items</h2>
+      <p className="text-gray-600 mb-8">
+        Configure the items that will be available in this menu
+      </p>
+      <Button
+        className="bg-teal-600 hover:bg-teal-700 text-white"
+        onClick={handleNext}
+      >
+        Continue to Menu Item
+      </Button>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div className="max-w-2xl mx-auto text-center py-12">
+      <h2 className="text-2xl font-bold mb-4">Payment Setup</h2>
+      <p className="text-gray-600 mb-8">
+        Configure payment options for this menu
+      </p>
+      <Button
+        className="bg-teal-600 hover:bg-teal-700 text-white"
+        onClick={handleNext}
+      >
+        Complete Setup
+      </Button>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b px-6 py-4">
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl font-semibold">Create Menu</h1>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-6 py-8">
+        {renderStepIndicator()}
+
+        <div className="bg-white rounded-lg shadow-sm p-8">
+          {currentStep === 1 && renderStep1()}
+          {currentStep === 2 && renderStep2()}
+          {currentStep === 3 && renderStep3()}
+        </div>
+
+        <div className="flex justify-between mt-8">
+          <Button
+            variant="outline"
+            onClick={() =>
+              currentStep > 1 ? setCurrentStep(currentStep - 1) : router.back()
+            }
+          >
+            {currentStep === 1 ? "Cancel" : "Back"}
+          </Button>
+
+          <Button
+            className="bg-teal-600 hover:bg-teal-700 text-white"
+            onClick={handleNext}
+          >
+            {currentStep === 3 ? "Complete Setup" : "Continue to Menu Item"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

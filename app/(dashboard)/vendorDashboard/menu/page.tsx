@@ -10,6 +10,11 @@ import {
   Copy,
   Eye,
   MoreHorizontal,
+  ArrowLeft,
+  Grid3X3,
+  List,
+  Upload,
+  Download,
 } from "lucide-react";
 import {
   Card,
@@ -32,6 +37,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/components/ui/table";
+import { Switch } from "@/app/components/ui/switch";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/components/ui/avatar";
 import { useRouter } from "next/navigation";
 
 interface MenuItem {
@@ -43,68 +62,125 @@ interface MenuItem {
   category: string;
   status: "available" | "unavailable";
   orders: number;
+  menuType: string;
+  mealTimes: string[];
+  tags: string[];
+  isActive: boolean;
+  updatedDaysAgo: number;
 }
 
 const mockMenuItems: MenuItem[] = [
   {
     id: "1",
-    name: "Mezze Platter",
+    name: "Joe's Platter",
     description: "Hummus, baba ghanoush, tzatziki, pita bread",
-    price: 15000,
-    image: "/placeholder-food.jpg",
-    category: "starters",
+    price: 25000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "main-dish",
     status: "available",
-    orders: 45,
+    orders: 6,
+    menuType: "A la Carte",
+    mealTimes: ["Lunch", "Dinner"],
+    tags: ["Best seller", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 3,
   },
   {
     id: "2",
-    name: "Chicken Springrolls",
-    description: "Chicken, garnished vegetables",
-    price: 12000,
-    image: "/placeholder-food.jpg",
-    category: "starters",
+    name: "Mezze Platter",
+    description: "Hummus, baba ghanoush, tzatzaki, pita bread",
+    price: 25000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "main-dish",
     status: "available",
-    orders: 32,
+    orders: 6,
+    menuType: "A la Carte",
+    mealTimes: ["Lunch", "Dinner"],
+    tags: ["Best seller", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 3,
   },
   {
     id: "3",
-    name: "Spaghetti Carbonara",
-    description: "Creamy pasta with bacon and parmesan",
-    price: 18000,
-    image: "/placeholder-food.jpg",
-    category: "main-course",
-    status: "unavailable",
-    orders: 28,
+    name: "Weekend Buffet",
+    description: "Weekend special buffet selection",
+    price: 45000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "buffet",
+    status: "available",
+    orders: 12,
+    menuType: "Buffet",
+    mealTimes: ["Brunch", "Dinner"],
+    tags: ["Vegan Options", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 5,
   },
   {
     id: "4",
-    name: "Grilled Salmon",
-    description: "Fresh salmon with herbs and lemon",
+    name: "Kid's Happy Menu",
+    description: "Special menu for children",
     price: 25000,
-    image: "/placeholder-food.jpg",
-    category: "main-course",
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "fixed",
     status: "available",
-    orders: 19,
+    orders: 4,
+    menuType: "Fixed",
+    mealTimes: ["All Day"],
+    tags: ["Kids", "Sweet", "Small Bites"],
+    isActive: true,
+    updatedDaysAgo: 2,
   },
   {
     id: "5",
-    name: "Chocolate Mousse",
-    description: "Rich chocolate dessert with berries",
-    price: 8000,
-    image: "/placeholder-food.jpg",
-    category: "desserts",
+    name: "Chef's Special",
+    description: "Daily chef special selection",
+    price: 25000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "main-dish",
     status: "available",
-    orders: 15,
+    orders: 6,
+    menuType: "A la Carte",
+    mealTimes: ["Lunch", "Dinner"],
+    tags: ["Best seller", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 1,
   },
   {
     id: "6",
-    name: "Fresh Orange Juice",
-    description: "Freshly squeezed orange juice",
-    price: 5000,
-    image: "/placeholder-food.jpg",
-    category: "beverages",
+    name: "Grilled Salmon",
+    description: "Fresh grilled salmon with herbs",
+    price: 25000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "main-dish",
     status: "available",
-    orders: 67,
+    orders: 6,
+    menuType: "Buffet, A la carte",
+    mealTimes: ["Lunch", "Dinner"],
+    tags: ["Best seller", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 4,
+  },
+  {
+    id: "7",
+    name: "Chicken springrolls",
+    description: "Crispy chicken spring rolls",
+    price: 7000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "starters",
+    status: "unavailable",
+    orders: 0,
+    menuType: "Set Menu, Buffet",
+    mealTimes: ["All day"],
+    tags: ["Sweet", "Savory"],
+    isActive: false,
+    updatedDaysAgo: 1,
   },
 ];
 
@@ -113,13 +189,15 @@ export default function MenuManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
   const categories = [
-    { value: "all", label: "All Items" },
+    { value: "all", label: "All Category" },
+    { value: "main-dish", label: "Main Dish" },
     { value: "starters", label: "Starters" },
-    { value: "main-course", label: "Main Course" },
     { value: "desserts", label: "Desserts" },
-    { value: "beverages", label: "Beverages" },
+    { value: "beverages", label: "Drinks" },
+    { value: "sides", label: "Sides" },
   ];
 
   const filteredItems = mockMenuItems.filter((item) => {
@@ -146,24 +224,12 @@ export default function MenuManagementPage() {
           <img
             src={item.image}
             alt={item.name}
-            className="w-full h-32 object-cover"
+            className="w-full h-48 object-cover"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = `https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop&crop=center`;
             }}
           />
-          <div className="absolute top-2 left-2">
-            <Badge
-              variant={item.status === "available" ? "default" : "secondary"}
-              className={
-                item.status === "available"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }
-            >
-              {item.status === "available" ? "Available" : "Unavailable"}
-            </Badge>
-          </div>
           <div className="absolute top-2 right-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -206,18 +272,22 @@ export default function MenuManagementPage() {
         </div>
 
         <CardContent className="p-4">
-          <div className="space-y-2">
-            <h3 className="font-semibold text-lg">{item.name}</h3>
-            <p className="text-sm text-gray-600 line-clamp-2">
-              {item.description}
-            </p>
+          <div className="space-y-3">
+            <div>
+              <h3 className="font-semibold text-lg">{item.name}</h3>
+              <p className="text-sm text-gray-600">{item.menuType}</p>
+              <p className="text-xs text-gray-500">{item.orders} items</p>
+              <p className="text-xs text-gray-500">
+                Updated {item.updatedDaysAgo} days ago
+              </p>
+            </div>
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-gray-900">
                 ₦{item.price.toLocaleString()}
               </span>
-              <span className="text-sm text-gray-500">
-                {item.orders} orders
-              </span>
+              <Button variant="ghost" size="sm" className="text-teal-600">
+                View Details
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -225,24 +295,122 @@ export default function MenuManagementPage() {
     );
   };
 
+  const MenuItemTableRow = ({ item }: { item: MenuItem }) => {
+    return (
+      <TableRow>
+        <TableCell>
+          <div className="flex items-center space-x-3">
+            <img
+              src={item.image}
+              alt={item.name}
+              className="w-12 h-12 rounded object-cover"
+            />
+            <div>
+              <div className="font-medium">{item.name}</div>
+              <div className="text-sm text-gray-500">{item.description}</div>
+            </div>
+          </div>
+        </TableCell>
+        <TableCell>₦{item.price.toLocaleString()}</TableCell>
+        <TableCell>{item.category}</TableCell>
+        <TableCell>{item.menuType}</TableCell>
+        <TableCell>{item.mealTimes.join(", ")}</TableCell>
+        <TableCell>{item.orders}</TableCell>
+        <TableCell>
+          <div className="flex flex-wrap gap-1">
+            {item.tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </TableCell>
+        <TableCell>
+          <Badge
+            variant={item.status === "available" ? "default" : "secondary"}
+            className={
+              item.status === "available"
+                ? "bg-green-100 text-green-800"
+                : "bg-gray-100 text-gray-800"
+            }
+          >
+            {item.status === "available" ? "Active" : "Inactive"}
+          </Badge>
+        </TableCell>
+        <TableCell>
+          <Switch checked={item.isActive} />
+        </TableCell>
+        <TableCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <Eye className="w-4 h-4 mr-2" />
+                View Details
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Copy className="w-4 h-4 mr-2" />
+                Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      </TableRow>
+    );
+  };
+
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Menu Management</h1>
-          <p className="text-gray-600">Manage your restaurant's menu items</p>
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <span>Restaurant 1 - HQ</span>
+              <span className="text-gray-400">•</span>
+              <span>2</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Menu Management
+            </h1>
+          </div>
         </div>
-        <Button
-          className="bg-teal-600 hover:bg-teal-700 text-white"
-          onClick={() => router.push("/vendorDashboard/menu/add")}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add New Item
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
+          <Button variant="outline" size="sm">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Menu Item
+          </Button>
+          <Button
+            className="bg-teal-600 hover:bg-teal-700 text-white"
+            size="sm"
+            onClick={() => router.push("/vendorDashboard/menu/add")}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Menu
+          </Button>
+        </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters and View Toggle */}
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col lg:flex-row gap-4">
@@ -250,7 +418,7 @@ export default function MenuManagementPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
-                  placeholder="Search menu items..."
+                  placeholder="Search menu"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -271,123 +439,126 @@ export default function MenuManagementPage() {
                 ))}
               </select>
 
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md bg-white min-w-[120px]"
-              >
-                <option value="all">All Status</option>
-                <option value="available">Available</option>
-                <option value="unavailable">Unavailable</option>
-              </select>
-
               <Button variant="outline">
                 <Filter className="w-4 h-4 mr-2" />
-                More Filters
+                Advanced Filter
               </Button>
+
+              <div className="flex border rounded-md">
+                <Button
+                  variant={viewMode === "table" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                  className={
+                    viewMode === "table" ? "bg-gray-900 text-white" : ""
+                  }
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className={
+                    viewMode === "grid" ? "bg-gray-900 text-white" : ""
+                  }
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
-                {mockMenuItems.length}
-              </div>
-              <div className="text-sm text-gray-600">Total Items</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {
-                  mockMenuItems.filter((item) => item.status === "available")
-                    .length
-                }
-              </div>
-              <div className="text-sm text-gray-600">Available</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">
-                {
-                  mockMenuItems.filter((item) => item.status === "unavailable")
-                    .length
-                }
-              </div>
-              <div className="text-sm text-gray-600">Unavailable</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {mockMenuItems.reduce((sum, item) => sum + item.orders, 0)}
-              </div>
-              <div className="text-sm text-gray-600">Total Orders</div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Menu Items */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Menu Items ({filteredItems.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="grid w-full grid-cols-5">
-              {categories.map((category) => (
-                <TabsTrigger
-                  key={category.value}
-                  value={category.value}
-                  className="text-xs"
-                >
-                  {category.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
+      <div>
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+          <TabsList className="grid w-full grid-cols-6 mb-6">
             {categories.map((category) => (
-              <TabsContent
+              <TabsTrigger
                 key={category.value}
                 value={category.value}
-                className="mt-6"
+                className="text-sm"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {getItemsByCategory(category.value).map((item) => (
-                    <MenuItemCard key={item.id} item={item} />
-                  ))}
-                </div>
-
-                {getItemsByCategory(category.value).length === 0 && (
-                  <div className="text-center py-12">
-                    <div className="text-gray-500 mb-4">No items found</div>
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push("/vendorDashboard/menu/add")}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add New Item
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
+                {category.label}
+              </TabsTrigger>
             ))}
-          </Tabs>
-        </CardContent>
-      </Card>
+          </TabsList>
+
+          {viewMode === "table" ? (
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Image</TableHead>
+                      <TableHead>Menu name</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Menu Type</TableHead>
+                      <TableHead>Meal Times</TableHead>
+                      <TableHead>Items</TableHead>
+                      <TableHead>Tags</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredItems.map((item) => (
+                      <MenuItemTableRow key={item.id} item={item} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredItems.map((item) => (
+                <MenuItemCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+
+          {filteredItems.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-500 mb-4">No items found</div>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/vendorDashboard/menu/add")}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Item
+              </Button>
+            </div>
+          )}
+        </Tabs>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-500">Page 1 of 30</div>
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm" disabled>
+            Previous
+          </Button>
+          <div className="flex space-x-1">
+            {[1, 2, 3, "...", 10, 11, 12].map((page, index) => (
+              <Button
+                key={index}
+                variant={page === 1 ? "default" : "ghost"}
+                size="sm"
+                className={page === 1 ? "bg-teal-600 hover:bg-teal-700" : ""}
+              >
+                {page}
+              </Button>
+            ))}
+          </div>
+          <Button variant="outline" size="sm">
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

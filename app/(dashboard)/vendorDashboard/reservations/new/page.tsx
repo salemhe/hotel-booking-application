@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  Users,
-  ChevronDown,
-  Check,
-} from "lucide-react";
+import { ArrowLeft, Check, Calendar, Users, Clock } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -20,8 +13,7 @@ import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
 import { useRouter } from "next/navigation";
 
-interface ReservationForm {
-  // Step 1: Reservation Details
+interface ReservationFormData {
   customerName: string;
   phoneNumber: string;
   date: string;
@@ -30,36 +22,13 @@ interface ReservationForm {
   tablePreference: string;
   specialRequests: string;
   staffNotes: string;
-  mealPreselected: boolean;
-
-  // Step 2: Meal Selection (if preselected)
-  selectedMeals: any[];
-
-  // Step 3: Payment
-  paymentMethod: "prepay" | "pay-at-restaurant";
+  skipMealPreselection: boolean;
 }
 
-const steps = [
-  { id: 1, title: "Reservation Details", icon: Calendar },
-  { id: 2, title: "Preselect meal", icon: Clock },
-  { id: 3, title: "Payment", icon: Users },
-];
-
-const tablePreferences = [
-  "Pick table preference",
-  "Window seat",
-  "Private booth",
-  "Bar area",
-  "Outdoor seating",
-  "No preference",
-];
-
-const guestOptions = Array.from({ length: 10 }, (_, i) => i + 1);
-
-export default function NewReservationPage() {
+export default function CreateReservationPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<ReservationForm>({
+  const [formData, setFormData] = useState<ReservationFormData>({
     customerName: "",
     phoneNumber: "",
     date: "",
@@ -68,98 +37,115 @@ export default function NewReservationPage() {
     tablePreference: "",
     specialRequests: "",
     staffNotes: "",
-    mealPreselected: false,
-    selectedMeals: [],
-    paymentMethod: "prepay",
+    skipMealPreselection: false,
   });
+
+  const steps = [
+    { id: 1, title: "Reservation Details", icon: "1" },
+    { id: 2, title: "Preselect meal", icon: "2" },
+    { id: 3, title: "Payment", icon: "3" },
+  ];
+
+  const timeSlots = [
+    "6:00 AM",
+    "6:30 AM",
+    "7:00 AM",
+    "7:30 AM",
+    "8:00 AM",
+    "8:30 AM",
+    "9:00 AM",
+    "9:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "12:00 PM",
+    "12:30 PM",
+    "1:00 PM",
+    "1:30 PM",
+    "2:00 PM",
+    "2:30 PM",
+    "3:00 PM",
+    "3:30 PM",
+    "4:00 PM",
+    "4:30 PM",
+    "5:00 PM",
+    "5:30 PM",
+    "6:00 PM",
+    "6:30 PM",
+    "7:00 PM",
+    "7:30 PM",
+    "8:00 PM",
+    "8:30 PM",
+    "9:00 PM",
+    "9:30 PM",
+    "10:00 PM",
+  ];
+
+  const guestOptions = Array.from({ length: 20 }, (_, i) => i + 1);
 
   const handleNext = () => {
     if (currentStep < 3) {
-      if (currentStep === 1 && !formData.mealPreselected) {
-        setCurrentStep(3); // Skip meal selection
-      } else {
-        setCurrentStep(currentStep + 1);
-      }
+      setCurrentStep(currentStep + 1);
+    } else {
+      // Submit form
+      console.log("Reservation created:", formData);
+      router.push("/vendorDashboard/reservations");
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
-      if (currentStep === 3 && !formData.mealPreselected) {
-        setCurrentStep(1); // Skip meal selection when going back
-      } else {
-        setCurrentStep(currentStep - 1);
-      }
+      setCurrentStep(currentStep - 1);
+    } else {
+      router.back();
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Reservation form data:", formData);
-    router.push("/vendorDashboard/reservations");
-  };
-
   const renderStepIndicator = () => (
-    <div className="flex items-center justify-center space-x-8 mb-8">
-      {steps.map((step, index) => {
-        const isActive = step.id === currentStep;
-        const isCompleted =
-          step.id < currentStep ||
-          (step.id === 2 && !formData.mealPreselected && currentStep === 3);
-        const isSkipped = step.id === 2 && !formData.mealPreselected;
-
-        return (
-          <div key={step.id} className="flex flex-col items-center">
-            <div className="flex items-center">
-              {index > 0 && (
-                <div
-                  className={`w-16 h-0.5 ${
-                    isCompleted || (isSkipped && currentStep === 3)
-                      ? "bg-teal-600"
-                      : "bg-gray-300"
-                  }`}
-                />
-              )}
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  isActive
-                    ? "bg-teal-600 text-white"
-                    : isCompleted || isSkipped
-                      ? "bg-teal-600 text-white"
-                      : "bg-gray-200 text-gray-400"
-                }`}
-              >
-                {(isCompleted || isSkipped) && !isActive ? (
-                  <Check className="w-5 h-5" />
-                ) : (
-                  <step.icon className="w-5 h-5" />
-                )}
-              </div>
-              {index < steps.length - 1 && (
-                <div
-                  className={`w-16 h-0.5 ${
-                    isCompleted || (isSkipped && currentStep === 3)
-                      ? "bg-teal-600"
-                      : "bg-gray-300"
-                  }`}
-                />
-              )}
-            </div>
-            <span
-              className={`text-sm mt-2 ${
-                isActive ? "text-teal-600 font-medium" : "text-gray-500"
-              }`}
-            >
-              {step.title}
-            </span>
+    <div className="flex items-center justify-center space-x-4 mb-8">
+      {steps.map((step, index) => (
+        <div key={step.id} className="flex items-center">
+          <div
+            className={`flex items-center justify-center w-10 h-10 rounded-full ${
+              step.id <= currentStep
+                ? "bg-teal-600 text-white"
+                : "bg-gray-200 text-gray-600"
+            }`}
+          >
+            {step.id < currentStep ? (
+              <Check className="w-5 h-5" />
+            ) : (
+              <span className="text-sm font-medium">{step.icon}</span>
+            )}
           </div>
-        );
-      })}
+          <span
+            className={`ml-2 text-sm font-medium ${
+              step.id <= currentStep ? "text-teal-600" : "text-gray-600"
+            }`}
+          >
+            {step.title}
+          </span>
+          {index < steps.length - 1 && (
+            <div
+              className={`w-16 h-0.5 mx-4 ${
+                step.id < currentStep ? "bg-teal-600" : "bg-gray-200"
+              }`}
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
 
   const renderStep1 = () => (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold mb-2">Create New Reservation</h2>
+        <p className="text-gray-600">Fill in the reservation details below</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Customer name*
@@ -173,48 +159,27 @@ export default function NewReservationPage() {
             required
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Table Preference*
+            Phone number
           </label>
-          <select
-            value={formData.tablePreference}
+          <Input
+            value={formData.phoneNumber}
             onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                tablePreference: e.target.value,
-              }))
+              setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
             }
-            className="w-full p-2 border border-gray-300 rounded-md bg-white"
-            required
-          >
-            {tablePreferences.map((preference) => (
-              <option key={preference} value={preference}>
-                {preference}
-              </option>
-            ))}
-          </select>
+            placeholder="Enter phone number"
+            type="tel"
+          />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Phone number
+          Date*
         </label>
-        <Input
-          value={formData.phoneNumber}
-          onChange={(e) =>
-            setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
-          }
-          placeholder="Enter phone number"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Date*
-          </label>
+        <div className="relative">
           <Input
             type="date"
             value={formData.date}
@@ -223,40 +188,80 @@ export default function NewReservationPage() {
             }
             required
           />
+          <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Time*
-          </label>
-          <Input
-            type="time"
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Time*
+        </label>
+        <div className="relative">
+          <select
             value={formData.time}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, time: e.target.value }))
             }
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white"
             required
-          />
+          >
+            <option value="">Select time</option>
+            {timeSlots.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
+          <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            No. of guests*
-          </label>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          No. of guests*
+        </label>
+        <div className="relative">
           <select
             value={formData.guests}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, guests: e.target.value }))
             }
-            className="w-full p-2 border border-gray-300 rounded-md bg-white"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white"
             required
           >
             <option value="">Select number of guests</option>
-            {guestOptions.map((num) => (
-              <option key={num} value={num}>
-                {num} {num === 1 ? "guest" : "guests"}
+            {guestOptions.map((number) => (
+              <option key={number} value={number}>
+                {number} {number === 1 ? "Guest" : "Guests"}
               </option>
             ))}
           </select>
+          <Users className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Table Preference*
+        </label>
+        <select
+          value={formData.tablePreference}
+          onChange={(e) =>
+            setFormData((prev) => ({
+              ...prev,
+              tablePreference: e.target.value,
+            }))
+          }
+          className="w-full p-3 border border-gray-300 rounded-lg bg-white"
+        >
+          <option value="">Pick table preference</option>
+          <option value="window">Window Seat</option>
+          <option value="private">Private Table</option>
+          <option value="outdoor">Outdoor Seating</option>
+          <option value="bar">Bar Seating</option>
+          <option value="booth">Booth</option>
+          <option value="no-preference">No Preference</option>
+        </select>
       </div>
 
       <div>
@@ -272,7 +277,7 @@ export default function NewReservationPage() {
             }))
           }
           placeholder="Let us know if you have any special request like dietary restrictions, birthday requests, etc."
-          className="min-h-[80px]"
+          className="min-h-[80px] resize-none"
         />
       </div>
 
@@ -286,24 +291,24 @@ export default function NewReservationPage() {
             setFormData((prev) => ({ ...prev, staffNotes: e.target.value }))
           }
           placeholder="Add notes for staff (not visible to customers)"
-          className="min-h-[80px]"
+          className="min-h-[80px] resize-none"
         />
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 p-4 border rounded-lg">
         <input
           type="checkbox"
-          id="meal-preselected"
-          checked={formData.mealPreselected}
+          id="skip-meal"
+          checked={formData.skipMealPreselection}
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
-              mealPreselected: e.target.checked,
+              skipMealPreselection: e.target.checked,
             }))
           }
-          className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+          className="rounded border-gray-300"
         />
-        <label htmlFor="meal-preselected" className="text-sm">
+        <label htmlFor="skip-meal" className="text-sm">
           Customer is dining now, skip meal preselected
         </label>
       </div>
@@ -311,237 +316,79 @@ export default function NewReservationPage() {
   );
 
   const renderStep2 = () => (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-xl font-semibold mb-2">
-          Select meals for your reservation
-        </h2>
-        <p className="text-gray-600">
-          Choose your preferred meals from our menu
-        </p>
-      </div>
-
-      {/* Mock menu items */}
-      <div className="space-y-6">
-        {["Starters", "Main Courses", "Desserts"].map((category) => (
-          <Card key={category}>
-            <CardHeader>
-              <CardTitle>{category}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {category === "Starters" && (
-                  <>
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">Calamari Fritti</h4>
-                        <p className="text-sm text-gray-600">
-                          Add extra lemon on the side
-                        </p>
-                        <p className="font-medium text-teal-600">₦15,000</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">Qty: 2</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">Caprese Salad</h4>
-                        <p className="text-sm text-gray-600">
-                          No special request
-                        </p>
-                        <p className="font-medium text-teal-600">₦15,000</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">Qty: 2</p>
-                      </div>
-                    </div>
-                  </>
-                )}
-                {category === "Main Courses" && (
-                  <>
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">Spaghetti Carbonara</h4>
-                        <p className="text-sm text-gray-600">
-                          No special request
-                        </p>
-                        <p className="font-medium text-teal-600">₦15,000</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">Qty: 2</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium">Calamari Fritti</h4>
-                        <p className="text-sm text-gray-600">
-                          Add extra lemon on the side
-                        </p>
-                        <p className="font-medium text-teal-600">₦15,000</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">Qty: 2</p>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    <div className="max-w-2xl mx-auto text-center py-12">
+      <h2 className="text-2xl font-bold mb-4">Preselect Meal</h2>
+      <p className="text-gray-600 mb-8">
+        Choose meals for the customer's reservation
+      </p>
+      <Button
+        className="bg-teal-600 hover:bg-teal-700 text-white"
+        onClick={handleNext}
+      >
+        Continue to Meal Selection
+      </Button>
     </div>
   );
 
   const renderStep3 = () => (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-xl font-semibold mb-2">
-          Choose your payment option
-        </h2>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-4">
-          Amount to pay: ₦42,000
-        </label>
-
-        <div className="space-y-3">
-          <Button
-            className={`w-full p-4 text-left justify-start ${
-              formData.paymentMethod === "prepay"
-                ? "bg-teal-600 hover:bg-teal-700 text-white"
-                : "bg-gray-100 hover:bg-gray-200 text-gray-900"
-            }`}
-            onClick={() =>
-              setFormData((prev) => ({ ...prev, paymentMethod: "prepay" }))
-            }
-          >
-            Prepay Now
-          </Button>
-
-          <Button
-            variant="outline"
-            className={`w-full p-4 text-left justify-start ${
-              formData.paymentMethod === "pay-at-restaurant"
-                ? "border-teal-600 text-teal-600"
-                : ""
-            }`}
-            onClick={() =>
-              setFormData((prev) => ({
-                ...prev,
-                paymentMethod: "pay-at-restaurant",
-              }))
-            }
-          >
-            Pay at Restaurant
-          </Button>
-        </div>
-      </div>
-
-      {formData.mealPreselected && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Order Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-medium mb-2">Starters</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Calamari Fritti</span>
-                  <span>₦15,000</span>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Add extra lemon on the side
-                </div>
-                <div className="text-sm text-gray-600">Qty: 2</div>
-
-                <div className="flex justify-between">
-                  <span>Caprese Salad</span>
-                  <span>₦15,000</span>
-                </div>
-                <div className="text-sm text-gray-600">No special request</div>
-                <div className="text-sm text-gray-600">Qty: 2</div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-medium mb-2">Main Courses</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Spaghetti Carbonara</span>
-                  <span>₦15,000</span>
-                </div>
-                <div className="text-sm text-gray-600">No special request</div>
-                <div className="text-sm text-gray-600">Qty: 2</div>
-
-                <div className="flex justify-between">
-                  <span>Calamari Fritti</span>
-                  <span>₦15,000</span>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Add extra lemon on the side
-                </div>
-                <div className="text-sm text-gray-600">Qty: 2</div>
-              </div>
-            </div>
-
-            <div className="border-t pt-4">
-              <h4 className="font-medium">Desserts</h4>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+    <div className="max-w-2xl mx-auto text-center py-12">
+      <h2 className="text-2xl font-bold mb-4">Payment</h2>
+      <p className="text-gray-600 mb-8">
+        Set up payment details for this reservation
+      </p>
+      <Button
+        className="bg-teal-600 hover:bg-teal-700 text-white"
+        onClick={handleNext}
+      >
+        Complete Reservation
+      </Button>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Create New Reservation
-          </h1>
+      <div className="bg-white border-b px-6 py-4">
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" onClick={handleBack}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-xl font-semibold">Create New Reservation</h1>
+          </div>
         </div>
       </div>
 
-      {/* Step Indicator */}
-      {renderStepIndicator()}
+      <div className="px-6 py-8">
+        {renderStepIndicator()}
 
-      {/* Form Content */}
-      <div className="min-h-[400px]">
-        {currentStep === 1 && renderStep1()}
-        {currentStep === 2 && renderStep2()}
-        {currentStep === 3 && renderStep3()}
-      </div>
+        <div className="bg-white rounded-lg shadow-sm p-8">
+          {currentStep === 1 && renderStep1()}
+          {currentStep === 2 && renderStep2()}
+          {currentStep === 3 && renderStep3()}
+        </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-8 max-w-2xl mx-auto">
-        <Button
-          variant="outline"
-          onClick={currentStep === 1 ? () => router.back() : handleBack}
-        >
-          {currentStep === 1 ? "Cancel" : "Back"}
-        </Button>
+        <div className="flex justify-between mt-8">
+          <Button variant="outline" onClick={handleBack}>
+            {currentStep === 1 ? "Cancel" : "Back"}
+          </Button>
 
-        <Button
-          className="bg-teal-600 hover:bg-teal-700 text-white"
-          onClick={currentStep === 3 ? handleSubmit : handleNext}
-        >
-          {currentStep === 3
-            ? formData.paymentMethod === "prepay"
-              ? "Pay ₦42,000 now"
-              : "Continue to Meal Selection"
-            : currentStep === 1 && !formData.mealPreselected
-              ? "Continue to Payment"
+          <Button
+            className="bg-teal-600 hover:bg-teal-700 text-white"
+            onClick={handleNext}
+            disabled={
+              currentStep === 1 &&
+              (!formData.customerName ||
+                !formData.date ||
+                !formData.time ||
+                !formData.guests)
+            }
+          >
+            {currentStep === 3
+              ? "Complete Reservation"
               : "Continue to Meal Selection"}
-        </Button>
+          </Button>
+        </div>
       </div>
     </div>
   );
