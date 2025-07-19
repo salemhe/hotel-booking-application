@@ -151,17 +151,18 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
               <Label htmlFor="state" className="text-sm font-medium text-gray-700">
                 State<span className="text-red-500">*</span>
               </Label>
-              <Select value={state} onValueChange={setState}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select state" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="lagos">Lagos</SelectItem>
-                  <SelectItem value="abuja">Abuja</SelectItem>
-                  <SelectItem value="kano">Kano</SelectItem>
-                  <SelectItem value="rivers">Rivers</SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                id="state"
+                className="w-full border rounded px-3 py-2"
+                value={state}
+                onChange={e => setState(e.target.value)}
+              >
+                <option value="">Select state</option>
+                <option value="lagos">Lagos</option>
+                <option value="abuja">Abuja</option>
+                <option value="kano">Kano</option>
+                <option value="rivers">Rivers</option>
+              </select>
             </div>
           </div>
           {/* Phone Number */}
@@ -170,16 +171,15 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
               Phone Number<span className="text-red-500">*</span>
             </Label>
             <div className="flex w-full max-w-xl rounded-lg border border-gray-300 bg-white focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200 overflow-hidden shadow-sm">
-              <Select value={countryCode} onValueChange={setCountryCode}>
-                <SelectTrigger className="w-16 h-12 rounded-l-lg border-none bg-transparent text-base px-2 focus:ring-0 focus:border-none">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="+234">+234</SelectItem>
-                  <SelectItem value="+1">+1</SelectItem>
-                  <SelectItem value="+44">+44</SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                className="w-16 h-12 rounded-l-lg border-none bg-transparent text-base px-2 focus:ring-0 focus:border-none"
+                value={countryCode}
+                onChange={e => setCountryCode(e.target.value)}
+              >
+                <option value="+234">+234</option>
+                <option value="+1">+1</option>
+                <option value="+44">+44</option>
+              </select>
               <Input
                 id="phone"
                 placeholder="7012345678"
@@ -258,7 +258,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
             </div>
             {/* Import Menu Items Checkbox */}
             <div className="flex items-center space-x-2">
-              <Checkbox id="import-menu" checked={importMenuItems} onCheckedChange={checked => { setImportMenuItems(checked === true); }} />
+              <Checkbox id="import-menu" checked={importMenuItems} onCheckedChange={(checked) => { setImportMenuItems(checked === true); }} />
               <Label htmlFor="import-menu" className="text-sm text-gray-700 cursor-pointer">
                 Import all menu and menu items
               </Label>
@@ -270,7 +270,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
           <Button variant="ghost" onClick={onClose} className="text-gray-600 hover:text-gray-800">
             Cancel
           </Button>
-          <Button variant="outline" className="text-gray-700 border-gray-300 hover:bg-gray-50 bg-transparent" onClick={handleSave} disabled={loading}>
+          <Button variant="secondary" className="text-gray-700 border-gray-300 hover:bg-gray-50 bg-transparent" onClick={handleSave} disabled={loading}>
             {loading ? "Saving..." : "Save & Add another"}
           </Button>
           <Button className="bg-teal-600 hover:bg-teal-700 text-white px-6" onClick={handleSave} disabled={loading}>{loading ? "Saving..." : "Save Branch"}</Button>
