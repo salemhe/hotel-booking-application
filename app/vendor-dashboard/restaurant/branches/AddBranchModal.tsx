@@ -38,10 +38,10 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
   }
   const [countryCode, setCountryCode] = useState(initialCountryCode);
   const [phone, setPhone] = useState(initialPhone);
-  const [opensAt, setOpensAt] = useState(branch?.opensAt || "09:00")
-  const [closesAt, setClosesAt] = useState(branch?.closesAt || "22:00")
-  const [manager, setManager] = useState(branch?.manager || "")
-  const [menu, setMenu] = useState(branch?.menu || "")
+  const [opensAt, setOpensAt] = useState(branch?.opensAt || "09:00");
+  const [closesAt, setClosesAt] = useState(branch?.closesAt || "22:00");
+  const [manager, setManager] = useState(branch?.manager || "");
+  const [menu, setMenu] = useState(branch?.menu || "");
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
