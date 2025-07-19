@@ -48,7 +48,7 @@ export default function RestaurantDashboard() {
     fetchBranches()
   }, [])
 
-  const handleAddBranch = (branch: Branch) => {
+  const handleAddBranch = () => {
     fetchBranches()
     setEditingBranch(null)
   }
