@@ -10,6 +10,11 @@ import {
   Copy,
   Eye,
   MoreHorizontal,
+  ArrowLeft,
+  Grid3X3,
+  List,
+  Upload,
+  Download,
 } from "lucide-react";
 import {
   Card,
@@ -32,6 +37,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/components/ui/table";
+import { Switch } from "@/app/components/ui/switch";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/app/components/ui/avatar";
 import { useRouter } from "next/navigation";
 
 interface MenuItem {
@@ -43,68 +62,125 @@ interface MenuItem {
   category: string;
   status: "available" | "unavailable";
   orders: number;
+  menuType: string;
+  mealTimes: string[];
+  tags: string[];
+  isActive: boolean;
+  updatedDaysAgo: number;
 }
 
 const mockMenuItems: MenuItem[] = [
   {
     id: "1",
-    name: "Mezze Platter",
+    name: "Joe's Platter",
     description: "Hummus, baba ghanoush, tzatziki, pita bread",
-    price: 15000,
-    image: "/placeholder-food.jpg",
-    category: "starters",
+    price: 25000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "main-dish",
     status: "available",
-    orders: 45,
+    orders: 6,
+    menuType: "A la Carte",
+    mealTimes: ["Lunch", "Dinner"],
+    tags: ["Best seller", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 3,
   },
   {
     id: "2",
-    name: "Chicken Springrolls",
-    description: "Chicken, garnished vegetables",
-    price: 12000,
-    image: "/placeholder-food.jpg",
-    category: "starters",
+    name: "Mezze Platter",
+    description: "Hummus, baba ghanoush, tzatzaki, pita bread",
+    price: 25000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "main-dish",
     status: "available",
-    orders: 32,
+    orders: 6,
+    menuType: "A la Carte",
+    mealTimes: ["Lunch", "Dinner"],
+    tags: ["Best seller", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 3,
   },
   {
     id: "3",
-    name: "Spaghetti Carbonara",
-    description: "Creamy pasta with bacon and parmesan",
-    price: 18000,
-    image: "/placeholder-food.jpg",
-    category: "main-course",
-    status: "unavailable",
-    orders: 28,
+    name: "Weekend Buffet",
+    description: "Weekend special buffet selection",
+    price: 45000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "buffet",
+    status: "available",
+    orders: 12,
+    menuType: "Buffet",
+    mealTimes: ["Brunch", "Dinner"],
+    tags: ["Vegan Options", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 5,
   },
   {
     id: "4",
-    name: "Grilled Salmon",
-    description: "Fresh salmon with herbs and lemon",
+    name: "Kid's Happy Menu",
+    description: "Special menu for children",
     price: 25000,
-    image: "/placeholder-food.jpg",
-    category: "main-course",
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "fixed",
     status: "available",
-    orders: 19,
+    orders: 4,
+    menuType: "Fixed",
+    mealTimes: ["All Day"],
+    tags: ["Kids", "Sweet", "Small Bites"],
+    isActive: true,
+    updatedDaysAgo: 2,
   },
   {
     id: "5",
-    name: "Chocolate Mousse",
-    description: "Rich chocolate dessert with berries",
-    price: 8000,
-    image: "/placeholder-food.jpg",
-    category: "desserts",
+    name: "Chef's Special",
+    description: "Daily chef special selection",
+    price: 25000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "main-dish",
     status: "available",
-    orders: 15,
+    orders: 6,
+    menuType: "A la Carte",
+    mealTimes: ["Lunch", "Dinner"],
+    tags: ["Best seller", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 1,
   },
   {
     id: "6",
-    name: "Fresh Orange Juice",
-    description: "Freshly squeezed orange juice",
-    price: 5000,
-    image: "/placeholder-food.jpg",
-    category: "beverages",
+    name: "Grilled Salmon",
+    description: "Fresh grilled salmon with herbs",
+    price: 25000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "main-dish",
     status: "available",
-    orders: 67,
+    orders: 6,
+    menuType: "Buffet, A la carte",
+    mealTimes: ["Lunch", "Dinner"],
+    tags: ["Best seller", "Sweet", "Savory"],
+    isActive: true,
+    updatedDaysAgo: 4,
+  },
+  {
+    id: "7",
+    name: "Chicken springrolls",
+    description: "Crispy chicken spring rolls",
+    price: 7000,
+    image:
+      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
+    category: "starters",
+    status: "unavailable",
+    orders: 0,
+    menuType: "Set Menu, Buffet",
+    mealTimes: ["All day"],
+    tags: ["Sweet", "Savory"],
+    isActive: false,
+    updatedDaysAgo: 1,
   },
 ];
 
@@ -113,13 +189,15 @@ export default function MenuManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
   const categories = [
-    { value: "all", label: "All Items" },
+    { value: "all", label: "All Category" },
+    { value: "main-dish", label: "Main Dish" },
     { value: "starters", label: "Starters" },
-    { value: "main-course", label: "Main Course" },
     { value: "desserts", label: "Desserts" },
-    { value: "beverages", label: "Beverages" },
+    { value: "beverages", label: "Drinks" },
+    { value: "sides", label: "Sides" },
   ];
 
   const filteredItems = mockMenuItems.filter((item) => {
