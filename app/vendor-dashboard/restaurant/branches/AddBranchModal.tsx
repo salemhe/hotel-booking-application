@@ -25,19 +25,22 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
   const [city, setCity] = useState(branch?.city || "")
   const [state, setState] = useState(branch?.state || "")
   // Parse country code and phone number
-  let initialCountryCode = "+234";
-  let initialPhone = "";
-  if (branch?.phone) {
-    const match = branch.phone.match(/^(\+\d{1,4})(\d{7,15})$/);
-    if (match) {
-      initialCountryCode = match[1];
-      initialPhone = match[2];
-    } else {
-      initialPhone = branch.phone.replace(/^[^0-9]+/, "");
+  const [countryCode, setCountryCode] = useState(() => {
+    if (branch?.phone) {
+      const match = branch.phone.match(/^(\+\d{1,4})(\d{7,15})$/);
+      if (match) return match[1];
+      return "+234";
     }
-  }
-  const [countryCode, setCountryCode] = useState(initialCountryCode);
-  const [phone, setPhone] = useState(initialPhone);
+    return "+234";
+  });
+  const [phone, setPhone] = useState(() => {
+    if (branch?.phone) {
+      const match = branch.phone.match(/^(\+\d{1,4})(\d{7,15})$/);
+      if (match) return match[2];
+      return branch.phone.replace(/^[^0-9]+/, "");
+    }
+    return "";
+  });
   const [opensAt, setOpensAt] = useState(branch?.opensAt || "09:00");
   const [closesAt, setClosesAt] = useState(branch?.closesAt || "22:00");
   const [manager, setManager] = useState(branch?.manager || "");
