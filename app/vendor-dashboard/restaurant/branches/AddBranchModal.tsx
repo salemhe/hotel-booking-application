@@ -258,7 +258,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
             </div>
             {/* Import Menu Items Checkbox */}
             <div className="flex items-center space-x-2">
-              <Checkbox id="import-menu" checked={importMenuItems} onCheckedChange={(checked) => { setImportMenuItems(checked === true); }} />
+              <Checkbox id="import-menu" checked={importMenuItems} onCheckedChange={(checked) => { setImportMenuItems(checked === true); return null; }} />
               <Label htmlFor="import-menu" className="text-sm text-gray-700 cursor-pointer">
                 Import all menu and menu items
               </Label>
