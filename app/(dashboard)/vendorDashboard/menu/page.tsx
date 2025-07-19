@@ -224,24 +224,12 @@ export default function MenuManagementPage() {
           <img
             src={item.image}
             alt={item.name}
-            className="w-full h-32 object-cover"
+            className="w-full h-48 object-cover"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = `https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop&crop=center`;
             }}
           />
-          <div className="absolute top-2 left-2">
-            <Badge
-              variant={item.status === "available" ? "default" : "secondary"}
-              className={
-                item.status === "available"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }
-            >
-              {item.status === "available" ? "Available" : "Unavailable"}
-            </Badge>
-          </div>
           <div className="absolute top-2 right-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -284,22 +272,102 @@ export default function MenuManagementPage() {
         </div>
 
         <CardContent className="p-4">
-          <div className="space-y-2">
-            <h3 className="font-semibold text-lg">{item.name}</h3>
-            <p className="text-sm text-gray-600 line-clamp-2">
-              {item.description}
-            </p>
+          <div className="space-y-3">
+            <div>
+              <h3 className="font-semibold text-lg">{item.name}</h3>
+              <p className="text-sm text-gray-600">{item.menuType}</p>
+              <p className="text-xs text-gray-500">{item.orders} items</p>
+              <p className="text-xs text-gray-500">
+                Updated {item.updatedDaysAgo} days ago
+              </p>
+            </div>
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-gray-900">
                 ₦{item.price.toLocaleString()}
               </span>
-              <span className="text-sm text-gray-500">
-                {item.orders} orders
-              </span>
+              <Button variant="ghost" size="sm" className="text-teal-600">
+                View Details
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
+    );
+  };
+
+  const MenuItemTableRow = ({ item }: { item: MenuItem }) => {
+    return (
+      <TableRow>
+        <TableCell>
+          <div className="flex items-center space-x-3">
+            <img
+              src={item.image}
+              alt={item.name}
+              className="w-12 h-12 rounded object-cover"
+            />
+            <div>
+              <div className="font-medium">{item.name}</div>
+              <div className="text-sm text-gray-500">{item.description}</div>
+            </div>
+          </div>
+        </TableCell>
+        <TableCell>₦{item.price.toLocaleString()}</TableCell>
+        <TableCell>{item.category}</TableCell>
+        <TableCell>{item.menuType}</TableCell>
+        <TableCell>{item.mealTimes.join(", ")}</TableCell>
+        <TableCell>{item.orders}</TableCell>
+        <TableCell>
+          <div className="flex flex-wrap gap-1">
+            {item.tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </TableCell>
+        <TableCell>
+          <Badge
+            variant={item.status === "available" ? "default" : "secondary"}
+            className={
+              item.status === "available"
+                ? "bg-green-100 text-green-800"
+                : "bg-gray-100 text-gray-800"
+            }
+          >
+            {item.status === "available" ? "Active" : "Inactive"}
+          </Badge>
+        </TableCell>
+        <TableCell>
+          <Switch checked={item.isActive} />
+        </TableCell>
+        <TableCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <Eye className="w-4 h-4 mr-2" />
+                View Details
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Copy className="w-4 h-4 mr-2" />
+                Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      </TableRow>
     );
   };
 
