@@ -375,20 +375,42 @@ export default function MenuManagementPage() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Menu Management</h1>
-          <p className="text-gray-600">Manage your restaurant's menu items</p>
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <span>Restaurant 1 - HQ</span>
+              <span className="text-gray-400">•</span>
+              <span>2</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Menu Management
+            </h1>
+          </div>
         </div>
-        <Button
-          className="bg-teal-600 hover:bg-teal-700 text-white"
-          onClick={() => router.push("/vendorDashboard/menu/add")}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add New Item
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
+          <Button variant="outline" size="sm">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Menu Item
+          </Button>
+          <Button
+            className="bg-teal-600 hover:bg-teal-700 text-white"
+            size="sm"
+            onClick={() => router.push("/vendorDashboard/menu/add")}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Menu
+          </Button>
+        </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters and View Toggle */}
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col lg:flex-row gap-4">
@@ -396,7 +418,7 @@ export default function MenuManagementPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
-                  placeholder="Search menu items..."
+                  placeholder="Search menu"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -417,20 +439,33 @@ export default function MenuManagementPage() {
                 ))}
               </select>
 
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md bg-white min-w-[120px]"
-              >
-                <option value="all">All Status</option>
-                <option value="available">Available</option>
-                <option value="unavailable">Unavailable</option>
-              </select>
-
               <Button variant="outline">
                 <Filter className="w-4 h-4 mr-2" />
-                More Filters
+                Advanced Filter
               </Button>
+
+              <div className="flex border rounded-md">
+                <Button
+                  variant={viewMode === "table" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                  className={
+                    viewMode === "table" ? "bg-gray-900 text-white" : ""
+                  }
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className={
+                    viewMode === "grid" ? "bg-gray-900 text-white" : ""
+                  }
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
