@@ -1,366 +1,457 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import axios from "axios";
-import {
-  Search,
-  Bell,
-  ChevronDown,
-  Plus,
-  Filter,
-  Grid3X3,
-  List,
-  MoreHorizontal,
-  Star,
-  ChevronLeft,
-  ChevronRight,
-  Download as Export,
-  X,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useState, useEffect } from "react"
+import { Search, Bell, Calendar, Users, TrendingUp, DollarSign, Clock, Eye, MoreHorizontal } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import AddBranchModal from "./AddBranchModal"
 
-// API endpoints to be implemented by backend:
-// GET /api/vendor/branches
-// POST /api/vendor/branches
-// PUT /api/vendor/branches/:id
-// DELETE /api/vendor/branches/:id
-
-interface BranchForm {
+export interface Branch {
   branchName: string;
   address: string;
-  city: string;
-  phoneNumber: string;
-  countryCode: string;
-  openingDays: {
-    Monday: boolean;
-    Tuesday: boolean;
-    Wednesday: boolean;
-    Thursday: boolean;
-    Friday: boolean;
-    Saturday: boolean;
-    Sunday: boolean;
-  };
-  opensAt: string;
-  closesAt: string;
-  assignedManager: string;
-  assignedMenu: string;
-  importAllMenuItems: boolean;
-  id: string;
+  city?: string;
+  state?: string;
+  phone?: string;
+  opensAt?: string;
+  closesAt?: string;
+  selectedDays?: string[];
+  manager?: string;
+  menu?: string;
+  importMenuItems?: boolean;
 }
 
-interface Branch {
-  id: string;
-  name: string;
-  status: string;
-  todayReservation: number;
-  todayRevenue: number;
-  lastFoodToday: string;
-  averageRating: number;
-}
+export default function RestaurantDashboard() {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingBranch, setEditingBranch] = useState<Branch | null>(null)
+  const [branches, setBranches] = useState<Branch[]>([])
 
-export default function BranchesDashboard() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("All");
-  const [viewMode, setViewMode] = useState("grid");
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [showAddBranch, setShowAddBranch] = useState(false);
-  const [form, setForm] = useState<BranchForm>({
-    branchName: "",
-    address: "",
-    city: "",
-    phoneNumber: "",
-    countryCode: "+234",
-    openingDays: {
-      Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false,
-    },
-    opensAt: "08:00",
-    closesAt: "22:00",
-    assignedManager: "",
-    assignedMenu: "",
-    importAllMenuItems: false,
-    id: ""
-  });
-  const [formLoading, setFormLoading] = useState(false);
+  // Fetch branches from backend
+  const fetchBranches = async () => {
+    try {
+      const res = await fetch("/api/branches")
+      if (res.ok) {
+        const data = await res.json()
+        setBranches(data)
+      }
+    } catch (e) {
+      // Optionally handle error
+    }
+  }
 
   useEffect(() => {
-    fetchBranches();
-  }, [searchTerm, activeTab, page]);
+    fetchBranches()
+  }, [])
 
-  async function fetchBranches() {
-    setLoading(true);
-    try {
-      const params: Record<string, string | number> = { page, limit: 12 };
-      if (searchTerm) params.search = searchTerm;
-      if (activeTab !== "All") params.status = activeTab;
-      const res = await axios.get("/api/vendor/branches", { params });
-      setBranches(res.data.data || []);
-      setTotalPages(res.data.totalPages || 1);
-    } catch {
-      setBranches([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
+  const handleAddBranch = (branch: Branch) => {
+    fetchBranches()
+    setEditingBranch(null)
   }
 
-  async function handleCreateOrEditBranch(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setFormLoading(true);
-    try {
-      if (form.id) {
-        await axios.put(`/api/vendor/branches/${form.id}`, form);
-      } else {
-        await axios.post(`/api/vendor/branches`, form);
-      }
-      setShowAddBranch(false);
-      setForm({
-        branchName: "",
-        address: "",
-        city: "",
-        phoneNumber: "",
-        countryCode: "+234",
-        openingDays: { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
-        opensAt: "08:00",
-        closesAt: "22:00",
-        assignedManager: "",
-        assignedMenu: "",
-        importAllMenuItems: false,
-        id: ""
-      });
-      fetchBranches();
-    } catch {
-      // handle error
-    } finally {
-      setFormLoading(false);
-    }
+  const handleEditBranch = (branch: Branch) => {
+    setEditingBranch(branch)
+    setIsModalOpen(true)
   }
 
-  
+  // Sample data for reservations
+  const reservations = [
+    { id: 1, name: "Emily Johnson", date: "June 5, 2024", time: "6:00 - 7:00 pm", guests: 4, status: "Upcoming" },
+    { id: 2, name: "Emily Johnson", date: "June 5, 2024", time: "6:00 - 7:00 pm", guests: 4, status: "Upcoming" },
+    { id: 3, name: "Emily Johnson", date: "June 5, 2024", time: "6:00 - 7:00 pm", guests: 4, status: "In 30 mins" },
+    { id: 4, name: "Emily Johnson", date: "June 5, 2024", time: "6:00 - 7:00 pm", guests: 4, status: "In 30 mins" },
+    { id: 5, name: "Emily Johnson", date: "June 5, 2024", time: "6:00 - 7:00 pm", guests: 4, status: "In 30 mins" },
+  ]
+
+  // Sample data for charts
+  const reservationTrends = [
+    { day: "Mon", value: 45 },
+    { day: "Tue", value: 52 },
+    { day: "Wed", value: 38 },
+    { day: "Thu", value: 65 },
+    { day: "Fri", value: 78 },
+    { day: "Sat", value: 85 },
+    { day: "Sun", value: 72 },
+  ]
+
+  const menuCategories = [
+    { category: "Main Dish", revenue: 2847, percentage: 45 },
+    { category: "Drinks", revenue: 1523, percentage: 24 },
+    { category: "Starters", revenue: 1205, percentage: 19 },
+    { category: "Desserts", revenue: 756, percentage: 12 },
+  ]
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  type="text"
-                  placeholder="Search"
-                  className="pl-10 w-80"
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                />
-              </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-bold text-gray-900">Branch Home page</h1>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-64"
+              />
             </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm">
-                <Bell className="w-5 h-5" />
-              </Button>
-              <div className="flex items-center space-x-2">
-                <Avatar>
-                  <AvatarFallback>JE</AvatarFallback>
-                </Avatar>
-                <div className="hidden md:block">
-                  <div className="text-sm font-medium">Vendor Name</div>
-                  <div className="text-xs text-gray-500">Admin</div>
-                </div>
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-              </div>
+
+            <Button variant="ghost" size="sm" className="p-2 rounded-full">
+              <Bell className="h-5 w-5" />
+            </Button>
+
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">Restaurant | HQ</span>
+              <Avatar className="h-8 w-8">
+                <AvatarFallback>JC</AvatarFallback>
+              </Avatar>
             </div>
           </div>
-        </header>
-        <main className="flex-1 overflow-auto p-6">
-          <div className="flex items-center justify-between mb-6">
+        </div>
+
+        {/* Restaurant Info */}
+        <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <span className="text-green-600 font-semibold">JC</span>
+            </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">All Branches</h1>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="secondary" size="sm">
-                <Export className="w-4 h-4 mr-2" />
-                Export
-              </Button>
-              <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => setShowAddBranch(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Branch
-              </Button>
+              <h2 className="font-semibold text-lg">Josh Chicken & Grill - Ikeja</h2>
+              <p className="text-gray-500 text-sm">📍 123 Ikeja Street, Lagos</p>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                {[
-                  "All",
-                  "Active",
-                  "Inactive"
-                ].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      activeTab === tab ? "bg-gray-100 text-gray-900" : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    {tab}
-                  </button>
+
+          <div className="flex items-center space-x-2">
+            <Button variant="secondary" size="sm" onClick={() => handleEditBranch(branches[0])}>
+              <Eye className="h-4 w-4 mr-2" />
+              Edit Branch Info
+            </Button>
+            <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => { setEditingBranch(null); setIsModalOpen(true); }}>
+              Add New Branch
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Yesterday Walk Visits</CardTitle>
+              <Calendar className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">32</div>
+              <p className="text-xs text-gray-500">↑ 12% vs last week</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Repeat Reservations</CardTitle>
+              <Users className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">16</div>
+              <p className="text-xs text-gray-500">↑ 8% vs last week</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Enhanced Guests Today</CardTitle>
+              <TrendingUp className="h-4 w-4 text-purple-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">80</div>
+              <p className="text-xs text-gray-500">↑ 15% vs last week</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
+              <DollarSign className="h-4 w-4 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">$2,546.00</div>
+              <p className="text-xs text-gray-500">↑ 23% vs last week</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Today's Reservations */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-lg font-semibold">Today's Reservations</CardTitle>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm">
+                    View All
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {reservations.map((reservation) => (
+                    <div key={reservation.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback>EJ</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{reservation.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {reservation.date} • {reservation.time}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <span className="text-sm text-gray-600">{reservation.guests} Guests</span>
+                        <Badge
+                          variant={reservation.status === "Upcoming" ? "secondary" : "default"}
+                          className={reservation.status === "In 30 mins" ? "bg-orange-100 text-orange-800" : ""}
+                        >
+                          {reservation.status}
+                        </Badge>
+                        <div className="flex items-center space-x-1">
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          <span className="text-xs text-gray-500">Free walk</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Reservations Trends Chart */}
+          <div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-lg font-semibold">Reservations Trends</CardTitle>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm">
+                    View All
+                  </Button>
+                  <Select defaultValue="weekly">
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="weekly">Weekly</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {reservationTrends.map((item, index) => (
+                    <div key={item.day} className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">{item.day}</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-20 bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-teal-500 h-2 rounded-full"
+                            style={{ width: `${(item.value / 100) * 100}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm font-medium">{item.value}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Bottom Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Customer Frequency */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg font-semibold">Customer Frequency</CardTitle>
+              <Select defaultValue="weekly">
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center">
+                <div className="relative w-32 h-32">
+                  <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#e5e7eb"
+                      strokeWidth="3"
+                    />
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#14b8a6"
+                      strokeWidth="3"
+                      strokeDasharray="60, 40"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xl font-bold">60%</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
+                    <span className="text-sm">New Customers</span>
+                  </div>
+                  <span className="text-sm font-medium">60%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                    <span className="text-sm">Returning Customers</span>
+                  </div>
+                  <span className="text-sm font-medium">40%</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Revenue Menu Category */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg font-semibold">Revenue Menu Category</CardTitle>
+              <Select defaultValue="weekly">
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold mb-2">$220,500</div>
+              <p className="text-sm text-gray-500 mb-4">↑ 15% vs last week</p>
+              <div className="space-y-3">
+                {menuCategories.map((item, index) => (
+                  <div key={item.category} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">{item.category}</span>
+                      <span className="text-sm font-medium">
+                        {item.percentage}% (${item.revenue})
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className={`h-2 rounded-full ${
+                          index === 0
+                            ? "bg-blue-500"
+                            : index === 1
+                              ? "bg-green-500"
+                              : index === 2
+                                ? "bg-yellow-500"
+                                : "bg-purple-500"
+                        }`}
+                        style={{ width: `${item.percentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  type="text"
-                  placeholder="Search branches"
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64"
-                />
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="secondary" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Advanced filter
-              </Button>
-              <div className="flex items-center border rounded-lg">
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="rounded-r-none"
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="rounded-l-none"
-                >
-                  <List className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-          {loading ? (
-            <div className="flex justify-center items-center py-10">
-              <svg className="animate-spin h-8 w-8 text-teal-600" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-              </svg>
-            </div>
-          ) : viewMode === "grid" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-              {branches.map((branch) => (
-                <Card key={String(branch.id)} className="relative overflow-hidden hover:shadow-lg transition-shadow">
-                  <CardContent className="p-0">
-                    <div className="absolute top-4 left-4 z-10">
-                      <Badge variant="secondary" className={`${branch.status === "Opened" ? "bg-green-500" : "bg-red-500"} text-white border-0`}>
-                        {String(branch.status)}
-                      </Badge>
-                    </div>
-                    <div className="absolute top-4 right-4 z-10">
-                      <Button variant="ghost" size="sm" className="h-8 w-8 bg-white/80 hover:bg-white">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <div className="flex justify-center pt-12 pb-4">
-                      <div className="w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xl font-bold">{String(branch.name).split(" ")[0][0]}</span>
-                      </div>
-                    </div>
-                    <div className="px-6 pb-6">
-                      <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{String(branch.name).replace(/'/g, "&apos;")}</h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today&apos;s Reservation</span>
-                          <span className="text-sm font-semibold">{String(branch.todayReservation)}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today&apos;s Revenue</span>
-                          <span className="text-sm font-semibold">₦{branch.todayRevenue?.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Last Food Today</span>
-                          <span className="text-sm font-semibold">{String(branch.lastFoodToday)}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Average Rating</span>
-                          <div className="flex items-center space-x-1">
-                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            <span className="text-sm font-semibold">{String(branch.averageRating)}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        variant="secondary"
-                        className="w-full mt-4 border-teal-600 text-teal-600 hover:bg-teal-50 bg-transparent"
-                      >
-                        View Branch
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="mb-8">
-              <div className="text-center text-gray-500">List view coming soon...</div>
-            </div>
-          )}
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
-            <div className="flex items-center space-x-2">
-              <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).slice(0, 6).map((p) => (
-                <Button
-                  key={p}
-                  variant={p === page ? "default" : "secondary"}
-                  size="sm"
-                  className={p === page ? "bg-teal-600 hover:bg-teal-700" : ""}
-                  onClick={() => setPage(p)}
-                >
-                  {p}
-                </Button>
-              ))}
-              <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-          {/* Modal for Add/Edit Branch */}
-          {showAddBranch && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-              <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-                <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={() => setShowAddBranch(false)}>
-                  <X className="w-5 h-5" />
-                </button>
-                <form onSubmit={handleCreateOrEditBranch} className="space-y-4">
-                  <h2 className="text-xl font-bold mb-4">{form.id ? "Edit Branch" : "Add Branch"}</h2>
-                  <Input placeholder="Branch Name" value={form.branchName} onChange={e => setForm(f => ({ ...f, branchName: e.target.value }))} required />
-                  <Input placeholder="Address" value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} required />
-                  <Input placeholder="City" value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} required />
-                  <Input placeholder="Phone Number" value={form.phoneNumber} onChange={e => setForm(f => ({ ...f, phoneNumber: e.target.value }))} required />
-                  <Input placeholder="Country Code" value={form.countryCode} onChange={e => setForm(f => ({ ...f, countryCode: e.target.value }))} required />
-                  <div className="flex gap-2">
-                    <Input type="time" value={form.opensAt} onChange={e => setForm(f => ({ ...f, opensAt: e.target.value }))} required />
-                    <Input type="time" value={form.closesAt} onChange={e => setForm(f => ({ ...f, closesAt: e.target.value }))} required />
+            </CardContent>
+          </Card>
+
+          {/* Registration Source */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg font-semibold">Registration Source</CardTitle>
+              <Select defaultValue="weekly">
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center">
+                <div className="relative w-32 h-32">
+                  <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#e5e7eb"
+                      strokeWidth="3"
+                    />
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#14b8a6"
+                      strokeWidth="3"
+                      strokeDasharray="70, 30"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xl font-bold">70%</span>
                   </div>
-                  <Button className="w-full bg-teal-600 hover:bg-teal-700" type="submit" disabled={formLoading}>{form.id ? "Save Changes" : "Add Branch"}</Button>
-                </form>
+                </div>
               </div>
-            </div>
-          )}
-        </main>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
+                    <span className="text-sm">Online</span>
+                  </div>
+                  <span className="text-sm font-medium">70%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+                    <span className="text-sm">Walk-in</span>
+                  </div>
+                  <span className="text-sm font-medium">30%</span>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
+                <span>📱 25 referrals</span>
+                <span>🌐 30 referrals</span>
+                <span>📧 20 walk-in</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
+      <AddBranchModal
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); setEditingBranch(null); }}
+        onSave={handleAddBranch}
+        branch={editingBranch}
+      />
     </div>
-  );
+  )
 }
