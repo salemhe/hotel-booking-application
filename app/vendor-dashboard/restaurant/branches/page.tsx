@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import AddBranchModal from "./AddBranchModal"
 
 export interface Branch {
+  id?: string;
   branchName: string;
   address: string;
   city?: string;

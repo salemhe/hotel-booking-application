@@ -169,7 +169,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
             <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
               Phone Number<span className="text-red-500">*</span>
             </Label>
-            <div className="flex w-full max-w-lg rounded-lg border border-gray-300 bg-white focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200 overflow-hidden shadow-sm">
+            <div className="flex w-full max-w-xl rounded-lg border border-gray-300 bg-white focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200 overflow-hidden shadow-sm">
               <Select value={countryCode} onValueChange={setCountryCode}>
                 <SelectTrigger className="w-16 h-12 rounded-l-lg border-none bg-transparent text-base px-2 focus:ring-0 focus:border-none">
                   <SelectValue />
