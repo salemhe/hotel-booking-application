@@ -125,7 +125,7 @@ export default function RestaurantDashboard() {
               <span className="text-green-600 font-semibold">JC</span>
             </div>
             <div>
-              <h2 className="font-semibold text-lg">Josh Chicken &amp; Grill - Ikeja</h2>
+              <h2 className="font-semibold text-lg">Josh Chicken &apos; Grill - Ikeja</h2>
               <p className="text-gray-500 text-sm">📍 123 Ikeja Street, Lagos</p>
             </div>
           </div>

@@ -152,6 +152,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
                 State<span className="text-red-500">*</span>
               </Label>
               <select
+              
                 id="state"
                 className="w-full border rounded px-3 py-2"
                 value={state}
@@ -258,7 +259,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
             </div>
             {/* Import Menu Items Checkbox */}
             <div className="flex items-center space-x-2">
-              <Checkbox id="import-menu" checked={importMenuItems} onCheckedChange={(checked) => { setImportMenuItems(checked === true); }} />
+              <Checkbox id="import-menu" checked={importMenuItems} onCheckedChange={checked => setImportMenuItems(checked === true)} />
               <Label htmlFor="import-menu" className="text-sm text-gray-700 cursor-pointer">
                 Import all menu and menu items
               </Label>
