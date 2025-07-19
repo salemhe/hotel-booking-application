@@ -89,23 +89,23 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         })
       }
       if (res && res.ok) {
-        onSave && onSave(branchData as Branch)
-        onClose()
+        if (onSave) onSave(branchData as Branch);
+        onClose();
         // Reset form
-        setBranchName("")
-        setAddress("")
-        setCity("")
-        setState("")
-        setPhone("")
-        setCountryCode("+234")
-        setOpensAt("09:00")
-        setClosesAt("22:00")
-        setSelectedDays([])
-        setManager("")
-        setMenu("")
-        setImportMenuItems(false)
+        setBranchName("");
+        setAddress("");
+        setCity("");
+        setState("");
+        setPhone("");
+        setCountryCode("+234");
+        setOpensAt("09:00");
+        setClosesAt("22:00");
+        setSelectedDays([]);
+        setManager("");
+        setMenu("");
+        setImportMenuItems(false);
       } else {
-        alert("Failed to save branch.")
+        alert("Failed to save branch.");
       }
     } finally {
       setLoading(false)
