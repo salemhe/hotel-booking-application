@@ -471,104 +471,94 @@ export default function MenuManagementPage() {
         </CardContent>
       </Card>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
-                {mockMenuItems.length}
-              </div>
-              <div className="text-sm text-gray-600">Total Items</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {
-                  mockMenuItems.filter((item) => item.status === "available")
-                    .length
-                }
-              </div>
-              <div className="text-sm text-gray-600">Available</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">
-                {
-                  mockMenuItems.filter((item) => item.status === "unavailable")
-                    .length
-                }
-              </div>
-              <div className="text-sm text-gray-600">Unavailable</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {mockMenuItems.reduce((sum, item) => sum + item.orders, 0)}
-              </div>
-              <div className="text-sm text-gray-600">Total Orders</div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Menu Items */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Menu Items ({filteredItems.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="grid w-full grid-cols-5">
-              {categories.map((category) => (
-                <TabsTrigger
-                  key={category.value}
-                  value={category.value}
-                  className="text-xs"
-                >
-                  {category.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
+      <div>
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+          <TabsList className="grid w-full grid-cols-6 mb-6">
             {categories.map((category) => (
-              <TabsContent
+              <TabsTrigger
                 key={category.value}
                 value={category.value}
-                className="mt-6"
+                className="text-sm"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {getItemsByCategory(category.value).map((item) => (
-                    <MenuItemCard key={item.id} item={item} />
-                  ))}
-                </div>
-
-                {getItemsByCategory(category.value).length === 0 && (
-                  <div className="text-center py-12">
-                    <div className="text-gray-500 mb-4">No items found</div>
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push("/vendorDashboard/menu/add")}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add New Item
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
+                {category.label}
+              </TabsTrigger>
             ))}
-          </Tabs>
-        </CardContent>
-      </Card>
+          </TabsList>
+
+          {viewMode === "table" ? (
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Image</TableHead>
+                      <TableHead>Menu name</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Menu Type</TableHead>
+                      <TableHead>Meal Times</TableHead>
+                      <TableHead>Items</TableHead>
+                      <TableHead>Tags</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredItems.map((item) => (
+                      <MenuItemTableRow key={item.id} item={item} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredItems.map((item) => (
+                <MenuItemCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
+
+          {filteredItems.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-500 mb-4">No items found</div>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/vendorDashboard/menu/add")}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Item
+              </Button>
+            </div>
+          )}
+        </Tabs>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-500">Page 1 of 30</div>
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm" disabled>
+            Previous
+          </Button>
+          <div className="flex space-x-1">
+            {[1, 2, 3, "...", 10, 11, 12].map((page, index) => (
+              <Button
+                key={index}
+                variant={page === 1 ? "default" : "ghost"}
+                size="sm"
+                className={page === 1 ? "bg-teal-600 hover:bg-teal-700" : ""}
+              >
+                {page}
+              </Button>
+            ))}
+          </div>
+          <Button variant="outline" size="sm">
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
