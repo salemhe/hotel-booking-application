@@ -143,11 +143,11 @@ export default function RestaurantDashboard() {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Today's Reservations */}
+          {/* Today&apos;s Reservations */}
           <div className="lg:col-span-2">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg font-semibold">Today's Reservations</CardTitle>
+                <CardTitle className="text-lg font-semibold">Today&apos;s Reservations</CardTitle>
                 <div className="flex items-center space-x-2">
                   <Button variant="ghost" size="sm">
                     View All
