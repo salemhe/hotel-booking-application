@@ -152,7 +152,6 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
                 State<span className="text-red-500">*</span>
               </Label>
               <select
-              
                 id="state"
                 className="w-full border rounded px-3 py-2"
                 value={state}
