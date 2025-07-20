@@ -1,5 +1,3 @@
-// src/components/MenuManagement.tsx
-
 import React, { useState } from 'react';
 import { MenuItem } from '../types';
 import { menuItems } from '../data';
