@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -29,6 +28,7 @@ import {
 // import Link from "next/link";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
+import { useState } from "react";
 // import { FaStore } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 
@@ -48,7 +48,7 @@ interface FormData {
 }
 
 export default function VendorRegistration() {
-  const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     businessName: "",
     email: "",
@@ -98,7 +98,7 @@ export default function VendorRegistration() {
       const data = await AuthService.register(formData);
       if (data.success !== false) {
         setShowOTPInput(true);
-        toast.success("Please check your email for the OTP verification code.");
+        toast.success("Please check your email for the OTP verification code.")
       } else {
         toast.error(data.message || "Registration failed");
       }
