@@ -277,6 +277,10 @@ export const TableGridTwo = ({ title }: TableGridProps) => {
     };
   }, [resetTimeouts]);
 
+  if  (!DUMMY_HOTEL_DATA || DUMMY_HOTEL_DATA.length === 0) {
+    return <div className="text-center text-gray-500">No hotels available</div>;
+  }
+
   return (
     <div className="mb-[92px]">
       <Button variant="outline" className="flex justify-between items-center mb-6 text-gray-900 text-sm font-medium leading-none">

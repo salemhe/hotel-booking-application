@@ -57,7 +57,7 @@ const HotelBookingForm = ({ id, restaurant }: { id: string; restaurant?: Restaur
           address: restaurant.address,
           rating: restaurant.rating,
           reviews: restaurant.reviews,
-          profileImages: restaurant.profileImages.map(img => img.url),
+          profileImages: restaurant?.profileImages?.map(img => img.url) ?? [],
           price: 150000, // You might want to get this from the restaurant data
         } : undefined,
       };

@@ -27,7 +27,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 // import Link from "next/link";
-// import { AuthService } from "@/app/lib/api/services/auth.service";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 import { useState } from "react";
 // import { FaStore } from "react-icons/fa6";
@@ -62,7 +62,9 @@ export default function VendorRegistration() {
     role: "vendor",
   });
   const [loading, setLoading] = useState(false);
-    const router = useRouter();
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [otp, setOTP] = useState("");
+  const router = useRouter();
   //Expanded errors state to accommodate all fields
   const [errors, setErrors] = useState<Partial<typeof formData>>({});
 
@@ -94,21 +96,10 @@ export default function VendorRegistration() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-       const data = await AuthService.register(formData);
-       if (data.success !== false) {
-         localStorage.setItem("accountType", formData.adminType);
-         // Instantly redirect to the correct dashboard
-         if (formData.businessType === "hotel") {
-           router.push("/vendor-dashboard/hotel");
-          } else if (formData.businessType === "restaurant") {
-            router.push("/vendor-dashboard/restaurant");
-          } else if (formData.businessType === "club") {
-            router.push("/vendor-dashboard/club");
-          } else {
-            router.push("/vendor-dashboard");
-          }
-          // setShowOTPInput(true);
-          toast.success("Please check your email for the OTP verification code.");
+      const data = await AuthService.register(formData);
+      if (data.success !== false) {
+        setShowOTPInput(true);
+        toast.success("Please check your email for the OTP verification code.")
       } else {
         toast.error(data.message || "Registration failed");
       }
@@ -120,6 +111,48 @@ export default function VendorRegistration() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOTPVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await AuthService.verifyOTP(formData.email, otp);
+      toast.success("Your account has been verified. Please log in.");
+      router.push("/vendor-login");
+      // localStorage.setItem("accountType", formData.adminType);
+      // // Instantly redirect to the correct dashboard
+      // if (formData.businessType === "hotel") {
+      //   router.push("/vendor-dashboard/hotel");
+      // } else if (formData.businessType === "restaurant") {
+      //   router.push("/vendor-dashboard/restaurant");
+      // } else if (formData.businessType === "club") {
+      //   router.push("/vendor-dashboard/club");
+      // } else {
+      //   router.push("/vendor-dashboard");
+      // }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Please try again");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      await AuthService.resendOTP(formData.email);
+      toast.success("Please check your email for the new verification code.");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Please try again");
+      }
     }
   };
 
@@ -196,15 +229,46 @@ export default function VendorRegistration() {
       <Card className="w-full max-w-2xl pb-6 px-2 sm:px-4">
         <CardHeader className="space-y-3 pb-6 px-6">
           <CardTitle className="text-2xl sm:text-3xl font-semibold text-center text-[#222]">
-            {"Create Business Account 🔐"}
+            {showOTPInput ? "Verify Your Email" : "Create Business Account 🔐"}
             <CardDescription className="mt-2 text-center text-gray-600 text-sm sm:text-base">
               Access your dashboard to manage bookings, monitor performance, and
               grow your hospitality business
             </CardDescription>
           </CardTitle>
         </CardHeader>
-        {/* No OTP step, always show registration form */}
-        <>
+        {showOTPInput ? (
+          <form onSubmit={handleOTPVerification} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="otp">Enter Verification Code</Label>
+              <Input
+                id="otp"
+                type="text"
+                value={otp}
+                onChange={(e) => setOTP(e.target.value)}
+                placeholder="Enter OTP"
+                required
+                className="h-12"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-linear-to-r from-emerald-600 to-teal-600 text-white h-12"
+              disabled={loading}
+            >
+              {loading ? "Verifying..." : "Verify Email"}
+            </Button>
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleResendOTP}
+                className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
+              >
+                {" Didn't receive code? Resend"}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <>
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
                 <div className="flex space-x-2">
@@ -512,7 +576,7 @@ export default function VendorRegistration() {
                       console.log("Button clicked", { currentStep, formData });
                       handleSubmit();
                     }}
-                    disabled={!isStepValid()}
+                    disabled={!isStepValid() || loading}
                     className="flex items-center gap-2"
                   >
                     {loading ? (
@@ -533,7 +597,8 @@ export default function VendorRegistration() {
               </div>
             </CardContent>
           </>
-        </Card>
+        )}
+      </Card>
     </div>
   );
 }

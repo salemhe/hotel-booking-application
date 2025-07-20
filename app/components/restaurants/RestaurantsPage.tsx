@@ -32,7 +32,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
           <div className="col-span-2">
             <div className="w-full space-y-6">
               <RestaurantImages
-                images={restaurant.profileImages}
+                images={restaurant?.profileImages ?? []}
                 name={restaurant.businessName}
               />
               <div className="space-y-2">
