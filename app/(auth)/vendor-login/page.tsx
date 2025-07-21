@@ -218,8 +218,18 @@ export default function VendorLoginPage() {
       const response = await AuthService.login(email, password);
       await AuthService.setToken(response.profile.token);
       toast.success(`Welcome back, ${response.profile.businessName}!`);
+      localStorage.setItem("accountType", response.profile.businessType);
+      // // Instantly redirect to the correct dashboard
       if (response.profile.onboarded) {
-        router.push("/vendorDashboard");
+        if (response.profile.businessType === "hotel") {
+          router.push("/vendor-dashboard/hotel");
+        } else if (response.profile.businessType === "restaurant") {
+          router.push("/vendor-dashboard/restaurant");
+        } else if (response.profile.businessType === "club") {
+          router.push("/vendor-dashboard/club");
+        } else {
+          router.push("/vendorDashboard");
+        }
       } else {
         router.push("/onboarding");
       }

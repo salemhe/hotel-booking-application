@@ -120,17 +120,6 @@ export default function VendorRegistration() {
       await AuthService.verifyOTP(formData.email, otp);
       toast.success("Your account has been verified. Please log in.");
       router.push("/vendor-login");
-      // localStorage.setItem("accountType", formData.adminType);
-      // // Instantly redirect to the correct dashboard
-      // if (formData.businessType === "hotel") {
-      //   router.push("/vendor-dashboard/hotel");
-      // } else if (formData.businessType === "restaurant") {
-      //   router.push("/vendor-dashboard/restaurant");
-      // } else if (formData.businessType === "club") {
-      //   router.push("/vendor-dashboard/club");
-      // } else {
-      //   router.push("/vendor-dashboard");
-      // }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
