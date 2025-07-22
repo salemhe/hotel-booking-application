@@ -36,6 +36,8 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     city: "",
     phoneNumber: "",
     countryCode: "+234",
+    email: "",
+    password: "",
     openingDays: {
       Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false,
     },
@@ -53,13 +55,16 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     setFormData((prev) => ({ ...prev, openingDays: { ...prev.openingDays, [day]: checked } }));
   };
   const handleSubmit = async (action: string) => {
-        try {
+    try {
       // POST to backend
       await axios.post(`${API_URL}/super-admin/branches`, {
         name: formData.branchName,
         address: formData.address,
         city: formData.city,
         phoneNumber: formData.countryCode + formData.phoneNumber,
+        email: formData.email,
+        password: formData.password,
+        businessType: "restaurant",
         openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
         opensAt: formData.opensAt,
         closesAt: formData.closesAt,
@@ -75,6 +80,8 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           city: "",
           phoneNumber: "",
           countryCode: "+234",
+          email: "",
+          password: "",
           openingDays: { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
           opensAt: "08:00",
           closesAt: "22:00",
@@ -96,7 +103,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         alert("Failed to save branch. Please try again.");
       }
     } finally {
-          }
+    }
   };
   return (
     <>
@@ -109,6 +116,16 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
             </Button>
           </div>
           <div className="space-y-6">
+            {/* Email */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">Email*</label>
+              <Input id="email" type="email" placeholder="Branch email" value={formData.email} onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))} className="w-full" />
+            </div>
+            {/* Password */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">Password*</label>
+              <Input id="password" type="password" placeholder="Password" value={formData.password} onChange={e => setFormData(prev => ({ ...prev, password: e.target.value }))} className="w-full" />
+            </div>
             {/* Branch Name */}
             <div className="space-y-2">
               <label htmlFor="branchName" className="text-sm font-medium">Branch name*</label>
