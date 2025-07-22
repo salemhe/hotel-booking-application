@@ -14,8 +14,7 @@ import {
   Users,
   Settings,
   LogOut,
-  MapPin,
-} from "lucide-react";
+  } from "lucide-react";
 
 const mainSidebarItems = [
   { icon: Home, label: "Dashboard", href: "/vendor-dashboard/restaurant/dashboard" },
@@ -29,7 +28,6 @@ const bottomSidebarItems = [
   { icon: LogOut, label: "Logout", href: "/logout" },
 ];
 
-import { Input } from "@/components/ui/input";
 function BranchNameDisplay() {
   const { selectedBranch } = useBranchContext();
   if (!selectedBranch) return <div className="mb-4 px-4 py-2 bg-teal-600 text-white rounded-lg">No Branch</div>;
