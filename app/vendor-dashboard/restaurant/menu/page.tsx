@@ -13,21 +13,21 @@ import {
   ArrowLeft,
   Grid3X3,
   List,
-  Upload,
+  // Upload,
   Download,
 } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
+  // CardHeader,
+  // CardTitle,
 } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import {
   Tabs,
-  TabsContent,
+  // TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/app/components/ui/tabs";
@@ -46,12 +46,13 @@ import {
   TableRow,
 } from "@/app/components/ui/table";
 import { Switch } from "@/app/components/ui/switch";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/app/components/ui/avatar";
+// import {
+//   Avatar,
+//   AvatarFallback,
+//   AvatarImage,
+// } from "@/app/components/ui/avatar";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface MenuItem {
   id: string;
@@ -188,7 +189,7 @@ export default function MenuManagementPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedStatus] = useState("all");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
   const categories = [
@@ -212,16 +213,16 @@ export default function MenuManagementPage() {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const getItemsByCategory = (category: string) => {
-    if (category === "all") return filteredItems;
-    return filteredItems.filter((item) => item.category === category);
-  };
+  // const getItemsByCategory = (category: string) => {
+  //   if (category === "all") return filteredItems;
+  //   return filteredItems.filter((item) => item.category === category);
+  // };
 
   const MenuItemCard = ({ item }: { item: MenuItem }) => {
     return (
       <Card className="overflow-hidden">
         <div className="relative">
-          <img
+          <Image
             src={item.image}
             alt={item.name}
             className="w-full h-48 object-cover"
@@ -229,6 +230,7 @@ export default function MenuManagementPage() {
               const target = e.target as HTMLImageElement;
               target.src = `https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop&crop=center`;
             }}
+            fill
           />
           <div className="absolute top-2 right-2">
             <DropdownMenu>
@@ -299,11 +301,12 @@ export default function MenuManagementPage() {
     return (
       <TableRow>
         <TableCell>
-          <div className="flex items-center space-x-3">
-            <img
+          <div className="flex items-center w-12 h-12 relative space-x-3">
+            <Image
               src={item.image}
               alt={item.name}
               className="w-12 h-12 rounded object-cover"
+              fill
             />
             <div>
               <div className="font-medium">{item.name}</div>
