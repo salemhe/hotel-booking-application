@@ -13,8 +13,8 @@ import {
   CreditCard,
   Users,
   Settings,
-  LogOut,
-  } from "lucide-react";
+  LogOut
+} from "lucide-react";
 
 const mainSidebarItems = [
   { icon: Home, label: "Dashboard", href: "/vendor-dashboard/restaurant/dashboard" },
