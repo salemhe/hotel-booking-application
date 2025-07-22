@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/app/super-admin/ThemeContext";
@@ -20,7 +20,6 @@ import {
 const mainSidebarItems = [
   { icon: Home, label: "Dashboard", href: "/vendor-dashboard/restaurant/dashboard" },
   { icon: Calendar, label: "Reservations", href: "/vendor-dashboard/restaurant/reservations" },
-  { icon: MapPin, label: "Branches", href: "/vendor-dashboard/restaurant/branches" },
   { icon: UtensilsCrossed, label: "Menu Management", href: "/vendor-dashboard/restaurant/menu" },
   { icon: CreditCard, label: "Payments", href: "/vendor-dashboard/restaurant/payments" },
   { icon: Users, label: "Staff", href: "/vendor-dashboard/restaurant/staff" },
@@ -30,34 +29,13 @@ const bottomSidebarItems = [
   { icon: LogOut, label: "Logout", href: "/logout" },
 ];
 
-function BranchDropdown() {
-  const { branches, selectedBranch, setSelectedBranch } = useBranchContext();
-  const [open, setOpen] = useState(false);
-
+import { Input } from "@/components/ui/input";
+function BranchNameDisplay() {
+  const { selectedBranch } = useBranchContext();
+  if (!selectedBranch) return <div className="mb-4 px-4 py-2 bg-teal-600 text-white rounded-lg">No Branch</div>;
   return (
-    <div className="mb-4">
-      <div className="relative">
-        <button
-          className="w-full flex items-center justify-between px-4 py-2 rounded-lg bg-teal-600 text-white font-semibold shadow focus:outline-none focus:ring-2 focus:ring-white/40"
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span>{selectedBranch ? selectedBranch.branchName : "No Branches"}</span>
-          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-        </button>
-        {open && branches.length > 0 && (
-          <div className="absolute left-0 mt-2 w-full bg-white text-gray-900 rounded shadow z-20">
-            {branches.map((branch) => (
-              <div
-                key={branch.id}
-                className={`px-4 py-2 cursor-pointer hover:bg-teal-100 ${selectedBranch && selectedBranch.id === branch.id ? "bg-teal-600 text-white" : ""}`}
-                onClick={() => { setSelectedBranch(branch); setOpen(false); }}
-              >
-                {branch.branchName}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+    <div className="mb-4 px-4 py-2 bg-teal-600 text-white rounded-lg font-semibold text-lg">
+      {selectedBranch.branchName}
     </div>
   );
 }
@@ -96,9 +74,9 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
             {/* Navigation */}
             <nav className="flex-1 px-2 py-4 overflow-y-auto flex flex-col justify-between">
               <div>
-                {/* Restaurant Dropdown (real-time branches) */}
+                {/* Vendor Name Display (not editable) */}
                 {!sidebarCollapsed && (
-                  <BranchDropdown />
+                  <BranchNameDisplay />
                 )}
                 <ul className="space-y-1">
                   {mainSidebarItems.map((item, index) => {
