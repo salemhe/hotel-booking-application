@@ -15,7 +15,7 @@ interface Branch {
   manager: string;
   menu: string;
   importMenuItems: boolean;
-  email?: string; // for login
+  email?: string; // for branch login
   password?: string; // hashed password for login
 }
 
