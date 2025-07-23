@@ -219,12 +219,16 @@ export default function VendorLoginPage() {
       await AuthService.setToken(response.profile.token);
       toast.success(`Welcome back, ${response.profile.businessName}!`);
       if (response.profile.onboarded) {
-        // Redirect based on business type
-        const businessType = response.profile.businessType || "restaurant";
+        // Robust redirect based on business type
+        const businessType = response.profile.businessType;
         if (businessType === "hotel") {
           router.push("/vendor-dashboard/hotel");
-        } else {
+        } else if (businessType === "restaurant") {
           router.push("/vendor-dashboard/restaurant");
+        } else if (businessType === "club") {
+          router.push("/vendor-dashboard/club");
+        } else {
+          router.push("/vendorDashboard");
         }
       } else {
         router.push("/onboarding");
@@ -299,7 +303,7 @@ export default function VendorLoginPage() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Enter your buisness email address"
+                      placeholder="Enter your business email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       aria-describedby="email-error"
