@@ -23,6 +23,7 @@ export interface Branch {
   manager?: string;
   menu?: string;
   importMenuItems?: boolean;
+  businessType?: "hotel" | "restaurant";
 }
 
 export default function RestaurantDashboard() {

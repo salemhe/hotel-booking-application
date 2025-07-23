@@ -219,7 +219,13 @@ export default function VendorLoginPage() {
       await AuthService.setToken(response.profile.token);
       toast.success(`Welcome back, ${response.profile.businessName}!`);
       if (response.profile.onboarded) {
-        router.push("/vendorDashboard");
+        // Redirect based on business type
+        const businessType = response.profile.businessType || "restaurant";
+        if (businessType === "hotel") {
+          router.push("/vendor-dashboard/hotel");
+        } else {
+          router.push("/vendor-dashboard/restaurant");
+        }
       } else {
         router.push("/onboarding");
       }
