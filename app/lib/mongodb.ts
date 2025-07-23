@@ -13,10 +13,13 @@ if (!process.env.MONGODB_URI) {
 if (process.env.NODE_ENV === 'development') {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!(global as any)._mongoClientPromise) {
     client = new MongoClient(uri, options);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (global as any)._mongoClientPromise = client.connect();
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   clientPromise = (global as any)._mongoClientPromise;
 } else {
   // In production mode, it's best to not use a global variable.

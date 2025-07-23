@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid credentials.' }, { status: 401 });
   }
   // Remove password from response
-  const { password: _, ...branchData } = branch;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...branchData } = branch;
   return NextResponse.json({ branch: branchData });
 }
