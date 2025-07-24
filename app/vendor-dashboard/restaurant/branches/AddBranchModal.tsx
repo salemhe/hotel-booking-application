@@ -45,6 +45,8 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
   const [closesAt, setClosesAt] = useState(branch?.closesAt || "22:00");
   const [manager, setManager] = useState(branch?.manager || "");
   const [menu, setMenu] = useState(branch?.menu || "");
+  // Business Type: hotel or restaurant
+  const [businessType, setBusinessType] = useState(branch?.businessType || "hotel");
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -71,18 +73,19 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         manager,
         menu,
         importMenuItems,
+        businessType, // Add business type to payload
       };
       let res;
       if (branch) {
         // Edit mode
-        res = await fetch(`/api/branches/${branch.id ?? branch.branchName}`, {
+        res = await fetch(`/super-admin/branches/${branch.id ?? branch.branchName}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(branchData)
         })
       } else {
         // Add mode
-        res = await fetch("/api/branches", {
+        res = await fetch("/super-admin/branches", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(branchData)
@@ -116,7 +119,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" style={{ minHeight: '600px', overflowY: 'auto' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-900">Add New Branch</h2>
@@ -239,6 +242,21 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
                 </div>
               </div>
             </div>
+          </div>
+          {/* Business Type */}
+          <div className="space-y-2">
+            <Label htmlFor="business-type" className="text-sm font-medium text-gray-700">
+              Business Type<span className="text-red-500">*</span>
+            </Label>
+            <select
+              id="business-type"
+              className="w-full border rounded px-3 py-2"
+              value={businessType}
+              onChange={e => setBusinessType(e.target.value as "hotel" | "restaurant")}
+            >
+              <option value="hotel">Hotel</option>
+              <option value="restaurant">Restaurant</option>
+            </select>
           </div>
           {/* Management & Menu */}
           <div className="space-y-4">

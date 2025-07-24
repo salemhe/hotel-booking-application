@@ -134,7 +134,7 @@ export default function AdminDashboard(): ReactElement {
         setLoading(false);
       }
     },
-    [isMounted, BASE_URL]
+    [isMounted, BASE_URL, user?.token]
   );
 
   // Set mounted state
@@ -151,7 +151,7 @@ export default function AdminDashboard(): ReactElement {
     if (isMounted) {
       fetchBookings(typeFilter !== "all" ? typeFilter : undefined, user?.id);
     }
-  }, [typeFilter, isMounted, fetchBookings]);
+  }, [typeFilter, isMounted, fetchBookings, user?.id]);
 
   // Show notification helper
   const showNotification = useCallback(
