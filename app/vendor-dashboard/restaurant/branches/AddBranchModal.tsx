@@ -76,18 +76,27 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         businessType, // Add business type to payload
       };
       let res;
+      // Dynamically import AuthService to avoid SSR issues
+      const AuthService = (await import("@/app/lib/api/services/auth.service")).AuthService;
+      const token = await AuthService.getToken();
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json"
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
       if (branch) {
         // Edit mode
         res = await fetch(`/super-admin/branches/${branch.id ?? branch.branchName}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify(branchData)
         })
       } else {
         // Add mode
         res = await fetch("/super-admin/branches", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           body: JSON.stringify(branchData)
         })
       }
