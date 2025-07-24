@@ -70,7 +70,7 @@ export default function VendorLoginPage() {
           router.push("/vendor-dashboard/club");
         } else {
           router.push("/vendorDashboard");
-        }
+        } 
       } else {
         router.push("/onboarding");
       }
