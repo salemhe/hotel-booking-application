@@ -11,12 +11,33 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+interface Branch {
+  id: string;
+  branchName: string;
+  active?: boolean;
+  reservationsToday?: number;
+  repeatReservations?: number;
+  confirmedGuestsToday?: number;
+  totalRevenue?: number;
+  revenueMenuCategory?: string;
+  menuCategoryData?: { category: string; percentage: string; amount: string }[];
+}
+interface Reservation {
+  id: string;
+  name: string;
+  email: string;
+  date: string;
+  time: string;
+  guests: number;
+  status: string;
+}
+
 export default function BranchDetailPage() {
   const params = useParams();
   const branchId = params?.id as string;
 
-  const [branch, setBranch] = useState<any>(null);
-  const [reservations, setReservations] = useState<any[]>([]);
+  const [branch, setBranch] = useState<Branch | null>(null);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -25,19 +46,21 @@ export default function BranchDetailPage() {
       setLoading(true);
       setError("");
       try {
-        // Fetch branch details
         const branchRes = await fetch(`/api/branches/${branchId}`);
         if (!branchRes.ok) throw new Error("Failed to fetch branch details");
         const branchData = await branchRes.json();
         setBranch(branchData);
 
-        // Fetch reservations for this branch
         const resRes = await fetch(`/api/branches/${branchId}/reservations`);
         if (!resRes.ok) throw new Error("Failed to fetch reservations");
         const reservationsData = await resRes.json();
         setReservations(reservationsData);
-      } catch (err: any) {
-        setError(err.message || "An error occurred");
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message || "An error occurred");
+        } else {
+          setError("An error occurred");
+        }
       } finally {
         setLoading(false);
       }
@@ -164,7 +187,7 @@ export default function BranchDetailPage() {
               {/* Today's Reservations */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="text-lg font-semibold">Today's Reservations</CardTitle>
+                  <CardTitle className="text-lg font-semibold">Today&apos;s Reservations</CardTitle>
                   <Button variant="ghost" size="sm" className="text-teal-600">
                     View All
                   </Button>
@@ -174,7 +197,7 @@ export default function BranchDetailPage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Guest</TableHead>
-                        <TableHead>Date & Time</TableHead>
+                        <TableHead>Date &amp; Time</TableHead>
                         <TableHead>Guests</TableHead>
                         <TableHead>Status</TableHead>
                       </TableRow>
@@ -207,7 +230,7 @@ export default function BranchDetailPage() {
                                   ? "secondary"
                                   : reservation.status === "Confirmed"
                                   ? "default"
-                                  : "outline"
+                                  : undefined
                               }
                               className={
                                 reservation.status === "Upcoming"
@@ -280,11 +303,10 @@ export default function BranchDetailPage() {
                     <div className="relative w-32 h-32">
                       <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
                         <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e5e7eb" strokeWidth="3" />
-                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#14b8a6" strokeWidth="3" strokeDasharray="60, 100" />
-                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#fbbf24" strokeWidth="3" strokeDasharray="25, 100" strokeDashoffset="-60" />
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#14b8a6" strokeWidth="3" strokeDasharray="60, 40" />
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-2xl font-bold">100</span>
+                        <span className="text-xl font-bold">60%</span>
                       </div>
                     </div>
                   </div>
@@ -330,7 +352,7 @@ export default function BranchDetailPage() {
                     <div className="text-sm text-gray-500">↑ 8.1% vs last week</div>
                   </div>
                   <div className="space-y-3">
-                    {(branch?.menuCategoryData || []).map((item: any, index: number) => (
+                    {(branch?.menuCategoryData || []).map((item, index) => (
                       <div key={index} className="flex items-center justify-between">
                         <span className="text-sm">{item.category}</span>
                         <div className="flex items-center space-x-2">
