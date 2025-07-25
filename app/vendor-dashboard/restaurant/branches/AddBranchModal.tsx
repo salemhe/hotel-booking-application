@@ -79,6 +79,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
       // Dynamically import AuthService to avoid SSR issues
       const AuthService = (await import("@/app/lib/api/services/auth.service")).AuthService;
       const token = await AuthService.getToken();
+      console.log('Token used for branch save:', token);
       const headers: Record<string, string> = {
         "Content-Type": "application/json"
       };
@@ -90,14 +91,16 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         res = await fetch(`/super-admin/branches/${branch.id ?? branch.branchName}`, {
           method: "PUT",
           headers,
-          body: JSON.stringify(branchData)
+          body: JSON.stringify(branchData),
+          credentials: "include"
         })
       } else {
         // Add mode
         res = await fetch("/super-admin/branches", {
           method: "POST",
           headers,
-          body: JSON.stringify(branchData)
+          body: JSON.stringify(branchData),
+          credentials: "include"
         })
       }
       if (res && res.ok) {
@@ -117,7 +120,9 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         setMenu("");
         setImportMenuItems(false);
       } else {
-        alert("Failed to save branch.");
+        const errorText = await res.text();
+        alert("Failed to save branch: " + errorText);
+        console.error("Failed to save branch:", errorText);
       }
     } finally {
       setLoading(false)

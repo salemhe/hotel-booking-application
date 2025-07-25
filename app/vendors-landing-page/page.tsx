@@ -25,6 +25,7 @@ export interface VendorProfile {
   isVerified: boolean
   createdAt: string
   updatedAt: string
+  status?: "active" | "inactive";
 }
 
 // Types and Interfaces
@@ -224,10 +225,17 @@ const LandingPage = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2 p-2">
-                <div className="bg-gray-500 w-8 h-8 rounded-full flex items-center justify-center">
+                <div className="relative bg-gray-500 w-8 h-8 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold">
                     {loading ? "..." : getInitials()}
                   </span>
+                  {/* Vendor status icon */}
+                  {profile && (
+                    <span
+                      className={`absolute w-3 h-3 rounded-full border-2 border-white top-0 right-0 ${profile.status === "active" ? "bg-green-500" : "bg-red-500"}`}
+                      title={profile.status === "active" ? "Active" : "Inactive"}
+                    />
+                  )}
                 </div>
                 <div className=" text-left">
                   <p className="text-sm font-medium">
