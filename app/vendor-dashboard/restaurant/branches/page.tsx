@@ -132,10 +132,25 @@ export default function RestaurantDashboard() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button variant="secondary" size="sm" onClick={() => handleEditBranch(branches[0])}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handleEditBranch(branches[0])}
+            >
               <Eye className="h-4 w-4 mr-2" />
               Edit Branch Info
             </Button>
+            {branches.map((branch) => (
+              <Button
+                key={branch.id}
+                variant="secondary"
+                size="sm"
+                className="ml-2"
+                onClick={() => window.location.href = `/vendor-dashboard/restaurant/branches/${branch.id}`}
+              >
+                View Branch
+              </Button>
+            ))}
             <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => { setEditingBranch(null); setIsModalOpen(true); }}>
               Add New Branch
             </Button>
