@@ -412,7 +412,6 @@ import {
 } from "@/app/components/ui/card";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import { AuthService } from "@/app/lib/api/services/userAuth.service";
 import Loading from "@/app/components/loading";
 
 const UserLoginPage = () => {
@@ -464,7 +463,7 @@ const Form = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  const redirectTo = searchParams.get("redirect") || "/userDashboard";
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -487,20 +486,27 @@ const Form = () => {
     setLoading(true);
 
     try {
-      const { data } = await AuthService.login(email, password);
-      await AuthService.setToken(data.token);
-
+     
+      const response = await fetch("/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+      const data = await response.json();
+      if (!data.token) throw new Error("No token received");
+      localStorage.setItem("auth_token", data.token);
       toast.success("Welcome back!");
       router.push(redirectTo);
     } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data?.message || "Login failed");
-      } else if (error instanceof Error) {
+      if (error instanceof Error) {
         toast.error(error.message || "Login failed");
       } else {
         toast.error("An unknown error occurred");
       }
-
       localStorage.clear();
     } finally {
       setLoading(false);

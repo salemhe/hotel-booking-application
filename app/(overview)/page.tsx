@@ -1,6 +1,9 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { VendorService, Vendor } from '@/app/lib/api/services/vendors';
+// import { VendorService, Vendor } from '@/app/lib/api/services/vendors';
+// TODO: Implement your own vendor fetching logic using fetch or axios here.
+// Define Vendor type locally for now:
+type Vendor = any; // Replace with actual Vendor type if needed
 import SearchSection from "@/app/components/SearchSection";
 import TableGrid, { TableGridTwo, Restaurant } from "@/app/components/TableGrid";
 
@@ -50,8 +53,12 @@ export default function Home() {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await VendorService.getVendors();
-        setVendors(data);
+        // TODO: Replace with your own fetch/axios call to get vendors from your backend
+        // Example:
+        // const response = await fetch('/api/vendors');
+        // const data = await response.json();
+        // setVendors(data);
+        setVendors([]); // Placeholder: set to empty array
       } catch (err) {
         console.error('Error fetching vendors:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch vendors');

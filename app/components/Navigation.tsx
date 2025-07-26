@@ -13,7 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 // import AccountTypeModal from "./AccountTypeModal";
-import { AuthService } from "@/app/lib/api/services/userAuth.service";
+// import { AuthService } from "@/app/lib/api/services/userAuth.service";
+// TODO: Implement frontend authentication logic here (e.g., using localStorage or context)
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import  { SearchSectionTwo } from "./SearchSection";
 export interface UserProfile {
@@ -73,12 +74,15 @@ const Navigation = () => {
   }, []);
 
   useEffect(() => {
+    // TODO: Replace AuthService logic with frontend authentication logic (e.g., check localStorage for token and user info)
     const fetchUserData = async () => {
       try {
-        if (await AuthService.isAuthenticated()) {
-          const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!)
-          setProfile(await AuthService.getUser(id!));
+        // Example: Check localStorage for user profile
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+          // You may want to decode the token and fetch user info from your backend if needed
+          // For now, just set a dummy profile or fetch from your backend
+          // setProfile({ id: "1", email: "user@example.com", firstName: "John", lastName: "Doe" });
         }
       } catch (error) {
         console.log(error)
@@ -90,8 +94,9 @@ const Navigation = () => {
     fetchUserData();
   }, []);
 
+  // TODO: Implement frontend logout logic (e.g., clear localStorage)
   const handleLogout = async () => {
-    AuthService.logout();
+    localStorage.clear();
     setProfile(null);
   };
 
