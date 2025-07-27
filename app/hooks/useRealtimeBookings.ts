@@ -119,6 +119,54 @@ export const useRealtimeBookings = () => {
           updateBooking(data.booking);
         });
 
+        // Add some mock data for development
+        const mockBookings: UserBooking[] = [
+          {
+            _id: '1',
+            reservationType: 'restaurant',
+            customerName: 'Emily Johnson',
+            customerEmail: 'emily@example.com',
+            date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+            time: '7:30 PM',
+            guests: 4,
+            status: 'confirmed',
+            totalPrice: 45000,
+            meals: [
+              { id: '1', name: 'Jollof Rice', price: 15000, quantity: 2, specialRequest: 'No spice' }
+            ],
+            vendorId: 'vendor1',
+            businessName: 'Kapadoccia',
+            location: 'Victoria Island, Lagos State',
+            image: '/hero-bg.jpg',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          },
+          {
+            _id: '2',
+            reservationType: 'hotel',
+            customerName: 'Emily Johnson',
+            customerEmail: 'emily@example.com',
+            date: '2025-06-05',
+            time: '12:00 PM',
+            guests: 2,
+            status: 'pending',
+            totalPrice: 85000,
+            rooms: [
+              { id: '1', type: 'Deluxe Room', price: 85000, nights: 1 }
+            ],
+            vendorId: 'vendor2',
+            businessName: 'Eko Hotel & Suites',
+            location: 'Victoria Island, Lagos State',
+            image: '/hero-bg.jpg',
+            checkIn: '12:00 PM',
+            checkOut: '12:00 PM',
+            roomType: '2 Guests, 1 Room',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        ];
+
+        setBookings(mockBookings);
         setLoading(false);
 
       } catch (error) {
