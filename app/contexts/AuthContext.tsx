@@ -26,14 +26,22 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
   useEffect(() => {
     // Check for saved auth data in localStorage on component mount
-    const savedUser = localStorage.getItem('user');
-    const savedToken = localStorage.getItem('token');
-    
-    if (savedUser && savedToken) {
-      setUser(JSON.parse(savedUser));
-      setToken(savedToken);
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('user');
+      const savedToken = localStorage.getItem('token');
+
+      if (savedUser && savedToken) {
+        try {
+          setUser(JSON.parse(savedUser));
+          setToken(savedToken);
+        } catch (error) {
+          console.error('Error parsing saved user data:', error);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        }
+      }
     }
-    
+
     setLoading(false);
   }, []);
 
