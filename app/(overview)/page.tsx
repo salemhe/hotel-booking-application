@@ -102,6 +102,34 @@ export default function HomePage() {
     setFilteredRestaurants(filtered);
   };
 
+  // Create categorized restaurant lists
+  const getPopularRestaurants = () => {
+    return filteredRestaurants.slice(0, 8);
+  };
+
+  const getTopRatedRestaurants = () => {
+    // Get highest rated restaurants from the filtered list
+    const sorted = [...filteredRestaurants].sort((a, b) => b.rating - a.rating);
+    return sorted.slice(0, 8);
+  };
+
+  const getFineDiningRestaurants = () => {
+    // Get restaurants with higher price range or specific cuisines
+    const fineDining = filteredRestaurants.filter(r =>
+      r.cuisine.toLowerCase().includes('french') ||
+      r.cuisine.toLowerCase().includes('italian') ||
+      r.priceRange === '₦₦₦'
+    ).slice(0, 8);
+
+    // If not enough fine dining restaurants, pad with remaining restaurants
+    if (fineDining.length < 4) {
+      const remaining = filteredRestaurants.filter(r => !fineDining.includes(r)).slice(0, 8 - fineDining.length);
+      return [...fineDining, ...remaining];
+    }
+
+    return fineDining;
+  };
+
   const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow group">
       <div className="relative">
