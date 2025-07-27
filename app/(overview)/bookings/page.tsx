@@ -15,118 +15,28 @@ import {
   Filter,
   MoreVertical,
   Star,
-  Phone,
-  Mail,
   Eye,
   Edit,
   Trash2,
-  RefreshCw
+  RefreshCw,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { format, parseISO, isToday, isTomorrow, isPast } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/app/components/ui/dropdown-menu';
-import { AuthService } from '@/app/lib/api/services/userAuth.service';
-import API from '@/app/lib/api/userAxios';
-
-interface Booking {
-  _id: string;
-  reservationType: 'restaurant' | 'hotel';
-  customerName: string;
-  customerEmail: string;
-  date: string;
-  time: string;
-  guests: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  totalPrice: number;
-  meals?: Array<{
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-  }>;
-  rooms?: Array<{
-    id: string;
-    type: string;
-    price: number;
-    nights: number;
-  }>;
-  vendorId: string;
-  businessName: string;
-  location: string;
-  image?: string;
-  checkIn?: string;
-  checkOut?: string;
-  roomType?: string;
-  createdAt: string;
-}
+import { useRealtimeBookings, UserBooking } from '@/app/hooks/useRealtimeBookings';
 
 export default function BookingsPage() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { bookings, loading, connected, cancelBooking } = useRealtimeBookings();
+  const [filteredBookings, setFilteredBookings] = useState<UserBooking[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('upcoming');
 
   useEffect(() => {
-    fetchUserBookings();
-  }, []);
-
-  useEffect(() => {
     filterBookings();
   }, [bookings, searchTerm, activeTab]);
-
-  const fetchUserBookings = async () => {
-    try {
-      const userId = await AuthService.getId();
-      if (!userId) return;
-
-      const response = await API.get(`/users/bookings?userId=${userId}`);
-      setBookings(response.data.bookings || []);
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      // Mock data for development
-      setBookings([
-        {
-          _id: '1',
-          reservationType: 'restaurant',
-          customerName: 'Emily Johnson',
-          customerEmail: 'emily@example.com',
-          date: '2025-06-05',
-          time: '7:30 PM',
-          guests: 4,
-          status: 'confirmed',
-          totalPrice: 45000,
-          businessName: 'Kapadoccia',
-          location: 'Victoria Island, Lagos State',
-          image: '/hero-bg.jpg',
-          vendorId: 'vendor1',
-          createdAt: '2025-01-20T10:00:00Z'
-        },
-        {
-          _id: '2',
-          reservationType: 'hotel',
-          customerName: 'Emily Johnson',
-          customerEmail: 'emily@example.com',
-          date: '2025-06-05',
-          time: '12:00 PM',
-          guests: 2,
-          status: 'pending',
-          totalPrice: 85000,
-          businessName: 'Eko Hotel & Suites',
-          location: 'Victoria Island, Lagos State',
-          image: '/hero-bg.jpg',
-          checkIn: '12:00 PM',
-          checkOut: '12:00 PM',
-          roomType: '2 Guests, 1 Room',
-          vendorId: 'vendor2',
-          createdAt: '2025-01-19T14:00:00Z'
-        }
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filterBookings = () => {
     let filtered = bookings;
@@ -157,6 +67,14 @@ export default function BookingsPage() {
     setFilteredBookings(filtered);
   };
 
+  const handleCancelBooking = async (bookingId: string) => {
+    try {
+      await cancelBooking(bookingId);
+    } catch (error) {
+      console.error('Failed to cancel booking:', error);
+    }
+  };
+
   const getDateLabel = (dateString: string) => {
     const date = parseISO(dateString);
     if (isToday(date)) return 'Today';
@@ -179,7 +97,7 @@ export default function BookingsPage() {
     }
   };
 
-  const BookingCard = ({ booking }: { booking: Booking }) => (
+  const BookingCard = ({ booking }: { booking: UserBooking }) => (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-0">
         <div className="flex">
@@ -221,7 +139,10 @@ export default function BookingsPage() {
                     </DropdownMenuItem>
                   )}
                   {booking.status !== 'completed' && (
-                    <DropdownMenuItem className="text-red-600">
+                    <DropdownMenuItem 
+                      className="text-red-600"
+                      onClick={() => handleCancelBooking(booking._id)}
+                    >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Cancel Booking
                     </DropdownMenuItem>
@@ -292,10 +213,25 @@ export default function BookingsPage() {
           <h1 className="text-2xl font-bold">Bookings/Reservation</h1>
           <p className="text-gray-600">Manage your restaurant and hotel bookings</p>
         </div>
-        <Button variant="outline" onClick={() => window.location.reload()}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 text-sm">
+            {connected ? (
+              <>
+                <Wifi className="h-4 w-4 text-green-600" />
+                <span className="text-green-600">Live updates</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="h-4 w-4 text-red-600" />
+                <span className="text-red-600">Offline</span>
+              </>
+            )}
+          </div>
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
