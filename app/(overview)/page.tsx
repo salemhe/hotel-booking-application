@@ -62,8 +62,8 @@ export default function HomePage() {
       // Fetch real restaurant data from API
       const mockRestaurants: Restaurant[] = Array.from({ length: 24 }, (_, i) => ({
         _id: `restaurant-${i + 1}`,
-        name: 'Kapadoccia',
-        cuisine: 'International, Turkish, Contemporary',
+        name: i === 0 ? 'Kapadoccia' : `Restaurant ${i + 1}`,
+        cuisine: i === 0 ? 'International, Turkish, Contemporary' : ['Italian', 'Mexican', 'Chinese', 'Turkish', 'Indian', 'French'][i % 6],
         rating: 4.8,
         reviewCount: 1000 + i * 100,
         location: 'Lagos, Nigeria',
