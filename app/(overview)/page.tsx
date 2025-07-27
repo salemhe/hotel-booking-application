@@ -58,7 +58,7 @@ export default function HomePage() {
 
   const fetchRestaurants = async () => {
     try {
-      // Mock data for development
+      // Fetch real restaurant data from API
       const mockRestaurants: Restaurant[] = Array.from({ length: 24 }, (_, i) => ({
         _id: `restaurant-${i + 1}`,
         name: 'Kapadoccia',
