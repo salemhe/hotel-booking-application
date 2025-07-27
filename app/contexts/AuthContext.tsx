@@ -48,10 +48,12 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const login = (userData: User, authToken: string) => {
     setUser(userData);
     setToken(authToken);
-    
+
     // Save to localStorage for persistence
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', authToken);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('token', authToken);
+    }
   };
 
   const logout = () => {
