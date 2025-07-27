@@ -121,7 +121,7 @@ function Header() {
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-[16px]/[24px] tracking-[0.5px] text-[#0a0a0a]">
-                      {user?.firstName} {user?.lastName}
+                      {user ? `${user.firstName} ${user.lastName}` : "Guest User"}
                     </h3>
                     {/* <p className="font-normal text-[14px]/[18px] tracking-[0.4px] text-[#0a0a0a]">
                       {user?.role || "User"}
