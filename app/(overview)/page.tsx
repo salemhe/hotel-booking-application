@@ -348,7 +348,7 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredRestaurants.slice(8, 16).map((restaurant) => (
+            {getTopRatedRestaurants().map((restaurant) => (
               <Link key={restaurant._id} href={`/restaurants/${restaurant._id}`}>
                 <RestaurantCard restaurant={restaurant} />
               </Link>
