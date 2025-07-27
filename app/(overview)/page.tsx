@@ -1,360 +1,406 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import { VendorService, Vendor } from '@/app/lib/api/services/vendors';
-import SearchSection from "@/app/components/SearchSection";
-import TableGrid, { TableGridTwo, Restaurant } from "@/app/components/TableGrid";
+"use client";
 
-interface ApiRestaurant {
+import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/app/components/ui/card';
+import { Button } from '@/app/components/ui/button';
+import { Input } from '@/app/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import { Badge } from '@/app/components/ui/badge';
+import { 
+  Search, 
+  Star, 
+  MapPin, 
+  Clock, 
+  Users,
+  Filter,
+  Heart,
+  Utensils,
+  Bed,
+  ChevronDown,
+  Wifi
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+
+interface Restaurant {
   _id: string;
   name: string;
   cuisine: string;
-  badge?: string;
-  id?:number;
-  businessName: string;
-  businessType: string;
-  branch: string;
-  address: string;
-  email: string;
-  phone: string;
-  services: string[];
-  image?: string;
-  profileImages?: string[];
-  description?: string;
-  rating?: number;
-  reviews?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-  featured?: boolean;
-  location?: string;
+  rating: number;
+  reviewCount: number;
+  location: string;
+  image: string;
+  openHours: string;
+  priceRange: string;
+  distance?: string;
+  features: string[];
+  isOpen: boolean;
 }
 
-export default function Home() {
-  const [activeTab, setActiveTab] = useState("restaurants");
-  const [vendors, setVendors] = useState<Vendor[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+export default function HomePage() {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [guestCount, setGuestCount] = useState('');
+  const [activeCategory, setActiveCategory] = useState('Restaurant');
 
-  // Handle client-side mounting to prevent hydration issues
   useEffect(() => {
-    setMounted(true);
-    // Load saved tab from localStorage only on client side
-    const savedTab = localStorage.getItem("activeTab");
-    if (savedTab && (savedTab === "restaurants" || savedTab === "hotels")) {
-      setActiveTab(savedTab);
-    }
+    fetchRestaurants();
   }, []);
 
   useEffect(() => {
-    const fetchVendors = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await VendorService.getVendors();
-        setVendors(data);
-      } catch (err) {
-        console.error('Error fetching vendors:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch vendors');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    filterRestaurants();
+  }, [restaurants, searchTerm, selectedLocation, activeCategory]);
 
-    if (mounted) {
-      fetchVendors();
-    }
-  }, [mounted]);
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    if (mounted) {
-      localStorage.setItem("activeTab", tab);
-    }
-  }
-
-  // Convert vendors to restaurant format with better error handling
-  const convertVendorsToRestaurants = (vendors: Vendor[]): ApiRestaurant[] => {
-    return vendors.map((vendor, index) => {
-      console.log('Vendor data:', {
-        id: vendor._id,
-        profileImages: vendor?.profileImages,
-        image: vendor.image
-      });
+  const fetchRestaurants = async () => {
+    try {
+      // Mock data for development
+      const mockRestaurants: Restaurant[] = Array.from({ length: 24 }, (_, i) => ({
+        _id: `restaurant-${i + 1}`,
+        name: 'Kapadoccia',
+        cuisine: 'International, Turkish, Contemporary',
+        rating: 4.8,
+        reviewCount: 1000 + i * 100,
+        location: 'Lagos, Nigeria',
+        image: '/hero-bg.jpg',
+        openHours: '12:00 PM - 11:00 PM Daily',
+        priceRange: '₦���₦',
+        features: ['Outdoor seating', 'Indoor seating', 'Vegan options', 'Free WiFi'],
+        isOpen: Math.random() > 0.3
+      }));
       
-      try {
-        // Ensure profileImages are valid URLs or relative paths
-        const sanitizedProfileImages = vendor.profileImages?.map(imgOrString => {
-          // if it's a string, use it; otherwise assume it's { url: string }
-          const url = typeof imgOrString === 'string'
-            ? imgOrString
-            : (imgOrString as { url?: string }).url || '';
-    
-          // only accept http or /-prefixed URLs
-          return (url.startsWith('http') || url.startsWith('/'))
-            ? url
-            : '/placeholder.jpg';
-        }) || [];
-
-        // Ensure main image is a valid URL or relative path
-        const mainImage = sanitizedProfileImages[0]
-        || (typeof vendor.image === 'string' && (vendor.image.startsWith('http') || vendor.image.startsWith('/'))
-            ? vendor.image
-            : '/placeholder.jpg');
-
-        return {
-          _id: vendor._id || `vendor-${index + 1}`,
-          name: vendor.businessName || 'Unknown Business',
-          businessName: vendor.businessName || 'Unknown Business',
-          businessType: vendor.businessType || 'Various',
-          branch: vendor.branch || '',
-          address: vendor.address || '',
-          email: vendor.email || '',
-          phone: vendor.phone || '',
-          services: vendor.services || [],
-          image:           mainImage,
-          profileImages:   sanitizedProfileImages,
-          description: vendor.description || '',
-          rating: typeof vendor.rating === 'number' ? vendor.rating : 4.5,
-          reviews: vendor.reviews || [],
-          createdAt: vendor.createdAt || new Date().toISOString(),
-          updatedAt: vendor.updatedAt || new Date().toISOString(),
-          featured: vendor.featured || false,
-          location: vendor.address || 'Location not specified',
-          cuisine: vendor.businessType || 'Various',
-        };
-      } catch (error) {
-        console.error('Error converting vendor to restaurant:', vendor, error);
-        return {
-          _id: String(index + 1),
-          name: 'Error loading restaurant',
-          businessName: 'Error loading restaurant',
-          businessType: 'Unknown',
-          branch: '',
-          address: 'Unknown',
-          email: '',
-          phone: '',
-          services: [],
-          image: '/placeholder.jpg',
-          profileImages: [],
-          description: '',
-          rating: 0,
-          reviews: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          featured: false,
-          location: 'Unknown',
-          cuisine: 'Unknown',
-        };
-      }
-    });
-  };
-  
-  const convertToTableGridRestaurant = (apiRestaurant: ApiRestaurant): Restaurant => {
-    console.log('Converting to TableGrid format:', {
-      image: apiRestaurant.image,
-      profileImages: apiRestaurant?.profileImages
-    });
-    
-    return {
-      _id: apiRestaurant._id,
-      name: apiRestaurant.name || apiRestaurant.businessName || 'Unknown Restaurant',
-      image: apiRestaurant.image || '/placeholder.jpg',
-      profileImages: apiRestaurant?.profileImages?.map(img => ({ 
-        url: typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) 
-          ? img 
-          : '/placeholder.jpg'
-      })),
-      rating: apiRestaurant.rating || 4.5,
-      reviews: apiRestaurant.reviews?.length || 0,
-      cuisine: apiRestaurant.cuisine || apiRestaurant.businessType || 'Various',
-      location: apiRestaurant.location || apiRestaurant.address || 'Location Unknown',
-      badge: apiRestaurant.featured ? 'Featured' : undefined
-    };
-  };
-
-  if (!mounted) {
-    return (
-      <main className="min-h-screen bg-white">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-700"></div>
-        </div>
-      </main>
-    );
-  }
-
-  const SvgIcon: React.FC<{ activeTab: string }> = ({ activeTab }) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      fill="none"
-      viewBox="0 0 16 16"
-    >
-      <path
-        fill={activeTab === "restaurants" ? "#111827" : "#ffffff"}
-        fillRule="evenodd"
-        d="M5.5 1.333A.833.833 0 0 1 6.333.5h3.334a.833.833 0 0 1 0 1.667h-.834v.862c4.534.409 7.509 5.11 5.775 9.447a.83.83 0 0 1-.775.524H2.167a.83.83 0 0 1-.774-.524c-1.735-4.337 1.24-9.038 5.774-9.447v-.862h-.834a.833.833 0 0 1-.833-.834m2.308 3.334c-3.521 0-5.986 3.377-5.047 6.666h10.478c.94-3.289-1.526-6.666-5.047-6.666zm-7.308 10a.833.833 0 0 1 .833-.834h13.334a.833.833 0 0 1 0 1.667H1.333a.833.833 0 0 1-.833-.833"
-        clipRule="evenodd"
-      ></path>
-    </svg>
-  );
-  
-  const SvgIcon2: React.FC<{ activeTab: string }> = ({ activeTab }) => (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        fill="none"
-        viewBox="0 0 18 18"
-      >
-        <path
-           fill={activeTab === "restaurants" ? "#ffffff" : "#111827"}
-          fillRule="evenodd"
-          d="M7.96.83a1.67 1.67 0 0 0-1.384.153l-3.433 2.06a1.67 1.67 0 0 0-.81 1.429v11.195H1.5a.833.833 0 0 0 0 1.666h15a.833.833 0 1 0 0-1.666h-.833V4.6a1.67 1.67 0 0 0-1.14-1.58zM14 15.668V4.6L8.167 2.657v13.01zM6.5 2.972 4 4.472v11.195h2.5z"
-          clipRule="evenodd"
-        ></path>
-      </svg>
-    );
-    
-  const tabs = [
-    {
-      name: "Restaurants",
-      value: "restaurants",
-      img: <SvgIcon activeTab={activeTab}/>,
-    },
-    {
-      name: "Hotels", 
-      value: "hotels",
-      img: <SvgIcon2 activeTab={activeTab}/>,
-    },
-  ]
-
-  const handleSearch = (searchData: {
-    query: string;
-    tab: string;
-    date?: string;
-    time?: string;
-    guests?: string;
-    timestamp: string;
-  }) => {
-    if (!searchData.query.trim()) return;
-    localStorage.setItem('searchData', JSON.stringify(searchData));
-    if (typeof window !== 'undefined') {
-      window.location.href = `/search`;
+      setRestaurants(mockRestaurants);
+    } catch (error) {
+      console.error('Error fetching restaurants:', error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const filterRestaurants = () => {
+    let filtered = restaurants;
+
+    if (searchTerm) {
+      filtered = filtered.filter(restaurant =>
+        restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        restaurant.cuisine.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        restaurant.location.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selectedLocation) {
+      filtered = filtered.filter(restaurant =>
+        restaurant.location.toLowerCase().includes(selectedLocation.toLowerCase())
+      );
+    }
+
+    setFilteredRestaurants(filtered);
+  };
+
+  const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow group">
+      <div className="relative">
+        <Image
+          src={restaurant.image}
+          alt={restaurant.name}
+          width={300}
+          height={200}
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute top-3 right-3">
+          <Button size="sm" variant="ghost" className="bg-white/80 hover:bg-white">
+            <Heart className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="absolute top-3 left-3">
+          <Badge className="bg-green-600">
+            Guest's favourite
+          </Badge>
+        </div>
+        {!restaurant.isOpen && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <Badge variant="secondary" className="bg-red-600 text-white">
+              Closed
+            </Badge>
+          </div>
+        )}
+      </div>
+      
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          <div>
+            <h3 className="font-semibold text-lg">{restaurant.name}</h3>
+            <p className="text-sm text-gray-600">{restaurant.cuisine}</p>
+            <p className="text-sm text-gray-600">{restaurant.location}</p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center">
+              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <span className="ml-1 font-medium">{restaurant.rating}</span>
+              <span className="text-sm text-gray-600 ml-1">
+                ({restaurant.reviewCount.toLocaleString()} reviews)
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-1">
+            {restaurant.features.slice(0, 3).map((feature) => (
+              <Badge key={feature} variant="outline" className="text-xs">
+                {feature}
+              </Badge>
+            ))}
+            {restaurant.features.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{restaurant.features.length - 3} more
+              </Badge>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const categories = [
+    { name: 'Restaurant', icon: Utensils },
+    { name: 'Hotels', icon: Bed },
+    { name: 'Clubs', icon: Users }
+  ];
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="relative min-h-[400px]">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-br-[20px] rounded-bl-[20px]"
-          style={{
-            backgroundImage: activeTab === "restaurants" ? "url('/find.png')" : "url('/find-hotel.jpg')",
-          }}
-        />
-        <div className="absolute inset-0 bg-black/70 rounded-br-[20px] rounded-bl-[20px]"></div>
-        <div className="relative max-w-7xl mx-auto px-4 min-h-[400px] justify-center items-center sm:px-6 lg:px-8 py-20">
-          <div className="text-center mt-16">
-            {activeTab === "restaurants" ? (
-              <>
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                  Find your Perfect Table
-                </h1>
-                <p className="text-xl text-white/90 mb-8">
-                  Discover and reserve the best restaurants in your city
-                </p>
-              </>
-            ) : (
-              <>
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                  Start Living Your Dream
-                </h1>
-                <p className="text-xl text-white/90 mb-8">
-                  Discover and reserve the best hotels in your city
-                </p>
-              </>
-            )}
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div 
+        className="relative h-96 bg-cover bg-center bg-no-repeat flex items-center justify-center"
+        style={{ 
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/hero-bg.jpg')` 
+        }}
+      >
+        <div className="text-center text-white space-y-6 max-w-2xl mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold">
+            Find your Perfect Table
+          </h1>
+          <p className="text-lg md:text-xl">
+            Discover and reserve the best restaurants in your city
+          </p>
 
-            <div className="flex justify-center items-center gap-4">
-              {tabs.map((tab) => (
-                <button 
-                  key={tab.value} 
-                  className={`px-4 py-2 rounded-[36px] gap-2.5 cursor-pointer text-sm flex font-medium leading-none transition-colors duration-200 ${
-                    activeTab === tab.value 
-                      ? "bg-slate-200 text-gray-900" 
-                      : "bg-transparent text-gray-50 hover:bg-white/10"
-                  }`} 
-                  onClick={() => handleTabChange(tab.value)}
-                >
-                <figure>{tab.img}</figure>  <span>{tab.name}</span> 
-                </button>
-              ))}
-            </div>
-            
-            <div className="relative">
-              <SearchSection activeTab={activeTab} onSearch={handleSearch} />
+          {/* Search Form */}
+          <div className="bg-white rounded-lg p-4 shadow-lg">
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex-1 min-w-64">
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Enter Restaurant or Cuisine"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 text-gray-900"
+                  />
+                </div>
+              </div>
+              
+              <Select value={selectedDate} onValueChange={setSelectedDate}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Pick date" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="today">Today</SelectItem>
+                  <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                  <SelectItem value="this-week">This Week</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedTime} onValueChange={setSelectedTime}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Select Time" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="12:00">12:00 PM</SelectItem>
+                  <SelectItem value="13:00">1:00 PM</SelectItem>
+                  <SelectItem value="14:00">2:00 PM</SelectItem>
+                  <SelectItem value="19:00">7:00 PM</SelectItem>
+                  <SelectItem value="20:00">8:00 PM</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={guestCount} onValueChange={setGuestCount}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Select Guests" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 Guest</SelectItem>
+                  <SelectItem value="2">2 Guests</SelectItem>
+                  <SelectItem value="4">4 Guests</SelectItem>
+                  <SelectItem value="6">6 Guests</SelectItem>
+                  <SelectItem value="8+">8+ Guests</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button className="bg-teal-600 hover:bg-teal-700 px-8">
+                Search
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {activeTab === "restaurants" ? (
-        <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-700"></div>
-              <span className="ml-2 text-gray-600">Loading restaurants...</span>
+      {/* Category Tabs */}
+      <div className="bg-white border-b">
+        <div className="container mx-auto px-4">
+          <div className="flex space-x-8">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <button
+                  key={category.name}
+                  onClick={() => setActiveCategory(category.name)}
+                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 transition-colors ${
+                    activeCategory === category.name
+                      ? 'border-blue-600 text-blue-600'
+                      : 'border-transparent text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="font-medium">{category.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto px-4 py-8">
+        {/* Popular Restaurants Section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Popular Restaurants</h2>
+            <Button variant="ghost" className="flex items-center">
+              Show more
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+          
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-200 h-48 rounded-lg mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-              <p className="text-red-600 font-medium">Error loading restaurants</p>
-              <p className="text-red-500 text-sm mt-1">{error}</p>
-              <button 
-                onClick={() => window.location.reload()} 
-                className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-              >
-                Try Again
-              </button>
-            </div>
-          ) : vendors.filter(v => v.businessType?.toLowerCase() === "restaurant").length > 0 ? (
-            <TableGrid 
-              title='Top Rated Restaurants' 
-              restaurants={vendors
-                .filter(v => v.onboarded === true && (v.businessType?.toLowerCase() === "restaurant"))
-                .map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))
-              } 
-            />
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600">No restaurants found</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredRestaurants.slice(0, 8).map((restaurant) => (
+                <Link key={restaurant._id} href={`/restaurants/${restaurant._id}`}>
+                  <RestaurantCard restaurant={restaurant} />
+                </Link>
+              ))}
             </div>
           )}
+        </section>
 
-          <TableGrid title="Popular Searches" />
-          <TableGrid title="In High Demand" />
-          <TableGrid title="Your History" />
-        </div>
-      ) : (
-        <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {
-           vendors
-              .filter(v => v.onboarded === true && (v.businessType?.toLowerCase() === "hotel")).length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-600">No hotels found</p>
+        {/* Top Rated Restaurants Section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Top Rated Restaurants</h2>
+            <Button variant="ghost" className="flex items-center">
+              Show more
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredRestaurants.slice(8, 16).map((restaurant) => (
+              <Link key={restaurant._id} href={`/restaurants/${restaurant._id}`}>
+                <RestaurantCard restaurant={restaurant} />
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Fine Dining Section */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Fine Dining</h2>
+            <Button variant="ghost" className="flex items-center">
+              Show more
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredRestaurants.slice(16, 24).map((restaurant) => (
+              <Link key={restaurant._id} href={`/restaurants/${restaurant._id}`}>
+                <RestaurantCard restaurant={restaurant} />
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-100 py-12 mt-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold">B</span>
+                </div>
+                <span className="font-bold text-xl">Bookies</span>
               </div>
-           ) : (
-             <TableGridTwo 
-            title="Popular Guest House Searches"
-            restaurants={vendors
-              .filter(v => v.onboarded === true && (v.businessType?.toLowerCase() === "hotel"))
-              .map(vendor => convertToTableGridRestaurant(convertVendorsToRestaurants([vendor])[0]))
-            }
-          />
-           )
-          }
+              <p className="text-gray-600 text-sm">
+                Making restaurant reservations simple and enjoyable
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Explore</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li><Link href="/restaurants">Restaurants</Link></li>
+                <li><Link href="/hotels">Hotels</Link></li>
+                <li><Link href="/restaurants">Top Restaurants</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li><Link href="/about">About us</Link></li>
+                <li><Link href="/contact">Contact</Link></li>
+                <li><Link href="/faq">FAQs</Link></li>
+                <li><Link href="/help">Help center</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Contact</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
+                <li>+2348234567</li>
+                <li>Kapadoccia@gmail.com</li>
+                <li>16, Idowu Taylor Street, Victoria Island 101241 Nigeria</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t mt-8 pt-8 text-center text-sm text-gray-600">
+            <p>© 2025 Bookies - All Rights Reserved</p>
+            <div className="flex justify-center space-x-4 mt-2">
+              <Link href="/privacy">Privacy Policy</Link>
+              <Link href="/terms">Terms of Service</Link>
+            </div>
+          </div>
         </div>
-      )}
-    </main>
+      </footer>
+    </div>
   );
 }
