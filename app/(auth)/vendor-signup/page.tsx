@@ -95,7 +95,8 @@ export default function VendorRegistration() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const data = await AuthService.register(formData);
+      const dataToSend = { ...formData, role: formData.adminType };
+      const data = await AuthService.register(dataToSend);
       if (data.success !== false) {
         setShowOTPInput(true);
         toast.success("Please check your email for the OTP verification code.")
@@ -118,8 +119,18 @@ export default function VendorRegistration() {
     setLoading(true);
     try {
       await AuthService.verifyOTP(formData.email, otp);
-      toast.success("Your account has been verified. Please log in.");
-      router.push("/vendor-login");
+      toast.success("Your account has been verified.");
+      // Automatically log in the user after verification
+      const loginResponse = await AuthService.login(formData.email, formData.password);
+      const token = loginResponse.profile.token;
+      await AuthService.setToken(token);
+      localStorage.setItem("auth_token", token);
+      // Route based on account type
+      if (formData.adminType === "super-admin") {
+        router.push("/super-admin/dashboard");
+      } else {
+        router.push("/vendor-dashboard");
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

@@ -56,22 +56,31 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
   };
   const handleSubmit = async (action: string) => {
     try {
-      // POST to backend
-      await axios.post(`${API_URL}/super-admin/branches`, {
-        name: formData.branchName,
-        address: formData.address,
-        city: formData.city,
-        phoneNumber: formData.countryCode + formData.phoneNumber,
-        email: formData.email,
-        password: formData.password,
-        businessType: "restaurant",
-        openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
-        opensAt: formData.opensAt,
-        closesAt: formData.closesAt,
-        assignedManager: formData.assignedManager,
-        assignedMenu: formData.assignedMenu,
-        importAllMenuItems: formData.importAllMenuItems,
-      });
+      // POST to backend with Authorization header
+      const token = localStorage.getItem("auth_token");
+      await axios.post(
+        `${API_URL}/super-admin/branches`,
+        {
+          name: formData.branchName,
+          address: formData.address,
+          city: formData.city,
+          phoneNumber: formData.countryCode + formData.phoneNumber,
+          email: formData.email,
+          password: formData.password,
+          businessType: "restaurant",
+          openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
+          opensAt: formData.opensAt,
+          closesAt: formData.closesAt,
+          assignedManager: formData.assignedManager,
+          assignedMenu: formData.assignedMenu,
+          importAllMenuItems: formData.importAllMenuItems,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       onBranchAdded(); // Refresh branch list
       if (action === "saveAndAdd") {
         setFormData({
