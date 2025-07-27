@@ -69,7 +69,7 @@ export default function HomePage() {
         location: ['Lagos, Nigeria', 'Abuja, Nigeria', 'Port Harcourt, Nigeria'][i % 3],
         image: '/hero-bg.jpg',
         openHours: '12:00 PM - 11:00 PM Daily',
-        priceRange: '₦���₦',
+        priceRange: '₦�����₦',
         features: ['Outdoor seating', 'Indoor seating', 'Vegan options', 'Free WiFi'],
         isOpen: Math.random() > 0.3
       }));
@@ -367,7 +367,7 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredRestaurants.slice(16, 24).map((restaurant) => (
+            {getFineDiningRestaurants().map((restaurant) => (
               <Link key={restaurant._id} href={`/restaurants/${restaurant._id}`}>
                 <RestaurantCard restaurant={restaurant} />
               </Link>
