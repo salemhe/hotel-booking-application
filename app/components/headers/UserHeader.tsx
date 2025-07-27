@@ -23,18 +23,30 @@ function Header() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        // Set a timeout to prevent indefinite loading
+        const timeoutId = setTimeout(() => {
+          setLoading(false);
+        }, 3000); // 3 second timeout
+
         if (await AuthService.isAuthenticated()) {
           const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!)
-          setUser(await AuthService.getUser(id!));
+          if (token) {
+            const id = AuthService.extractUserId(token);
+            if (id) {
+              const userData = await AuthService.getUser(id);
+              setUser(userData);
+            }
+          }
         }
+
+        clearTimeout(timeoutId);
       } catch (error) {
-        console.log(error)
+        console.log('Error fetching user data:', error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchUserData();
   }, []);
 
