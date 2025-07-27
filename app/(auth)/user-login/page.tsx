@@ -464,7 +464,7 @@ const Form = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -489,6 +489,7 @@ const Form = () => {
     try {
       const { data } = await AuthService.login(email, password);
       await AuthService.setToken(data.token);
+      localStorage.setItem("auth_token", data.token);
 
       toast.success("Welcome back!");
       router.push(redirectTo);

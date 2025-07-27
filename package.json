@@ -36,6 +36,7 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
     "chart.js": "^4.5.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-zoom": "^2.2.0",
@@ -85,8 +86,10 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.11",
+    "@types/bcryptjs": "^2.4.6",
     "@types/dom-to-image": "^2.6.7",
     "@types/js-cookie": "^3.0.6",
+    "@types/mongodb": "^4.0.6",
     "@types/node": "^20",
     "@types/paystack__inline-js": "^1.0.1",
     "@types/react": "^19",

@@ -233,15 +233,20 @@ export class AuthService {
   }
 
   static async setToken(token: string) {
-    await fetch(`${getFrontendUrl()}/api/auth/set-vendor-token`, {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
+    await fetch(`${backendUrl}/api/auth/set-vendor-token`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
+      credentials: "include"
     });
   }
 
   static async getToken(): Promise<string | null> {
-    const response = await fetch(`${getFrontendUrl()}/api/auth/get-vendor-token`, {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
+    const response = await fetch(`${backendUrl}/api/auth/get-vendor-token`, {
       method: "GET",
+      credentials: "include"
     });
     const data = await response.json();
     return data.token;
