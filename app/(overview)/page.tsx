@@ -57,6 +57,7 @@ export default function HomePage() {
   }, [restaurants, searchTerm, selectedLocation, activeCategory]);
 
   const fetchRestaurants = async () => {
+    setLoading(true);
     try {
       // Fetch real restaurant data from API
       const mockRestaurants: Restaurant[] = Array.from({ length: 24 }, (_, i) => ({
