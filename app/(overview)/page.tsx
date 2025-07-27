@@ -347,60 +347,7 @@ export default function HomePage() {
         </section>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gray-100 py-12 mt-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold">B</span>
-                </div>
-                <span className="font-bold text-xl">Bookies</span>
-              </div>
-              <p className="text-gray-600 text-sm">
-                Making restaurant reservations simple and enjoyable
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Explore</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/restaurants">Restaurants</Link></li>
-                <li><Link href="/hotels">Hotels</Link></li>
-                <li><Link href="/restaurants">Top Restaurants</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/about">About us</Link></li>
-                <li><Link href="/contact">Contact</Link></li>
-                <li><Link href="/faq">FAQs</Link></li>
-                <li><Link href="/help">Help center</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Contact</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>+2348234567</li>
-                <li>Kapadoccia@gmail.com</li>
-                <li>16, Idowu Taylor Street, Victoria Island 101241 Nigeria</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t mt-8 pt-8 text-center text-sm text-gray-600">
-            <p>© 2025 Bookies - All Rights Reserved</p>
-            <div className="flex justify-center space-x-4 mt-2">
-              <Link href="/privacy">Privacy Policy</Link>
-              <Link href="/terms">Terms of Service</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }
