@@ -115,8 +115,10 @@ function Header() {
                       />
                     ) : null}
                     <AvatarFallback className="bg-indigo-600 text-white">
-                      {user?.firstName?.charAt(0).toUpperCase() || "U"}
-                      {user?.lastName?.charAt(0).toUpperCase() || ""}
+                      {user ?
+                        `${user.firstName?.charAt(0).toUpperCase() || ""}${user.lastName?.charAt(0).toUpperCase() || ""}` :
+                        "G"
+                      }
                     </AvatarFallback>
                   </Avatar>
                   <div>
