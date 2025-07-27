@@ -1,0 +1,252 @@
+"use client";
+
+import { useEffect, useState, useCallback } from 'react';
+import SocketService from '@/app/lib/socket';
+import { AuthService } from '@/app/lib/api/services/userAuth.service';
+
+export interface UserBooking {
+  _id: string;
+  reservationType: 'restaurant' | 'hotel';
+  customerName: string;
+  customerEmail: string;
+  date: string;
+  time: string;
+  guests: number;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  totalPrice: number;
+  meals?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    specialRequest?: string;
+  }>;
+  rooms?: Array<{
+    id: string;
+    type: string;
+    price: number;
+    nights: number;
+  }>;
+  seatingPreference?: string;
+  specialOccasion?: string;
+  specialRequest?: string;
+  vendorId: string;
+  businessName: string;
+  location: string;
+  image?: string;
+  checkIn?: string;
+  checkOut?: string;
+  roomType?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const useRealtimeBookings = () => {
+  const [bookings, setBookings] = useState<UserBooking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [connected, setConnected] = useState(false);
+
+  const addBooking = useCallback((newBooking: UserBooking) => {
+    setBookings(prev => [newBooking, ...prev]);
+  }, []);
+
+  const updateBooking = useCallback((updatedBooking: UserBooking) => {
+    setBookings(prev => 
+      prev.map(booking => 
+        booking._id === updatedBooking._id ? updatedBooking : booking
+      )
+    );
+  }, []);
+
+  const removeBooking = useCallback((bookingId: string) => {
+    setBookings(prev => 
+      prev.filter(booking => booking._id !== bookingId)
+    );
+  }, []);
+
+  useEffect(() => {
+    const initializeSocket = async () => {
+      try {
+        const userId = await AuthService.getId();
+        if (!userId) {
+          setLoading(false);
+          return;
+        }
+
+        // Connect to socket
+        const socket = SocketService.connect(userId, 'user');
+        
+        // Join user room for real-time updates
+        SocketService.joinUserRoom(userId);
+        
+        setConnected(true);
+
+        // Set up event listeners for booking updates
+        SocketService.onNewReservation((data) => {
+          console.log('New booking received:', data);
+          addBooking(data.booking);
+        });
+
+        SocketService.onReservationUpdate((data) => {
+          console.log('Booking updated:', data);
+          updateBooking(data.booking);
+        });
+
+        SocketService.onReservationCancelled((data) => {
+          console.log('Booking cancelled:', data);
+          if (data.action === 'remove') {
+            removeBooking(data.bookingId);
+          } else {
+            updateBooking(data.booking);
+          }
+        });
+
+        // Listen for vendor confirmations
+        socket.on('booking_confirmed', (data) => {
+          console.log('Booking confirmed by vendor:', data);
+          updateBooking(data.booking);
+        });
+
+        // Listen for vendor rejections
+        socket.on('booking_rejected', (data) => {
+          console.log('Booking rejected by vendor:', data);
+          updateBooking(data.booking);
+        });
+
+        // Listen for payment confirmations
+        socket.on('payment_confirmed', (data) => {
+          console.log('Payment confirmed:', data);
+          updateBooking(data.booking);
+        });
+
+        setLoading(false);
+
+      } catch (error) {
+        console.error('Error initializing socket:', error);
+        setLoading(false);
+      }
+    };
+
+    initializeSocket();
+
+    // Cleanup on unmount
+    return () => {
+      const cleanup = async () => {
+        const userId = await AuthService.getId();
+        if (userId) {
+          SocketService.leaveUserRoom(userId);
+        }
+        SocketService.removeListener('new_reservation');
+        SocketService.removeListener('reservation_updated');
+        SocketService.removeListener('reservation_cancelled');
+        SocketService.removeListener('booking_confirmed');
+        SocketService.removeListener('booking_rejected');
+        SocketService.removeListener('payment_confirmed');
+      };
+      cleanup();
+    };
+  }, [addBooking, updateBooking, removeBooking]);
+
+  const createBooking = useCallback(async (bookingData: Partial<UserBooking>) => {
+    try {
+      // Create booking via API
+      // const response = await API.post('/users/bookings', bookingData);
+      
+      // For now, simulate creating a booking
+      const newBooking: UserBooking = {
+        _id: Date.now().toString(),
+        reservationType: bookingData.reservationType || 'restaurant',
+        customerName: bookingData.customerName || '',
+        customerEmail: bookingData.customerEmail || '',
+        date: bookingData.date || '',
+        time: bookingData.time || '',
+        guests: bookingData.guests || 1,
+        status: 'pending',
+        totalPrice: bookingData.totalPrice || 0,
+        meals: bookingData.meals || [],
+        rooms: bookingData.rooms || [],
+        seatingPreference: bookingData.seatingPreference,
+        specialOccasion: bookingData.specialOccasion,
+        specialRequest: bookingData.specialRequest,
+        vendorId: bookingData.vendorId || '',
+        businessName: bookingData.businessName || '',
+        location: bookingData.location || '',
+        image: bookingData.image,
+        checkIn: bookingData.checkIn,
+        checkOut: bookingData.checkOut,
+        roomType: bookingData.roomType,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      // Emit to socket for real-time updates
+      const socket = SocketService.getSocket();
+      if (socket) {
+        socket.emit('create_booking', { booking: newBooking });
+      }
+
+      addBooking(newBooking);
+      return newBooking;
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      throw error;
+    }
+  }, [addBooking]);
+
+  const cancelBooking = useCallback(async (bookingId: string) => {
+    try {
+      // Cancel booking via API
+      // await API.patch(`/users/bookings/${bookingId}`, { status: 'cancelled' });
+      
+      // Emit to socket for real-time updates
+      const socket = SocketService.getSocket();
+      if (socket) {
+        socket.emit('cancel_booking', { bookingId });
+      }
+
+      // Update local state
+      setBookings(prev => 
+        prev.map(booking => 
+          booking._id === bookingId 
+            ? { ...booking, status: 'cancelled' as const }
+            : booking
+        )
+      );
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      throw error;
+    }
+  }, []);
+
+  const updateBookingStatus = useCallback(async (bookingId: string, status: string) => {
+    try {
+      // Update booking status via API
+      // await API.patch(`/users/bookings/${bookingId}`, { status });
+      
+      console.log(`Updating booking ${bookingId} to status: ${status}`);
+      
+      setBookings(prev => 
+        prev.map(booking => 
+          booking._id === bookingId 
+            ? { ...booking, status: status as any }
+            : booking
+        )
+      );
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+      throw error;
+    }
+  }, []);
+
+  return {
+    bookings,
+    loading,
+    connected,
+    addBooking,
+    updateBooking,
+    removeBooking,
+    createBooking,
+    cancelBooking,
+    updateBookingStatus,
+  };
+};
