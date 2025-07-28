@@ -217,13 +217,24 @@ export default function AddMenuPage() {
         formData.append("itemImage", imageFile);
       }
 
-      await API.post("/vendors/create-menu", formData, {
+      const response = await API.post("/vendors/create-menu", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
+      // Emit real-time socket event for menu creation
+      const user = AuthService.getUser();
+      const socket = SocketService.getSocket();
+      if (socket && user?.profile.id) {
+        socket.emit('menu_updated', {
+          vendorId: user.profile.id,
+          action: 'create',
+          newItem: response.data
+        });
+      }
+
       // Clear draft after successful submission
       localStorage.removeItem("menuFormDraft");
-      
+
       toast.success("Menu item added successfully!");
       router.push("/vendorDashboard/menu");
     } catch (error: any) {
