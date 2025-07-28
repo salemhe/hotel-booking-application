@@ -99,50 +99,48 @@ export const useRealtimeReservations = () => {
           }
         });
 
-        // Fetch initial reservations - add some mock data for development
-        const mockReservations: Reservation[] = [
-          {
-            _id: '1',
-            reservationType: 'restaurant',
-            customerName: 'Emily Johnson',
-            customerEmail: 'emily@example.com',
-            date: new Date().toISOString(),
-            time: '7:30 PM',
-            guests: 4,
-            status: 'pending',
-            totalPrice: 45000,
-            meals: [
-              { id: '1', name: 'Jollof Rice', price: 15000, quantity: 2, specialRequest: 'No spice' },
-              { id: '2', name: 'Chicken Wings', price: 8000, quantity: 3 }
-            ],
-            vendorId: user.profile.id,
-            businessName: 'Kapadoccia Restaurant',
-            location: 'Victoria Island, Lagos',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          },
-          {
-            _id: '2',
-            reservationType: 'hotel',
-            customerName: 'John Smith',
-            customerEmail: 'john@example.com',
-            date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-            time: '2:00 PM',
-            guests: 2,
-            status: 'confirmed',
-            totalPrice: 85000,
-            rooms: [
-              { id: '1', type: 'Deluxe Room', price: 85000, nights: 1 }
-            ],
-            vendorId: user.profile.id,
-            businessName: 'Eko Hotel & Suites',
-            location: 'Victoria Island, Lagos',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        ];
+        // Fetch initial reservations from API
+        try {
+          const response = await API.get(`/vendors/reservations?vendorId=${user.profile.id}`);
 
-        setReservations(mockReservations);
+          if (response.data && Array.isArray(response.data.reservations)) {
+            setReservations(response.data.reservations);
+          } else if (response.data && Array.isArray(response.data)) {
+            setReservations(response.data);
+          } else {
+            // Fallback to empty array if no reservations found
+            setReservations([]);
+          }
+        } catch (error) {
+          console.error('Error fetching reservations:', error);
+
+          // Create sample reservations for development if API fails
+          const sampleReservations: Reservation[] = [
+            {
+              _id: 'sample-1',
+              reservationType: 'restaurant',
+              customerName: 'Sample Customer',
+              customerEmail: 'sample@example.com',
+              date: new Date().toISOString(),
+              time: '7:30 PM',
+              guests: 4,
+              status: 'pending',
+              totalPrice: 45000,
+              meals: [
+                { id: '1', name: 'Sample Dish', price: 15000, quantity: 2 }
+              ],
+              vendorId: user.profile.id,
+              businessName: user.profile.businessName || 'Your Restaurant',
+              location: user.profile.address || 'Lagos, Nigeria',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            }
+          ];
+
+          setReservations(sampleReservations);
+          toast.info("Showing sample reservations - Connect to backend to see real data");
+        }
+
         setLoading(false);
 
       } catch (error) {
