@@ -189,7 +189,7 @@ const Navigation = () => {
           className="cursor-pointer rounded-full bg-blue-700 hover:bg-blue-700/90"
           asChild
         >
-          <Link href="user-signup">Create Account</Link>
+          <Link href="/user-signup">Create Account</Link>
         </Button>
       </>
     );
