@@ -125,8 +125,48 @@ export default function VendorMenuPage() {
         )
       );
       toast.success(`Menu item ${!currentVisibility ? 'shown' : 'hidden'} successfully`);
+
+      // Emit socket event for real-time update
+      const socket = SocketService.getSocket();
+      if (socket) {
+        socket.emit('menu_updated', {
+          vendorId: user?.profile.id,
+          action: 'visibility_toggle',
+          itemId,
+          visible: !currentVisibility
+        });
+      }
     } catch (error) {
       toast.error("Failed to update visibility");
+    }
+  };
+
+  const handleDeleteMenuItem = async (itemId: string, itemName: string) => {
+    if (!window.confirm(`Are you sure you want to delete "${itemName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await API.delete(`/vendors/menus/${itemId}`);
+      setMenuItems(prev => prev.filter(item => item._id !== itemId));
+      toast.success("Menu item deleted successfully");
+
+      // Emit socket event for real-time update
+      const socket = SocketService.getSocket();
+      if (socket) {
+        socket.emit('menu_updated', {
+          vendorId: user?.profile.id,
+          action: 'delete',
+          itemId
+        });
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || "Failed to delete menu item");
+      } else {
+        toast.error("Failed to delete menu item");
+      }
     }
   };
 
