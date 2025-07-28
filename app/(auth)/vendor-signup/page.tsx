@@ -120,16 +120,33 @@ export default function VendorRegistration() {
     try {
       await AuthService.verifyOTP(formData.email, otp);
       toast.success("Your account has been verified.");
+
       // Automatically log in the user after verification
       const loginResponse = await AuthService.login(formData.email, formData.password);
-      const token = loginResponse.profile.token;
-      await AuthService.setToken(token);
-      localStorage.setItem("auth_token", token);
-      // Route based on account type
+      await AuthService.setToken(loginResponse.profile.token);
+
+      toast.success(`Welcome, ${loginResponse.profile.businessName}!`);
+      localStorage.setItem("accountType", loginResponse.profile.businessType);
+
+      // Route based on admin type and business type
       if (formData.adminType === "super-admin") {
         router.push("/super-admin/dashboard");
       } else {
-        router.push("/vendor-dashboard");
+        // Route to appropriate vendor dashboard based on business type
+        if (loginResponse.profile.onboarded) {
+          if (loginResponse.profile.businessType === "hotel") {
+            router.push("/vendor-dashboard/hotel");
+          } else if (loginResponse.profile.businessType === "restaurant") {
+            router.push("/vendor-dashboard/restaurant");
+          } else if (loginResponse.profile.businessType === "club") {
+            router.push("/vendor-dashboard/club");
+          } else {
+            router.push("/vendorDashboard");
+          }
+        } else {
+          // Route to onboarding if not yet onboarded
+          router.push("/onboarding");
+        }
       }
     } catch (error) {
       if (error instanceof Error) {
