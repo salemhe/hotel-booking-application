@@ -23,18 +23,30 @@ function Header() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        // Set a timeout to prevent indefinite loading
+        const timeoutId = setTimeout(() => {
+          setLoading(false);
+        }, 3000); // 3 second timeout
+
         if (await AuthService.isAuthenticated()) {
           const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!)
-          setUser(await AuthService.getUser(id!));
+          if (token) {
+            const id = AuthService.extractUserId(token);
+            if (id) {
+              const userData = await AuthService.getUser(id);
+              setUser(userData);
+            }
+          }
         }
+
+        clearTimeout(timeoutId);
       } catch (error) {
-        console.log(error)
+        console.log('Error fetching user data:', error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchUserData();
   }, []);
 
@@ -103,13 +115,15 @@ function Header() {
                       />
                     ) : null}
                     <AvatarFallback className="bg-indigo-600 text-white">
-                      {user?.firstName?.charAt(0).toUpperCase() || "U"}
-                      {user?.lastName?.charAt(0).toUpperCase() || ""}
+                      {user ?
+                        `${user.firstName?.charAt(0).toUpperCase() || ""}${user.lastName?.charAt(0).toUpperCase() || ""}` :
+                        "G"
+                      }
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-[16px]/[24px] tracking-[0.5px] text-[#0a0a0a]">
-                      {user?.firstName} {user?.lastName}
+                      {user ? `${user.firstName} ${user.lastName}` : "Guest User"}
                     </h3>
                     {/* <p className="font-normal text-[14px]/[18px] tracking-[0.4px] text-[#0a0a0a]">
                       {user?.role || "User"}

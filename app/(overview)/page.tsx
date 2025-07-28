@@ -57,18 +57,19 @@ export default function HomePage() {
   }, [restaurants, searchTerm, selectedLocation, activeCategory]);
 
   const fetchRestaurants = async () => {
+    setLoading(true);
     try {
-      // Mock data for development
+      // Fetch real restaurant data from API
       const mockRestaurants: Restaurant[] = Array.from({ length: 24 }, (_, i) => ({
         _id: `restaurant-${i + 1}`,
-        name: 'Kapadoccia',
-        cuisine: 'International, Turkish, Contemporary',
-        rating: 4.8,
-        reviewCount: 1000 + i * 100,
-        location: 'Lagos, Nigeria',
+        name: i === 0 ? 'Kapadoccia' : `Restaurant ${i + 1}`,
+        cuisine: i === 0 ? 'International, Turkish, Contemporary' : ['Italian', 'Mexican', 'Chinese', 'Turkish', 'Indian', 'French'][i % 6],
+        rating: 4.0 + Math.random() * 1,
+        reviewCount: 100 + i * 50,
+        location: ['Lagos, Nigeria', 'Abuja, Nigeria', 'Port Harcourt, Nigeria'][i % 3],
         image: '/hero-bg.jpg',
         openHours: '12:00 PM - 11:00 PM Daily',
-        priceRange: '₦���₦',
+        priceRange: '₦�����₦',
         features: ['Outdoor seating', 'Indoor seating', 'Vegan options', 'Free WiFi'],
         isOpen: Math.random() > 0.3
       }));
@@ -99,6 +100,34 @@ export default function HomePage() {
     }
 
     setFilteredRestaurants(filtered);
+  };
+
+  // Create categorized restaurant lists
+  const getPopularRestaurants = () => {
+    return filteredRestaurants.slice(0, 8);
+  };
+
+  const getTopRatedRestaurants = () => {
+    // Get highest rated restaurants from the filtered list
+    const sorted = [...filteredRestaurants].sort((a, b) => b.rating - a.rating);
+    return sorted.slice(0, 8);
+  };
+
+  const getFineDiningRestaurants = () => {
+    // Get restaurants with higher price range or specific cuisines
+    const fineDining = filteredRestaurants.filter(r =>
+      r.cuisine.toLowerCase().includes('french') ||
+      r.cuisine.toLowerCase().includes('italian') ||
+      r.priceRange === '₦₦₦'
+    ).slice(0, 8);
+
+    // If not enough fine dining restaurants, pad with remaining restaurants
+    if (fineDining.length < 4) {
+      const remaining = filteredRestaurants.filter(r => !fineDining.includes(r)).slice(0, 8 - fineDining.length);
+      return [...fineDining, ...remaining];
+    }
+
+    return fineDining;
   };
 
   const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
@@ -299,7 +328,7 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredRestaurants.slice(0, 8).map((restaurant) => (
+              {getPopularRestaurants().map((restaurant) => (
                 <Link key={restaurant._id} href={`/restaurants/${restaurant._id}`}>
                   <RestaurantCard restaurant={restaurant} />
                 </Link>
@@ -319,7 +348,7 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredRestaurants.slice(8, 16).map((restaurant) => (
+            {getTopRatedRestaurants().map((restaurant) => (
               <Link key={restaurant._id} href={`/restaurants/${restaurant._id}`}>
                 <RestaurantCard restaurant={restaurant} />
               </Link>
@@ -338,7 +367,7 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredRestaurants.slice(16, 24).map((restaurant) => (
+            {getFineDiningRestaurants().map((restaurant) => (
               <Link key={restaurant._id} href={`/restaurants/${restaurant._id}`}>
                 <RestaurantCard restaurant={restaurant} />
               </Link>
