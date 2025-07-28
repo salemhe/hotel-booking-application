@@ -139,7 +139,7 @@ const UserLoginPage = () => {
           </CardContent>
           <CardFooter className="px-6 sm:px-8 pb-6 md:pb-8">
             <p className="w-full text-center text-sm text-[#6d727b]">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/user-signup"
                 className="text-[#60a5fa] hover:text-[#3b82f6] font-normal transition-colors duration-300"
