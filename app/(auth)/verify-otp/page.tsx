@@ -100,7 +100,7 @@ function OTPVerificationComponent() {
             Verify Your Email
           </CardTitle>
           <CardDescription className="text-center">
-            We've sent a verification code to <strong>{email}</strong>
+            We&apos;ve sent a verification code to <strong>{email}</strong>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -130,7 +130,7 @@ function OTPVerificationComponent() {
           </form>
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
-              Didn't receive the code?{" "}
+              Didn&apos;t receive the code?{" "}
               <button
                 onClick={handleResendOTP}
                 className="text-blue-600 hover:text-blue-500 font-medium"
