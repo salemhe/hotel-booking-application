@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
 import API from "@/app/lib/api/axios";
+import SocketService from "@/app/lib/socket";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
