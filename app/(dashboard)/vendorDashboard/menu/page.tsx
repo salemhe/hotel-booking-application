@@ -60,7 +60,25 @@ export default function VendorMenuPage() {
 
   useEffect(() => {
     fetchMenuItems();
-  }, []);
+
+    // Setup socket connection for real-time updates
+    if (user?.profile.id) {
+      const socket = SocketService.connect(user.profile.id, 'vendor');
+      SocketService.joinVendorRoom(user.profile.id);
+
+      // Listen for real-time menu updates
+      SocketService.onMenuUpdate((data) => {
+        console.log('Real-time menu update received:', data);
+        fetchMenuItems(); // Refresh menu items when updates are received
+        toast.info('Menu updated in real-time!');
+      });
+
+      return () => {
+        SocketService.removeListener('menu_updated');
+        SocketService.leaveVendorRoom(user.profile.id);
+      };
+    }
+  }, [user?.profile.id]);
 
   useEffect(() => {
     filterItems();
