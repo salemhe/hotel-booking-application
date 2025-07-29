@@ -1,7 +1,7 @@
 // src/services/booking.services.js
 // import API from "@/utils/axios";
 
-import API from "../userServerAxios";
+import API from "../userAxios";
 
 export interface BookingResponse {
   _id: string;
