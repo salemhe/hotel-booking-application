@@ -55,8 +55,9 @@ export class AuthService {
 
 
   static async setToken(token: string) {
-    await fetch(`${getFrontendUrl()}/api/auth/set-user-token`, {
+    await fetch(`http://localhost:5000/api/auth/set-user-token`, {
       method: "POST",
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
     });
   }

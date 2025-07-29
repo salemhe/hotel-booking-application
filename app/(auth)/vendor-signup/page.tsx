@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -29,6 +28,7 @@ import {
 // import Link from "next/link";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
+import { useState } from "react";
 // import { FaStore } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 
@@ -48,7 +48,7 @@ interface FormData {
 }
 
 export default function VendorRegistration() {
-  const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     businessName: "",
     email: "",
@@ -95,10 +95,11 @@ export default function VendorRegistration() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const data = await AuthService.register(formData);
+      const dataToSend = { ...formData, role: formData.adminType };
+      const data = await AuthService.register(dataToSend);
       if (data.success !== false) {
         setShowOTPInput(true);
-        toast.success("Please check your email for the OTP verification code.");
+        toast.success("Please check your email for the OTP verification code.")
       } else {
         toast.error(data.message || "Registration failed");
       }
@@ -118,19 +119,18 @@ export default function VendorRegistration() {
     setLoading(true);
     try {
       await AuthService.verifyOTP(formData.email, otp);
-      toast.success("Your account has been verified. Please log in.");
-      router.push("/vendor-login");
-      // localStorage.setItem("accountType", formData.adminType);
-      // // Instantly redirect to the correct dashboard
-      // if (formData.businessType === "hotel") {
-      //   router.push("/vendor-dashboard/hotel");
-      // } else if (formData.businessType === "restaurant") {
-      //   router.push("/vendor-dashboard/restaurant");
-      // } else if (formData.businessType === "club") {
-      //   router.push("/vendor-dashboard/club");
-      // } else {
-      //   router.push("/vendor-dashboard");
-      // }
+      toast.success("Your account has been verified.");
+      // Automatically log in the user after verification
+      const loginResponse = await AuthService.login(formData.email, formData.password);
+      const token = loginResponse.profile.token;
+      await AuthService.setToken(token);
+      localStorage.setItem("auth_token", token);
+      // Route based on account type
+      if (formData.adminType === "super-admin") {
+        router.push("/super-admin/dashboard");
+      } else {
+        router.push("/vendor-dashboard");
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

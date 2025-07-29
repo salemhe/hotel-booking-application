@@ -132,7 +132,7 @@ export default function EditBookingForm({ bookingId }: { bookingId: string }) {
     };
 
     fetchBooking();
-  }, [bookingId]);
+  }, [bookingId, booking.checkIn, booking.checkOut, booking.guests, booking.roomNumber, booking.tableNumber]);
 
   const handleFormChange = (field: string, value?: string | number | Date | null) => {
     setFormData((prev) => ({

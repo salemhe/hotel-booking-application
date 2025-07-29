@@ -103,22 +103,6 @@ export default function Home() {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
-  useEffect(() => {
-    // Initial search to load featured restaurants
-    const initialSearch = async () => {
-      setInitialLoad(true);
-      try {
-        await searchRestaurants("");
-      } catch (error) {
-        console.error("Error during initial search:", error);
-      } finally {
-        setInitialLoad(false);
-      }
-    };
-
-    initialSearch();
-  }, [])
-
   const searchRestaurants = useCallback(
     async (query: string) => {
       setInitialLoad(false);
@@ -168,6 +152,22 @@ export default function Home() {
     },
     [recentSearches, toast]
   );
+
+  useEffect(() => {
+    // Initial search to load featured restaurants
+    const initialSearch = async () => {
+      setInitialLoad(true);
+      try {
+        await searchRestaurants("");
+      } catch (error) {
+        console.error("Error during initial search:", error);
+      } finally {
+        setInitialLoad(false);
+      }
+    };
+
+    initialSearch();
+  }, [searchRestaurants])
 
   // useEffect(() => {
   //   searchRestaurants("");
