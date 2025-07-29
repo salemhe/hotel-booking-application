@@ -147,6 +147,21 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
           </button>
         </div>
         <div className="p-6 space-y-6">
+          {/* Business Type - moved to top for visibility */}
+          <div className="space-y-2">
+            <Label htmlFor="business-type" className="text-sm font-medium text-gray-700">
+              Business Type<span className="text-red-500">*</span>
+            </Label>
+            <select
+              id="business-type"
+              className="w-full border rounded px-3 py-2"
+              value={businessType}
+              onChange={e => setBusinessType(e.target.value as "hotel" | "restaurant")}
+            >
+              <option value="hotel">Hotel</option>
+              <option value="restaurant">Restaurant</option>
+            </select>
+          </div>
           {/* Branch Name */}
           <div className="space-y-2">
             <Label htmlFor="branch-name" className="text-sm font-medium text-gray-700">

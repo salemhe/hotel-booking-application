@@ -5,16 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
-import { AuthService } from "@/app/lib/api/services/auth.service";
+import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";
 import { BookingService } from "@/app/lib/api/services/bookings.service";
 import { DashboardService } from "@/app/lib/api/services/dashboard.service";
 
 export default function SuperAdminDashboard() {
-  const [profile, setProfile] = useState<any>(null);
-  const [bookings, setBookings] = useState<Array<Record<string, unknown>>>([]);
-  const [payments, setPayments] = useState<Array<Record<string, unknown>>>([]);
-  const [branches, setBranches] = useState<Array<Record<string, unknown>>>([]);
-  const [staff, setStaff] = useState<Array<Record<string, unknown>>>([]);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [bookings, setBookings] = useState<Record<string, unknown>[]>([]);
+  const [payments, setPayments] = useState<Record<string, unknown>[]>([]);
+  const [branches, setBranches] = useState<Record<string, unknown>[]>([]);
+  const [staff, setStaff] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,8 +40,8 @@ export default function SuperAdminDashboard() {
           setBranches(branchesData || []);
           setStaff(staffData || []);
         }
-      } catch (error) {
-        // Handle error (show toast, etc.)
+      } catch {
+        // Optionally handle error (show toast, etc.)
       } finally {
         setLoading(false);
       }
@@ -119,11 +119,11 @@ export default function SuperAdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bookings.map((b: any) => (
+              {bookings.map((b) => (
                 <TableRow key={String(b._id)}>
                   <TableCell>{String(b.user)}</TableCell>
                   <TableCell>{String(b.vendor)}</TableCell>
-                  <TableCell>{b.bookingDate ? new Date(b.bookingDate).toLocaleDateString() : ''}</TableCell>
+                  <TableCell>{b.bookingDate ? new Date(b.bookingDate as string).toLocaleDateString() : ''}</TableCell>
                   <TableCell>
                     <Badge className={
                       b.status === "Upcoming" ? "bg-blue-100 text-blue-800" :
@@ -154,7 +154,7 @@ export default function SuperAdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {payments.map((p: any) => (
+              {payments.map((p) => (
                 <TableRow key={String(p.id)}>
                   <TableCell>{String(p.payer)}</TableCell>
                   <TableCell>{String(p.branch)}</TableCell>
@@ -162,7 +162,7 @@ export default function SuperAdminDashboard() {
                   <TableCell>
                     <Badge className={String(p.status) === "Paid" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>{String(p.status)}</Badge>
                   </TableCell>
-                  <TableCell>{p.date ? new Date(p.date).toLocaleDateString() : ''}</TableCell>
+                  <TableCell>{p.date ? new Date(p.date as string).toLocaleDateString() : ''}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -184,7 +184,7 @@ export default function SuperAdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {branches.map((br: any) => (
+              {branches.map((br) => (
                 <TableRow key={String(br.id)}>
                   <TableCell>{String(br.name)}</TableCell>
                   <TableCell>{String(br.location)}</TableCell>
@@ -213,7 +213,7 @@ export default function SuperAdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {staff.map((s: any) => (
+              {staff.map((s) => (
                 <TableRow key={String(s.id)}>
                   <TableCell>{String(s.name)}</TableCell>
                   <TableCell>{String(s.role)}</TableCell>
