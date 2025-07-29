@@ -47,6 +47,9 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
   const [menu, setMenu] = useState(branch?.menu || "");
   // Business Type: hotel or restaurant
   const [businessType, setBusinessType] = useState(branch?.businessType || "hotel");
+  // Email and Password for branch login
+  const [email, setEmail] = useState(branch?.email || "");
+  const [password, setPassword] = useState("");
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -74,6 +77,8 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         menu,
         importMenuItems,
         businessType, // Add business type to payload
+        email, // Add email to payload
+        password, // Add password to payload
       };
       let res;
       // Dynamically import AuthService to avoid SSR issues
@@ -256,6 +261,20 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
                 </div>
               </div>
             </div>
+          </div>
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="branch-email" className="text-sm font-medium text-gray-700">
+              Branch Email<span className="text-red-500">*</span>
+            </Label>
+            <Input id="branch-email" placeholder="branch@email.com" className="w-full" value={email} onChange={e => setEmail(e.target.value)} />
+          </div>
+          {/* Password */}
+          <div className="space-y-2">
+            <Label htmlFor="branch-password" className="text-sm font-medium text-gray-700">
+              Branch Password<span className="text-red-500">*</span>
+            </Label>
+            <Input id="branch-password" type="password" placeholder="Enter password" className="w-full" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
           {/* Business Type */}
           <div className="space-y-2">

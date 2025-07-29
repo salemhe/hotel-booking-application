@@ -5,42 +5,65 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
+import { AuthService } from "@/app/lib/api/services/auth.service";
+import { BookingService } from "@/app/lib/api/services/bookings.service";
+import { DashboardService } from "@/app/lib/api/services/dashboard.service";
 
 export default function SuperAdminDashboard() {
-  // Simulated data for demo
+  const [profile, setProfile] = useState<any>(null);
   const [bookings, setBookings] = useState<Array<Record<string, unknown>>>([]);
   const [payments, setPayments] = useState<Array<Record<string, unknown>>>([]);
   const [branches, setBranches] = useState<Array<Record<string, unknown>>>([]);
   const [staff, setStaff] = useState<Array<Record<string, unknown>>>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching data from API
-    setTimeout(() => {
-      setBookings([
-        { id: 1, guest: "John Doe", branch: "Lagos HQ", date: "2024-06-01", status: "Upcoming" },
-        { id: 2, guest: "Jane Smith", branch: "Abuja Central", date: "2024-06-02", status: "Completed" },
-        { id: 3, guest: "Mike Johnson", branch: "Kano North", date: "2024-06-03", status: "Cancelled" },
-      ]);
-      setPayments([
-        { id: 1, payer: "John Doe", branch: "Lagos HQ", amount: 50000, status: "Paid", date: "2024-06-01" },
-        { id: 2, payer: "Jane Smith", branch: "Abuja Central", amount: 75000, status: "Pending", date: "2024-06-02" },
-      ]);
-      setBranches([
-        { id: 1, name: "Lagos HQ", location: "Lagos", status: "Active" },
-        { id: 2, name: "Abuja Central", location: "Abuja", status: "Active" },
-        { id: 3, name: "Kano North", location: "Kano", status: "Inactive" },
-      ]);
-      setStaff([
-        { id: 1, name: "Alice Brown", role: "Manager", branch: "Lagos HQ", status: "Active" },
-        { id: 2, name: "Bob Green", role: "Receptionist", branch: "Abuja Central", status: "Active" },
-        { id: 3, name: "Carol White", role: "Chef", branch: "Kano North", status: "Inactive" },
-      ]);
-    }, 500);
+    async function fetchData() {
+      setLoading(true);
+      try {
+        // Get current user
+        const user = AuthService.getUser();
+        if (user && user.id) {
+          // Fetch super-admin profile
+          const profileData = await AuthService.fetchMyProfile(user.id);
+          setProfile(profileData);
+          // Fetch real bookings for this super-admin
+          const bookingsData = await BookingService.getBookings({ vendorId: user.id });
+          setBookings(bookingsData || []);
+          // Fetch payments, branches, and staff for this super-admin
+          const [paymentsData, branchesData, staffData] = await Promise.all([
+            DashboardService.getPayments(user.id),
+            DashboardService.getBranches(user.id),
+            DashboardService.getStaff(user.id),
+          ]);
+          setPayments(paymentsData || []);
+          setBranches(branchesData || []);
+          setStaff(staffData || []);
+        }
+      } catch (error) {
+        // Handle error (show toast, etc.)
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
+
+  if (loading) {
+    return <div className="w-full max-w-7xl mx-auto py-8 px-2 sm:px-4 md:px-6 lg:px-8 text-center">Loading dashboard...</div>;
+  }
 
   return (
     <div className="w-full max-w-7xl mx-auto py-8 px-2 sm:px-4 md:px-6 lg:px-8">
       <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-center">Super Admin Dashboard Overview</h1>
+      {profile && (
+        <div className="mb-8 p-4 bg-gray-100 rounded-lg">
+          <h2 className="text-xl font-semibold mb-2">Welcome, {profile.businessName} ({profile.email})</h2>
+          <div className="text-gray-700">Business Type: {profile.businessType}</div>
+          <div className="text-gray-700">Address: {profile.address}</div>
+          <div className="text-gray-700">Phone: {profile.phone}</div>
+        </div>
+      )}
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
@@ -96,11 +119,11 @@ export default function SuperAdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bookings.map((b) => (
-                <TableRow key={String(b.id)}>
-                  <TableCell>{String(b.guest)}</TableCell>
-                  <TableCell>{String(b.branch)}</TableCell>
-                  <TableCell>{String(b.date)}</TableCell>
+              {bookings.map((b: any) => (
+                <TableRow key={String(b._id)}>
+                  <TableCell>{String(b.user)}</TableCell>
+                  <TableCell>{String(b.vendor)}</TableCell>
+                  <TableCell>{b.bookingDate ? new Date(b.bookingDate).toLocaleDateString() : ''}</TableCell>
                   <TableCell>
                     <Badge className={
                       b.status === "Upcoming" ? "bg-blue-100 text-blue-800" :
@@ -131,7 +154,7 @@ export default function SuperAdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {payments.map((p) => (
+              {payments.map((p: any) => (
                 <TableRow key={String(p.id)}>
                   <TableCell>{String(p.payer)}</TableCell>
                   <TableCell>{String(p.branch)}</TableCell>
@@ -139,7 +162,7 @@ export default function SuperAdminDashboard() {
                   <TableCell>
                     <Badge className={String(p.status) === "Paid" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>{String(p.status)}</Badge>
                   </TableCell>
-                  <TableCell>{String(p.date)}</TableCell>
+                  <TableCell>{p.date ? new Date(p.date).toLocaleDateString() : ''}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -161,7 +184,7 @@ export default function SuperAdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {branches.map((br) => (
+              {branches.map((br: any) => (
                 <TableRow key={String(br.id)}>
                   <TableCell>{String(br.name)}</TableCell>
                   <TableCell>{String(br.location)}</TableCell>
@@ -190,7 +213,7 @@ export default function SuperAdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {staff.map((s) => (
+              {staff.map((s: any) => (
                 <TableRow key={String(s.id)}>
                   <TableCell>{String(s.name)}</TableCell>
                   <TableCell>{String(s.role)}</TableCell>

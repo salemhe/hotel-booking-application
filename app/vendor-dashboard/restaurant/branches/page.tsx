@@ -12,6 +12,8 @@ import AddBranchModal from "./AddBranchModal"
 
 export interface Branch {
   id?: string;
+  email?: string;
+  // password?: string; // Uncomment if you want to store password in state/type
   branchName: string;
   address: string;
   city?: string;
