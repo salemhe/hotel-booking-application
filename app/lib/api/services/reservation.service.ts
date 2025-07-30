@@ -305,9 +305,8 @@ export class ReservationService {
           const result = response.data.booking || response.data;
           
           // Emit real-time event for fallback
-          const socket = SocketService.getSocket();
-          if (socket && result.vendor) {
-            socket.emit("reservation_cancelled", {
+          if (result.vendor) {
+            SocketService.safeEmit("reservation_cancelled", {
               vendorId: result.vendor,
               reservation: result,
               reservationId,
