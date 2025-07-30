@@ -151,7 +151,7 @@ export const useRealtimeReservations = () => {
       console.error('Error updating reservation status:', error);
 
       // Show specific error message
-      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update reservation status';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update reservation status';
       toast.error(errorMessage);
 
       // Revert optimistic update if any
