@@ -298,7 +298,7 @@ export default function VendorDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {todayReservations.map((reservation, index) => (
+                  {todayReservations.map((reservation) => (
                     <tr key={reservation._id} className="border-b hover:bg-gray-50">
                       <td className="py-4">
                         <div className="flex items-center space-x-3">
