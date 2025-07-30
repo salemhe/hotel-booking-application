@@ -42,7 +42,7 @@ export default function VendorDashboard() {
     monthlyRevenue: 0
   });
   
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ profile: { businessName: string } } | null>(null);
 
   useEffect(() => {
     const userInfo = AuthService.getUser();
