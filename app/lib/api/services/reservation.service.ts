@@ -285,9 +285,8 @@ export class ReservationService {
       const cancelledReservation = response.data.reservation || response.data;
       
       // Emit real-time event
-      const socket = SocketService.getSocket();
-      if (socket && cancelledReservation.vendorId) {
-        socket.emit("reservation_cancelled", {
+      if (cancelledReservation.vendorId) {
+        SocketService.safeEmit("reservation_cancelled", {
           vendorId: cancelledReservation.vendorId,
           reservation: cancelledReservation,
           reservationId,
