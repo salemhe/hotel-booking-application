@@ -263,7 +263,7 @@ export default function VendorDashboard() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center space-x-2">
-              <span>Today's Reservation ({todayReservations.length})</span>
+              <span>Today&apos;s Reservation ({todayReservations.length})</span>
               {connected && (
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Live updates" />
               )}
