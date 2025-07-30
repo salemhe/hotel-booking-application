@@ -632,8 +632,13 @@ export default function BusinessProfileSetup() {
         });
       }
 
+      // Get token and add Authorization header manually
+      const token = await AuthService.getToken();
       const response = await API.post(`/vendors/onboard/${user?.id}`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (response.status === 200) {
