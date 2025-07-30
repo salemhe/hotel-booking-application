@@ -42,7 +42,6 @@ class SocketService {
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
-        reconnectionAttempts: 5,
       });
 
       this.socket.on('connect', () => {
