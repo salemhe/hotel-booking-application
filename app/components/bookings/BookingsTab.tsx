@@ -40,7 +40,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     pastReservations: 6,
   });
 
-  const bookings = [
+  const bookings = useMemo(() => [
     {
       name: "Eko Hotel & Suites",
       type: "Hotel",
@@ -151,7 +151,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
       endTime: "Next Tuesday 12:00 pm",
       image: "/images/four-points.jpg",
     },
-  ];
+  ], []);
 
   const fetchMetrics = useCallback(async () => {
     setMetLoading(true)
