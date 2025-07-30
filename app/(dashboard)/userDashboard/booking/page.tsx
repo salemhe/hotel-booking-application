@@ -226,7 +226,12 @@ export default function BookingList() {
                       return bookingDate > today;
                     })
                     .map((booking) => (
-                      <BookingCard key={booking._id} booking={booking} />
+                      <BookingCard
+                        key={booking._id}
+                        booking={booking}
+                        onCancel={handleCancelBooking}
+                        onModify={handleModifyBooking}
+                      />
                     ))}
                 </div>
               ) : (
@@ -255,7 +260,12 @@ export default function BookingList() {
                       return bookingDate < today;
                     })
                     .map((booking) => (
-                      <BookingCard key={booking._id} booking={booking} />
+                      <BookingCard
+                        key={booking._id}
+                        booking={booking}
+                        onCancel={handleCancelBooking}
+                        onModify={handleModifyBooking}
+                      />
                     ))}
                 </div>
               ) : (
