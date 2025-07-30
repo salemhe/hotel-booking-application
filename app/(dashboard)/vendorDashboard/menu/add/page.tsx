@@ -198,38 +198,14 @@ export default function AddMenuPage() {
 
   const onSubmit = async (data: MenuFormData) => {
     setIsSubmitting(true);
-    
+
     try {
-      const formData = new FormData();
-      
-      // Add all form fields
-      Object.entries(data).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, String(value));
-        }
-      });
+      console.log("Submitting menu item with data:", data);
 
-      // Add image if selected
-      if (imageFile) {
-        formData.append("itemImage", imageFile);
-      }
+      // Create menu item using MenuService
+      const createdMenuItem = await MenuService.createMenuItem(data, imageFile || undefined);
 
-      const response = await API.post("/vendors/create-menu", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-
-      // Emit real-time socket event for menu creation
-      const user = AuthService.getUser();
-      const socket = SocketService.getSocket();
-      if (socket && user?.profile.id) {
-        socket.emit('menu_updated', {
-          vendorId: user.profile.id,
-          action: 'create',
-          newItem: response.data
-        });
-      }
+      console.log("Menu item created successfully:", createdMenuItem);
 
       // Clear draft after successful submission
       localStorage.removeItem("menuFormDraft");
@@ -238,7 +214,15 @@ export default function AddMenuPage() {
       router.push("/vendorDashboard/menu");
     } catch (error: any) {
       console.error("Error submitting menu:", error);
-      toast.error(error.response?.data?.message || "Failed to add menu item");
+
+      // Show specific error message
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to add menu item";
+      toast.error(errorMessage);
+
+      // Log detailed error for debugging
+      if (error?.response?.data) {
+        console.error("Server error details:", error.response.data);
+      }
     } finally {
       setIsSubmitting(false);
     }
