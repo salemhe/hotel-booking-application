@@ -298,7 +298,15 @@ interface Booking {
   vendorId: string;
 }
 
-function BookingCard({ booking }: { booking: Booking }) {
+function BookingCard({
+  booking,
+  onCancel,
+  onModify
+}: {
+  booking: Booking;
+  onCancel: (bookingId: string) => void;
+  onModify: (bookingId: string) => void;
+}) {
   const [receipt, setReceipt] = useState<Booking | null>(null);
   const router = useRouter();
   const formatPrice = (price: number) => {
