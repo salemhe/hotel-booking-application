@@ -95,31 +95,38 @@ export const useRealtimeReservations = () => {
         } catch (error) {
           console.error('Error fetching reservations:', error);
 
-          // Create sample reservations for development if API fails
-          const sampleReservations: Reservation[] = [
-            {
-              _id: 'sample-1',
-              reservationType: 'restaurant',
-              customerName: 'Sample Customer',
-              customerEmail: 'sample@example.com',
-              date: new Date().toISOString(),
-              time: '7:30 PM',
-              guests: 4,
-              status: 'pending',
-              totalPrice: 45000,
-              meals: [
-                { id: '1', name: 'Sample Dish', price: 15000, quantity: 2, category: 'Main Course' }
-              ],
-              vendorId: user.profile.id,
-              businessName: user.profile.businessName || 'Your Restaurant',
-              location: user.profile.address || 'Lagos, Nigeria',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString()
-            }
-          ];
+          // Show user-friendly message about connection issues
+          if (process.env.NODE_ENV === 'development') {
+            // Create sample reservations for development if API fails
+            const sampleReservations: Reservation[] = [
+              {
+                _id: 'sample-1',
+                reservationType: 'restaurant',
+                customerName: 'Sample Customer',
+                customerEmail: 'sample@example.com',
+                date: new Date().toISOString(),
+                time: '7:30 PM',
+                guests: 4,
+                status: 'pending',
+                totalPrice: 45000,
+                meals: [
+                  { id: '1', name: 'Sample Dish', price: 15000, quantity: 2, category: 'Main Course' }
+                ],
+                vendorId: user.profile.id,
+                businessName: user.profile.businessName || 'Your Restaurant',
+                location: user.profile.address || 'Lagos, Nigeria',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              }
+            ];
 
-          setReservations(sampleReservations);
-          toast.info("Showing sample reservations - Connect to backend to see real data");
+            setReservations(sampleReservations);
+            toast.info("Using demo data - Backend server not available");
+          } else {
+            // Production environment - show empty state
+            setReservations([]);
+            toast.error("Unable to load reservations. Please check your connection.");
+          }
         }
 
         setLoading(false);
