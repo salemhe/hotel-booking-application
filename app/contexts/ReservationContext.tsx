@@ -5,8 +5,8 @@ import { MenuItem } from "../components/reservation/PreSelectMeal";
 import { Restaurant } from "../lib/types/restaurant";
 import { AuthService } from "../lib/api/services/userAuth.service";
 import { useRouter } from "next/navigation";
-import API from "../lib/api/userAxios";
 import { toast } from "sonner";
+import { ReservationService, CreateReservationData } from "../lib/api/services/reservation.service";
 
 type ReservationsContextType = {
   menuItems: MenuItem[];
