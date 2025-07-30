@@ -275,11 +275,21 @@ export default function HomePage() {
                   <SelectValue placeholder="Select Time" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="11:00">11:00 AM</SelectItem>
+                  <SelectItem value="11:30">11:30 AM</SelectItem>
                   <SelectItem value="12:00">12:00 PM</SelectItem>
+                  <SelectItem value="12:30">12:30 PM</SelectItem>
                   <SelectItem value="13:00">1:00 PM</SelectItem>
+                  <SelectItem value="13:30">1:30 PM</SelectItem>
                   <SelectItem value="14:00">2:00 PM</SelectItem>
+                  <SelectItem value="14:30">2:30 PM</SelectItem>
+                  <SelectItem value="18:00">6:00 PM</SelectItem>
+                  <SelectItem value="18:30">6:30 PM</SelectItem>
                   <SelectItem value="19:00">7:00 PM</SelectItem>
+                  <SelectItem value="19:30">7:30 PM</SelectItem>
                   <SelectItem value="20:00">8:00 PM</SelectItem>
+                  <SelectItem value="20:30">8:30 PM</SelectItem>
+                  <SelectItem value="21:00">9:00 PM</SelectItem>
                 </SelectContent>
               </Select>
 
