@@ -204,7 +204,7 @@ export default function VendorDashboard() {
           <h1 className="text-3xl font-bold text-gray-900">
             {getTimeGreeting()}, {user?.profile?.businessName || user?.profile?.firstName || 'Joseph'}!
           </h1>
-          <p className="text-gray-600 mt-1">Here's what is happening today.</p>
+          <p className="text-gray-600 mt-1">Here&apos;s what is happening today.</p>
         </div>
         <div className="flex items-center space-x-3">
           {connected && (
