@@ -3,20 +3,14 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
-import { Badge } from '@/app/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
-import { 
-  Star, 
-  MapPin, 
-  Clock, 
-  Users,
+import {
+  Star,
+  MapPin,
+  Clock,
   Share,
   Heart,
   Camera,
-  Utensils,
-  Car,
-  Wifi,
-  CreditCard,
   Phone,
   Mail,
   Globe
