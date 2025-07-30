@@ -158,7 +158,10 @@ export default function HomePage() {
   };
 
   const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow group">
+    <Card
+      className="overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer"
+      onClick={() => handleRestaurantClick(restaurant)}
+    >
       <div className="relative">
         <Image
           src={restaurant.image}
