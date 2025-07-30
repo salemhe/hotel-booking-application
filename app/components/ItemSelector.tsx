@@ -35,7 +35,7 @@ export default function ItemSelector({
       return item.dishName || item.itemName || "Item";
     });
     onSelectionChange(selectedItems, foodNames);
-  }, [selectedItems]);
+  }, [selectedItems, onSelectionChange]);
 
   const toggleSelection = (item: Menu) => {
     setSelectedItems(
