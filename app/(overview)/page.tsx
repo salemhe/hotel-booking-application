@@ -47,14 +47,6 @@ export default function HomePage() {
   const [guestCount, setGuestCount] = useState('');
   const [activeCategory, setActiveCategory] = useState('Restaurant');
 
-  useEffect(() => {
-    fetchRestaurants();
-  }, []);
-
-  useEffect(() => {
-    filterRestaurants();
-  }, [restaurants, searchTerm, selectedLocation, activeCategory, filterRestaurants]);
-
   const fetchRestaurants = async () => {
     setLoading(true);
     try {
