@@ -39,6 +39,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/ta
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import API from "@/app/lib/api/userAxios";
+import { ReservationService } from "@/app/lib/api/services/reservation.service";
 import { AuthService, UserProfile } from "@/app/lib/api/services/userAuth.service";
 import { toast } from "sonner";
 import { Edit, X, Calendar, Clock, AlertTriangle, Star } from "lucide-react";
