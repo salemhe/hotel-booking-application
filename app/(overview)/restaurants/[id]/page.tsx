@@ -58,15 +58,25 @@ const ReserveWidget = ({ restaurant }: { restaurant: Restaurant }) => {
   const [specialRequest, setSpecialRequest] = useState('');
 
   const handleReservation = () => {
-    // Navigate to reservation details page
+    // Validate required fields
+    if (!selectedDate) {
+      alert('Please select a date');
+      return;
+    }
+    if (!selectedTime) {
+      alert('Please select a time');
+      return;
+    }
+
+    // Navigate to reservation page with context
     const params = new URLSearchParams({
-      restaurant: restaurant._id,
       date: selectedDate,
       time: selectedTime,
       guests: guestCount,
       request: specialRequest
     });
-    window.location.href = `/reservation-details?${params.toString()}`;
+
+    router.push(`/restaurants/${restaurant._id}/reservations?${params.toString()}`);
   };
 
   return (
