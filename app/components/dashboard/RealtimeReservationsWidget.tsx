@@ -5,13 +5,11 @@ import { useRealtimeReservations, Reservation } from '@/app/hooks/useRealtimeRes
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  TrendingUp, 
+import {
+  Calendar,
+  Clock,
+  Users,
   AlertCircle,
-  CheckCircle,
   Eye,
   ArrowRight,
   Wifi,
