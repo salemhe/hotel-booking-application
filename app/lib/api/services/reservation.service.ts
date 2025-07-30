@@ -246,9 +246,8 @@ export class ReservationService {
       const updatedReservation = response.data.reservation || response.data;
       
       // Emit real-time event
-      const socket = SocketService.getSocket();
-      if (socket && updatedReservation.vendorId) {
-        socket.emit("reservation_updated", {
+      if (updatedReservation.vendorId) {
+        SocketService.safeEmit("reservation_updated", {
           vendorId: updatedReservation.vendorId,
           reservation: updatedReservation,
           action: "update"
