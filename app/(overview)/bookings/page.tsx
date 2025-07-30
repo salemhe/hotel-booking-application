@@ -281,7 +281,7 @@ export default function BookingsPage() {
               <Calendar className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No upcoming bookings</h3>
               <p className="text-gray-500 mb-4">
-                You don't have any upcoming reservations.
+                You don&apos;t have any upcoming reservations.
               </p>
               <Link href="/">
                 <Button>Book a Table</Button>
