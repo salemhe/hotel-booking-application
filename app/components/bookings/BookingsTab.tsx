@@ -1,6 +1,6 @@
 import { useBookings } from "@/app/contexts/BookingsContext";
 import { Search } from "lucide-react";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { IoFilter } from "react-icons/io5";
 import {
   DropdownMenu,
