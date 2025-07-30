@@ -359,15 +359,19 @@ function BookingCard({
           fill
           className="object-cover"
         />
-        <div
-          className={`absolute top-2 right-2 size-3 rounded-full ${
+        <div className="absolute top-2 right-2">
+          <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
             booking.status === "confirmed"
-              ? "bg-green-500"
+              ? "bg-green-100 text-green-800 border border-green-200"
               : booking.status === "cancelled"
-              ? "bg-red-500"
-              : "bg-orange-500"
-          }`}
-        />
+              ? "bg-red-100 text-red-800 border border-red-200"
+              : booking.status === "completed"
+              ? "bg-blue-100 text-blue-800 border border-blue-200"
+              : "bg-yellow-100 text-yellow-800 border border-yellow-200"
+          }`}>
+            {getStatusText(booking.status)}
+          </div>
+        </div>
       </div>
       <CardContent className="p-4">
         <div className="space-y-3">
