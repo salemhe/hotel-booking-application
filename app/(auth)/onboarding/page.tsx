@@ -583,6 +583,16 @@ export default function BusinessProfileSetup() {
       toast.error("Please complete all required fields before submitting.");
       return;
     }
+    // Validate all required fields for rooms
+    if (businessType === "hotel") {
+      const hasEmptyRoomDescription = formData.rooms.some(
+        room => !room.roomDescription || room.roomDescription.trim() === ""
+      );
+      if (hasEmptyRoomDescription) {
+        toast.error("Please provide a description for every room.");
+        return;
+      }
+    }
 
     try {
       setIsLoading(true);
