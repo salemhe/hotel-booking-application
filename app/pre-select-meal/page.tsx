@@ -131,17 +131,17 @@ export default function PreSelectMealPage() {
 
   const handleContinueToPayment = () => {
     const reservationData = {
-      restaurant: searchParams.get('restaurant'),
-      customerName: searchParams.get('customerName'),
-      phoneNumber: searchParams.get('phoneNumber'),
-      date: searchParams.get('date'),
-      time: searchParams.get('time'),
-      guests: searchParams.get('guests'),
-      tablePreference: searchParams.get('tablePreference'),
-      specialRequests: searchParams.get('specialRequests'),
+      restaurant: searchParams.get('restaurant') || '',
+      customerName: searchParams.get('customerName') || '',
+      phoneNumber: searchParams.get('phoneNumber') || '',
+      date: searchParams.get('date') || '',
+      time: searchParams.get('time') || '',
+      guests: searchParams.get('guests') || '',
+      tablePreference: searchParams.get('tablePreference') || '',
+      specialRequests: searchParams.get('specialRequests') || '',
       selectedItems: JSON.stringify(selectedItems),
       additionalNotes,
-      totalPrice: getTotalPrice()
+      totalPrice: getTotalPrice().toString()
     };
 
     const params = new URLSearchParams(reservationData);
