@@ -130,9 +130,11 @@ export default function VendorRegistration() {
       toast.success("Your account has been verified.");
       // Automatically log in the user after verification
       const loginResponse = await AuthService.login(formData.email, formData.password);
-      const token = loginResponse.profile.token;
-      await AuthService.setToken(token);
-      localStorage.setItem("auth_token", token);
+      const token = loginResponse.token || (loginResponse.profile && loginResponse.profile.token);
+      if (token) {
+        await AuthService.setToken(token);
+        localStorage.setItem("auth_token", token);
+      }
       // Route based on account type
       if (formData.adminType === "super-admin") {
         router.push("/super-admin/dashboard");
