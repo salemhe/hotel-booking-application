@@ -42,12 +42,25 @@ export const useRealtimeReservations = () => {
         }
 
         // Connect to socket
-        SocketService.connect(user.profile.id, 'vendor');
-        
-        // Join vendor room for real-time updates
-        SocketService.joinVendorRoom(user.profile.id);
-        
-        setConnected(true);
+        const socket = SocketService.connect(user.profile.id, 'vendor');
+
+        // Set up connection status monitoring
+        const checkConnection = () => {
+          const isConnected = SocketService.isConnected();
+          setConnected(isConnected);
+
+          if (isConnected) {
+            // Join vendor room for real-time updates
+            SocketService.joinVendorRoom(user.profile.id);
+          }
+        };
+
+        // Check connection immediately
+        checkConnection();
+
+        // Monitor connection status
+        socket.on('connect', checkConnection);
+        socket.on('disconnect', () => setConnected(false));
 
         // Set up event listeners
         SocketService.onNewReservation((data) => {
