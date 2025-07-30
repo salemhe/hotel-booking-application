@@ -69,6 +69,10 @@ export default function ReservationDetailsPage() {
     }
   }, [params.id]);
 
+  useEffect(() => {
+    fetchRestaurant();
+  }, [params.id, fetchRestaurant]);
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
