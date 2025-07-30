@@ -42,7 +42,7 @@ export const useRealtimeReservations = () => {
         }
 
         // Connect to socket
-        const socket = SocketService.connect(user.profile.id, 'vendor');
+        SocketService.connect(user.profile.id, 'vendor');
         
         // Join vendor room for real-time updates
         SocketService.joinVendorRoom(user.profile.id);
