@@ -27,6 +27,32 @@ const SearchResults = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query.trim()) return;
+    setLoading(true);
+
+    try {
+      const response = await restaurantService.searchRestaurants(query);
+      setRestaurants(response.data);
+
+      // Update localStorage with the current search
+      const updatedSearchData: SearchData = {
+        ...(searchData || {}),
+        query: query,
+        tab: (searchData && searchData.tab) || 'restaurants',
+        timestamp: new Date().toISOString(),
+      };
+      setSearchData(updatedSearchData);
+      localStorage.setItem('searchData', JSON.stringify(updatedSearchData));
+
+    } catch (err) {
+      console.error('Search error:', err);
+      setRestaurants([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchData]);
+
   // Load search data from URL parameters or localStorage on component mount
   useEffect(() => {
     setMounted(true);
