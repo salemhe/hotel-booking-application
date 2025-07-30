@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
@@ -215,7 +215,7 @@ export default function RestaurantPage() {
     fetchRestaurant();
   }, [params.id, fetchRestaurant]);
 
-  const fetchRestaurant = async () => {
+  const fetchRestaurant = useCallback(async () => {
     try {
       // Mock data for development
       const mockRestaurant: Restaurant = {
@@ -251,7 +251,7 @@ export default function RestaurantPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
 
   if (loading) {
     return (
