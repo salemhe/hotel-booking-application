@@ -167,7 +167,7 @@ export default function VendorDashboard() {
           <div className="flex items-center justify-between pt-2 border-t">
             <div className="flex items-center space-x-2">
               <Badge variant="outline" className="text-xs">
-                {(reservation as any).reservationType === 'restaurant' ? 'Restaurant' : 'Hotel'}
+                {'reservationType' in reservation && reservation.reservationType === 'restaurant' ? 'Restaurant' : 'Hotel'}
               </Badge>
               <Badge className={`text-xs ${paymentStatusColors.paid}`}>
                 Payment Status
