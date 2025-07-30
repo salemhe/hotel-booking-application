@@ -24,6 +24,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useAvailability } from '@/app/hooks/useAvailability';
 
 interface Restaurant {
   _id: string;
