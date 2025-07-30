@@ -185,7 +185,7 @@ export default function Hotels() {
     // setCurrentPage(page)
     // setSortBy(sort)
     // setSortOrder(order)
-  }, [searchParams]);
+  }, [searchParams, handleSearch]);
 
   const resetFilters = () => {
     setCuisineFilter([]);
