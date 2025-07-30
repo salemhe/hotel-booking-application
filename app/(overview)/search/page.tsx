@@ -102,32 +102,6 @@ const SearchResults = () => {
     }
   }, [searchParams, handleSearch]);
 
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) return;
-    setLoading(true);
-    
-    try {
-      const response = await restaurantService.searchRestaurants(query);
-      setRestaurants(response.data);
-      
-      // Update localStorage with the current search
-      const updatedSearchData: SearchData = {
-        ...(searchData || {}),
-        query: query,
-        tab: (searchData && searchData.tab) || 'restaurants',
-        timestamp: new Date().toISOString(),
-      };
-      setSearchData(updatedSearchData);
-      localStorage.setItem('searchData', JSON.stringify(updatedSearchData));
-      
-    } catch (err) {
-      console.error('Search error:', err);
-      setRestaurants([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchData]);
-
   const handleNewSearch = (newSearchData: SearchData) => {
     setSearchQuery(newSearchData.query);
     setSearchData(newSearchData);
