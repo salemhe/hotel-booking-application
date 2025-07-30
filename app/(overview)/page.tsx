@@ -219,6 +219,22 @@ export default function HomePage() {
               </Badge>
             )}
           </div>
+
+          <div className="flex items-center justify-between pt-3 border-t">
+            <div className="text-sm text-gray-600">
+              {restaurant.openHours}
+            </div>
+            <Button
+              size="sm"
+              className="bg-teal-600 hover:bg-teal-700 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRestaurantClick(restaurant);
+              }}
+            >
+              Reserve Now
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
