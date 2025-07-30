@@ -212,7 +212,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     "Top Hotels in Lagos",
   ];
 
-  const bookings = [
+  const bookings_unused = [
     {
       name: "Eko Hotel & Suites",
       type: "Hotel",
