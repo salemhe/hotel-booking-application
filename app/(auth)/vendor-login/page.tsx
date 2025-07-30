@@ -57,11 +57,14 @@ export default function VendorLoginPage() {
 
     try {
       const response = await AuthService.login(email, password);
-      await AuthService.setToken(response.profile.token);
-      toast.success(`Welcome back, ${response.profile.businessName}!`);
-      localStorage.setItem("accountType", response.profile.businessType);
+      const token = response.token || (response.profile && response.profile.token);
+      if (token) {
+        await AuthService.setToken(token);
+      }
+      toast.success(`Welcome back, ${response.profile?.businessName || "Vendor"}!`);
+      localStorage.setItem("accountType", response.profile?.businessType || "");
       // Instantly redirect to the correct dashboard
-      if (response.profile.onboarded) {
+      if (response.profile?.onboarded) {
         if (response.profile.businessType === "hotel") {
           router.push("/vendor-dashboard/hotel");
         } else if (response.profile.businessType === "restaurant") {
