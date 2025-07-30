@@ -85,7 +85,7 @@ export class MenuService {
       }
 
       return createdMenuItem;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating menu item:", error);
       throw error;
     }
@@ -100,7 +100,7 @@ export class MenuService {
     try {
       const response = await API.get(`/vendors/menus?vendorId=${vendorId}`);
       return response.data.menus || response.data || [];
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching menu items:", error);
       return [];
     }
@@ -115,7 +115,7 @@ export class MenuService {
     try {
       const response = await API.get(`/vendors/menus/${menuId}`);
       return response.data.menu || response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching menu item:", error);
       throw error;
     }
@@ -165,7 +165,7 @@ export class MenuService {
       }
 
       return updatedMenuItem;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating menu item:", error);
       throw error;
     }
@@ -194,7 +194,7 @@ export class MenuService {
         success: true,
         message: response.data.message || "Menu item deleted successfully"
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error deleting menu item:", error);
       throw error;
     }
@@ -224,7 +224,7 @@ export class MenuService {
       }
 
       return updatedMenuItem;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error toggling menu item visibility:", error);
       throw error;
     }
@@ -258,7 +258,7 @@ export class MenuService {
         success: true,
         updatedCount: response.data.updatedCount || menuIds.length
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error bulk updating menu items:", error);
       throw error;
     }
@@ -292,7 +292,7 @@ export class MenuService {
       }
 
       return updatedMenuItem;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error uploading menu image:", error);
       throw error;
     }
