@@ -133,31 +133,33 @@ export const useRealtimeReservations = () => {
 
   const updateReservationStatus = useCallback(async (reservationId: string, status: string) => {
     try {
-      // Update reservation status via API
-      const response = await API.patch(`/vendors/reservations/${reservationId}`, { status });
+      // Update reservation status using ReservationService
+      const updatedReservation = await ReservationService.updateReservation(reservationId, {
+        status: status as any
+      });
 
-      // Update local state optimistically
+      // Update local state with the response
       setReservations(prev =>
         prev.map(reservation =>
-          reservation._id === reservationId ? { ...reservation, status: status as any } : reservation
+          reservation._id === reservationId ? updatedReservation : reservation
         )
       );
 
-      // Emit socket event for real-time updates to other clients
-      const socket = SocketService.getSocket();
-      if (socket) {
-        socket.emit('reservation_updated', {
-          reservationId,
-          status,
-          updatedReservation: response.data
-        });
-      }
-
       toast.success(`Reservation ${status} successfully`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating reservation status:', error);
-      toast.error(`Failed to update reservation status`);
+
+      // Show specific error message
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update reservation status';
+      toast.error(errorMessage);
+
+      // Revert optimistic update if any
+      setReservations(prev =>
+        prev.map(reservation =>
+          reservation._id === reservationId ? reservation : reservation
+        )
+      );
     }
   }, []);
 
