@@ -158,33 +158,33 @@ class SocketService {
   }
 
   // Reservation events
-  public onNewReservation(callback: (data: any) => void): void {
+  public onNewReservation(callback: (data: { reservation?: unknown; booking?: unknown }) => void): void {
     if (this.socket) {
       this.socket.on('new_reservation', callback);
     }
   }
 
-  public onReservationUpdate(callback: (data: any) => void): void {
+  public onReservationUpdate(callback: (data: { reservation?: unknown; booking?: unknown }) => void): void {
     if (this.socket) {
       this.socket.on('reservation_updated', callback);
     }
   }
 
-  public onReservationCancelled(callback: (data: any) => void): void {
+  public onReservationCancelled(callback: (data: { action?: string; reservationId?: string; bookingId?: string; reservation?: unknown; booking?: unknown }) => void): void {
     if (this.socket) {
       this.socket.on('reservation_cancelled', callback);
     }
   }
 
   // Menu events
-  public onMenuUpdate(callback: (data: any) => void): void {
+  public onMenuUpdate(callback: (data: { vendorId?: string; action?: string; newItem?: unknown }) => void): void {
     if (this.socket) {
       this.socket.on('menu_updated', callback);
     }
   }
 
   // Safe emit - only emit if connected
-  public safeEmit(event: string, data: any): boolean {
+  public safeEmit(event: string, data: unknown): boolean {
     if (this.socket && this.socket.connected) {
       this.socket.emit(event, data);
       return true;
