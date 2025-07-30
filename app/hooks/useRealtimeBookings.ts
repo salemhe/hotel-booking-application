@@ -75,11 +75,24 @@ export const useRealtimeBookings = () => {
 
         // Connect to socket
         const socket = SocketService.connect(userId, 'user');
-        
-        // Join user room for real-time updates
-        SocketService.joinUserRoom(userId);
-        
-        setConnected(true);
+
+        // Set up connection status monitoring
+        const checkConnection = () => {
+          const isConnected = SocketService.isConnected();
+          setConnected(isConnected);
+
+          if (isConnected) {
+            // Join user room for real-time updates
+            SocketService.joinUserRoom(userId);
+          }
+        };
+
+        // Check connection immediately
+        checkConnection();
+
+        // Monitor connection status
+        socket.on('connect', checkConnection);
+        socket.on('disconnect', () => setConnected(false));
 
         // Set up event listeners for booking updates
         SocketService.onNewReservation((data) => {
