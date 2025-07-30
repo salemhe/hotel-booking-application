@@ -249,6 +249,10 @@ export default function RestaurantPage() {
     }
   }, [params.id]);
 
+  useEffect(() => {
+    fetchRestaurant();
+  }, [params.id, fetchRestaurant]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
