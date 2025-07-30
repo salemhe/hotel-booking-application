@@ -1,6 +1,6 @@
 import { useBookings } from "@/app/contexts/BookingsContext";
 import { Search } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { IoFilter } from "react-icons/io5";
 import {
   DropdownMenu,
@@ -179,7 +179,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     },
   ];
 
-  const fetchMetrics = async () => {
+  const fetchMetrics = useCallback(async () => {
     setMetLoading(true)
     const upcomingBookings = bookings.filter(
       (c) => c.status === "Upcoming" && c.type === "Hotel"
@@ -210,9 +210,9 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     });
     setData(await data);
     setMetLoading(false)
-  };
+  }, [upcomingBookings, pastBookings, upcomingReservations, pastReservations]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     const upcomingBookings = bookings.filter(
       (c) => c.status === "Upcoming" && c.type === "Hotel"
@@ -254,7 +254,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     });
     setDatas(await data);
     setIsLoading(false);
-  };
+  }, [bookings, reservations]);
 
   useEffect(() => {
     fetchData();
