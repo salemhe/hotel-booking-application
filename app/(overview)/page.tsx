@@ -132,6 +132,31 @@ export default function HomePage() {
     return fineDining;
   };
 
+  const handleSearch = () => {
+    // Build search parameters
+    const searchParams = new URLSearchParams();
+
+    if (searchTerm) searchParams.set('q', searchTerm);
+    if (selectedDate) searchParams.set('date', selectedDate);
+    if (selectedTime) searchParams.set('time', selectedTime);
+    if (guestCount) searchParams.set('guests', guestCount);
+    if (activeCategory) searchParams.set('category', activeCategory);
+
+    // Navigate to search page with parameters
+    router.push(`/search?${searchParams.toString()}`);
+  };
+
+  const handleRestaurantClick = (restaurant: Restaurant) => {
+    // Navigate to restaurant page with search context
+    const searchParams = new URLSearchParams();
+    if (selectedDate) searchParams.set('date', selectedDate);
+    if (selectedTime) searchParams.set('time', selectedTime);
+    if (guestCount) searchParams.set('guests', guestCount);
+
+    const url = `/restaurants/${restaurant._id}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+    router.push(url);
+  };
+
   const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow group">
       <div className="relative">
