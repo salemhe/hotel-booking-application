@@ -42,7 +42,7 @@ import API from "@/app/lib/api/userAxios";
 import { ReservationService } from "@/app/lib/api/services/reservation.service";
 import { AuthService, UserProfile } from "@/app/lib/api/services/userAuth.service";
 import { toast } from "sonner";
-import { Edit, X, Calendar, Clock, AlertTriangle, Star } from "lucide-react";
+import { Edit, X, AlertTriangle, Star } from "lucide-react";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");
