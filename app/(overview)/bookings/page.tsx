@@ -49,7 +49,6 @@ export default function BookingsPage() {
     }
 
     // Filter by tab
-    const now = new Date();
     switch (activeTab) {
       case 'upcoming':
         filtered = filtered.filter(booking => 
