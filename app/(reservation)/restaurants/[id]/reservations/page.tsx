@@ -49,10 +49,6 @@ export default function ReservationDetailsPage() {
     isPreMealSelected: false
   });
 
-  useEffect(() => {
-    fetchRestaurant();
-  }, [params.id, fetchRestaurant]);
-
   const fetchRestaurant = useCallback(async () => {
     try {
       // Mock data for development
