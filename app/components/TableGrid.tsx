@@ -323,7 +323,7 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
       ...prev,
       [restaurantId]: imageIndex
     }));
-  }, []);
+  }, [hasMultipleImages]);
 
   const handleMouseLeave = useCallback((restaurantId: number) => {
     const restaurant = DUMMY_HOTEL_DATA.find(r => r.id === restaurantId);
