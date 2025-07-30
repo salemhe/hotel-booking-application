@@ -56,18 +56,56 @@ export default function VendorMenuPage() {
 
   const user = AuthService.getUser();
 
+  const fetchMenuItemsCallback = useCallback(async () => {
+    try {
+      if (!user?.profile.id) {
+        throw new Error("User profile not found");
+      }
+
+      const menuItems = await MenuService.getVendorMenuItems(user.profile.id);
+      setMenuItems(menuItems);
+
+      console.log(`Loaded ${menuItems.length} menu items for vendor`);
+    } catch (error: any) {
+      console.error("Menu fetch error:", error);
+
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to fetch menu items";
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.profile.id]);
+
+  const filterItemsCallback = useCallback(() => {
+    let filtered = menuItems;
+
+    if (searchTerm) {
+      filtered = filtered.filter(item =>
+        item.dishName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (selectedCategory !== "All Category") {
+      filtered = filtered.filter(item => item.category === selectedCategory);
+    }
+
+    setFilteredItems(filtered);
+  }, [menuItems, searchTerm, selectedCategory]);
+
   useEffect(() => {
-    fetchMenuItems();
+    fetchMenuItemsCallback();
 
     // Setup socket connection for real-time updates
     if (user?.profile.id) {
-      const socket = SocketService.connect(user.profile.id, 'vendor');
+      SocketService.connect(user.profile.id, 'vendor');
       SocketService.joinVendorRoom(user.profile.id);
 
       // Listen for real-time menu updates
       SocketService.onMenuUpdate((data) => {
         console.log('Real-time menu update received:', data);
-        fetchMenuItems(); // Refresh menu items when updates are received
+        fetchMenuItemsCallback(); // Refresh menu items when updates are received
         toast.info('Menu updated in real-time!');
       });
 
@@ -76,11 +114,11 @@ export default function VendorMenuPage() {
         SocketService.leaveVendorRoom(user.profile.id);
       };
     }
-  }, [user?.profile.id]);
+  }, [user?.profile.id, fetchMenuItemsCallback]);
 
   useEffect(() => {
-    filterItems();
-  }, [menuItems, searchTerm, selectedCategory]);
+    filterItemsCallback();
+  }, [filterItemsCallback]);
 
   const fetchMenuItems = async () => {
     try {
