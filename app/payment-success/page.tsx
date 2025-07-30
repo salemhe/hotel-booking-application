@@ -246,7 +246,7 @@ export default function PaymentSuccessPage() {
                     <Mail className="w-5 h-5 mr-3 text-blue-600 mt-0.5" />
                     <div>
                       <p className="font-medium text-blue-900">Confirmation Email</p>
-                      <p className="text-sm text-blue-700">You'll receive a confirmation email shortly with all details</p>
+                      <p className="text-sm text-blue-700">You&apos;ll receive a confirmation email shortly with all details</p>
                     </div>
                   </div>
                   
