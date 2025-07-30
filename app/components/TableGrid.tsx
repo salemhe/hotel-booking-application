@@ -116,7 +116,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
       ...prev,
       [restaurantId]: imageIndex
     }));
-  }, [restaurants]);
+  }, [restaurants, hasMultipleImages]);
 
   const handleMouseLeave = useCallback((restaurantId: string) => {
     const restaurant = restaurants.find(r => (r._id || String(r.id)) === restaurantId);
