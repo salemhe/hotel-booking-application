@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -81,7 +81,7 @@ export default function HomePage() {
     }
   };
 
-  const filterRestaurants = () => {
+  const filterRestaurants = useCallback(() => {
     let filtered = restaurants;
 
     if (searchTerm) {
@@ -99,7 +99,7 @@ export default function HomePage() {
     }
 
     setFilteredRestaurants(filtered);
-  };
+  }, [restaurants, searchTerm, selectedLocation]);
 
   // Create categorized restaurant lists
   const getPopularRestaurants = () => {
