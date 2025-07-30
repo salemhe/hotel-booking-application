@@ -88,15 +88,22 @@ export default function VendorRegistration() {
       newErrors.address = "Address is required.";
     }
     setErrors(newErrors);
+    console.log("validateForm called", { formData, newErrors, valid: Object.keys(newErrors).length === 0 });
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    console.log("handleSubmit called", { currentStep, formData });
+    if (!validateForm()) {
+      console.log("Validation failed");
+      return;
+    }
     setLoading(true);
     try {
       const dataToSend = { ...formData, role: formData.adminType };
+      console.log("Submitting registration", dataToSend);
       const data = await AuthService.register(dataToSend);
+      console.log("Registration response", data);
       if (data.success !== false) {
         setShowOTPInput(true);
         toast.success("Please check your email for the OTP verification code.")
@@ -104,6 +111,7 @@ export default function VendorRegistration() {
         toast.error(data.message || "Registration failed");
       }
     } catch (error) {
+      console.error("Registration error", error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {

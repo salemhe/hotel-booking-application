@@ -1,20 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { CheckCircle, XCircle, Loader2, Moon, Sun } from "lucide-react";
 import { useTheme } from "../ThemeContext";
+import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";
 
 export default function SuperAdminSettings() {
-  // Simulated user data
-  const [profile, setProfile] = useState({
-    name: "Joseph Eyebiokin",
-    email: "joseph@bookies.com",
-    phone: "+2347012345678",
-  });
+  // Real user data
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const { theme, setTheme } = useTheme();
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState("");
@@ -25,9 +22,21 @@ export default function SuperAdminSettings() {
   const [passwordError, setPasswordError] = useState("");
   const [themeMsg, setThemeMsg] = useState("");
 
-  // Simulate real-time profile save
+  // Fetch real super-admin profile on mount
+  useEffect(() => {
+    async function fetchProfile() {
+      const user = AuthService.getUser();
+      if (user && user.id) {
+        const profileData = await AuthService.fetchMyProfile(user.id);
+        setProfile(profileData);
+      }
+    }
+    fetchProfile();
+  }, []);
+
+  // Simulate real-time profile save (optional: implement real save logic)
   const handleProfileChange = (field: string, value: string) => {
-    setProfile((prev) => ({ ...prev, [field]: value }));
+    setProfile((prev) => prev ? { ...prev, [field]: value } : prev);
     setSavingProfile(true);
     setProfileMsg("");
     setProfileError("");
@@ -79,11 +88,11 @@ export default function SuperAdminSettings() {
       {/* Real-time Profile Preview */}
       <div className="flex flex-col items-center justify-center mb-8">
         <div className="w-20 h-20 rounded-full bg-teal-600 flex items-center justify-center text-white text-3xl font-bold mb-2">
-          {profile.name.trim().length > 0 ? profile.name.split(" ").map(n => n[0]).join("") : "?"}
+          {profile && profile.name && profile.name.trim().length > 0 ? profile.name.split(" ").map(n => n[0]).join("") : "?"}
         </div>
-        <div className="text-lg font-semibold">{profile.name || <span className='text-gray-400'>No Name</span>}</div>
-        <div className="text-sm text-gray-600">{profile.email || <span className='text-gray-400'>No Email</span>}</div>
-        <div className="text-sm text-gray-600">{profile.phone || <span className='text-gray-400'>No Phone</span>}</div>
+        <div className="text-lg font-semibold">{profile?.name || <span className='text-gray-400'>No Name</span>}</div>
+        <div className="text-sm text-gray-600">{profile?.email || <span className='text-gray-400'>No Email</span>}</div>
+        <div className="text-sm text-gray-600">{profile?.phone || <span className='text-gray-400'>No Phone</span>}</div>
       </div>
       <Card className="mb-8 shadow-md">
         <CardHeader>
@@ -93,7 +102,7 @@ export default function SuperAdminSettings() {
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
             <Input
-              value={profile.name}
+              value={profile?.name || ""}
               onChange={(e) => handleProfileChange("name", e.target.value)}
               className="w-full"
               autoComplete="name"
@@ -102,7 +111,7 @@ export default function SuperAdminSettings() {
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
             <Input
-              value={profile.email}
+              value={profile?.email || ""}
               onChange={(e) => handleProfileChange("email", e.target.value)}
               className="w-full"
               type="email"
@@ -112,7 +121,7 @@ export default function SuperAdminSettings() {
           <div>
             <label className="block text-sm font-medium mb-1">Phone</label>
             <Input
-              value={profile.phone}
+              value={profile?.phone || ""}
               onChange={(e) => handleProfileChange("phone", e.target.value)}
               className="w-full"
               type="tel"
