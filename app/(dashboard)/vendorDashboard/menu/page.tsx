@@ -147,26 +147,14 @@ export default function VendorMenuPage() {
     }
 
     try {
-      await API.delete(`/vendors/menus/${itemId}`);
+      await MenuService.deleteMenuItem(itemId);
       setMenuItems(prev => prev.filter(item => item._id !== itemId));
       toast.success("Menu item deleted successfully");
-
-      // Emit socket event for real-time update
-      const socket = SocketService.getSocket();
-      if (socket) {
-        socket.emit('menu_updated', {
-          vendorId: user?.profile.id,
-          action: 'delete',
-          itemId
-        });
-      }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Delete error:", error);
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data?.message || "Failed to delete menu item");
-      } else {
-        toast.error("Failed to delete menu item");
-      }
+
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to delete menu item";
+      toast.error(errorMessage);
     }
   };
 
