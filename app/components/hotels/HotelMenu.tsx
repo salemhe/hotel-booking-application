@@ -2,7 +2,7 @@
 
 import { Menu } from "@/app/lib/types/restaurant";
 import { ChevronDown } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { LoadingSpinner } from "../loading-spinner";
 import API from "@/app/lib/api/userAxios";
 type CategoryFilterProps = {
@@ -63,7 +63,7 @@ export default function MenuPage({ id }: { id: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const LOAD_MORE_STEP = 3;
 
-  const fetchMenus = async () => {
+  const fetchMenus = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await API.get(`/vendors/menus?vendorId=${id}`);
@@ -74,7 +74,7 @@ export default function MenuPage({ id }: { id: string }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchMenus();
