@@ -258,7 +258,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
 
   useEffect(() => {
     fetchData();
-  }, [type, activeType]);
+  }, [type, activeType, fetchData]);
 
   if (metLoading) {
     return (
