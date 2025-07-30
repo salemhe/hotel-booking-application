@@ -93,6 +93,14 @@ export default function HomePage() {
     setFilteredRestaurants(filtered);
   }, [restaurants, searchTerm, selectedLocation]);
 
+  useEffect(() => {
+    fetchRestaurants();
+  }, []);
+
+  useEffect(() => {
+    filterRestaurants();
+  }, [restaurants, searchTerm, selectedLocation, activeCategory, filterRestaurants]);
+
   // Create categorized restaurant lists
   const getPopularRestaurants = () => {
     return filteredRestaurants.slice(0, 8);
