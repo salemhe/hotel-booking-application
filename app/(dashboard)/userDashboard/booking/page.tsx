@@ -114,14 +114,21 @@ export default function BookingList() {
   };
 
   const handleCancelBooking = async (bookingId: string) => {
+    const booking = bookings.find(b => b._id === bookingId);
+    const isReservation = booking && 'reservationType' in booking;
+
     const confirmCancel = window.confirm(
-      "Are you sure you want to cancel this booking? This action cannot be undone."
+      `Are you sure you want to cancel this ${isReservation ? 'reservation' : 'booking'}? This action cannot be undone.`
     );
 
     if (!confirmCancel) return;
 
     try {
-      await API.patch(`/users/bookings/${bookingId}/cancel`);
+      if (isReservation) {
+        await ReservationService.cancelReservation(bookingId);
+      } else {
+        await API.patch(`/users/bookings/${bookingId}/cancel`);
+      }
 
       // Update local state
       setBookings(prev =>
@@ -132,10 +139,10 @@ export default function BookingList() {
         )
       );
 
-      toast.success("Booking cancelled successfully");
+      toast.success(`${isReservation ? 'Reservation' : 'Booking'} cancelled successfully`);
     } catch (error) {
-      console.error("Error cancelling booking:", error);
-      toast.error("Failed to cancel booking. Please try again.");
+      console.error("Error cancelling:", error);
+      toast.error(`Failed to cancel ${isReservation ? 'reservation' : 'booking'}. Please try again.`);
     }
   };
 
