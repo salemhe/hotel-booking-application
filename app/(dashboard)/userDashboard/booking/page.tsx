@@ -69,6 +69,55 @@ export default function BookingList() {
     }
   };
 
+  const handleCancelBooking = async (bookingId: string) => {
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this booking? This action cannot be undone."
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      await API.patch(`/users/bookings/${bookingId}/cancel`);
+
+      // Update local state
+      setBookings(prev =>
+        prev.map(booking =>
+          booking._id === bookingId
+            ? { ...booking, status: 'cancelled' }
+            : booking
+        )
+      );
+
+      toast.success("Booking cancelled successfully");
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      toast.error("Failed to cancel booking. Please try again.");
+    }
+  };
+
+  const handleModifyBooking = (bookingId: string) => {
+    // Navigate to modification page
+    router.push(`/userDashboard/booking/${bookingId}/edit`);
+  };
+
+  const canCancelBooking = (booking: Booking): boolean => {
+    const bookingDate = new Date(booking.date);
+    const now = new Date();
+    const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    // Can cancel if booking is more than 2 hours away and not already cancelled/completed
+    return hoursDiff > 2 && !['cancelled', 'completed'].includes(booking.status);
+  };
+
+  const canModifyBooking = (booking: Booking): boolean => {
+    const bookingDate = new Date(booking.date);
+    const now = new Date();
+    const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    // Can modify if booking is more than 4 hours away and not cancelled/completed
+    return hoursDiff > 4 && !['cancelled', 'completed'].includes(booking.status);
+  };
+
   useEffect(() => {
     (async () => {
       const id = await AuthService.getId();
