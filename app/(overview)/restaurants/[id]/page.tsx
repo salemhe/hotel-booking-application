@@ -114,17 +114,53 @@ const ReserveWidget = ({ restaurant }: { restaurant: Restaurant }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Available Time</label>
-            <select
-              value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-            >
-              <option value="">Select Time</option>
-              {restaurant.availableSlots.map((slot) => (
-                <option key={slot} value={slot}>{slot}</option>
-              ))}
-            </select>
+            <label className="block text-sm font-medium mb-2">
+              Available Time
+              {availabilityLoading && (
+                <span className="text-xs text-gray-500 ml-2">(Checking availability...)</span>
+              )}
+            </label>
+            {availability ? (
+              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                {availability.timeSlots.map((slot) => (
+                  <button
+                    key={slot.time}
+                    onClick={() => setSelectedTime(slot.time)}
+                    disabled={!slot.available}
+                    className={`p-2 text-sm border rounded-lg transition-colors ${
+                      selectedTime === slot.time
+                        ? 'border-teal-500 bg-teal-50 text-teal-700'
+                        : slot.available
+                        ? 'border-gray-200 hover:border-gray-300 bg-white'
+                        : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <div className="font-medium">{slot.time}</div>
+                    {slot.available ? (
+                      <div className="text-xs text-green-600">
+                        {slot.remaining} spots left
+                      </div>
+                    ) : (
+                      <div className="text-xs text-red-500">Fully booked</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <select
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              >
+                <option value="">Select Time</option>
+                {restaurant.availableSlots.map((slot) => (
+                  <option key={slot} value={slot}>{slot}</option>
+                ))}
+              </select>
+            )}
+            {availabilityError && (
+              <p className="text-xs text-amber-600 mt-1">{availabilityError}</p>
+            )}
           </div>
 
           <div>
