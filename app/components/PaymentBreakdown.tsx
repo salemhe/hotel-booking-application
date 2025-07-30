@@ -107,7 +107,7 @@ export function PaymentBreakdown() {
 
   useEffect(() => {
     fetchRestaurants();
-  }, []);
+  }, [fetchRestaurants]);
 
   return (
     <Card className="bg-white shadow-lg">
