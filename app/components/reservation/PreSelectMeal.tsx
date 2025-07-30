@@ -77,7 +77,7 @@ export default function PreSelectMeal({ id }: { id: string }) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [id, setMenuItems]);
 
     useEffect(() => {
         fetchMenuItems();
