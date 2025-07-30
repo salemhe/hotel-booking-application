@@ -210,7 +210,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     });
     setData(await data);
     setMetLoading(false)
-  }, [upcomingBookings, pastBookings, upcomingReservations, pastReservations]);
+  }, [bookings]);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
