@@ -174,7 +174,7 @@ export default function HomePage() {
         </div>
         <div className="absolute top-3 left-3">
           <Badge className="bg-green-600">
-            Guest's favourite
+            Guest&apos;s favourite
           </Badge>
         </div>
         {!restaurant.isOpen && (
