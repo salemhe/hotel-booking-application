@@ -277,7 +277,7 @@ export class AuthService {
   }
 
   private static async clearAuth():  Promise<void> {
-    await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+    await fetch(`https://hotel-booking-app-backend-30q1.onrender.com/api/auth/clear-token`, {
       method: "GET",
     });
   }
