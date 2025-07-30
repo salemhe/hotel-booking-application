@@ -100,7 +100,7 @@ export class ReservationService {
       console.error("Error creating reservation:", error);
       
       // If the endpoint doesn't exist, fallback to existing booking endpoint
-      if (error.response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         console.log("Fallback to existing booking endpoint");
         return await this.createBookingFallback(reservationData);
       }
@@ -192,7 +192,7 @@ export class ReservationService {
       console.error("Error fetching user reservations:", error);
       
       // Fallback to booking service
-      if (error.response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         try {
           const response = await API.get(`/users/bookings?userId=${userId}&type=restaurant`);
           return response.data.bookings || response.data || [];
@@ -219,7 +219,7 @@ export class ReservationService {
       console.error("Error fetching vendor reservations:", error);
       
       // Fallback to booking service
-      if (error.response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         try {
           const response = await API.get(`/users/bookings?vendorId=${vendorId}&type=restaurant`);
           return response.data.bookings || response.data || [];
@@ -259,7 +259,7 @@ export class ReservationService {
       console.error("Error updating reservation:", error);
       
       // Fallback to booking service
-      if (error.response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         try {
           const response = await API.patch(`/users/bookings/update/${reservationId}`, updateData);
           return response.data.booking || response.data;
@@ -299,7 +299,7 @@ export class ReservationService {
       console.error("Error cancelling reservation:", error);
       
       // Fallback to booking service
-      if (error.response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         try {
           const response = await API.patch(`/users/bookings/cancel/${reservationId}`);
           const result = response.data.booking || response.data;
@@ -338,7 +338,7 @@ export class ReservationService {
       console.error("Error fetching reservation:", error);
       
       // Fallback to booking service
-      if (error.response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         try {
           const response = await API.get(`/users/bookings?bookingId=${reservationId}`);
           const bookings = response.data.bookings || response.data || [];
