@@ -214,13 +214,13 @@ export default function AddMenuPage() {
       console.error("Error submitting menu:", error);
 
       // Show specific error message
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to add menu item";
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Failed to add menu item";
       toast.error(errorMessage);
 
       // Log detailed error for debugging
-      if (error?.response?.data) {
-        console.error("Server error details:", error.response.data);
-      }
+      console.error("Server error details:", error);
     } finally {
       setIsSubmitting(false);
     }
