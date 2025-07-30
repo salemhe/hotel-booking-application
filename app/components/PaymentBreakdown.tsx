@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/app/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Select,
   SelectContent,
@@ -90,7 +90,7 @@ export function PaymentBreakdown() {
   );
   const totalPages: number = Math.ceil(filteredBookings.length / itemsPerPage);
 
-  const fetchRestaurants = async () => {
+  const fetchRestaurants = useCallback(async () => {
     setLoading(true);
     try {
       // const data = await fetchPaymentBreakdown();
@@ -103,7 +103,7 @@ export function PaymentBreakdown() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchRestaurants();
