@@ -8,16 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/app/components/ui/badge';
 import { 
   Search, 
-  Star, 
-  MapPin, 
-  Clock, 
+  Star,
+  MapPin,
   Users,
-  Filter,
   Heart,
   Utensils,
   Bed,
-  ChevronDown,
-  Wifi
+  ChevronDown
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
