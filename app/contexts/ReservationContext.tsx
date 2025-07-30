@@ -148,16 +148,25 @@ export function ReservationsProvider({
       // Navigate to confirmation page
       router.push(`/completed/${reservation._id}`);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting reservation:", error);
 
       // Show specific error message
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to submit reservation. Please try again.";
+      let errorMessage = "Failed to submit reservation. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
+        errorMessage = axiosError.response?.data?.message || "Failed to submit reservation. Please try again.";
+      }
       toast.error(errorMessage);
 
       // Log detailed error for debugging
-      if (error?.response?.data) {
-        console.error("Server error details:", error.response.data);
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: unknown } };
+        if (axiosError.response?.data) {
+          console.error("Server error details:", axiosError.response.data);
+        }
       }
     } finally {
       setIsLoading(false);
