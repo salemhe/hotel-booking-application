@@ -300,13 +300,24 @@ export default function HomePage() {
                 <SelectContent>
                   <SelectItem value="1">1 Guest</SelectItem>
                   <SelectItem value="2">2 Guests</SelectItem>
+                  <SelectItem value="3">3 Guests</SelectItem>
                   <SelectItem value="4">4 Guests</SelectItem>
+                  <SelectItem value="5">5 Guests</SelectItem>
                   <SelectItem value="6">6 Guests</SelectItem>
-                  <SelectItem value="8+">8+ Guests</SelectItem>
+                  <SelectItem value="7">7 Guests</SelectItem>
+                  <SelectItem value="8">8 Guests</SelectItem>
+                  <SelectItem value="9">9 Guests</SelectItem>
+                  <SelectItem value="10">10 Guests</SelectItem>
+                  <SelectItem value="12">12 Guests</SelectItem>
+                  <SelectItem value="15">15+ Guests</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Button className="bg-teal-600 hover:bg-teal-700 px-8">
+              <Button
+                onClick={handleSearch}
+                className="bg-teal-600 hover:bg-teal-700 px-8"
+              >
+                <Search className="h-4 w-4 mr-2" />
                 Search
               </Button>
             </div>
