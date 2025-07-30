@@ -135,7 +135,7 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
       ...prev,
       [restaurantId]: timeout
     }));
-  }, [restaurants]);
+  }, [restaurants, hasMultipleImages]);
 
   useEffect(() => {
     return () => {
