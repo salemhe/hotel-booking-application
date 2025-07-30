@@ -11,6 +11,7 @@ import { Button } from "../ui/button"
 import { AuthService } from "@/app/lib/api/services/auth.service"
 // import { api } from '@/lib/axios-config'
 import API from '@/app/lib/api/axios'
+import WebSocketStatus from '../WebSocketStatus'
 
 export interface VendorProfile {
   _id: string
