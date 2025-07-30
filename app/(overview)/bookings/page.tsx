@@ -33,11 +33,7 @@ export default function BookingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('upcoming');
 
-  useEffect(() => {
-    filterBookings();
-  }, [bookings, searchTerm, activeTab]);
-
-  const filterBookings = () => {
+  const filterBookings = useCallback(() => {
     let filtered = bookings;
 
     // Filter by search term
@@ -51,19 +47,23 @@ export default function BookingsPage() {
     // Filter by tab
     switch (activeTab) {
       case 'upcoming':
-        filtered = filtered.filter(booking => 
+        filtered = filtered.filter(booking =>
           !isPast(parseISO(booking.date)) && booking.status !== 'cancelled'
         );
         break;
       case 'past':
-        filtered = filtered.filter(booking => 
+        filtered = filtered.filter(booking =>
           isPast(parseISO(booking.date)) || booking.status === 'completed'
         );
         break;
     }
 
     setFilteredBookings(filtered);
-  };
+  }, [bookings, searchTerm, activeTab]);
+
+  useEffect(() => {
+    filterBookings();
+  }, [filterBookings]);
 
   const handleCancelBooking = async (bookingId: string) => {
     try {
