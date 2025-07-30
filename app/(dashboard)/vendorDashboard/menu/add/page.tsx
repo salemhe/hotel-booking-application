@@ -170,13 +170,13 @@ export default function AddMenuPage() {
   const addArrayItem = (field: keyof MenuFormData, value: string) => {
     const currentArray = watchedData[field] as string[] || [];
     if (!currentArray.includes(value) && value.trim()) {
-      setValue(field, [...currentArray, value.trim()] as any);
+      setValue(field, [...currentArray, value.trim()] as string[]);
     }
   };
 
   const removeArrayItem = (field: keyof MenuFormData, index: number) => {
     const currentArray = watchedData[field] as string[] || [];
-    setValue(field, currentArray.filter((_, i) => i !== index) as any);
+    setValue(field, currentArray.filter((_, i) => i !== index) as string[]);
   };
 
   const saveDraft = () => {
