@@ -151,23 +151,7 @@ export default function BookingList() {
     router.push(`/userDashboard/booking/${bookingId}/edit`);
   };
 
-  const canCancelBooking = (booking: Booking): boolean => {
-    const bookingDate = new Date(booking.date);
-    const now = new Date();
-    const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-    // Can cancel if booking is more than 2 hours away and not already cancelled/completed
-    return hoursDiff > 2 && !['cancelled', 'completed'].includes(booking.status);
-  };
-
-  const canModifyBooking = (booking: Booking): boolean => {
-    const bookingDate = new Date(booking.date);
-    const now = new Date();
-    const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-
-    // Can modify if booking is more than 4 hours away and not cancelled/completed
-    return hoursDiff > 4 && !['cancelled', 'completed'].includes(booking.status);
-  };
 
   useEffect(() => {
     (async () => {
