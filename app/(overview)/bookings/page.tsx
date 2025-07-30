@@ -14,7 +14,6 @@ import {
   Search,
   Filter,
   MoreVertical,
-  Star,
   Eye,
   Edit,
   Trash2,
