@@ -110,7 +110,7 @@ export default function VendorDashboard() {
     </Card>
   );
 
-  const ReservationCard = ({ reservation, isCompact = false }: { reservation: any; isCompact?: boolean }) => {
+  const ReservationCard = ({ reservation, isCompact = false }: { reservation: { _id: string; customerName: string; date: string; time: string; guests: number; status: string; totalPrice: number }; isCompact?: boolean }) => {
     const statusColors = {
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
       confirmed: 'bg-green-100 text-green-800 border-green-200',
