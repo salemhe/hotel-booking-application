@@ -42,7 +42,7 @@ interface ReservationSummary {
 
 export default function PaymentSelectionPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  useSearchParams();
   
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'mobile' | 'bank'>('card');
   const [loading, setLoading] = useState(false);
