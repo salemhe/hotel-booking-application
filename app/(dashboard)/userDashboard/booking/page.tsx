@@ -457,10 +457,36 @@ function BookingCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Edit Booking</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">
-                  Cancel Booking
-                </DropdownMenuItem>
+                {canModify() && (
+                  <DropdownMenuItem
+                    onClick={() => onModify(booking._id)}
+                    className="flex items-center"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Modify Booking
+                  </DropdownMenuItem>
+                )}
+                {canCancel() && (
+                  <DropdownMenuItem
+                    onClick={() => onCancel(booking._id)}
+                    className="text-destructive flex items-center"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel Booking
+                  </DropdownMenuItem>
+                )}
+                {booking.status === 'completed' && (
+                  <DropdownMenuItem className="flex items-center">
+                    <Star className="h-4 w-4 mr-2" />
+                    Leave Review
+                  </DropdownMenuItem>
+                )}
+                {!canCancel() && !canModify() && booking.status !== 'completed' && (
+                  <DropdownMenuItem disabled className="text-gray-400">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Too late to modify
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
