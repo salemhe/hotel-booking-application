@@ -130,7 +130,7 @@ export const RealtimeReservationsWidget = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Today's Bookings</p>
+                <p className="text-sm font-medium text-gray-600">Today&apos;s Bookings</p>
                 <p className="text-2xl font-bold text-gray-900">{todayReservations.length}</p>
               </div>
               <div className="p-3 rounded-lg bg-blue-50">
