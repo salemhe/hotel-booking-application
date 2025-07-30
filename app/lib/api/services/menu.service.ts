@@ -76,9 +76,8 @@ export class MenuService {
       const createdMenuItem = response.data.menu || response.data;
 
       // Emit real-time socket event for menu creation
-      const socket = SocketService.getSocket();
-      if (socket && createdMenuItem.vendor) {
-        socket.emit('menu_updated', {
+      if (createdMenuItem.vendor) {
+        SocketService.safeEmit('menu_updated', {
           vendorId: createdMenuItem.vendor,
           action: 'create',
           newItem: createdMenuItem
@@ -156,9 +155,8 @@ export class MenuService {
       const updatedMenuItem = response.data.menu || response.data;
 
       // Emit real-time socket event for menu update
-      const socket = SocketService.getSocket();
-      if (socket && updatedMenuItem.vendor) {
-        socket.emit('menu_updated', {
+      if (updatedMenuItem.vendor) {
+        SocketService.safeEmit('menu_updated', {
           vendorId: updatedMenuItem.vendor,
           action: 'update',
           itemId: menuId,
@@ -183,10 +181,9 @@ export class MenuService {
       const response = await API.delete(`/vendors/menus/${menuId}`);
 
       // Emit real-time socket event for menu deletion
-      const socket = SocketService.getSocket();
-      if (socket) {
-        const vendorId = localStorage.getItem('vendorId'); // Fallback to get vendorId
-        socket.emit('menu_updated', {
+      const vendorId = localStorage.getItem('vendorId'); // Fallback to get vendorId
+      if (vendorId) {
+        SocketService.safeEmit('menu_updated', {
           vendorId,
           action: 'delete',
           itemId: menuId
@@ -216,9 +213,8 @@ export class MenuService {
       const updatedMenuItem = response.data.menu || response.data;
 
       // Emit real-time socket event for visibility toggle
-      const socket = SocketService.getSocket();
-      if (socket && updatedMenuItem.vendor) {
-        socket.emit('menu_updated', {
+      if (updatedMenuItem.vendor) {
+        SocketService.safeEmit('menu_updated', {
           vendorId: updatedMenuItem.vendor,
           action: 'visibility_toggle',
           itemId: menuId,
@@ -248,10 +244,9 @@ export class MenuService {
       });
 
       // Emit real-time socket event for bulk update
-      const socket = SocketService.getSocket();
-      if (socket) {
-        const vendorId = localStorage.getItem('vendorId'); // Fallback to get vendorId
-        socket.emit('menu_updated', {
+      const vendorId = localStorage.getItem('vendorId'); // Fallback to get vendorId
+      if (vendorId) {
+        SocketService.safeEmit('menu_updated', {
           vendorId,
           action: 'bulk_update',
           menuIds,
@@ -287,9 +282,8 @@ export class MenuService {
       const updatedMenuItem = response.data.menu || response.data;
 
       // Emit real-time socket event for image update
-      const socket = SocketService.getSocket();
-      if (socket && updatedMenuItem.vendor) {
-        socket.emit('menu_updated', {
+      if (updatedMenuItem.vendor) {
+        SocketService.safeEmit('menu_updated', {
           vendorId: updatedMenuItem.vendor,
           action: 'image_update',
           itemId: menuId,
