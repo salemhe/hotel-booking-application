@@ -232,6 +232,10 @@ export class AuthService {
   }
 
   static async setToken(token: string) {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("auth_token", token);
+    }
+    // Optionally, also send to backend if needed
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
     await fetch(`${backendUrl}/api/auth/set-vendor-token`, {
       method: "POST",
