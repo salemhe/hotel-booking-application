@@ -155,7 +155,7 @@ export const useRealtimeReservations = () => {
     try {
       // Update reservation status using ReservationService
       const updatedReservation = await ReservationService.updateReservation(reservationId, {
-        status: status as any
+        status: status as Reservation['status']
       });
 
       // Update local state with the response
