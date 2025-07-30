@@ -96,7 +96,7 @@ export class ReservationService {
       }
       
       return response.data.reservation || response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating reservation:", error);
       
       // If the endpoint doesn't exist, fallback to existing booking endpoint
@@ -188,7 +188,7 @@ export class ReservationService {
     try {
       const response = await API.get(`/users/reservations?userId=${userId}`);
       return response.data.reservations || response.data || [];
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching user reservations:", error);
       
       // Fallback to booking service
@@ -215,7 +215,7 @@ export class ReservationService {
     try {
       const response = await API.get(`/vendors/reservations?vendorId=${vendorId}`);
       return response.data.reservations || response.data || [];
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching vendor reservations:", error);
       
       // Fallback to booking service
@@ -255,7 +255,7 @@ export class ReservationService {
       }
       
       return updatedReservation;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating reservation:", error);
       
       // Fallback to booking service
@@ -295,7 +295,7 @@ export class ReservationService {
       }
       
       return cancelledReservation;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error cancelling reservation:", error);
       
       // Fallback to booking service
@@ -334,7 +334,7 @@ export class ReservationService {
     try {
       const response = await API.get(`/users/reservations/${reservationId}`);
       return response.data.reservation || response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching reservation:", error);
       
       // Fallback to booking service
@@ -368,7 +368,7 @@ export class ReservationService {
     try {
       const response = await API.get(`/vendors/availability?vendorId=${vendorId}&date=${date}&time=${time}&guests=${guests}`);
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error checking availability:", error);
       
       // Default to available if endpoint doesn't exist
