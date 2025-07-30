@@ -357,6 +357,10 @@ interface Booking {
   totalPrice: number;
   userId: string;
   vendorId: string;
+  time?: string;
+  reservationType?: string;
+  seatingPreference?: string;
+  additionalNote?: string;
 }
 
 function BookingCard({
