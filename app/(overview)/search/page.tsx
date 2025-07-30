@@ -27,9 +27,40 @@ const SearchResults = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Load search data from localStorage on component mount
+  // Load search data from URL parameters or localStorage on component mount
   useEffect(() => {
     setMounted(true);
+
+    // First check URL parameters
+    const urlQuery = searchParams.get('q');
+    const urlDate = searchParams.get('date');
+    const urlTime = searchParams.get('time');
+    const urlGuests = searchParams.get('guests');
+    const urlCategory = searchParams.get('category');
+
+    if (urlQuery || urlDate || urlTime || urlGuests) {
+      const urlSearchData: SearchData = {
+        query: urlQuery || '',
+        tab: urlCategory || 'Restaurant',
+        date: urlDate || undefined,
+        time: urlTime || undefined,
+        guests: urlGuests || undefined,
+        timestamp: new Date().toISOString()
+      };
+
+      setSearchData(urlSearchData);
+      setSearchQuery(urlQuery || '');
+
+      // Save to localStorage for persistence
+      localStorage.setItem('searchData', JSON.stringify(urlSearchData));
+
+      if (urlQuery) {
+        handleSearch(urlQuery);
+      }
+      return;
+    }
+
+    // Fall back to localStorage if no URL parameters
     const stored = localStorage.getItem('searchData');
     if (stored) {
       try {
@@ -43,7 +74,7 @@ const SearchResults = () => {
         console.error('Error parsing search data from localStorage:', error);
       }
     }
-  }, []);
+  }, [searchParams]);
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) return;
