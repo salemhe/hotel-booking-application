@@ -23,8 +23,9 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
-  
+
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Load search data from localStorage on component mount
   useEffect(() => {
