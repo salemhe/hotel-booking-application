@@ -84,7 +84,7 @@ export default function VendorDashboard() {
   const StatCard = ({ title, value, icon: Icon, color = "text-blue-600", bgColor = "bg-blue-50", change }: {
     title: string;
     value: string | number;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     color?: string;
     bgColor?: string;
     change?: string;
