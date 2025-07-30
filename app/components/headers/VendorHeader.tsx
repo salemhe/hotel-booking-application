@@ -130,6 +130,7 @@ function Header() {
           </div>
         </div>
         <div className="flex justify-center items-center gap-4">
+          <WebSocketStatus className="mr-2" />
           <BellDot />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
