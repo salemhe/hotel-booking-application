@@ -340,7 +340,7 @@ export default function VendorMenuPage() {
           </div>
           <div className="flex space-x-2">
             <Button variant="outline" className="flex items-center">
-              <Export className="h-4 w-4 mr-2" />
+              <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
             <MenuPopup />
