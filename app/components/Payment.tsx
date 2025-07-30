@@ -139,7 +139,7 @@ function calculateSplitPaymentAmount(
 
   useEffect(() => {
     fetchBooking(id);
-  }, [id]);
+  }, [id, fetchBooking]);
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-4 md:px-6 md:py-6">
