@@ -6,38 +6,8 @@ import { AuthService } from '@/app/lib/api/services/auth.service';
 import { ReservationService, ReservationResponse } from '@/app/lib/api/services/reservation.service';
 import { toast } from 'sonner';
 
-export interface Reservation {
-  _id: string;
-  reservationType: 'restaurant' | 'hotel';
-  customerName: string;
-  customerEmail: string;
-  date: string;
-  time: string;
-  guests: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  totalPrice: number;
-  meals?: Array<{
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    specialRequest?: string;
-  }>;
-  rooms?: Array<{
-    id: string;
-    type: string;
-    price: number;
-    nights: number;
-  }>;
-  seatingPreference?: string;
-  specialOccasion?: string;
-  specialRequest?: string;
-  vendorId: string;
-  businessName: string;
-  location: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Re-export the Reservation interface from the service for consistency
+export type Reservation = ReservationResponse;
 
 export const useRealtimeReservations = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
