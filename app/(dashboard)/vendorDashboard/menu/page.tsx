@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
-import { MenuService } from "@/app/lib/api/services/menu.service";
+import { MenuService, MenuItem } from "@/app/lib/api/services/menu.service";
 import { toast } from "sonner";
 import { MenuPopup } from "@/app/components/MenuPopup";
 import { Button } from "@/app/components/ui/button";
@@ -27,23 +27,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
 
-interface MenuItem {
-  _id: string;
-  vendor: string;
-  dishName: string;
-  description: string;
-  price: number;
-  category: string;
-  itemImage: string;
-  visible?: boolean;
-  preparationTime?: string;
-  spiceLevel?: string;
-  cuisineType?: string;
-  stockQuantity?: number;
-  dietaryInfo?: string[];
-  tags?: string[];
-  updatedAt?: string;
-}
+
 
 export default function VendorMenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -66,10 +50,16 @@ export default function VendorMenuPage() {
       setMenuItems(menuItems);
 
       console.log(`Loaded ${menuItems.length} menu items for vendor`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Menu fetch error:", error);
 
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to fetch menu items";
+      let errorMessage = "Failed to fetch menu items";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
+        errorMessage = axiosError.response?.data?.message || "Failed to fetch menu items";
+      }
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -134,10 +124,16 @@ export default function VendorMenuPage() {
       );
 
       toast.success(`Menu item ${newVisibility ? 'shown' : 'hidden'} successfully`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error toggling visibility:", error);
 
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to update visibility";
+      let errorMessage = "Failed to update visibility";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
+        errorMessage = axiosError.response?.data?.message || "Failed to update visibility";
+      }
       toast.error(errorMessage);
     }
   };
@@ -151,10 +147,16 @@ export default function VendorMenuPage() {
       await MenuService.deleteMenuItem(itemId);
       setMenuItems(prev => prev.filter(item => item._id !== itemId));
       toast.success("Menu item deleted successfully");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Delete error:", error);
 
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to delete menu item";
+      let errorMessage = "Failed to delete menu item";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
+        errorMessage = axiosError.response?.data?.message || "Failed to delete menu item";
+      }
       toast.error(errorMessage);
     }
   };
