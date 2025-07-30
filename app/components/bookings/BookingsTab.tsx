@@ -42,7 +42,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
 
   useEffect(() => {
     fetchMetrics();
-  }, []);
+  }, [fetchMetrics]);
 
   const tab: { name: string; tab: "upcoming" | "past"; number: number }[] = [
     {
