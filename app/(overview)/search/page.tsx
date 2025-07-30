@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -74,9 +74,9 @@ const SearchResults = () => {
         console.error('Error parsing search data from localStorage:', error);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, handleSearch]);
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = useCallback(async (query: string) => {
     if (!query.trim()) return;
     setLoading(true);
     
@@ -100,7 +100,7 @@ const SearchResults = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchData]);
 
   const handleNewSearch = (newSearchData: SearchData) => {
     setSearchQuery(newSearchData.query);
