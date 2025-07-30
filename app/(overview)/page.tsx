@@ -53,7 +53,7 @@ export default function HomePage() {
 
   useEffect(() => {
     filterRestaurants();
-  }, [restaurants, searchTerm, selectedLocation, activeCategory]);
+  }, [restaurants, searchTerm, selectedLocation, activeCategory, filterRestaurants]);
 
   const fetchRestaurants = async () => {
     setLoading(true);
