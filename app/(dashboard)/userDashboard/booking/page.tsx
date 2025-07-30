@@ -146,6 +146,8 @@ export default function BookingList() {
     }
   };
 
+  const router = useRouter();
+
   const handleModifyBooking = (bookingId: string) => {
     // Navigate to modification page
     router.push(`/userDashboard/booking/${bookingId}/edit`);
