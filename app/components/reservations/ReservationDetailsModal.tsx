@@ -5,13 +5,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/app/componen
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Separator } from '@/app/components/ui/separator';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  MapPin, 
-  Mail, 
-  Phone,
+import {
+  Calendar,
+  Clock,
+  Users,
+  MapPin,
+  Mail,
   Utensils,
   Bed,
   CheckCircle,
