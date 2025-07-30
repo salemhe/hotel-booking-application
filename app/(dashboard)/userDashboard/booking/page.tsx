@@ -55,13 +55,56 @@ export default function BookingList() {
   const fetchBooking = async () => {
     setIsLoading(true);
     try {
-      const bookings = await API.get(`/users/bookings`);
-      setBookings(bookings.data);
-      console.log(bookings.data);
+      const id = await AuthService.getId();
+
+      // Fetch both bookings and reservations
+      const [bookingsResponse, reservationsResponse] = await Promise.allSettled([
+        API.get(`/users/bookings`),
+        ReservationService.getUserReservations(id!)
+      ]);
+
+      let allBookings: Booking[] = [];
+
+      // Process bookings
+      if (bookingsResponse.status === 'fulfilled') {
+        allBookings = [...allBookings, ...bookingsResponse.value.data];
+      }
+
+      // Process reservations and transform them to booking format
+      if (reservationsResponse.status === 'fulfilled') {
+        const transformedReservations = reservationsResponse.value.map(reservation => ({
+          _id: reservation._id,
+          businessName: reservation.businessName,
+          date: reservation.date,
+          bookingDate: reservation.date,
+          guests: reservation.guests,
+          meals: reservation.meals?.map(meal => meal.name) || [],
+          menuId: reservation.meals?.[0]?.id || '',
+          partySize: reservation.guests,
+          specialRequest: reservation.specialRequest || '',
+          status: reservation.status,
+          tableNumber: reservation.guests, // Use guests as table number for reservations
+          tableType: `${reservation.guests}-seats`,
+          location: reservation.location,
+          image: reservation.image || '',
+          pricePerTable: reservation.totalPrice,
+          totalPrice: reservation.totalPrice,
+          userId: id!,
+          vendorId: reservation.vendorId,
+          time: reservation.time,
+          reservationType: reservation.reservationType,
+          seatingPreference: reservation.seatingPreference,
+          additionalNote: reservation.additionalNote
+        }));
+        allBookings = [...allBookings, ...transformedReservations];
+      }
+
+      setBookings(allBookings);
+      console.log(`Loaded ${allBookings.length} bookings/reservations`);
     } catch (error) {
       if (error instanceof AxiosError)
         console.error(
-          "Error fetching booking:",
+          "Error fetching bookings:",
           error.response?.data || error.message
         );
       throw error;
