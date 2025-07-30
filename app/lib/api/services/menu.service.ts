@@ -338,7 +338,7 @@ export class MenuService {
 
       const response = await API.get(`/vendors/menus/search?${params.toString()}`);
       return response.data.menus || response.data || [];
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error searching menu items:", error);
       // Fallback to getting all items and filtering client-side
       const allItems = await this.getVendorMenuItems(vendorId);
