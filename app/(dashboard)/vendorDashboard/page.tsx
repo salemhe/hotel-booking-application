@@ -258,7 +258,7 @@ export default function VendorDashboard() {
         />
       </div>
 
-      {/* Today's Reservations */}
+      {/* Today&apos;s Reservations */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
