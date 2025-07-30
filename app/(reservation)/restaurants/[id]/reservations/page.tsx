@@ -196,7 +196,7 @@ export default function ReservationDetailsPage() {
             <div className="space-y-6">
               {/* Current Reservation Info */}
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-3">Let's Plan For Your Visit</h4>
+                <h4 className="font-medium mb-3">Let&apos;s Plan For Your Visit</h4>
                 <p className="text-sm text-gray-600 mb-4">
                   Kindly provide answers to few questions below to enable us serve you better
                 </p>
