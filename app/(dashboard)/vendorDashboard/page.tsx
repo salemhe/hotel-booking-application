@@ -6,22 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/ca
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  TrendingUp, 
+import {
+  Calendar,
+  Clock,
+  Users,
   AlertCircle,
   CheckCircle,
   XCircle,
   Eye,
   Plus,
-  Bell,
   ArrowUpRight,
-  MapPin,
-  DollarSign,
-  Utensils,
-  Bed
+  DollarSign
 } from 'lucide-react';
 import { format, parseISO, isToday } from 'date-fns';
 import Link from 'next/link';
