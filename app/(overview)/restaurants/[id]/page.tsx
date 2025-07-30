@@ -48,9 +48,13 @@ interface Restaurant {
 }
 
 const ReserveWidget = ({ restaurant }: { restaurant: Restaurant }) => {
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [guestCount, setGuestCount] = useState('2');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Initialize with URL parameters if available
+  const [selectedDate, setSelectedDate] = useState(searchParams.get('date') || '');
+  const [selectedTime, setSelectedTime] = useState(searchParams.get('time') || '');
+  const [guestCount, setGuestCount] = useState(searchParams.get('guests') || '2');
   const [specialRequest, setSpecialRequest] = useState('');
 
   const handleReservation = () => {
