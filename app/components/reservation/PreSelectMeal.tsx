@@ -81,7 +81,7 @@ export default function PreSelectMeal({ id }: { id: string }) {
 
     useEffect(() => {
         fetchMenuItems();
-    }, [])
+    }, [fetchMenuItems])
       const menuFiltered = menuItems.filter((a) => a.category === activeTab);
 
   // const router = useRouter();
