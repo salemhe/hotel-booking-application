@@ -367,7 +367,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     });
     setDatas(await data);
     setIsLoading(false);
-  }, [bookings, reservations]);
+  }, [bookings]);
 
   useEffect(() => {
     fetchData();
