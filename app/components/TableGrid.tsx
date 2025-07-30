@@ -81,10 +81,10 @@ const TableGrid = ({ title, restaurants = DUMMY_DATA }: TableGridProps) => {
     return restaurant.image ? [restaurant.image] : ['/placeholder.jpg'];
   };
 
-  const hasMultipleImages = (restaurant: Restaurant) => {
+  const hasMultipleImages = useCallback((restaurant: Restaurant) => {
     const images = getImagesForRestaurant(restaurant);
     return images.length > 1;
-  };
+  }, []);
 
   const handleMouseEnter = (restaurantId: string) => {
     const restaurant = restaurants.find(r => (r._id || String(r.id)) === restaurantId);
@@ -288,10 +288,10 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
     return restaurant.image ? [restaurant.image] : ['/placeholder.jpg'];
   };
 
-  const hasMultipleImages = (restaurant: Restaurant) => {
+  const hasMultipleImages = useCallback((restaurant: Restaurant) => {
     const images = getImagesForRestaurant(restaurant);
     return images.length > 1;
-  };
+  }, []);
 
   const handleMouseEnter = (restaurantId: number) => {
     const restaurant = DUMMY_HOTEL_DATA.find(r => r.id === restaurantId);
