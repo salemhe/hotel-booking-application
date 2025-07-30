@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
-import API from "@/app/lib/api/axios";
-import { AxiosError } from "axios";
+import { MenuService } from "@/app/lib/api/services/menu.service";
 import { toast } from "sonner";
 import { MenuPopup } from "@/app/components/MenuPopup";
 import { Button } from "@/app/components/ui/button";
