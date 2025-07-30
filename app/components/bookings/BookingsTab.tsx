@@ -40,6 +40,39 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     pastReservations: 6,
   });
 
+  const fetchMetrics = useCallback(async () => {
+    setMetLoading(true)
+    const upcomingBookings = bookings.filter(
+      (c) => c.status === "Upcoming" && c.type === "Hotel"
+    );
+    const pastBookings = bookings.filter(
+      (c) => c.status === "Past" && c.type === "Hotel"
+    );
+    const upcomingReservations = bookings.filter(
+      (c) => c.status === "Upcoming" && c.type === "Restaurant"
+    );
+    const pastReservations = bookings.filter(
+      (c) => c.status === "Past" && c.type === "Restaurant"
+    );
+    const data = new Promise<{
+      upcomingBookings: number;
+      pastBookings: number;
+      upcomingReservations: number;
+      pastReservations: number;
+    }>((resolve) => {
+      setTimeout(() => {
+        resolve({
+          upcomingBookings: upcomingBookings.length,
+          pastBookings: pastBookings.length,
+          upcomingReservations: upcomingReservations.length,
+          pastReservations: pastReservations.length,
+        });
+      }, 500);
+    });
+    setData(await data);
+    setMetLoading(false)
+  }, [bookings]);
+
   useEffect(() => {
     fetchMetrics();
   }, [fetchMetrics]);
