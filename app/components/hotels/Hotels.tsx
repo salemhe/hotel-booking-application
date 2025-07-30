@@ -111,7 +111,7 @@ export default function Hotels() {
   // );
 
   // Debounced search function
-  const handleSearch = async (data?: string) => {
+  const handleSearch = useCallback(async (data?: string) => {
     setIsLoading(true);
     // applyFilters();
 
@@ -137,7 +137,7 @@ export default function Hotels() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
   // Effect to handle search params and filters
   // useEffect(() => {
