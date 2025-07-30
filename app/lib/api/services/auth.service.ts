@@ -5,19 +5,20 @@ import API from "../axios";
 import { SessionService } from "./session.service";
 import { DecodedToken } from "./userAuth.service";
 interface LoginResponse {
-  message: string;
-  profile: {
-    id: string;
-    name: string;
-    businessName: string;
-    businessType: string;
-    email: string;
-    address: string;
-    branch: string;
-    profileImage: string;
-    services: string[];
-    token: string;
-    onboarded: boolean;
+  message?: string;
+  token?: string;
+  profile?: {
+    id?: string;
+    name?: string;
+    businessName?: string;
+    businessType?: string;
+    email?: string;
+    address?: string;
+    branch?: string;
+    profileImage?: string;
+    services?: string[];
+    token?: string;
+    onboarded?: boolean;
   };
 }
 
