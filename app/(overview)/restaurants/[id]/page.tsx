@@ -213,7 +213,7 @@ export default function RestaurantPage() {
 
   useEffect(() => {
     fetchRestaurant();
-  }, [params.id]);
+  }, [params.id, fetchRestaurant]);
 
   const fetchRestaurant = async () => {
     try {
