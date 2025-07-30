@@ -58,6 +58,22 @@ const ReserveWidget = ({ restaurant }: { restaurant: Restaurant }) => {
   const [guestCount, setGuestCount] = useState(searchParams.get('guests') || '2');
   const [specialRequest, setSpecialRequest] = useState('');
 
+  // Real-time availability
+  const {
+    availability,
+    loading: availabilityLoading,
+    error: availabilityError,
+    checkAvailability,
+    validateBookingTime
+  } = useAvailability(restaurant._id);
+
+  // Check availability when date changes
+  useEffect(() => {
+    if (selectedDate) {
+      checkAvailability(selectedDate);
+    }
+  }, [selectedDate, checkAvailability]);
+
   const handleReservation = () => {
     // Validate required fields
     if (!selectedDate) {
