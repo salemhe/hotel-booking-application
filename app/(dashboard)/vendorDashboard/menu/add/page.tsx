@@ -18,18 +18,16 @@ import { Badge } from "@/app/components/ui/badge";
 import { Switch } from "@/app/components/ui/switch";
 import { Separator } from "@/app/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
-import { 
-  Upload, 
-  Save, 
-  Eye, 
-  ArrowLeft, 
-  Plus, 
-  X, 
+import {
+  Upload,
+  Save,
+  Eye,
+  ArrowLeft,
+  Plus,
+  X,
   Info,
-  Clock,
   DollarSign,
   Package,
-  Users,
   ChefHat,
   ImageIcon
 } from "lucide-react";
