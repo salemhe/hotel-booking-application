@@ -85,13 +85,19 @@ export default function VendorMenuPage() {
 
   const fetchMenuItems = async () => {
     try {
-      const menuResponse = await API.get(`/vendors/menus?vendorId=${user?.profile.id}`);
-      setMenuItems(menuResponse.data.menus || []);
-    } catch (error) {
-      console.log("menu fetch error", error);
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data.message);
+      if (!user?.profile.id) {
+        throw new Error("User profile not found");
       }
+
+      const menuItems = await MenuService.getVendorMenuItems(user.profile.id);
+      setMenuItems(menuItems);
+
+      console.log(`Loaded ${menuItems.length} menu items for vendor`);
+    } catch (error: any) {
+      console.error("Menu fetch error:", error);
+
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to fetch menu items";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
