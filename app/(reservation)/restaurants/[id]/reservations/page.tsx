@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -51,9 +51,9 @@ export default function ReservationDetailsPage() {
 
   useEffect(() => {
     fetchRestaurant();
-  }, [params.id]);
+  }, [params.id, fetchRestaurant]);
 
-  const fetchRestaurant = async () => {
+  const fetchRestaurant = useCallback(async () => {
     try {
       // Mock data for development
       const mockRestaurant: RestaurantInfo = {
@@ -71,7 +71,7 @@ export default function ReservationDetailsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
