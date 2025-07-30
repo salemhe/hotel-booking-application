@@ -120,43 +120,7 @@ export default function VendorMenuPage() {
     filterItemsCallback();
   }, [filterItemsCallback]);
 
-  const fetchMenuItems = async () => {
-    try {
-      if (!user?.profile.id) {
-        throw new Error("User profile not found");
-      }
 
-      const menuItems = await MenuService.getVendorMenuItems(user.profile.id);
-      setMenuItems(menuItems);
-
-      console.log(`Loaded ${menuItems.length} menu items for vendor`);
-    } catch (error: any) {
-      console.error("Menu fetch error:", error);
-
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to fetch menu items";
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterItems = () => {
-    let filtered = menuItems;
-
-    if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.dishName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (selectedCategory !== "All Category") {
-      filtered = filtered.filter(item => item.category === selectedCategory);
-    }
-
-    setFilteredItems(filtered);
-  };
 
   const handleToggleVisibility = async (itemId: string, currentVisibility: boolean) => {
     try {
