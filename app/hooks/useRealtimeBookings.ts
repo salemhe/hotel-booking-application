@@ -287,9 +287,9 @@ export const useRealtimeBookings = () => {
       console.log(`Updating booking ${bookingId} to status: ${status}`);
       
       setBookings(prev => 
-        prev.map(booking => 
-          booking._id === bookingId 
-            ? { ...booking, status: status as any }
+        prev.map(booking =>
+          booking._id === bookingId
+            ? { ...booking, status: status as UserBooking['status'] }
             : booking
         )
       );
