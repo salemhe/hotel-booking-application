@@ -147,7 +147,7 @@ export const useRealtimeReservations = () => {
 
       toast.success(`Reservation ${status} successfully`);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating reservation status:', error);
 
       // Show specific error message
