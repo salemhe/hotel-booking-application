@@ -211,10 +211,6 @@ export default function RestaurantPage() {
   const [loading, setLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  useEffect(() => {
-    fetchRestaurant();
-  }, [params.id, fetchRestaurant]);
-
   const fetchRestaurant = useCallback(async () => {
     try {
       // Mock data for development
