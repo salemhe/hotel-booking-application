@@ -212,6 +212,7 @@ const BookingsTab = ({ type }: { type: "bookings" | "reservations" }) => {
     "Top Hotels in Lagos",
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const bookings_unused = [
     {
       name: "Eko Hotel & Suites",
