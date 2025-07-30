@@ -38,6 +38,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     countryCode: "+234",
     email: "",
     password: "",
+    businessType: "restaurant",
     openingDays: {
       Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false,
     },
@@ -91,6 +92,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           countryCode: "+234",
           email: "",
           password: "",
+          businessType: "restaurant",
           openingDays: { Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false },
           opensAt: "08:00",
           closesAt: "22:00",
@@ -134,6 +136,14 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">Password*</label>
               <Input id="password" type="password" placeholder="Password" value={formData.password} onChange={e => setFormData(prev => ({ ...prev, password: e.target.value }))} className="w-full" />
+            </div>
+            {/* Business Type */}
+            <div className="space-y-2">
+              <label htmlFor="businessType" className="text-sm font-medium">Business Type*</label>
+              <select id="businessType" value={formData.businessType} onChange={e => setFormData(prev => ({ ...prev, businessType: e.target.value }))} className="w-full border rounded px-3 py-2">
+                <option value="restaurant">Restaurant</option>
+                <option value="hotel">Hotel</option>
+              </select>
             </div>
             {/* Branch Name */}
             <div className="space-y-2">
@@ -301,11 +311,11 @@ export default function BranchesDashboard() {
               </Button>
               <div className="flex items-center space-x-2">
                 <Avatar>
-                  <AvatarFallback>JE</AvatarFallback>
+                  <AvatarFallback>{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).profile.businessName?.split(' ').map((n: string) => n[0]).join('') : 'SA'}</AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block">
-                  <div className="text-sm font-medium">Joseph Eyeaokah</div>
-                  <div className="text-xs text-gray-500">Admin</div>
+                  <div className="text-sm font-medium">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).profile.businessName : 'Super Admin'}</div>
+                  <div className="text-xs text-gray-500">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).role : 'Admin'}</div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </div>

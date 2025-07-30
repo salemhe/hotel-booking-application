@@ -243,13 +243,10 @@ export class AuthService {
   }
 
   static async getToken(): Promise<string | null> {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
-    const response = await fetch(`${backendUrl}/api/auth/get-vendor-token`, {
-      method: "GET",
-      credentials: "include"
-    });
-    const data = await response.json();
-    return data.token;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("auth_token");
+    }
+    return null;
   }
   static getUser(): AuthUser | null {
     if (typeof window !== "undefined") {

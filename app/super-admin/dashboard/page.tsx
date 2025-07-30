@@ -8,9 +8,18 @@ import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
 import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";
 import { BookingService } from "@/app/lib/api/services/bookings.service";
 import { DashboardService } from "@/app/lib/api/services/dashboard.service";
+import { ProfileProvider, useProfile } from "../ProfileContext";
 
 export default function SuperAdminDashboard() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  return (
+    <ProfileProvider>
+      <SuperAdminDashboardContent />
+    </ProfileProvider>
+  );
+}
+
+function SuperAdminDashboardContent() {
+  const { profile } = useProfile();
   const [bookings, setBookings] = useState<Record<string, unknown>[]>([]);
   const [payments, setPayments] = useState<Record<string, unknown>[]>([]);
   const [branches, setBranches] = useState<Record<string, unknown>[]>([]);
@@ -21,12 +30,8 @@ export default function SuperAdminDashboard() {
     async function fetchData() {
       setLoading(true);
       try {
-        // Get current user
         const user = AuthService.getUser();
         if (user && user.id) {
-          // Fetch super-admin profile
-          const profileData = await AuthService.fetchMyProfile(user.id);
-          setProfile(profileData);
           // Fetch real bookings for this super-admin
           const bookingsData = await BookingService.getBookings({ vendorId: user.id });
           setBookings(bookingsData || []);

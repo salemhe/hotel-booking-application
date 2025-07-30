@@ -49,8 +49,8 @@ export class BookingService {
     try {
       const queryString = new URLSearchParams(params).toString();
       const endpoint = queryString
-        ? `users/bookings?${queryString}`
-        : "users/bookings";
+        ? `bookings?${queryString}`
+        : "bookings";
       const response = await API.get(endpoint);
       return response.data;
     } catch (error) {
