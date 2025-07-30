@@ -123,26 +123,21 @@ export default function VendorMenuPage() {
 
   const handleToggleVisibility = async (itemId: string, currentVisibility: boolean) => {
     try {
-      await API.patch(`/vendors/menus/${itemId}/visibility`, { visible: !currentVisibility });
+      const newVisibility = !currentVisibility;
+      const updatedItem = await MenuService.toggleVisibility(itemId, newVisibility);
+
       setMenuItems(prev =>
         prev.map(item =>
-          item._id === itemId ? { ...item, visible: !currentVisibility } : item
+          item._id === itemId ? updatedItem : item
         )
       );
-      toast.success(`Menu item ${!currentVisibility ? 'shown' : 'hidden'} successfully`);
 
-      // Emit socket event for real-time update
-      const socket = SocketService.getSocket();
-      if (socket) {
-        socket.emit('menu_updated', {
-          vendorId: user?.profile.id,
-          action: 'visibility_toggle',
-          itemId,
-          visible: !currentVisibility
-        });
-      }
-    } catch (error) {
-      toast.error("Failed to update visibility");
+      toast.success(`Menu item ${newVisibility ? 'shown' : 'hidden'} successfully`);
+    } catch (error: any) {
+      console.error("Error toggling visibility:", error);
+
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to update visibility";
+      toast.error(errorMessage);
     }
   };
 
