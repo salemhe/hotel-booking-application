@@ -224,7 +224,7 @@ export default function Hotels() {
     }
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = restaurants;
     // if (cuisineFilter.length > 0) {
     //   filtered = filtered.filter((restaurant) =>
@@ -256,7 +256,7 @@ export default function Hotels() {
 
     setFilteredRestaurants(filtered);
     setCurrentPage(1);
-  };
+  }, [restaurants, searchQuery, locationFilter]);
 
   const handlePriceChange = (price: string) => {
     setPriceFilter((prev) =>
