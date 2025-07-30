@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { MenuService } from "@/app/lib/api/services/menu.service";
 import { toast } from "sonner";
