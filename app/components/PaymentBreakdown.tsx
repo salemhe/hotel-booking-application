@@ -103,7 +103,7 @@ export function PaymentBreakdown() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     fetchRestaurants();
