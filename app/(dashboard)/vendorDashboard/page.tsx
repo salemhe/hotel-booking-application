@@ -51,10 +51,8 @@ export default function VendorDashboard() {
 
   useEffect(() => {
     if (reservations.length > 0) {
-      const today = new Date();
       const todayReservations = reservations.filter(r => isToday(parseISO(r.date)));
       const pending = reservations.filter(r => r.status === 'pending');
-      const unpaidReservations = reservations.filter(r => r.status !== 'cancelled');
       
       setStats({
         reservationsToday: todayReservations.length,
