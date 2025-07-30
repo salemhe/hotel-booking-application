@@ -116,7 +116,7 @@ export const useAvailability = (restaurantId: string) => {
     socket.emit('join_restaurant_room', { restaurantId });
     
     // Listen for availability updates
-    const handleAvailabilityUpdate = (data: any) => {
+    const handleAvailabilityUpdate = (data: { restaurantId: string; date: string; timeSlots?: Array<{ time: string; [key: string]: unknown }> }) => {
       if (data.restaurantId === restaurantId) {
         setAvailability(prev => {
           if (!prev || prev.date !== data.date) return prev;
@@ -124,7 +124,7 @@ export const useAvailability = (restaurantId: string) => {
           return {
             ...prev,
             timeSlots: prev.timeSlots.map(slot => {
-              const update = data.timeSlots?.find((ts: any) => ts.time === slot.time);
+              const update = data.timeSlots?.find((ts) => ts.time === slot.time);
               return update ? { ...slot, ...update } : slot;
             })
           };
