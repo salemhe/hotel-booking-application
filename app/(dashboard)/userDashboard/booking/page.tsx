@@ -41,7 +41,7 @@ import { AxiosError } from "axios";
 import API from "@/app/lib/api/userAxios";
 import { AuthService, UserProfile } from "@/app/lib/api/services/userAuth.service";
 import { toast } from "sonner";
-import { Edit, X, Calendar, Clock, AlertTriangle } from "lucide-react";
+import { Edit, X, Calendar, Clock, AlertTriangle, Star } from "lucide-react";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");
