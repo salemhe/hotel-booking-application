@@ -69,17 +69,15 @@ export const useRealtimeReservations = () => {
           }
         });
 
-        // Fetch initial reservations from API
+        // Fetch initial reservations using ReservationService
         try {
-          const response = await API.get(`/vendors/reservations?vendorId=${user.profile.id}`);
+          const reservations = await ReservationService.getVendorReservations(user.profile.id);
+          setReservations(reservations);
 
-          if (response.data && Array.isArray(response.data.reservations)) {
-            setReservations(response.data.reservations);
-          } else if (response.data && Array.isArray(response.data)) {
-            setReservations(response.data);
+          if (reservations.length === 0) {
+            console.log("No reservations found for vendor:", user.profile.id);
           } else {
-            // Fallback to empty array if no reservations found
-            setReservations([]);
+            console.log(`Loaded ${reservations.length} reservations for vendor`);
           }
         } catch (error) {
           console.error('Error fetching reservations:', error);
@@ -97,7 +95,7 @@ export const useRealtimeReservations = () => {
               status: 'pending',
               totalPrice: 45000,
               meals: [
-                { id: '1', name: 'Sample Dish', price: 15000, quantity: 2 }
+                { id: '1', name: 'Sample Dish', price: 15000, quantity: 2, category: 'Main Course' }
               ],
               vendorId: user.profile.id,
               businessName: user.profile.businessName || 'Your Restaurant',
