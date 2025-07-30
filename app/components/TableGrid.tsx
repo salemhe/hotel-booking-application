@@ -342,7 +342,7 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
       ...prev,
       [restaurantId]: timeout
     }));
-  }, []);
+  }, [hasMultipleImages]);
 
   useEffect(() => {
     return () => {
