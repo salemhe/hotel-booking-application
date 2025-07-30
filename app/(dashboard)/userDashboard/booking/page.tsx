@@ -322,6 +322,34 @@ function BookingCard({
     setReceipt(booking);
   };
 
+  const canCancel = (): boolean => {
+    const bookingDate = new Date(booking.date);
+    const now = new Date();
+    const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return hoursDiff > 2 && !['cancelled', 'completed'].includes(booking.status);
+  };
+
+  const canModify = (): boolean => {
+    const bookingDate = new Date(booking.date);
+    const now = new Date();
+    const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return hoursDiff > 4 && !['cancelled', 'completed'].includes(booking.status);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-500';
+      case 'cancelled': return 'bg-red-500';
+      case 'completed': return 'bg-blue-500';
+      case 'pending': return 'bg-yellow-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative aspect-[4/3]">
