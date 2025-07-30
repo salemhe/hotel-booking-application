@@ -87,9 +87,8 @@ export class ReservationService {
       const response = await API.post("/users/reservations", reservationData);
       
       // Emit real-time event to vendor
-      const socket = SocketService.getSocket();
-      if (socket && reservationData.vendorId) {
-        socket.emit("new_reservation", {
+      if (reservationData.vendorId) {
+        SocketService.safeEmit("new_reservation", {
           vendorId: reservationData.vendorId,
           reservation: response.data.reservation || response.data,
           action: "create"
