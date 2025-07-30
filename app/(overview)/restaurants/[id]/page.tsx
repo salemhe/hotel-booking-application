@@ -85,6 +85,15 @@ const ReserveWidget = ({ restaurant }: { restaurant: Restaurant }) => {
       return;
     }
 
+    // Validate booking time with real-time availability
+    if (availability) {
+      const validation = validateBookingTime(selectedDate, selectedTime);
+      if (!validation.valid) {
+        alert(validation.reason || 'This time slot is not available');
+        return;
+      }
+    }
+
     // Navigate to reservation page with context
     const params = new URLSearchParams({
       date: selectedDate,
