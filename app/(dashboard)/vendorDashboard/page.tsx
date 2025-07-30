@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRealtimeReservations, Reservation } from '@/app/hooks/useRealtimeReservations';
+import { useRealtimeReservations } from '@/app/hooks/useRealtimeReservations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
