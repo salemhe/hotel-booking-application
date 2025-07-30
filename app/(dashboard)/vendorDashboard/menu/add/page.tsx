@@ -210,7 +210,7 @@ export default function AddMenuPage() {
 
       toast.success("Menu item added successfully!");
       router.push("/vendorDashboard/menu");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting menu:", error);
 
       // Show specific error message
