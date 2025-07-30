@@ -135,7 +135,7 @@ function calculateSplitPaymentAmount(
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     fetchBooking(id);
