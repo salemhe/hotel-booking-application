@@ -208,6 +208,7 @@ export default function Hotels() {
     sortOrder,
     sortBy,
     restaurants,
+    applyFilters,
   ]);
 
   const paginatedRestaurants = filteredRestaurants.slice(
