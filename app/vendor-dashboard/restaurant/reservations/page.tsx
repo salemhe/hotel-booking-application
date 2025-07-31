@@ -1,6 +1,5 @@
 "use client";
 
-import { useRealtimeReservations } from "@/app/hooks/useRealtimeReservations";
 import { RealtimeReservations } from "@/app/components/reservations/RealtimeReservations";
 
 export default function VendorReservationsPage() {
