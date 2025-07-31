@@ -65,20 +65,20 @@ export const useRealtimeReservations = () => {
         // Set up event listeners
         SocketService.onNewReservation((data) => {
           console.log('New reservation received:', data);
-          addReservation(data.reservation);
+          addReservation(data.reservation as Reservation);
         });
 
         SocketService.onReservationUpdate((data) => {
           console.log('Reservation updated:', data);
-          updateReservation(data.reservation);
+          updateReservation(data.reservation as Reservation);
         });
 
         SocketService.onReservationCancelled((data) => {
           console.log('Reservation cancelled:', data);
           if (data.action === 'remove') {
-            removeReservation(data.reservationId);
+            removeReservation(data.reservationId as Reservation['_id']);
           } else {
-            updateReservation(data.reservation);
+            updateReservation(data.reservation as Reservation);
           }
         });
 
