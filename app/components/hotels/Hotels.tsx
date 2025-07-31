@@ -199,18 +199,7 @@ export default function Hotels() {
     setCurrentPage(1);
   };
 
-  useEffect(() => {
-    applyFilters();
-  }, [
-    cuisineFilter,
-    priceFilter,
-    ratingFilter,
-    sortOrder,
-    sortBy,
-    restaurants,
-    applyFilters,
-  ]);
-
+ 
   const paginatedRestaurants = filteredRestaurants.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -258,6 +247,19 @@ export default function Hotels() {
     setFilteredRestaurants(filtered);
     setCurrentPage(1);
   }, [restaurants, searchQuery, locationFilter]);
+
+   useEffect(() => {
+    applyFilters();
+  }, [
+    cuisineFilter,
+    priceFilter,
+    ratingFilter,
+    sortOrder,
+    sortBy,
+    restaurants,
+    applyFilters,
+  ]);
+
 
   const handlePriceChange = (price: string) => {
     setPriceFilter((prev) =>
