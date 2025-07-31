@@ -398,7 +398,7 @@ export class ReservationService {
       console.error("Error checking availability:", error);
       
       // Default to available if endpoint doesn't exist
-      if (error.response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         return { available: true, message: "Availability check not implemented" };
       }
       

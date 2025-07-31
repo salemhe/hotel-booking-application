@@ -4,7 +4,7 @@ import {
   Paper, IconButton, Collapse, Box, Typography, CircularProgress
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
-import { useReservationsSocket, Reservation } from "../hooks/useReservationsSocket";
+import { Reservation, useReservationsSocket } from "@/hooks/useReservationSocket";
 
 interface ReservationsTableProps {
   apiUrl: string;
