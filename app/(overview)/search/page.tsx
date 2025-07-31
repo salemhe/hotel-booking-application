@@ -1,5 +1,6 @@
 "use client"
-import React, { useState, useEffect, useCallback } from 'react';
+
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Image from 'next/image';
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -15,7 +16,18 @@ interface SearchData {
   timestamp: string;
 }
 
-const SearchResults = () => {
+const LoadingFallback = () => (
+  <div className="min-h-screen mt-[100px] bg-gray-50">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-600">Loading...</span>
+      </div>
+    </div>
+  </div>
+);
+
+const SearchContent = () => {
   const [selectedCuisine, setSelectedCuisine] = useState('International');
   const [priceRange, setPriceRange] = useState([10000, 70000]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -316,4 +328,13 @@ const SearchResults = () => {
   );
 };
 
-export default SearchResults;
+// Add this wrapper component
+const Page = () => {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SearchContent />
+    </Suspense>
+  );
+};
+
+export default Page;
