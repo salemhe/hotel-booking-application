@@ -182,7 +182,19 @@ export class ReservationService {
         SocketService.safeEmit("new_reservation", {
           vendorId: reservationData.vendorId,
           reservation: reservationResult,
-          action: "create"
+          action: "create",
+          customerName: reservationData.customerName,
+          businessName: reservationData.businessName
+        });
+
+        console.log("✅ Emitted new_reservation event (fallback) to vendor:", reservationData.vendorId);
+      }
+
+      // Also emit to user for confirmation
+      if (reservationData.customerEmail) {
+        SocketService.safeEmit("reservation_created", {
+          reservation: reservationResult,
+          customerEmail: reservationData.customerEmail
         });
       }
 
