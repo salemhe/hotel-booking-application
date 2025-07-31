@@ -307,7 +307,8 @@ export default function MenuManagementPage() {
               src={item.image}
               alt={item.name}
               className="w-12 h-12 rounded object-cover"
-              fill
+              width={48}
+              height={48}
             />
             <div>
               <div className="font-medium">{item.name}</div>
