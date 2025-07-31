@@ -194,6 +194,48 @@ export default function MenuManagementPage() {
   const [selectedStatus] = useState("all");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
+  // Initialize websocket connection for real-time updates
+  useEffect(() => {
+    const initializeSocket = async () => {
+      try {
+        const user = AuthService.getUser();
+        if (user?.profile?.id) {
+          SocketService.connect(user.profile.id, 'vendor');
+          SocketService.joinVendorRoom(user.profile.id);
+
+          // Listen for real-time reservation updates
+          SocketService.onNewReservation((data) => {
+            console.log('New reservation received:', data);
+            // You can add a toast notification here
+          });
+
+          SocketService.onReservationUpdate((data) => {
+            console.log('Reservation updated:', data);
+          });
+
+          // Listen for menu updates
+          SocketService.onMenuUpdate((data) => {
+            console.log('Menu update received:', data);
+          });
+        }
+      } catch (error) {
+        console.error('Error initializing socket:', error);
+      }
+    };
+
+    initializeSocket();
+
+    return () => {
+      const user = AuthService.getUser();
+      if (user?.profile?.id) {
+        SocketService.leaveVendorRoom(user.profile.id);
+      }
+      SocketService.removeListener('new_reservation');
+      SocketService.removeListener('reservation_updated');
+      SocketService.removeListener('menu_updated');
+    };
+  }, []);
+
   const categories = [
     { value: "all", label: "All Category" },
     { value: "main-dish", label: "Main Dish" },
