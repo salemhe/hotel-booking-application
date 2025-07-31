@@ -4,21 +4,21 @@ import { jwtDecode } from "jwt-decode";
 import API from "../axios";
 import { SessionService } from "./session.service";
 import { DecodedToken } from "./userAuth.service";
-import { getFrontendUrl } from "@/app/lib/config";
 interface LoginResponse {
-  message: string;
-  profile: {
-    id: string;
-    name: string;
-    businessName: string;
-    businessType: string;
-    email: string;
-    address: string;
-    branch: string;
-    profileImage: string;
-    services: string[];
-    token: string;
-    onboarded: boolean;
+  message?: string;
+  token?: string;
+  profile?: {
+    id?: string;
+    name?: string;
+    businessName?: string;
+    businessType?: string;
+    email?: string;
+    address?: string;
+    branch?: string;
+    profileImage?: string;
+    services?: string[];
+    token?: string;
+    onboarded?: boolean;
   };
 }
 
@@ -233,6 +233,10 @@ export class AuthService {
   }
 
   static async setToken(token: string) {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("auth_token", token);
+    }
+    // Optionally, also send to backend if needed
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
     await fetch(`${backendUrl}/api/auth/set-vendor-token`, {
       method: "POST",
@@ -243,13 +247,10 @@ export class AuthService {
   }
 
   static async getToken(): Promise<string | null> {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
-    const response = await fetch(`${backendUrl}/api/auth/get-vendor-token`, {
-      method: "GET",
-      credentials: "include"
-    });
-    const data = await response.json();
-    return data.token;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("auth_token");
+    }
+    return null;
   }
   static getUser(): AuthUser | null {
     if (typeof window !== "undefined") {
@@ -280,7 +281,7 @@ export class AuthService {
   }
 
   private static async clearAuth():  Promise<void> {
-    await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+    await fetch(`https://hotel-booking-app-backend-30q1.onrender.com/api/auth/clear-token`, {
       method: "GET",
     });
   }

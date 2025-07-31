@@ -63,7 +63,7 @@ export class AuthService {
   }
 
   static async getToken(): Promise<string | null> {
-    const response = await fetch(`${getFrontendUrl()}/api/auth/get-user-token`, {
+    const response = await fetch(`https://hotel-booking-app-backend-30q1.onrender.com/api/auth/get-user-token`, {
       method: "GET",
     });
     const data = await response.json();

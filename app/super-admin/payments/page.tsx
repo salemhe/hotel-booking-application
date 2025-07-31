@@ -148,11 +148,11 @@ export default function SuperAdminPayments() {
               <div className="flex items-center space-x-2">
                 <Avatar>
                   <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                  <AvatarFallback>SA</AvatarFallback>
+                  <AvatarFallback>{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).profile.businessName?.split(' ').map((n: string) => n[0]).join('') : 'SA'}</AvatarFallback>
                 </Avatar>
                 <div className="text-sm">
-                  <div className="font-medium">Super Admin</div>
-                  <div className="text-gray-500">Admin</div>
+                  <div className="font-medium">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).profile.businessName : 'Super Admin'}</div>
+                  <div className="text-gray-500">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).role : 'Admin'}</div>
                 </div>
                 <ChevronDown className="h-4 w-4 text-gray-400" />
               </div>
