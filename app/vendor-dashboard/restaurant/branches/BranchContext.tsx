@@ -37,14 +37,31 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
   const fetchBranches = async () => {
-    const res = await fetch("/api/branches");
-    const data = await res.json();
-    setBranches(data);
-    if (!selectedBranch && data.length > 0) setSelectedBranch(data[0]);
-    if (selectedBranch) {
-      // Update selectedBranch if it exists in the new data
-      const found = data.find((b: Branch) => b.id === selectedBranch.id);
-      if (found) setSelectedBranch(found);
+    try {
+      const res = await fetch("/api/branches");
+
+      if (!res.ok) {
+        console.error("Failed to fetch branches:", res.status, res.statusText);
+        // Set empty array for branches if API fails
+        setBranches([]);
+        return;
+      }
+
+      const data = await res.json();
+      setBranches(Array.isArray(data) ? data : []);
+
+      if (!selectedBranch && data.length > 0) {
+        setSelectedBranch(data[0]);
+      }
+
+      if (selectedBranch) {
+        // Update selectedBranch if it exists in the new data
+        const found = data.find((b: Branch) => b.id === selectedBranch.id);
+        if (found) setSelectedBranch(found);
+      }
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+      setBranches([]);
     }
   };
 

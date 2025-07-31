@@ -26,33 +26,45 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
   useEffect(() => {
     // Check for saved auth data in localStorage on component mount
-    const savedUser = localStorage.getItem('user');
-    const savedToken = localStorage.getItem('token');
-    
-    if (savedUser && savedToken) {
-      setUser(JSON.parse(savedUser));
-      setToken(savedToken);
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('user');
+      const savedToken = localStorage.getItem('token');
+
+      if (savedUser && savedToken) {
+        try {
+          setUser(JSON.parse(savedUser));
+          setToken(savedToken);
+        } catch (error) {
+          console.error('Error parsing saved user data:', error);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        }
+      }
     }
-    
+
     setLoading(false);
   }, []);
 
   const login = (userData: User, authToken: string) => {
     setUser(userData);
     setToken(authToken);
-    
+
     // Save to localStorage for persistence
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', authToken);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('token', authToken);
+    }
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
-    
+
     // Clear localStorage
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    }
   };
 
   return (

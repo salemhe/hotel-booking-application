@@ -57,7 +57,7 @@ export default function BookingInfo({ id }: { id: string }) {
     };
 
     fetchBookingData();
-  }, []);
+  }, [id]);
   // Sample booking data
   // const booking = {
   //   id: "BK12345",
@@ -164,4 +164,3 @@ export default function BookingInfo({ id }: { id: string }) {
     </Card>
   )
 }
-

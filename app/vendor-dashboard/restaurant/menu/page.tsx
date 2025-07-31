@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import SocketService from "@/app/lib/socket";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import {
   Plus,
   Search,
@@ -192,6 +194,48 @@ export default function MenuManagementPage() {
   const [selectedStatus] = useState("all");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
+  // Initialize websocket connection for real-time updates
+  useEffect(() => {
+    const initializeSocket = async () => {
+      try {
+        const user = AuthService.getUser();
+        if (user?.profile?.id) {
+          SocketService.connect(user.profile.id, 'vendor');
+          SocketService.joinVendorRoom(user.profile.id);
+
+          // Listen for real-time reservation updates
+          SocketService.onNewReservation((data) => {
+            console.log('New reservation received:', data);
+            // You can add a toast notification here
+          });
+
+          SocketService.onReservationUpdate((data) => {
+            console.log('Reservation updated:', data);
+          });
+
+          // Listen for menu updates
+          SocketService.onMenuUpdate((data) => {
+            console.log('Menu update received:', data);
+          });
+        }
+      } catch (error) {
+        console.error('Error initializing socket:', error);
+      }
+    };
+
+    initializeSocket();
+
+    return () => {
+      const user = AuthService.getUser();
+      if (user?.profile?.id) {
+        SocketService.leaveVendorRoom(user.profile.id);
+      }
+      SocketService.removeListener('new_reservation');
+      SocketService.removeListener('reservation_updated');
+      SocketService.removeListener('menu_updated');
+    };
+  }, []);
+
   const categories = [
     { value: "all", label: "All Category" },
     { value: "main-dish", label: "Main Dish" },
@@ -226,11 +270,12 @@ export default function MenuManagementPage() {
             src={item.image}
             alt={item.name}
             className="w-full h-48 object-cover"
+            width={400}
+            height={200}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = `https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop&crop=center`;
             }}
-            fill
           />
           <div className="absolute top-2 right-2">
             <DropdownMenu>
@@ -306,7 +351,8 @@ export default function MenuManagementPage() {
               src={item.image}
               alt={item.name}
               className="w-12 h-12 rounded object-cover"
-              fill
+              width={48}
+              height={48}
             />
             <div>
               <div className="font-medium">{item.name}</div>
