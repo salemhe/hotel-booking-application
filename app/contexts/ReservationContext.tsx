@@ -60,6 +60,37 @@ export function ReservationsProvider({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  // Initialize websocket connection for users
+  useEffect(() => {
+    const initializeSocket = async () => {
+      try {
+        const userId = await AuthService.getId();
+        if (userId) {
+          SocketService.connect(userId, 'user');
+          SocketService.joinUserRoom(userId);
+
+          // Listen for reservation confirmations from vendors
+          SocketService.getSocket()?.on('booking_confirmed', (data) => {
+            toast.success(`Your reservation at ${data.businessName} has been confirmed!`);
+          });
+
+          SocketService.getSocket()?.on('booking_rejected', (data) => {
+            toast.error(`Your reservation at ${data.businessName} has been declined.`);
+          });
+        }
+      } catch (error) {
+        console.error('Error initializing user socket:', error);
+      }
+    };
+
+    initializeSocket();
+
+    return () => {
+      SocketService.removeListener('booking_confirmed');
+      SocketService.removeListener('booking_rejected');
+    };
+  }, []);
+
   const occasions = ["Birthday", "Casual", "Business", "Anniversary", "Other"];
 
 
