@@ -226,11 +226,12 @@ export default function MenuManagementPage() {
             src={item.image}
             alt={item.name}
             className="w-full h-48 object-cover"
+            width={400}
+            height={200}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = `https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop&crop=center`;
             }}
-            fill
           />
           <div className="absolute top-2 right-2">
             <DropdownMenu>
