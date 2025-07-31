@@ -1,12 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { MenuItem } from "../components/reservation/PreSelectMeal";
 import { Restaurant } from "../lib/types/restaurant";
 import { AuthService } from "../lib/api/services/userAuth.service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ReservationService, CreateReservationData } from "../lib/api/services/reservation.service";
+import SocketService from "../lib/socket";
 
 type ReservationsContextType = {
   menuItems: MenuItem[];
