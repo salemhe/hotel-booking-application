@@ -86,12 +86,26 @@ export class ReservationService {
       
       const response = await API.post("/users/reservations", reservationData);
       
+      const createdReservation = response.data.reservation || response.data;
+
       // Emit real-time event to vendor
       if (reservationData.vendorId) {
         SocketService.safeEmit("new_reservation", {
           vendorId: reservationData.vendorId,
-          reservation: response.data.reservation || response.data,
-          action: "create"
+          reservation: createdReservation,
+          action: "create",
+          customerName: reservationData.customerName,
+          businessName: reservationData.businessName
+        });
+
+        console.log("✅ Emitted new_reservation event to vendor:", reservationData.vendorId);
+      }
+
+      // Also emit to user for confirmation
+      if (createdReservation.customerEmail) {
+        SocketService.safeEmit("reservation_created", {
+          reservation: createdReservation,
+          customerEmail: reservationData.customerEmail
         });
       }
       
