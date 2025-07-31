@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -114,7 +114,7 @@ function calculateSplitPaymentAmount(
     fetchUserData();
   }, []);
 
-  const fetchBooking = async (id: string) => {
+  const fetchBooking = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
       const bookings = await API.get(`/users/bookings?bookingId=${id}`);
@@ -135,11 +135,11 @@ function calculateSplitPaymentAmount(
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     fetchBooking(id);
-  }, [id]);
+  }, [id, fetchBooking]);
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-4 md:px-6 md:py-6">

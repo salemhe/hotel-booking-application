@@ -11,6 +11,7 @@ import { Button } from "../ui/button"
 import { AuthService } from "@/app/lib/api/services/auth.service"
 // import { api } from '@/lib/axios-config'
 import API from '@/app/lib/api/axios'
+import WebSocketStatus from '../WebSocketStatus'
 
 export interface VendorProfile {
   _id: string
@@ -129,6 +130,7 @@ function Header() {
           </div>
         </div>
         <div className="flex justify-center items-center gap-4">
+          <WebSocketStatus className="mr-2" />
           <BellDot />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -6,7 +6,8 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import API from "@/app/lib/api/axios";
+import { MenuService } from "@/app/lib/api/services/menu.service";
+
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -17,18 +18,16 @@ import { Badge } from "@/app/components/ui/badge";
 import { Switch } from "@/app/components/ui/switch";
 import { Separator } from "@/app/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
-import { 
-  Upload, 
-  Save, 
-  Eye, 
-  ArrowLeft, 
-  Plus, 
-  X, 
+import {
+  Upload,
+  Save,
+  Eye,
+  ArrowLeft,
+  Plus,
+  X,
   Info,
-  Clock,
   DollarSign,
   Package,
-  Users,
   ChefHat,
   ImageIcon
 } from "lucide-react";
@@ -171,13 +170,13 @@ export default function AddMenuPage() {
   const addArrayItem = (field: keyof MenuFormData, value: string) => {
     const currentArray = watchedData[field] as string[] || [];
     if (!currentArray.includes(value) && value.trim()) {
-      setValue(field, [...currentArray, value.trim()] as any);
+      setValue(field, [...currentArray, value.trim()] as string[]);
     }
   };
 
   const removeArrayItem = (field: keyof MenuFormData, index: number) => {
     const currentArray = watchedData[field] as string[] || [];
-    setValue(field, currentArray.filter((_, i) => i !== index) as any);
+    setValue(field, currentArray.filter((_, i) => i !== index) as string[]);
   };
 
   const saveDraft = () => {
@@ -197,36 +196,31 @@ export default function AddMenuPage() {
 
   const onSubmit = async (data: MenuFormData) => {
     setIsSubmitting(true);
-    
+
     try {
-      const formData = new FormData();
-      
-      // Add all form fields
-      Object.entries(data).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, String(value));
-        }
-      });
+      console.log("Submitting menu item with data:", data);
 
-      // Add image if selected
-      if (imageFile) {
-        formData.append("itemImage", imageFile);
-      }
+      // Create menu item using MenuService
+      const createdMenuItem = await MenuService.createMenuItem(data, imageFile || undefined);
 
-      await API.post("/vendors/create-menu", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      console.log("Menu item created successfully:", createdMenuItem);
 
       // Clear draft after successful submission
       localStorage.removeItem("menuFormDraft");
-      
+
       toast.success("Menu item added successfully!");
       router.push("/vendorDashboard/menu");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting menu:", error);
-      toast.error(error.response?.data?.message || "Failed to add menu item");
+
+      // Show specific error message
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Failed to add menu item";
+      toast.error(errorMessage);
+
+      // Log detailed error for debugging
+      console.error("Server error details:", error);
     } finally {
       setIsSubmitting(false);
     }

@@ -1,8 +1,8 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Star, Heart, Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
 import { SearchSectionTwo } from '@/app/components/SearchSection';
 
@@ -23,12 +23,70 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
-  
-  const router = useRouter();
 
-  // Load search data from localStorage on component mount
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query.trim()) return;
+    setLoading(true);
+
+    try {
+      const response = await restaurantService.searchRestaurants(query);
+      setRestaurants(response.data);
+
+      // Update localStorage with the current search
+      const updatedSearchData: SearchData = {
+        ...(searchData || {}),
+        query: query,
+        tab: (searchData && searchData.tab) || 'restaurants',
+        timestamp: new Date().toISOString(),
+      };
+      setSearchData(updatedSearchData);
+      localStorage.setItem('searchData', JSON.stringify(updatedSearchData));
+
+    } catch (err) {
+      console.error('Search error:', err);
+      setRestaurants([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchData]);
+
+  // Load search data from URL parameters or localStorage on component mount
   useEffect(() => {
     setMounted(true);
+
+    // First check URL parameters
+    const urlQuery = searchParams.get('q');
+    const urlDate = searchParams.get('date');
+    const urlTime = searchParams.get('time');
+    const urlGuests = searchParams.get('guests');
+    const urlCategory = searchParams.get('category');
+
+    if (urlQuery || urlDate || urlTime || urlGuests) {
+      const urlSearchData: SearchData = {
+        query: urlQuery || '',
+        tab: urlCategory || 'Restaurant',
+        date: urlDate || undefined,
+        time: urlTime || undefined,
+        guests: urlGuests || undefined,
+        timestamp: new Date().toISOString()
+      };
+
+      setSearchData(urlSearchData);
+      setSearchQuery(urlQuery || '');
+
+      // Save to localStorage for persistence
+      localStorage.setItem('searchData', JSON.stringify(urlSearchData));
+
+      if (urlQuery) {
+        handleSearch(urlQuery);
+      }
+      return;
+    }
+
+    // Fall back to localStorage if no URL parameters
     const stored = localStorage.getItem('searchData');
     if (stored) {
       try {
@@ -42,33 +100,7 @@ const SearchResults = () => {
         console.error('Error parsing search data from localStorage:', error);
       }
     }
-  }, []);
-
-  const handleSearch = async (query: string) => {
-    if (!query.trim()) return;
-    setLoading(true);
-    
-    try {
-      const response = await restaurantService.searchRestaurants(query);
-      setRestaurants(response.data);
-      
-      // Update localStorage with the current search
-      const updatedSearchData: SearchData = {
-        ...(searchData || {}),
-        query: query,
-        tab: (searchData && searchData.tab) || 'restaurants',
-        timestamp: new Date().toISOString(),
-      };
-      setSearchData(updatedSearchData);
-      localStorage.setItem('searchData', JSON.stringify(updatedSearchData));
-      
-    } catch (err) {
-      console.error('Search error:', err);
-      setRestaurants([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [searchParams, handleSearch]);
 
   const handleNewSearch = (newSearchData: SearchData) => {
     setSearchQuery(newSearchData.query);

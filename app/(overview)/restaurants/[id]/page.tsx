@@ -1,29 +1,24 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
-import { Badge } from '@/app/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
-import { 
-  Star, 
-  MapPin, 
-  Clock, 
-  Users,
+import {
+  Star,
+  MapPin,
+  Clock,
   Share,
   Heart,
   Camera,
-  Utensils,
-  Car,
-  Wifi,
-  CreditCard,
   Phone,
   Mail,
   Globe
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
+import { useAvailability } from '@/app/hooks/useAvailability';
 
 interface Restaurant {
   _id: string;
@@ -48,21 +43,60 @@ interface Restaurant {
 }
 
 const ReserveWidget = ({ restaurant }: { restaurant: Restaurant }) => {
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [guestCount, setGuestCount] = useState('2');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Initialize with URL parameters if available
+  const [selectedDate, setSelectedDate] = useState(searchParams.get('date') || '');
+  const [selectedTime, setSelectedTime] = useState(searchParams.get('time') || '');
+  const [guestCount, setGuestCount] = useState(searchParams.get('guests') || '2');
   const [specialRequest, setSpecialRequest] = useState('');
 
+  // Real-time availability
+  const {
+    availability,
+    loading: availabilityLoading,
+    error: availabilityError,
+    checkAvailability,
+    validateBookingTime
+  } = useAvailability(restaurant._id);
+
+  // Check availability when date changes
+  useEffect(() => {
+    if (selectedDate) {
+      checkAvailability(selectedDate);
+    }
+  }, [selectedDate, checkAvailability]);
+
   const handleReservation = () => {
-    // Navigate to reservation details page
+    // Validate required fields
+    if (!selectedDate) {
+      alert('Please select a date');
+      return;
+    }
+    if (!selectedTime) {
+      alert('Please select a time');
+      return;
+    }
+
+    // Validate booking time with real-time availability
+    if (availability) {
+      const validation = validateBookingTime(selectedDate, selectedTime);
+      if (!validation.valid) {
+        alert(validation.reason || 'This time slot is not available');
+        return;
+      }
+    }
+
+    // Navigate to reservation page with context
     const params = new URLSearchParams({
-      restaurant: restaurant._id,
       date: selectedDate,
       time: selectedTime,
       guests: guestCount,
       request: specialRequest
     });
-    window.location.href = `/reservation-details?${params.toString()}`;
+
+    router.push(`/restaurants/${restaurant._id}/reservations?${params.toString()}`);
   };
 
   return (
@@ -83,17 +117,53 @@ const ReserveWidget = ({ restaurant }: { restaurant: Restaurant }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Available Time</label>
-            <select
-              value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-            >
-              <option value="">Select Time</option>
-              {restaurant.availableSlots.map((slot) => (
-                <option key={slot} value={slot}>{slot}</option>
-              ))}
-            </select>
+            <label className="block text-sm font-medium mb-2">
+              Available Time
+              {availabilityLoading && (
+                <span className="text-xs text-gray-500 ml-2">(Checking availability...)</span>
+              )}
+            </label>
+            {availability ? (
+              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                {availability.timeSlots.map((slot) => (
+                  <button
+                    key={slot.time}
+                    onClick={() => setSelectedTime(slot.time)}
+                    disabled={!slot.available}
+                    className={`p-2 text-sm border rounded-lg transition-colors ${
+                      selectedTime === slot.time
+                        ? 'border-teal-500 bg-teal-50 text-teal-700'
+                        : slot.available
+                        ? 'border-gray-200 hover:border-gray-300 bg-white'
+                        : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <div className="font-medium">{slot.time}</div>
+                    {slot.available ? (
+                      <div className="text-xs text-green-600">
+                        {slot.remaining} spots left
+                      </div>
+                    ) : (
+                      <div className="text-xs text-red-500">Fully booked</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <select
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              >
+                <option value="">Select Time</option>
+                {restaurant.availableSlots.map((slot) => (
+                  <option key={slot} value={slot}>{slot}</option>
+                ))}
+              </select>
+            )}
+            {availabilityError && (
+              <p className="text-xs text-amber-600 mt-1">{availabilityError}</p>
+            )}
           </div>
 
           <div>
@@ -141,11 +211,7 @@ export default function RestaurantPage() {
   const [loading, setLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  useEffect(() => {
-    fetchRestaurant();
-  }, [params.id]);
-
-  const fetchRestaurant = async () => {
+  const fetchRestaurant = useCallback(async () => {
     try {
       // Mock data for development
       const mockRestaurant: Restaurant = {
@@ -181,7 +247,11 @@ export default function RestaurantPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchRestaurant();
+  }, [params.id, fetchRestaurant]);
 
   if (loading) {
     return (

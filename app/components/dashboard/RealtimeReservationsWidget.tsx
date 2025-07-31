@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { useRealtimeReservations, Reservation } from '@/app/hooks/useRealtimeReservations';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  TrendingUp, 
+import {
+  Calendar,
+  Clock,
+  Users,
   AlertCircle,
-  CheckCircle,
   Eye,
   ArrowRight,
   Wifi,
@@ -132,7 +130,7 @@ export const RealtimeReservationsWidget = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Today's Bookings</p>
+                <p className="text-sm font-medium text-gray-600">Today&apos;s Bookings</p>
                 <p className="text-2xl font-bold text-gray-900">{todayReservations.length}</p>
               </div>
               <div className="p-3 rounded-lg bg-blue-50">

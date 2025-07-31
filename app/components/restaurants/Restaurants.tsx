@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Star,
@@ -111,7 +111,7 @@ export default function Restaurants() {
   // );
 
   // Debounced search function
-  const handleSearch = async (data?: string) => {
+  const handleSearch = useCallback(async (data?: string) => {
     setIsLoading(true);
     // applyFilters();
 
@@ -137,7 +137,7 @@ export default function Restaurants() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
   // Effect to handle search params and filters
   // useEffect(() => {
@@ -185,7 +185,7 @@ export default function Restaurants() {
     // setCurrentPage(page)
     // setSortBy(sort)
     // setSortOrder(order)
-  }, [searchParams]);
+  }, [searchParams, handleSearch]);
 
   const resetFilters = () => {
     setCuisineFilter([]);
@@ -208,6 +208,7 @@ export default function Restaurants() {
     sortOrder,
     sortBy,
     restaurants,
+    applyFilters,
   ]);
 
   const paginatedRestaurants = filteredRestaurants.slice(
@@ -224,7 +225,7 @@ export default function Restaurants() {
     }
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = restaurants;
     // if (cuisineFilter.length > 0) {
     //   filtered = filtered.filter((restaurant) =>
@@ -256,7 +257,7 @@ export default function Restaurants() {
 
     setFilteredRestaurants(filtered);
     setCurrentPage(1);
-  };
+  }, [restaurants, searchQuery, locationFilter]);
 
   const handlePriceChange = (price: string) => {
     setPriceFilter((prev) =>

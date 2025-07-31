@@ -7,18 +7,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/ta
 import { useState, useEffect } from 'react';
 import { AuthService } from '@/app/lib/api/services/auth.service';
 import API from '@/app/lib/api/axios';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  TrendingUp, 
+import {
+  Calendar,
+  Clock,
+  TrendingUp,
   AlertCircle,
   CheckCircle,
-  XCircle,
   Plus,
   RefreshCw
 } from 'lucide-react';
-import { format, startOfDay, endOfDay, isToday, isTomorrow } from 'date-fns';
 
 interface ReservationStats {
   total: number;
@@ -82,7 +79,7 @@ export default function BookingManagementPage() {
   const StatCard = ({ title, value, icon: Icon, color = "text-blue-600", bgColor = "bg-blue-50" }: {
     title: string;
     value: string | number;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     color?: string;
     bgColor?: string;
   }) => (

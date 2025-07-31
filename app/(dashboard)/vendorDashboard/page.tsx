@@ -6,26 +6,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/ca
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  TrendingUp, 
+import {
+  Calendar,
+  Clock,
+  Users,
   AlertCircle,
   CheckCircle,
   XCircle,
   Eye,
   Plus,
-  Bell,
   ArrowUpRight,
-  MapPin,
-  DollarSign,
-  Utensils,
-  Bed
+  DollarSign
 } from 'lucide-react';
 import { format, parseISO, isToday } from 'date-fns';
 import Link from 'next/link';
 import { AuthService } from '@/app/lib/api/services/auth.service';
+import { toast } from 'sonner';
 
 interface DashboardStats {
   reservationsToday: number;
@@ -47,19 +43,30 @@ export default function VendorDashboard() {
     monthlyRevenue: 0
   });
   
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ profile: { businessName?: string; firstName?: string } } | null>(null);
 
   useEffect(() => {
     const userInfo = AuthService.getUser();
     setUser(userInfo);
   }, []);
 
+  // Monitor real-time reservation updates
+  useEffect(() => {
+    if (connected && reservations.length > 0) {
+      // Show notification for latest reservation (most recent one)
+      const latestReservation = reservations[0];
+      if (latestReservation && isToday(parseISO(latestReservation.date))) {
+        toast.success(`New reservation from ${latestReservation.customerName} for ${latestReservation.time}!`, {
+          duration: 5000,
+        });
+      }
+    }
+  }, [reservations, connected]);
+
   useEffect(() => {
     if (reservations.length > 0) {
-      const today = new Date();
       const todayReservations = reservations.filter(r => isToday(parseISO(r.date)));
       const pending = reservations.filter(r => r.status === 'pending');
-      const unpaidReservations = reservations.filter(r => r.status !== 'cancelled');
       
       setStats({
         reservationsToday: todayReservations.length,
@@ -91,7 +98,7 @@ export default function VendorDashboard() {
   const StatCard = ({ title, value, icon: Icon, color = "text-blue-600", bgColor = "bg-blue-50", change }: {
     title: string;
     value: string | number;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
     color?: string;
     bgColor?: string;
     change?: string;
@@ -117,7 +124,7 @@ export default function VendorDashboard() {
     </Card>
   );
 
-  const ReservationCard = ({ reservation, isCompact = false }: { reservation: any; isCompact?: boolean }) => {
+  const ReservationCard = ({ reservation, isCompact = false }: { reservation: { _id: string; customerName: string; date: string; time: string; guests: number; status: string; totalPrice: number }; isCompact?: boolean }) => {
     const statusColors = {
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
       confirmed: 'bg-green-100 text-green-800 border-green-200',
@@ -174,7 +181,7 @@ export default function VendorDashboard() {
           <div className="flex items-center justify-between pt-2 border-t">
             <div className="flex items-center space-x-2">
               <Badge variant="outline" className="text-xs">
-                {reservation.reservationType === 'restaurant' ? 'Restaurant' : 'Hotel'}
+                {'reservationType' in reservation && reservation.reservationType === 'restaurant' ? 'Restaurant' : 'Hotel'}
               </Badge>
               <Badge className={`text-xs ${paymentStatusColors.paid}`}>
                 Payment Status
@@ -211,7 +218,7 @@ export default function VendorDashboard() {
           <h1 className="text-3xl font-bold text-gray-900">
             {getTimeGreeting()}, {user?.profile?.businessName || user?.profile?.firstName || 'Joseph'}!
           </h1>
-          <p className="text-gray-600 mt-1">Here's what is happening today.</p>
+          <p className="text-gray-600 mt-1">Here&apos;s what is happening today.</p>
         </div>
         <div className="flex items-center space-x-3">
           {connected && (
@@ -265,12 +272,12 @@ export default function VendorDashboard() {
         />
       </div>
 
-      {/* Today's Reservations */}
+      {/* Today&apos;s Reservations */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center space-x-2">
-              <span>Today's Reservation ({todayReservations.length})</span>
+              <span>Today&apos;s Reservation ({todayReservations.length})</span>
               {connected && (
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" title="Live updates" />
               )}
@@ -305,7 +312,7 @@ export default function VendorDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {todayReservations.map((reservation, index) => (
+                  {todayReservations.map((reservation) => (
                     <tr key={reservation._id} className="border-b hover:bg-gray-50">
                       <td className="py-4">
                         <div className="flex items-center space-x-3">

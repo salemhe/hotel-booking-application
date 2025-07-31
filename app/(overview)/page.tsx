@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -8,19 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/app/components/ui/badge';
 import { 
   Search, 
-  Star, 
-  MapPin, 
-  Clock, 
+  Star,
+  MapPin,
   Users,
-  Filter,
   Heart,
   Utensils,
   Bed,
-  ChevronDown,
-  Wifi
+  ChevronDown
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Restaurant {
   _id: string;
@@ -38,23 +36,16 @@ interface Restaurant {
 }
 
 export default function HomePage() {
+  const router = useRouter();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedLocation] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [guestCount, setGuestCount] = useState('');
   const [activeCategory, setActiveCategory] = useState('Restaurant');
-
-  useEffect(() => {
-    fetchRestaurants();
-  }, []);
-
-  useEffect(() => {
-    filterRestaurants();
-  }, [restaurants, searchTerm, selectedLocation, activeCategory]);
 
   const fetchRestaurants = async () => {
     setLoading(true);
@@ -82,7 +73,7 @@ export default function HomePage() {
     }
   };
 
-  const filterRestaurants = () => {
+  const filterRestaurants = useCallback(() => {
     let filtered = restaurants;
 
     if (searchTerm) {
@@ -100,7 +91,15 @@ export default function HomePage() {
     }
 
     setFilteredRestaurants(filtered);
-  };
+  }, [restaurants, searchTerm, selectedLocation]);
+
+  useEffect(() => {
+    fetchRestaurants();
+  }, []);
+
+  useEffect(() => {
+    filterRestaurants();
+  }, [restaurants, searchTerm, selectedLocation, activeCategory, filterRestaurants]);
 
   // Create categorized restaurant lists
   const getPopularRestaurants = () => {
@@ -130,8 +129,36 @@ export default function HomePage() {
     return fineDining;
   };
 
+  const handleSearch = () => {
+    // Build search parameters
+    const searchParams = new URLSearchParams();
+
+    if (searchTerm) searchParams.set('q', searchTerm);
+    if (selectedDate) searchParams.set('date', selectedDate);
+    if (selectedTime) searchParams.set('time', selectedTime);
+    if (guestCount) searchParams.set('guests', guestCount);
+    if (activeCategory) searchParams.set('category', activeCategory);
+
+    // Navigate to search page with parameters
+    router.push(`/search?${searchParams.toString()}`);
+  };
+
+  const handleRestaurantClick = (restaurant: Restaurant) => {
+    // Navigate to restaurant page with search context
+    const searchParams = new URLSearchParams();
+    if (selectedDate) searchParams.set('date', selectedDate);
+    if (selectedTime) searchParams.set('time', selectedTime);
+    if (guestCount) searchParams.set('guests', guestCount);
+
+    const url = `/restaurants/${restaurant._id}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+    router.push(url);
+  };
+
   const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow group">
+    <Card
+      className="overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer"
+      onClick={() => handleRestaurantClick(restaurant)}
+    >
       <div className="relative">
         <Image
           src={restaurant.image}
@@ -147,7 +174,7 @@ export default function HomePage() {
         </div>
         <div className="absolute top-3 left-3">
           <Badge className="bg-green-600">
-            Guest's favourite
+            Guest&apos;s favourite
           </Badge>
         </div>
         {!restaurant.isOpen && (
@@ -188,6 +215,22 @@ export default function HomePage() {
                 +{restaurant.features.length - 3} more
               </Badge>
             )}
+          </div>
+
+          <div className="flex items-center justify-between pt-3 border-t">
+            <div className="text-sm text-gray-600">
+              {restaurant.openHours}
+            </div>
+            <Button
+              size="sm"
+              className="bg-teal-600 hover:bg-teal-700 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRestaurantClick(restaurant);
+              }}
+            >
+              Reserve Now
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -248,11 +291,21 @@ export default function HomePage() {
                   <SelectValue placeholder="Select Time" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="11:00">11:00 AM</SelectItem>
+                  <SelectItem value="11:30">11:30 AM</SelectItem>
                   <SelectItem value="12:00">12:00 PM</SelectItem>
+                  <SelectItem value="12:30">12:30 PM</SelectItem>
                   <SelectItem value="13:00">1:00 PM</SelectItem>
+                  <SelectItem value="13:30">1:30 PM</SelectItem>
                   <SelectItem value="14:00">2:00 PM</SelectItem>
+                  <SelectItem value="14:30">2:30 PM</SelectItem>
+                  <SelectItem value="18:00">6:00 PM</SelectItem>
+                  <SelectItem value="18:30">6:30 PM</SelectItem>
                   <SelectItem value="19:00">7:00 PM</SelectItem>
+                  <SelectItem value="19:30">7:30 PM</SelectItem>
                   <SelectItem value="20:00">8:00 PM</SelectItem>
+                  <SelectItem value="20:30">8:30 PM</SelectItem>
+                  <SelectItem value="21:00">9:00 PM</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -263,13 +316,24 @@ export default function HomePage() {
                 <SelectContent>
                   <SelectItem value="1">1 Guest</SelectItem>
                   <SelectItem value="2">2 Guests</SelectItem>
+                  <SelectItem value="3">3 Guests</SelectItem>
                   <SelectItem value="4">4 Guests</SelectItem>
+                  <SelectItem value="5">5 Guests</SelectItem>
                   <SelectItem value="6">6 Guests</SelectItem>
-                  <SelectItem value="8+">8+ Guests</SelectItem>
+                  <SelectItem value="7">7 Guests</SelectItem>
+                  <SelectItem value="8">8 Guests</SelectItem>
+                  <SelectItem value="9">9 Guests</SelectItem>
+                  <SelectItem value="10">10 Guests</SelectItem>
+                  <SelectItem value="12">12 Guests</SelectItem>
+                  <SelectItem value="15">15+ Guests</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Button className="bg-teal-600 hover:bg-teal-700 px-8">
+              <Button
+                onClick={handleSearch}
+                className="bg-teal-600 hover:bg-teal-700 px-8"
+              >
+                <Search className="h-4 w-4 mr-2" />
                 Search
               </Button>
             </div>

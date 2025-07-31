@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -49,11 +49,7 @@ export default function ReservationDetailsPage() {
     isPreMealSelected: false
   });
 
-  useEffect(() => {
-    fetchRestaurant();
-  }, [params.id]);
-
-  const fetchRestaurant = async () => {
+  const fetchRestaurant = useCallback(async () => {
     try {
       // Mock data for development
       const mockRestaurant: RestaurantInfo = {
@@ -71,7 +67,11 @@ export default function ReservationDetailsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchRestaurant();
+  }, [params.id, fetchRestaurant]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -196,7 +196,7 @@ export default function ReservationDetailsPage() {
             <div className="space-y-6">
               {/* Current Reservation Info */}
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-3">Let's Plan For Your Visit</h4>
+                <h4 className="font-medium mb-3">Let&apos;s Plan For Your Visit</h4>
                 <p className="text-sm text-gray-600 mb-4">
                   Kindly provide answers to few questions below to enable us serve you better
                 </p>

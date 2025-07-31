@@ -31,14 +31,16 @@ const UserLoginPage = () => {
     try {
       const response = await AuthService.login(email, password);
       
-      if (response.token) {
+      if (response.data.token) {
         // Set token and get user profile
-        AuthService.setToken(response.token);
-        const userId = AuthService.extractUserId(response.token);
+        AuthService.setToken(response.data.token);
+        const userId = AuthService.extractUserId(response.data.token);
         
         if (userId) {
           const user = await AuthService.getUser(userId);
-          AuthService.setUser(user);
+          if (user) {
+            AuthService.setUser(user);
+          }
         }
         
         toast.success("Welcome back!");
@@ -139,7 +141,7 @@ const UserLoginPage = () => {
           </CardContent>
           <CardFooter className="px-6 sm:px-8 pb-6 md:pb-8">
             <p className="w-full text-center text-sm text-[#6d727b]">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/user-signup"
                 className="text-[#60a5fa] hover:text-[#3b82f6] font-normal transition-colors duration-300"

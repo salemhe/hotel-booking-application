@@ -3,39 +3,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import SocketService from '@/app/lib/socket';
 import { AuthService } from '@/app/lib/api/services/auth.service';
+import { ReservationService, ReservationResponse } from '@/app/lib/api/services/reservation.service';
+import { toast } from 'sonner';
 
-export interface Reservation {
-  _id: string;
-  reservationType: 'restaurant' | 'hotel';
-  customerName: string;
-  customerEmail: string;
-  date: string;
-  time: string;
-  guests: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  totalPrice: number;
-  meals?: Array<{
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    specialRequest?: string;
-  }>;
-  rooms?: Array<{
-    id: string;
-    type: string;
-    price: number;
-    nights: number;
-  }>;
-  seatingPreference?: string;
-  specialOccasion?: string;
-  specialRequest?: string;
-  vendorId: string;
-  businessName: string;
-  location: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Re-export the Reservation interface from the service for consistency
+export type Reservation = ReservationResponse;
 
 export const useRealtimeReservations = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -71,11 +43,24 @@ export const useRealtimeReservations = () => {
 
         // Connect to socket
         const socket = SocketService.connect(user.profile.id, 'vendor');
-        
-        // Join vendor room for real-time updates
-        SocketService.joinVendorRoom(user.profile.id);
-        
-        setConnected(true);
+
+        // Set up connection status monitoring
+        const checkConnection = () => {
+          const isConnected = SocketService.isConnected();
+          setConnected(isConnected);
+
+          if (isConnected) {
+            // Join vendor room for real-time updates
+            SocketService.joinVendorRoom(user.profile.id);
+          }
+        };
+
+        // Check connection immediately
+        checkConnection();
+
+        // Monitor connection status
+        socket.on('connect', checkConnection);
+        socket.on('disconnect', () => setConnected(false));
 
         // Set up event listeners
         SocketService.onNewReservation((data) => {
@@ -97,50 +82,53 @@ export const useRealtimeReservations = () => {
           }
         });
 
-        // Fetch initial reservations - add some mock data for development
-        const mockReservations: Reservation[] = [
-          {
-            _id: '1',
-            reservationType: 'restaurant',
-            customerName: 'Emily Johnson',
-            customerEmail: 'emily@example.com',
-            date: new Date().toISOString(),
-            time: '7:30 PM',
-            guests: 4,
-            status: 'pending',
-            totalPrice: 45000,
-            meals: [
-              { id: '1', name: 'Jollof Rice', price: 15000, quantity: 2, specialRequest: 'No spice' },
-              { id: '2', name: 'Chicken Wings', price: 8000, quantity: 3 }
-            ],
-            vendorId: user.profile.id,
-            businessName: 'Kapadoccia Restaurant',
-            location: 'Victoria Island, Lagos',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          },
-          {
-            _id: '2',
-            reservationType: 'hotel',
-            customerName: 'John Smith',
-            customerEmail: 'john@example.com',
-            date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-            time: '2:00 PM',
-            guests: 2,
-            status: 'confirmed',
-            totalPrice: 85000,
-            rooms: [
-              { id: '1', type: 'Deluxe Room', price: 85000, nights: 1 }
-            ],
-            vendorId: user.profile.id,
-            businessName: 'Eko Hotel & Suites',
-            location: 'Victoria Island, Lagos',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        ];
+        // Fetch initial reservations using ReservationService
+        try {
+          const reservations = await ReservationService.getVendorReservations(user.profile.id);
+          setReservations(reservations);
 
-        setReservations(mockReservations);
+          if (reservations.length === 0) {
+            console.log("No reservations found for vendor:", user.profile.id);
+          } else {
+            console.log(`Loaded ${reservations.length} reservations for vendor`);
+          }
+        } catch (error) {
+          console.error('Error fetching reservations:', error);
+
+          // Show user-friendly message about connection issues
+          if (process.env.NODE_ENV === 'development') {
+            // Create sample reservations for development if API fails
+            const sampleReservations: Reservation[] = [
+              {
+                _id: 'sample-1',
+                reservationType: 'restaurant',
+                customerName: 'Sample Customer',
+                customerEmail: 'sample@example.com',
+                date: new Date().toISOString(),
+                time: '7:30 PM',
+                guests: 4,
+                status: 'pending',
+                totalPrice: 45000,
+                meals: [
+                  { id: '1', name: 'Sample Dish', price: 15000, quantity: 2, category: 'Main Course' }
+                ],
+                vendorId: user.profile.id,
+                businessName: user.profile.businessName || 'Your Restaurant',
+                location: user.profile.address || 'Lagos, Nigeria',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              }
+            ];
+
+            setReservations(sampleReservations);
+            toast.info("Using demo data - Backend server not available");
+          } else {
+            // Production environment - show empty state
+            setReservations([]);
+            toast.error("Unable to load reservations. Please check your connection.");
+          }
+        }
+
         setLoading(false);
 
       } catch (error) {
@@ -164,14 +152,34 @@ export const useRealtimeReservations = () => {
   }, [addReservation, updateReservation, removeReservation]);
 
   const updateReservationStatus = useCallback(async (reservationId: string, status: string) => {
-    // You would call your API here to update the reservation status
-    // The socket will handle the real-time update to other clients
     try {
-      // Example API call (implement according to your backend)
-      // await API.patch(`/reservations/${reservationId}`, { status });
-      console.log(`Updating reservation ${reservationId} to status: ${status}`);
-    } catch (error) {
+      // Update reservation status using ReservationService
+      const updatedReservation = await ReservationService.updateReservation(reservationId, {
+        status: status as Reservation['status']
+      });
+
+      // Update local state with the response
+      setReservations(prev =>
+        prev.map(reservation =>
+          reservation._id === reservationId ? updatedReservation : reservation
+        )
+      );
+
+      toast.success(`Reservation ${status} successfully`);
+
+    } catch (error: unknown) {
       console.error('Error updating reservation status:', error);
+
+      // Show specific error message
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update reservation status';
+      toast.error(errorMessage);
+
+      // Revert optimistic update if any
+      setReservations(prev =>
+        prev.map(reservation =>
+          reservation._id === reservationId ? reservation : reservation
+        )
+      );
     }
   }, []);
 

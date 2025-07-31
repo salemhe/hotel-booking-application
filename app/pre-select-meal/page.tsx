@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
 import { Textarea } from '@/app/components/ui/textarea';
-import { 
-  ArrowLeft, 
-  Plus, 
+import {
+  ArrowLeft,
+  Plus,
   Minus,
   Info,
-  Star,
   Calendar,
   Clock,
   Users
@@ -131,17 +130,17 @@ export default function PreSelectMealPage() {
 
   const handleContinueToPayment = () => {
     const reservationData = {
-      restaurant: searchParams.get('restaurant'),
-      customerName: searchParams.get('customerName'),
-      phoneNumber: searchParams.get('phoneNumber'),
-      date: searchParams.get('date'),
-      time: searchParams.get('time'),
-      guests: searchParams.get('guests'),
-      tablePreference: searchParams.get('tablePreference'),
-      specialRequests: searchParams.get('specialRequests'),
+      restaurant: searchParams.get('restaurant') || '',
+      customerName: searchParams.get('customerName') || '',
+      phoneNumber: searchParams.get('phoneNumber') || '',
+      date: searchParams.get('date') || '',
+      time: searchParams.get('time') || '',
+      guests: searchParams.get('guests') || '',
+      tablePreference: searchParams.get('tablePreference') || '',
+      specialRequests: searchParams.get('specialRequests') || '',
       selectedItems: JSON.stringify(selectedItems),
       additionalNotes,
-      totalPrice: getTotalPrice()
+      totalPrice: getTotalPrice().toString()
     };
 
     const params = new URLSearchParams(reservationData);

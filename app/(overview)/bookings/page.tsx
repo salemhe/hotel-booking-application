@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
@@ -14,7 +14,6 @@ import {
   Search,
   Filter,
   MoreVertical,
-  Star,
   Eye,
   Edit,
   Trash2,
@@ -34,11 +33,7 @@ export default function BookingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('upcoming');
 
-  useEffect(() => {
-    filterBookings();
-  }, [bookings, searchTerm, activeTab]);
-
-  const filterBookings = () => {
+  const filterBookings = useCallback(() => {
     let filtered = bookings;
 
     // Filter by search term
@@ -50,22 +45,25 @@ export default function BookingsPage() {
     }
 
     // Filter by tab
-    const now = new Date();
     switch (activeTab) {
       case 'upcoming':
-        filtered = filtered.filter(booking => 
+        filtered = filtered.filter(booking =>
           !isPast(parseISO(booking.date)) && booking.status !== 'cancelled'
         );
         break;
       case 'past':
-        filtered = filtered.filter(booking => 
+        filtered = filtered.filter(booking =>
           isPast(parseISO(booking.date)) || booking.status === 'completed'
         );
         break;
     }
 
     setFilteredBookings(filtered);
-  };
+  }, [bookings, searchTerm, activeTab]);
+
+  useEffect(() => {
+    filterBookings();
+  }, [filterBookings]);
 
   const handleCancelBooking = async (bookingId: string) => {
     try {
@@ -281,7 +279,7 @@ export default function BookingsPage() {
               <Calendar className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No upcoming bookings</h3>
               <p className="text-gray-500 mb-4">
-                You don't have any upcoming reservations.
+                You don&apos;t have any upcoming reservations.
               </p>
               <Link href="/">
                 <Button>Book a Table</Button>
