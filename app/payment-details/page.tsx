@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from 'react';
 import { useState } from 'react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
@@ -14,11 +15,12 @@ import {
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function PaymentDetailsPage() {
+
+function PaymentDetailsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const amount = searchParams.get('amount') || '42000';
-  
+
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [formData, setFormData] = useState({
     cardName: '',
@@ -40,7 +42,7 @@ export default function PaymentDetailsPage() {
 
   const handlePayment = async () => {
     setProcessing(true);
-    
+
     // Simulate payment processing
     setTimeout(() => {
       setProcessing(false);
@@ -242,5 +244,13 @@ export default function PaymentDetailsPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function PaymentDetailsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading payment details...</div>}>
+      <PaymentDetailsContent />
+    </Suspense>
   );
 }
