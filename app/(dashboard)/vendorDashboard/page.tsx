@@ -50,6 +50,19 @@ export default function VendorDashboard() {
     setUser(userInfo);
   }, []);
 
+  // Monitor real-time reservation updates
+  useEffect(() => {
+    if (connected && reservations.length > 0) {
+      // Show notification for latest reservation (most recent one)
+      const latestReservation = reservations[0];
+      if (latestReservation && isToday(parseISO(latestReservation.date))) {
+        toast.success(`New reservation from ${latestReservation.customerName} for ${latestReservation.time}!`, {
+          duration: 5000,
+        });
+      }
+    }
+  }, [reservations, connected]);
+
   useEffect(() => {
     if (reservations.length > 0) {
       const todayReservations = reservations.filter(r => isToday(parseISO(r.date)));
