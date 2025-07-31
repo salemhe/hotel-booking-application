@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import SocketService from "@/app/lib/socket";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import {
   Plus,
   Search,
