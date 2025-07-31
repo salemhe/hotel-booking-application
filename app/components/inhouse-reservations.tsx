@@ -1,6 +1,6 @@
 import React from "react";
-import { ReservationsTable } from "../components/ReservationsTable";
 import { Container, Typography } from "@mui/material";
+import { ReservationsTable } from "@/components/ReservationsTable";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000";
