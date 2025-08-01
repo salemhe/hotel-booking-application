@@ -61,15 +61,41 @@ export default function VendorLoginPage() {
       if (token) {
         await AuthService.setToken(token);
       }
-      toast.success(`Welcome back, ${response.profile?.businessName || "Vendor"}!`);
-      localStorage.setItem("accountType", response.profile?.businessType || "");
+      // Fetch real user info after setting token
+      let realProfile = response.profile;
+      try {
+        if (token) {
+          // Try to fetch the latest profile from backend
+          realProfile = await AuthService.fetchMyProfile(response.profile?._id || response.profile?.id);
+          if (realProfile) {
+            AuthService.setUser({
+              ...realProfile,
+              role: realProfile.role || "vendor",
+              profile: realProfile.profile || {},
+              email: realProfile.email || "",
+            });
+          }
+        }
+      } catch (e) {
+        // fallback to response.profile if fetch fails
+        if (response.profile) {
+          AuthService.setUser({
+            ...response.profile,
+            role: response.profile.role || "vendor",
+            profile: response.profile.profile || {},
+            email: response.profile.email || "",
+          });
+        }
+      }
+      toast.success(`Welcome back, ${realProfile?.businessName || "Vendor"}!`);
+      localStorage.setItem("accountType", realProfile?.businessType || "");
       // Instantly redirect to the correct dashboard
-      if (response.profile?.onboarded) {
-        if (response.profile.businessType === "hotel") {
+      if (realProfile?.onboarded) {
+        if (realProfile.businessType === "hotel") {
           router.push("/vendor-dashboard/hotel");
-        } else if (response.profile.businessType === "restaurant") {
+        } else if (realProfile.businessType === "restaurant") {
           router.push("/vendor-dashboard/restaurant");
-        } else if (response.profile.businessType === "club") {
+        } else if (realProfile.businessType === "club") {
           router.push("/vendor-dashboard/club");
         } else {
           router.push("/vendorDashboard");
