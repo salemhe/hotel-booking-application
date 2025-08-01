@@ -26,7 +26,6 @@ interface PaymentDetalsProps {
   paystackSubAccount: string;
   percentageCharge: number;
   recipientCode: string;
-  [key: string]: any;
 }
 
 interface VendorProfile {
@@ -82,7 +81,16 @@ export default function VendorLoginPage() {
     setLoading(true);
 
     try {
-      const response = await AuthService.login(email, password);
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+      const response = await res.json();
       const token = response.token || (response.profile && response.profile.token);
       if (token) {
         await AuthService.setToken(token);
