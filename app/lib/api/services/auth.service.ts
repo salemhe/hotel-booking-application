@@ -19,6 +19,7 @@ interface LoginResponse {
     services?: string[];
     token?: string;
     onboarded?: boolean;
+    role?: string;
   };
 }
 
@@ -64,6 +65,11 @@ export interface AuthUser {
   role: string;
   token?: string;
   id: string;
+  businessName?: string;
+  businessType?: string;
+  address?: string;
+  branch?: string;
+  profileImage?: string;
   profile: {
     id: string;
     businessName: string;
