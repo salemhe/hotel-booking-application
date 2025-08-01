@@ -18,6 +18,21 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 
+interface VendorProfile {
+  id?: string;
+  _id?: string;
+  email?: string;
+  role?: string;
+  token?: string;
+  businessName?: string;
+  businessType?: string;
+  address?: string;
+  branch?: string;
+  profileImage?: string;
+  onboarded?: boolean;
+  [key: string]: unknown;
+}
+
 export default function VendorLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,13 +77,13 @@ export default function VendorLoginPage() {
         await AuthService.setToken(token);
       }
 
-      let realProfile: any = response.profile;
+      let realProfile: VendorProfile = response.profile as VendorProfile;
       try {
         if (token) {
-          const userId = response.profile?.id || (response.profile as any)?._id || "";
+          const userId = response.profile?.id || (response.profile as VendorProfile)?._id || "";
           const fetchedProfile = await AuthService.fetchMyProfile(userId);
           if (fetchedProfile) {
-            realProfile = fetchedProfile;
+            realProfile = fetchedProfile as unknown as VendorProfile;
           }
         }
       } catch (fetchError) {
@@ -77,16 +92,28 @@ export default function VendorLoginPage() {
 
       if (realProfile) {
         AuthService.setUser({
-          id: realProfile.id || (realProfile as any)._id,
-          email: realProfile.email,
-          role: realProfile.role || "vendor",
-          token: (realProfile as any).token,
-          businessName: realProfile.businessName,
-          businessType: realProfile.businessType,
-          address: realProfile.address,
-          branch: realProfile.branch,
-          profileImage: (realProfile as any).profileImage,
-          profile: realProfile, 
+          id: realProfile.id ?? realProfile._id ?? "",
+          email: realProfile.email ?? "",
+          role: realProfile.role ?? "vendor",
+          token: realProfile.token ?? "",
+          businessName: realProfile.businessName ?? "",
+          businessType: realProfile.businessType ?? "",
+          address: realProfile.address ?? "",
+          branch: realProfile.branch ?? "",
+          profileImage: realProfile.profileImage ?? "",
+          profile: {
+            id: realProfile.id ?? realProfile._id ?? "",
+            businessName: realProfile.businessName ?? "",
+            businessType: realProfile.businessType ?? "",
+            email: realProfile.email ?? "",
+            address: realProfile.address ?? "",
+            branch: realProfile.branch ?? "",
+            profileImage: realProfile.profileImage ?? "",
+            phone: (realProfile as any).phone ?? 0,
+            paymentDetails: (realProfile as any).paymentDetails ?? {},
+            recipientCode: (realProfile as any).recipientCode ?? "",
+            onboarded: realProfile.onboarded ?? false,
+          },
         });
       }
 
