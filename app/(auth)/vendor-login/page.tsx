@@ -18,6 +18,17 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 
+interface PaymentDetalsProps {
+  accountNumber: string;
+  bankAccountName: string;
+  bankName: string;
+  bankCode: string;
+  paystackSubAccount: string;
+  percentageCharge: number;
+  recipientCode: string;
+  [key: string]: any;
+}
+
 interface VendorProfile {
   id?: string;
   _id?: string;
@@ -102,17 +113,33 @@ export default function VendorLoginPage() {
           branch: realProfile.branch ?? "",
           profileImage: realProfile.profileImage ?? "",
           profile: {
-            id: realProfile.id ?? realProfile._id ?? "",
-            businessName: realProfile.businessName ?? "",
-            businessType: realProfile.businessType ?? "",
-            email: realProfile.email ?? "",
-            address: realProfile.address ?? "",
-            branch: realProfile.branch ?? "",
-            profileImage: realProfile.profileImage ?? "",
-            phone: (realProfile as any).phone ?? 0,
-            paymentDetails: (realProfile as any).paymentDetails ?? {},
-            recipientCode: (realProfile as any).recipientCode ?? "",
-            onboarded: realProfile.onboarded ?? false,
+            id: typeof realProfile.id === "string" && realProfile.id.length > 0
+              ? realProfile.id
+              : typeof realProfile._id === "string" ? realProfile._id : "",
+            businessName: typeof realProfile.businessName === "string" ? realProfile.businessName : "",
+            businessType: typeof realProfile.businessType === "string" ? realProfile.businessType : "",
+            email: typeof realProfile.email === "string" ? realProfile.email : "",
+            address: typeof realProfile.address === "string" ? realProfile.address : "",
+            branch: typeof realProfile.branch === "string" ? realProfile.branch : "",
+            profileImage: typeof realProfile.profileImage === "string" ? realProfile.profileImage : "",
+            phone: typeof (realProfile as Record<string, unknown>).phone === "number"
+              ? (realProfile as Record<string, unknown>).phone as number
+              : 0,
+            paymentDetails: typeof (realProfile as Record<string, unknown>).paymentDetails === "object" && (realProfile as Record<string, unknown>).paymentDetails !== null
+              ? (realProfile as { paymentDetails: PaymentDetalsProps }).paymentDetails
+              : {
+                  accountNumber: "",
+                  bankAccountName: "",
+                  bankName: "",
+                  bankCode: "",
+                  paystackSubAccount: "",
+                  percentageCharge: 0,
+                  recipientCode: "",
+                },
+            recipientCode: typeof (realProfile as Record<string, unknown>).recipientCode === "string"
+              ? (realProfile as Record<string, unknown>).recipientCode as string
+              : "",
+            onboarded: typeof realProfile.onboarded === "boolean" ? realProfile.onboarded : false,
           },
         });
       }
