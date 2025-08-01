@@ -10,7 +10,6 @@ import {
   Filter,
   Download,
   Plus,
-  Check,
   X,
 } from "lucide-react";
 
