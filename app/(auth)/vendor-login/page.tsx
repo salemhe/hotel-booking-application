@@ -18,6 +18,31 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 
+interface PaymentDetalsProps {
+  accountNumber: string;
+  bankAccountName: string;
+  bankName: string;
+  bankCode: string;
+  paystackSubAccount: string;
+  percentageCharge: number;
+  recipientCode: string;
+}
+
+interface VendorProfile {
+  id?: string;
+  _id?: string;
+  email?: string;
+  role?: string;
+  token?: string;
+  businessName?: string;
+  businessType?: string;
+  address?: string;
+  branch?: string;
+  profileImage?: string;
+  onboarded?: boolean;
+  [key: string]: unknown;
+}
+
 export default function VendorLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -56,20 +81,86 @@ export default function VendorLoginPage() {
     setLoading(true);
 
     try {
-      const response = await AuthService.login(email, password);
+      const res = await fetch("http://localhost:5000/api/vendors/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Login failed");
+      }
+      const response = await res.json();
       const token = response.token || (response.profile && response.profile.token);
       if (token) {
         await AuthService.setToken(token);
       }
-      toast.success(`Welcome back, ${response.profile?.businessName || "Vendor"}!`);
-      localStorage.setItem("accountType", response.profile?.businessType || "");
-      // Instantly redirect to the correct dashboard
-      if (response.profile?.onboarded) {
-        if (response.profile.businessType === "hotel") {
+
+      let realProfile: VendorProfile = response.profile as VendorProfile;
+      try {
+        if (token) {
+          const userId = response.profile?.id || (response.profile as VendorProfile)?._id || "";
+          const fetchedProfile = await AuthService.fetchMyProfile(userId);
+          if (fetchedProfile) {
+            realProfile = fetchedProfile as unknown as VendorProfile;
+          }
+        }
+      } catch (fetchError) {
+        console.error("Could not fetch latest profile, using login profile.", fetchError);
+      }
+
+      if (realProfile) {
+        AuthService.setUser({
+          id: realProfile.id ?? realProfile._id ?? "",
+          email: realProfile.email ?? "",
+          role: realProfile.role ?? "vendor",
+          token: realProfile.token ?? "",
+          businessName: realProfile.businessName ?? "",
+          businessType: realProfile.businessType ?? "",
+          address: realProfile.address ?? "",
+          branch: realProfile.branch ?? "",
+          profileImage: realProfile.profileImage ?? "",
+          profile: {
+            id: typeof realProfile.id === "string" && realProfile.id.length > 0
+              ? realProfile.id
+              : typeof realProfile._id === "string" ? realProfile._id : "",
+            businessName: typeof realProfile.businessName === "string" ? realProfile.businessName : "",
+            businessType: typeof realProfile.businessType === "string" ? realProfile.businessType : "",
+            email: typeof realProfile.email === "string" ? realProfile.email : "",
+            address: typeof realProfile.address === "string" ? realProfile.address : "",
+            branch: typeof realProfile.branch === "string" ? realProfile.branch : "",
+            profileImage: typeof realProfile.profileImage === "string" ? realProfile.profileImage : "",
+            phone: typeof (realProfile as Record<string, unknown>).phone === "number"
+              ? (realProfile as Record<string, unknown>).phone as number
+              : 0,
+            paymentDetails: typeof (realProfile as Record<string, unknown>).paymentDetails === "object" && (realProfile as Record<string, unknown>).paymentDetails !== null
+              ? (realProfile as { paymentDetails: PaymentDetalsProps }).paymentDetails
+              : {
+                  accountNumber: "",
+                  bankAccountName: "",
+                  bankName: "",
+                  bankCode: "",
+                  paystackSubAccount: "",
+                  percentageCharge: 0,
+                  recipientCode: "",
+                },
+            recipientCode: typeof (realProfile as Record<string, unknown>).recipientCode === "string"
+              ? (realProfile as Record<string, unknown>).recipientCode as string
+              : "",
+            onboarded: typeof realProfile.onboarded === "boolean" ? realProfile.onboarded : false,
+          },
+        });
+      }
+
+      toast.success(`Welcome back, ${realProfile?.businessName || "Vendor"}!`);
+      localStorage.setItem("accountType", realProfile?.businessType || "");
+
+      if (realProfile?.onboarded) {
+        if (realProfile.businessType === "hotel") {
           router.push("/vendor-dashboard/hotel");
-        } else if (response.profile.businessType === "restaurant") {
+        } else if (realProfile.businessType === "restaurant") {
           router.push("/vendor-dashboard/restaurant");
-        } else if (response.profile.businessType === "club") {
+        } else if (realProfile.businessType === "club") {
           router.push("/vendor-dashboard/club");
         } else {
           router.push("/vendorDashboard");
