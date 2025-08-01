@@ -76,7 +76,7 @@ export default function VendorLoginPage() {
             });
           }
         }
-      } catch (e) {
+      } catch {
         // fallback to response.profile if fetch fails
         if (response.profile) {
           AuthService.setUser({
