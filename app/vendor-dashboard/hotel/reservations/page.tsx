@@ -35,7 +35,7 @@ export default function HotelRooms() {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"view"|"edit"|"create"|null>(null);
   const [selectedRoom, setSelectedRoom] = useState<Room|null>(null);
-  const [form, setForm] = useState<Room>({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
+  // const [form, setForm] = useState<Room>({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
   // const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
@@ -272,7 +272,7 @@ function MultiRoomForm({ isEdit, onClose, fetchRooms, selectedRoom }: { isEdit: 
   const [imagePreviews, setImagePreviews] = useState<string[][]>(Array(5).fill([]));
   const [imageErrors, setImageErrors] = useState<string[]>(Array(5).fill(""));
 
-  const handleRoomChange = (idx: number, field: string, value: any) => {
+  const handleRoomChange = (idx: number, field: string, value: string | number) => {
     setRoomForms(forms => forms.map((room, i) => i === idx ? { ...room, [field]: value } : room));
   };
 
