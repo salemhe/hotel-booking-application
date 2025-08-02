@@ -33,6 +33,6 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ProfileContext.Provider value={{ profile, setProfile }}>
       {children}
-    </ProfileContext.Provider>
+    </ProfileContext.Provider> 
   );
 };
