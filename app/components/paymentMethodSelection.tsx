@@ -38,7 +38,7 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import PaymentForm from "@/app/components/paymentForm";
 import Image from "next/image";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
-import { UserProfile } from "./Navigation";
+import { UserProfile } from "@/app/lib/api/services/auth.service";
 import { AxiosError } from "axios";
 import API from "@/app/lib/api/userAxios";
 import { useRouter } from "next/navigation";
