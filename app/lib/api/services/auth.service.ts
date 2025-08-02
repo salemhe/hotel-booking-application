@@ -36,6 +36,9 @@ export interface UserProfile {
   role: string;
   onboarded: boolean;
   services: string[];
+  profileImage?: string;
+  paymentDetails?: PaymentDetalsProps;
+  recipientCode?: string;
 }
 
 interface RegisterData {

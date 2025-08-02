@@ -13,12 +13,9 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { toast } from "sonner";
 
-// API endpoints to be implemented by backend:
-// GET /api/vendor/reservations
-// POST /api/vendor/reservations
-// PUT /api/vendor/reservations/:id
-// DELETE /api/vendor/reservations/:id
+
 
 interface Reservation {
   id: string;
@@ -42,10 +39,30 @@ export default function RestaurantReservations() {
   const [selectedReservation, setSelectedReservation] = useState<Reservation|null>(null);
   const [form, setForm] = useState<Reservation>({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
   const [formLoading, setFormLoading] = useState(false);
+  const [vendorProfile, setVendorProfile] = useState<{ name: string; profileImage?: string }>({ name: '', profileImage: '' });
 
   useEffect(() => {
     fetchReservations();
+    fetchVendorProfile();
   }, [searchTerm, filterStatus]);
+
+  async function fetchVendorProfile() {
+    try {
+      const { AuthService } = await import("@/app/lib/api/services/auth.service");
+      const user = AuthService.getUser();
+      if (user && user.id) {
+        const realProfile = await AuthService.fetchMyProfile(user.id);
+        if (realProfile) {
+          setVendorProfile({
+            name: realProfile.businessName || realProfile.name || '',
+            profileImage: realProfile.profileImage || ''
+          });
+        }
+      }
+    } catch {
+      setVendorProfile({ name: '', profileImage: '' });
+    }
+  }
 
   async function fetchReservations() {
     setLoading(true);
@@ -68,14 +85,16 @@ export default function RestaurantReservations() {
     try {
       if (modalType === "edit") {
         await axios.put(`/api/vendor/reservations/${form.id}`, form);
+        toast.success("Reservation updated successfully!");
       } else {
         await axios.post(`/api/vendor/reservations`, form);
+        toast.success("Reservation created successfully!");
       }
       setShowModal(false);
       setForm({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
       fetchReservations();
     } catch {
-      // handle error
+      toast.error("Failed to save reservation. Please try again.");
     } finally {
       setFormLoading(false);
     }
@@ -128,10 +147,20 @@ export default function RestaurantReservations() {
             <div className="flex items-center space-x-4">
               <Bell className="w-6 h-6 text-gray-400" />
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">JE</span>
-                </div>
-                <span className="text-sm font-medium">Vendor Name</span>
+                {vendorProfile.profileImage ? (
+                  <img
+                    src={vendorProfile.profileImage}
+                    alt={vendorProfile.name}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">
+                      {vendorProfile.name.trim().length > 0 ? vendorProfile.name.split(" ").map(n => n[0]).join("") : "?"}
+                    </span>
+                  </div>
+                )}
+                <span className="text-sm font-medium">{vendorProfile.name || "Vendor"}</span>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </div>
             </div>

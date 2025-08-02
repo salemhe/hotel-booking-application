@@ -35,8 +35,8 @@ export default function HotelRooms() {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<"view"|"edit"|"create"|null>(null);
   const [selectedRoom, setSelectedRoom] = useState<Room|null>(null);
-  const [form, setForm] = useState<Room>({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
-  const [formLoading, setFormLoading] = useState(false);
+  // const [form, setForm] = useState<Room>({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
+  // const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
     fetchRooms();
@@ -56,24 +56,24 @@ export default function HotelRooms() {
     }
   }
 
-  async function handleCreateOrEditRoom(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setFormLoading(true);
-    try {
-      if (modalType === "edit") {
-        await axios.put(`/api/vendor/hotel-rooms/${form.id}`, form);
-      } else {
-        await axios.post(`/api/vendor/hotel-rooms`, form);
-      }
-      setShowModal(false);
-      setForm({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
-      fetchRooms();
-    } catch {
-      // handle error
-    } finally {
-      setFormLoading(false);
-    }
-  }
+  // async function handleCreateOrEditRoom(e: React.FormEvent<HTMLFormElement>) {
+  //   e.preventDefault();
+  //   setFormLoading(true);
+  //   try {
+  //     if (modalType === "edit") {
+  //       await axios.put(`/api/vendor/hotel-rooms/${form.id}`, form);
+  //     } else {
+  //       await axios.post(`/api/vendor/hotel-rooms`, form);
+  //     }
+  //     setShowModal(false);
+  //     setForm({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
+  //     fetchRooms();
+  //   } catch {
+  //     // handle error
+  //   } finally {
+  //     setFormLoading(false);
+  //   }
+  // }
 
   const statusOptions = ["Available", "Occupied", "Maintenance"];
 
@@ -238,21 +238,12 @@ export default function HotelRooms() {
                   </div>
                 )}
                 {(modalType === "edit" || modalType === "create") && (
-                  <form onSubmit={handleCreateOrEditRoom} className="space-y-4">
-                    <h2 className="text-xl font-bold mb-4">{modalType === "edit" ? "Edit" : "Add"} Room</h2>
-                    <input type="text" className="w-full border rounded px-3 py-2" placeholder="Room Number" value={form.roomNumber} onChange={e => setForm({ ...form, roomNumber: e.target.value })} required />
-                    <input type="text" className="w-full border rounded px-3 py-2" placeholder="Type (e.g. Deluxe, Suite)" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} required />
-                    <input type="number" className="w-full border rounded px-3 py-2" placeholder="Price" value={form.price} min={0} onChange={e => setForm({ ...form, price: Number(e.target.value) })} required />
-                    <select className="w-full border rounded px-3 py-2" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
-                      {statusOptions.map((status) => (
-                        <option key={status} value={status}>{status}</option>
-                      ))}
-                    </select>
-                    <input type="number" className="w-full border rounded px-3 py-2" placeholder="Guests" value={form.guests} min={1} onChange={e => setForm({ ...form, guests: Number(e.target.value) })} required />
-                    <button type="submit" className="w-full bg-teal-600 text-white py-2 rounded hover:bg-teal-700" disabled={formLoading}>
-                      {formLoading ? "Saving..." : modalType === "edit" ? "Update Room" : "Add Room"}
-                    </button>
-                  </form>
+                  <MultiRoomForm
+                    isEdit={modalType === "edit"}
+                    onClose={() => setShowModal(false)}
+                    fetchRooms={fetchRooms}
+                    selectedRoom={selectedRoom}
+                  />
                 )}
               </div>
             </div>
@@ -260,5 +251,144 @@ export default function HotelRooms() {
         </main>
       </div>
     </div>
+  );
+}
+
+// MultiRoomForm component for adding multiple rooms at once
+interface RoomForm extends Room {
+  quality?: string;
+  stars?: number;
+  description?: string;
+  amenities?: string;
+}
+function MultiRoomForm({ isEdit, onClose, fetchRooms, selectedRoom }: { isEdit: boolean, onClose: () => void, fetchRooms: () => void, selectedRoom: Room | null }) {
+  const [roomForms, setRoomForms] = useState<RoomForm[]>(
+    isEdit && selectedRoom
+      ? [{ ...selectedRoom }]
+      : Array(5).fill(null).map(() => ({ id: '', roomNumber: '', type: '', price: 0, status: 'Available', guests: 1, quality: '', stars: 1, description: '', amenities: '' }))
+  );
+  const [loading, setLoading] = useState(false);
+  const [roomImages, setRoomImages] = useState<File[][]>(Array(5).fill([]));
+  const [imagePreviews, setImagePreviews] = useState<string[][]>(Array(5).fill([]));
+  const [imageErrors, setImageErrors] = useState<string[]>(Array(5).fill(""));
+
+  const handleRoomChange = (idx: number, field: string, value: string | number) => {
+    setRoomForms(forms => forms.map((room, i) => i === idx ? { ...room, [field]: value } : room));
+  };
+
+  const handleImageChange = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length < 5 || files.length > 10) {
+      setImageErrors(errors => errors.map((err, i) => i === idx ? "Please select 5 to 10 images." : err));
+      setRoomImages(imgs => imgs.map((arr, i) => i === idx ? [] : arr));
+      setImagePreviews(previews => previews.map((arr, i) => i === idx ? [] : arr));
+      return;
+    }
+    setImageErrors(errors => errors.map((err, i) => i === idx ? "" : err));
+    setRoomImages(imgs => imgs.map((arr, i) => i === idx ? files : arr));
+    setImagePreviews(previews => previews.map((arr, i) => i === idx ? files.map(file => URL.createObjectURL(file)) : arr));
+  };
+
+  const handleAddRooms = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const validRooms = roomForms.filter(r => r.roomNumber && r.type && r.price && r.guests);
+      if (validRooms.length === 0) return;
+      // Upload images for each room
+      const uploadedImagesPerRoom: string[][] = [];
+      for (let i = 0; i < validRooms.length; i++) {
+        let uploadedImageUrls: string[] = [];
+        if (roomImages[i] && roomImages[i].length > 0) {
+          const formData = new FormData();
+          roomImages[i].forEach(img => formData.append("images", img));
+          const res = await fetch("/api/vendor/hotel-rooms/images", {
+            method: "POST",
+            body: formData
+          });
+          const data = await res.json();
+          uploadedImageUrls = data.urls || [];
+        }
+        uploadedImagesPerRoom.push(uploadedImageUrls);
+      }
+      await fetch("/api/vendor/hotel-rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rooms: validRooms, roomImages: uploadedImagesPerRoom })
+      });
+      fetchRooms();
+      onClose();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleAddRooms} className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+      <h2 className="text-2xl font-bold mb-4 text-center text-teal-700">{isEdit ? "Edit Room" : "Add Rooms (at least 5 at once)"}</h2>
+      {roomForms.map((room, idx) => (
+        <div key={idx} className="mb-8 rounded-lg shadow-sm border bg-gray-50 p-4">
+          {/* Room Images Upload */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2 text-teal-800">Room Images (5-10 images)</label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={e => handleImageChange(idx, e)}
+              className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+            />
+            {imageErrors[idx] && <div className="text-red-600 text-xs mt-1">{imageErrors[idx]}</div>}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {imagePreviews[idx] && imagePreviews[idx].map((src, i) => (
+                <img key={i} src={src} alt="preview" className="w-20 h-20 object-cover rounded border" />
+              ))}
+            </div>
+          </div>
+          <div className="mb-2 flex items-center justify-between">
+            <span className="font-semibold text-lg text-teal-800">Room {idx + 1}</span>
+            <span className="text-xs text-gray-400">Fill all required fields</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+            <div>
+              <label className="block text-sm font-medium mb-1">Room Number *</label>
+              <input type="text" className="w-full border rounded px-3 py-2" placeholder="Room Number" value={room.roomNumber} onChange={e => handleRoomChange(idx, 'roomNumber', e.target.value)} required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Type *</label>
+              <input type="text" className="w-full border rounded px-3 py-2" placeholder="Type (e.g. Deluxe, Suite)" value={room.type} onChange={e => handleRoomChange(idx, 'type', e.target.value)} required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Price (₦) *</label>
+              <input type="number" className="w-full border rounded px-3 py-2" placeholder="Price (₦)" value={room.price} min={0} onChange={e => handleRoomChange(idx, 'price', Number(e.target.value))} required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Stars</label>
+              <input type="number" className="w-full border rounded px-3 py-2" placeholder="Stars" value={room.stars || 1} min={1} max={5} onChange={e => handleRoomChange(idx, 'stars', Number(e.target.value))} />
+              <span className="text-xs text-gray-400">1-5 stars</span>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Quality</label>
+              <input type="text" className="w-full border rounded px-3 py-2" placeholder="Quality" value={room.quality || ''} onChange={e => handleRoomChange(idx, 'quality', e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Guests *</label>
+              <input type="number" className="w-full border rounded px-3 py-2" placeholder="Guests" value={room.guests} min={1} onChange={e => handleRoomChange(idx, 'guests', Number(e.target.value))} required />
+            </div>
+          </div>
+          <div className="mb-2">
+            <label className="block text-sm font-medium mb-1">Description</label>
+            <input type="text" className="w-full border rounded px-3 py-2" placeholder="Description" value={room.description || ''} onChange={e => handleRoomChange(idx, 'description', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Amenities <span className="text-xs text-gray-400">(comma separated)</span></label>
+            <input type="text" className="w-full border rounded px-3 py-2" placeholder="Amenities (comma separated)" value={room.amenities || ''} onChange={e => handleRoomChange(idx, 'amenities', e.target.value)} />
+          </div>
+        </div>
+      ))}
+      <button type="submit" className="w-full bg-gradient-to-r from-teal-600 to-blue-500 text-white py-3 rounded-lg font-semibold text-lg shadow hover:from-teal-700 hover:to-blue-600 transition-all duration-200" disabled={loading}>
+        {loading ? <span className="animate-pulse">Adding...</span> : isEdit ? "Update Room" : "Add Room(s)"}
+      </button>
+    </form>
   );
 }
