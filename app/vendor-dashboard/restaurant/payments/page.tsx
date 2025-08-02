@@ -100,7 +100,7 @@ export default function RestaurantPayments() {
           const profile = await AuthService.fetchMyProfile(id!);
           setVendor(profile);
         }
-      } catch (e) {
+      } catch {
         setVendor(null);
       }
     };
