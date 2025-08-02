@@ -25,6 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
+ import { AuthService } from "@/app/lib/api/services/userAuth.service";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -79,6 +80,7 @@ interface ChartData {
 export default function RestaurantPayments() {
   // Real-time state
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [vendor, setVendor] = useState<{ businessName?: string; role?: string; profileImage?: string } | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [accountForm, setAccountForm] = useState<Account>({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
@@ -90,6 +92,19 @@ export default function RestaurantPayments() {
 
   useEffect(() => {
     fetchAll();
+    const fetchVendor = async () => {
+      try {
+        if (await AuthService.isAuthenticated()) {
+          const token = await AuthService.getToken();
+          const id = AuthService.extractUserId(token!);
+          const profile = await AuthService.fetchMyProfile(id!);
+          setVendor(profile);
+        }
+      } catch {
+        setVendor(null);
+      }
+    };
+    fetchVendor();
   }, []);
   const fetchAll = async () => {
     try {
@@ -109,7 +124,8 @@ export default function RestaurantPayments() {
     setVerifying(true);
     setVerifyError('');
     try {
-      const res = await fetch("/api/vendor/accounts/verify", {
+      const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${BASE_URL}/api/vendor/accounts/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accountNumber })
@@ -317,12 +333,12 @@ export default function RestaurantPayments() {
               </Button>
               <div className="flex items-center space-x-2">
                 <Avatar>
-                  <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                  <AvatarFallback>JE</AvatarFallback>
+                  <AvatarImage src={vendor?.profileImage || "/placeholder.svg?height=32&width=32"} />
+                  <AvatarFallback>{vendor?.businessName?.[0] || "V"}</AvatarFallback>
                 </Avatar>
                 <div className="text-sm">
-                  <div className="font-medium">Vendor Name</div>
-                  <div className="text-gray-500">Vendor</div>
+                  <div className="font-medium">{vendor?.businessName || "Vendor Name"}</div>
+                  <div className="text-gray-500">{vendor?.role || "Vendor"}</div>
                 </div>
                 <ChevronDown className="h-4 w-4 text-gray-400" />
               </div>
