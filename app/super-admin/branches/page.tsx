@@ -25,7 +25,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Removed unused sidebarItems
 

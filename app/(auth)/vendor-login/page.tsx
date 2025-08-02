@@ -43,6 +43,8 @@ interface VendorProfile {
   [key: string]: unknown;
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function VendorLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,10 +83,11 @@ export default function VendorLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/vendors/login", {
+      const res = await fetch(`${BASE_URL}/api/vendors/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        // credentials: "include", // Uncomment if you need cookies/session
       });
       if (!res.ok) {
         const errorData = await res.json();
