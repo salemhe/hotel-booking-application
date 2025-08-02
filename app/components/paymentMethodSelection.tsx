@@ -37,8 +37,7 @@ import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import PaymentForm from "@/app/components/paymentForm";
 import Image from "next/image";
-import { AuthService } from "@/app/lib/api/services/userAuth.service";
-import { UserProfile } from "@/app/lib/api/services/auth.service";
+import { AuthService, UserProfile } from "@/app/lib/api/services/userAuth.service";
 import { AxiosError } from "axios";
 import API from "@/app/lib/api/userAxios";
 import { useRouter } from "next/navigation";
@@ -100,7 +99,12 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
           if (await AuthService.isAuthenticated()) {
             const token = await AuthService.getToken();
             const id = AuthService.extractUserId(token!);
-            setUser(await AuthService.getUser(id!));
+            const profile = await AuthService.fetchMyProfile(id!);
+            if (profile) {
+              setUser(profile as UserProfile);
+            } else {
+              setUser(null);
+            }
           }
         } catch (error) {
           console.log(error);
