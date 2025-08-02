@@ -36,7 +36,7 @@ export default function HotelRooms() {
   const [modalType, setModalType] = useState<"view"|"edit"|"create"|null>(null);
   const [selectedRoom, setSelectedRoom] = useState<Room|null>(null);
   const [form, setForm] = useState<Room>({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
-  const [formLoading, setFormLoading] = useState(false);
+  // const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
     fetchRooms();
@@ -56,24 +56,24 @@ export default function HotelRooms() {
     }
   }
 
-  async function handleCreateOrEditRoom(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setFormLoading(true);
-    try {
-      if (modalType === "edit") {
-        await axios.put(`/api/vendor/hotel-rooms/${form.id}`, form);
-      } else {
-        await axios.post(`/api/vendor/hotel-rooms`, form);
-      }
-      setShowModal(false);
-      setForm({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
-      fetchRooms();
-    } catch {
-      // handle error
-    } finally {
-      setFormLoading(false);
-    }
-  }
+  // async function handleCreateOrEditRoom(e: React.FormEvent<HTMLFormElement>) {
+  //   e.preventDefault();
+  //   setFormLoading(true);
+  //   try {
+  //     if (modalType === "edit") {
+  //       await axios.put(`/api/vendor/hotel-rooms/${form.id}`, form);
+  //     } else {
+  //       await axios.post(`/api/vendor/hotel-rooms`, form);
+  //     }
+  //     setShowModal(false);
+  //     setForm({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
+  //     fetchRooms();
+  //   } catch {
+  //     // handle error
+  //   } finally {
+  //     setFormLoading(false);
+  //   }
+  // }
 
   const statusOptions = ["Available", "Occupied", "Maintenance"];
 
@@ -255,8 +255,14 @@ export default function HotelRooms() {
 }
 
 // MultiRoomForm component for adding multiple rooms at once
+interface RoomForm extends Room {
+  quality?: string;
+  stars?: number;
+  description?: string;
+  amenities?: string;
+}
 function MultiRoomForm({ isEdit, onClose, fetchRooms, selectedRoom }: { isEdit: boolean, onClose: () => void, fetchRooms: () => void, selectedRoom: Room | null }) {
-  const [roomForms, setRoomForms] = useState<any[]>(
+  const [roomForms, setRoomForms] = useState<RoomForm[]>(
     isEdit && selectedRoom
       ? [{ ...selectedRoom }]
       : Array(5).fill(null).map(() => ({ id: '', roomNumber: '', type: '', price: 0, status: 'Available', guests: 1, quality: '', stars: 1, description: '', amenities: '' }))
@@ -290,7 +296,7 @@ function MultiRoomForm({ isEdit, onClose, fetchRooms, selectedRoom }: { isEdit: 
       const validRooms = roomForms.filter(r => r.roomNumber && r.type && r.price && r.guests);
       if (validRooms.length === 0) return;
       // Upload images for each room
-      let uploadedImagesPerRoom: string[][] = [];
+      const uploadedImagesPerRoom: string[][] = [];
       for (let i = 0; i < validRooms.length; i++) {
         let uploadedImageUrls: string[] = [];
         if (roomImages[i] && roomImages[i].length > 0) {

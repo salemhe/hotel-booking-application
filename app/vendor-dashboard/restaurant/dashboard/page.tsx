@@ -1,18 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { UserProfile } from "@/app/lib/api/services/auth.service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
 
-// API endpoints to be implemented by backend:
-// GET /api/vendor/dashboard/overview
-// GET /api/vendor/bookings/recent
-// GET /api/vendor/payments/recent
-// GET /api/vendor/branches
-// GET /api/vendor/staff
+
 
 export default function RestaurantDashboard() {
   // Types
@@ -85,7 +79,7 @@ export default function RestaurantDashboard() {
       const { AuthService } = await import("@/app/lib/api/services/auth.service");
       const user = AuthService.getUser();
       if (user && user.id) {
-        const realProfile = await AuthService.fetchMyProfile(user.id);
+        await AuthService.fetchMyProfile(user.id);
         // if (realProfile) setProfile(realProfile);
       }
     } catch {
