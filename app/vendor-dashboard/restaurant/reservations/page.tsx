@@ -62,11 +62,11 @@ export default function RestaurantReservations() {
         setSocketAlert({ reservation });
         fetchReservations(); // Optionally refresh the list
       });
-      socket.on("connect_error", (err: Error) => {
-        // console.error("Socket connection error:", err);
+      socket.on("connect_error", () => {
+        // console.error("Socket connection error");
       });
-    } catch (err) {
-      // console.error("Socket error:", err);
+    } catch {
+      // console.error("Socket error");
     }
     return () => {
       if (socket) socket.disconnect();

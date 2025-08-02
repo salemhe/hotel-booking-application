@@ -43,8 +43,12 @@ export default function AddMenuPage() {
       });
       if (!res.ok) throw new Error("Failed to add menu");
       router.push("/vendor-dashboard/restaurant/menu");
-    } catch (err: any) {
-      setError(err.message || "Error adding menu");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Error adding menu");
+      } else {
+        setError("Error adding menu");
+      }
     } finally {
       setLoading(false);
     }
