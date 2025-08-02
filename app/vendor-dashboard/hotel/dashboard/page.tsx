@@ -50,7 +50,7 @@ export default function HotelDashboard() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  // const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     fetchAll();
@@ -79,10 +79,10 @@ export default function HotelDashboard() {
       const user = AuthService.getUser();
       if (user && user.id) {
         const realProfile = await AuthService.fetchMyProfile(user.id);
-        if (realProfile) setProfile(realProfile);
+        // if (realProfile) setProfile(realProfile);
       }
-    } catch (e) {
-      setProfile(null);
+    } catch {
+      // setProfile(null);
     }
   };
 

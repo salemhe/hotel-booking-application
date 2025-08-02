@@ -131,7 +131,7 @@ export default function VendorRegistration() {
       // Automatically log in the user after verification
       const loginResponse = await AuthService.login(formData.email, formData.password);
       const token = loginResponse.token || (loginResponse.profile && loginResponse.profile.token);
-      let userId = loginResponse.profile?.id;
+       const userId = loginResponse.profile?.id;
       if (token) {
         await AuthService.setToken(token);
         localStorage.setItem("auth_token", token);
