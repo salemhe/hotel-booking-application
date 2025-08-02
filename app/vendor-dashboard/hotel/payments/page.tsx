@@ -124,7 +124,8 @@ export default function HotelPayments() {
     setVerifying(true);
     setVerifyError('');
     try {
-      const res = await fetch("/api/vendor/hotel-accounts/verify", {
+      const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${BASE_URL}/api/vendor/hotel-accounts/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accountNumber })
