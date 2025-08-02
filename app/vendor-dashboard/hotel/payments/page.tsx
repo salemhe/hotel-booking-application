@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { useMemo } from "react";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -176,6 +177,59 @@ export default function HotelPayments() {
     </Card>
   );
 
+  // Static list of Nigerian commercial and microfinance banks
+  const NIGERIAN_BANKS = useMemo(() => [
+    // Commercial Banks
+    "Access Bank",
+    "Citibank",
+    "Ecobank Nigeria",
+    "Fidelity Bank",
+    "First Bank of Nigeria",
+    "First City Monument Bank (FCMB)",
+    "Globus Bank",
+    "Guaranty Trust Bank (GTB)",
+    "Heritage Bank",
+    "Keystone Bank",
+    "Polaris Bank",
+    "Providus Bank",
+    "Stanbic IBTC Bank",
+    "Standard Chartered Bank",
+    "Sterling Bank",
+    "Suntrust Bank",
+    "Union Bank of Nigeria",
+    "United Bank for Africa (UBA)",
+    "Unity Bank",
+    "Wema Bank",
+    "Zenith Bank",
+    // Major Microfinance Banks
+    "AB Microfinance Bank",
+    "Accion Microfinance Bank",
+    "Addosser Microfinance Bank",
+    "Baobab Microfinance Bank",
+    "Boctrust Microfinance Bank",
+    "Fina Trust Microfinance Bank",
+    "Infinity Microfinance Bank",
+    "LAPO Microfinance Bank",
+    "Mainstreet Microfinance Bank",
+    "Mutual Trust Microfinance Bank",
+    "Parallex Microfinance Bank",
+    "Rephidim Microfinance Bank",
+    "VFD Microfinance Bank"
+  ], []);
+  const [bankSearch, setBankSearch] = useState("");
+  const [showBankDropdown, setShowBankDropdown] = useState(false);
+  const filteredBanks = useMemo(() =>
+    NIGERIAN_BANKS.filter(b => b.toLowerCase().includes(bankSearch.toLowerCase())),
+    [NIGERIAN_BANKS, bankSearch]
+  );
+
+  // Controlled input for account number
+  const [accountNumberInput, setAccountNumberInput] = useState("");
+
+  useEffect(() => {
+    setAccountNumberInput(accountForm.accountNumber);
+  }, [accountForm.accountNumber]);
+
   const AccountModal = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) => (
     open ? (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
@@ -183,10 +237,53 @@ export default function HotelPayments() {
           <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={onClose}>&times;</button>
           <h2 className="text-xl font-bold mb-4">{isEdit ? "Edit Account" : "Add Account"}</h2>
           <div className="space-y-4">
-            <Input placeholder="Bank Name" value={accountForm.bankName} onChange={e => setAccountForm(f => ({ ...f, bankName: e.target.value }))} />
-            {/* <Input placeholder="Bank Code" value={accountForm.bankCode} onChange={e => setAccountForm(f => ({ ...f, bankCode: e.target.value }))} /> */}
-            <Input placeholder="Account Number" value={accountForm.accountNumber} onChange={e => setAccountForm(f => ({ ...f, accountNumber: e.target.value }))} />
-            <Button onClick={() => verifyAccount(accountForm.accountNumber)} disabled={verifying}>
+            {/* Modern Searchable Nigerian Banks Dropdown */}
+            <div className="relative">
+              <Input
+                placeholder="Search or select bank..."
+                value={bankSearch || accountForm.bankName}
+                onChange={e => {
+                  setBankSearch(e.target.value);
+                  setShowBankDropdown(true);
+                  setAccountForm(f => ({ ...f, bankName: e.target.value }));
+                }}
+                onFocus={() => setShowBankDropdown(true)}
+                className="mb-2"
+                autoComplete="off"
+              />
+              {showBankDropdown && (
+                <div className="absolute z-10 w-full bg-white border border-gray-200 rounded shadow max-h-48 overflow-y-auto">
+                  {filteredBanks.length === 0 && (
+                    <div className="px-4 py-2 text-gray-500">No banks found</div>
+                  )}
+                  {filteredBanks.map(bank => (
+                    <div
+                      key={bank}
+                      className={`px-4 py-2 cursor-pointer hover:bg-teal-100 ${accountForm.bankName === bank ? "bg-teal-50 font-semibold" : ""}`}
+                      onClick={() => {
+                        setAccountForm(f => ({ ...f, bankName: bank }));
+                        setBankSearch(bank);
+                        setShowBankDropdown(false);
+                      }}
+                    >
+                      {bank}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Input
+              placeholder="Account Number"
+              value={accountNumberInput}
+              onChange={e => {
+                setAccountNumberInput(e.target.value);
+                setAccountForm(f => ({ ...f, accountNumber: e.target.value }));
+              }}
+              maxLength={10}
+              inputMode="numeric"
+              autoComplete="off"
+            />
+            <Button onClick={() => verifyAccount(accountNumberInput)} disabled={verifying}>
               {verifying ? "Verifying..." : "Verify Account"}
             </Button>
             {accountForm.accountName && <div className="text-green-600 font-semibold">{accountForm.accountName}</div>}

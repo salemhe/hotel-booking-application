@@ -131,9 +131,50 @@ export default function VendorRegistration() {
       // Automatically log in the user after verification
       const loginResponse = await AuthService.login(formData.email, formData.password);
       const token = loginResponse.token || (loginResponse.profile && loginResponse.profile.token);
+      let userId = loginResponse.profile?.id;
       if (token) {
         await AuthService.setToken(token);
         localStorage.setItem("auth_token", token);
+      }
+      // Fetch real user profile from backend and store it
+      if (userId) {
+        const realProfile = await AuthService.fetchMyProfile(userId);
+        if (realProfile) {
+          AuthService.setUser({
+            ...realProfile,
+            email: realProfile.email,
+            role: realProfile.role,
+            id: realProfile.id,
+            businessName: realProfile.businessName ?? "",
+            businessType: realProfile.businessType ?? "",
+            address: realProfile.address ?? "",
+            branch: realProfile.branch ?? "",
+            profileImage: realProfile.profileImage ?? "",
+                                                profile: {
+              id: realProfile.id,
+              businessName: realProfile.businessName ?? "",
+              businessType: realProfile.businessType ?? "",
+              email: realProfile.email ?? "",
+              address: realProfile.address ?? "",
+              branch: realProfile.branch ?? "",
+              profileImage: realProfile.profileImage ?? "",
+              phone: typeof realProfile.phone === "number" ? realProfile.phone : 0,
+              paymentDetails: typeof realProfile.paymentDetails === "object" && realProfile.paymentDetails !== null
+                ? realProfile.paymentDetails
+                : {
+                    accountNumber: "",
+                    bankAccountName: "",
+                    bankCode: "",
+                    bankName: "",
+                    paystackSubAccount: "",
+                    percentageCharge: 0,
+                    recipientCode: "",
+                  },
+              recipientCode: typeof realProfile.recipientCode === "string" ? realProfile.recipientCode : "",
+              onboarded: typeof realProfile.onboarded === "boolean" ? realProfile.onboarded : false,
+            },
+          });
+        }
       }
       // Route based on account type
       if (formData.adminType === "super-admin") {

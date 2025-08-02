@@ -30,7 +30,7 @@ const bottomSidebarItems = [
 
 function BranchNameDisplay() {
   const { selectedBranch } = useBranchContext();
-  if (!selectedBranch) return <div className="mb-4 px-4 py-2 bg-teal-600 text-white rounded-lg">No Branch</div>;
+  if (!selectedBranch) return null;
   return (
     <div className="mb-4 px-4 py-2 bg-teal-600 text-white rounded-lg font-semibold text-lg">
       {selectedBranch.branchName}
