@@ -50,7 +50,7 @@ export default function RestaurantDashboard() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
-  // const [profile, setProfile] = useState<UserProfile | null>(null);
+  // const [profile, setProfile] = useState<UserProfile |  null>(null);
 
   useEffect(() => {
     fetchAll();
