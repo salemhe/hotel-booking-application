@@ -70,127 +70,23 @@ interface MenuItem {
   updatedDaysAgo: number;
 }
 
-const mockMenuItems: MenuItem[] = [
-  {
-    id: "1",
-    name: "Joe's Platter",
-    description: "Hummus, baba ghanoush, tzatziki, pita bread",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 3,
-  },
-  {
-    id: "2",
-    name: "Mezze Platter",
-    description: "Hummus, baba ghanoush, tzatzaki, pita bread",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 3,
-  },
-  {
-    id: "3",
-    name: "Weekend Buffet",
-    description: "Weekend special buffet selection",
-    price: 45000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "buffet",
-    status: "available",
-    orders: 12,
-    menuType: "Buffet",
-    mealTimes: ["Brunch", "Dinner"],
-    tags: ["Vegan Options", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 5,
-  },
-  {
-    id: "4",
-    name: "Kid's Happy Menu",
-    description: "Special menu for children",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "fixed",
-    status: "available",
-    orders: 4,
-    menuType: "Fixed",
-    mealTimes: ["All Day"],
-    tags: ["Kids", "Sweet", "Small Bites"],
-    isActive: true,
-    updatedDaysAgo: 2,
-  },
-  {
-    id: "5",
-    name: "Chef's Special",
-    description: "Daily chef special selection",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 1,
-  },
-  {
-    id: "6",
-    name: "Grilled Salmon",
-    description: "Fresh grilled salmon with herbs",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "Buffet, A la carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 4,
-  },
-  {
-    id: "7",
-    name: "Chicken springrolls",
-    description: "Crispy chicken spring rolls",
-    price: 7000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "starters",
-    status: "unavailable",
-    orders: 0,
-    menuType: "Set Menu, Buffet",
-    mealTimes: ["All day"],
-    tags: ["Sweet", "Savory"],
-    isActive: false,
-    updatedDaysAgo: 1,
-  },
-];
+import { useEffect } from "react";
 
 export default function MenuManagementPage() {
   const router = useRouter();
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus] = useState("all");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
+
+  useEffect(() => {
+    // Fetch menu items from backend API
+    fetch("/api/vendor/menus")
+      .then((res) => res.json())
+      .then((data) => setMenuItems(data))
+      .catch(() => setMenuItems([]));
+  }, []);
 
   const categories = [
     { value: "all", label: "All Category" },
@@ -201,7 +97,7 @@ export default function MenuManagementPage() {
     { value: "sides", label: "Sides" },
   ];
 
-  const filteredItems = mockMenuItems.filter((item) => {
+  const filteredItems = menuItems.filter((item) => {
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase());

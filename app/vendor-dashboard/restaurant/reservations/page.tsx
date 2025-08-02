@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { io, Socket } from "socket.io-client";
 import {
   Search,
   Bell,
@@ -40,11 +41,37 @@ export default function RestaurantReservations() {
   const [form, setForm] = useState<Reservation>({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
   const [formLoading, setFormLoading] = useState(false);
   const [vendorProfile, setVendorProfile] = useState<{ name: string; profileImage?: string }>({ name: '', profileImage: '' });
+  const [socketAlert, setSocketAlert] = useState<{reservation: Reservation}|null>(null);
 
   useEffect(() => {
     fetchReservations();
     fetchVendorProfile();
   }, [searchTerm, filterStatus]);
+
+  // Setup WebSocket connection for real-time updates
+  useEffect(() => {
+    // You may want to use your actual backend URL here
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    let socket: Socket | null = null;
+    try {
+      socket = io(BASE_URL);
+      socket.on("connect", () => {
+        // console.log("WebSocket connected");
+      });
+      socket.on("bookingsUpdate", (reservation: Reservation) => {
+        setSocketAlert({ reservation });
+        fetchReservations(); // Optionally refresh the list
+      });
+      socket.on("connect_error", () => {
+        // console.error("Socket connection error");
+      });
+    } catch {
+      // console.error("Socket error");
+    }
+    return () => {
+      if (socket) socket.disconnect();
+    };
+  }, []);
 
   async function fetchVendorProfile() {
     try {
@@ -167,6 +194,19 @@ export default function RestaurantReservations() {
           </div>
         </header>
         <main className="flex-1 overflow-auto p-6">
+          {socketAlert && (
+            <div className="mb-4 p-4 rounded bg-yellow-100 border-l-4 border-yellow-500 text-yellow-900 flex items-center justify-between">
+              <div>
+                <b>New Reservation Alert:</b> {socketAlert.reservation.name} ({socketAlert.reservation.paymentStatus}) for {socketAlert.reservation.date} at {socketAlert.reservation.time}
+              </div>
+              <button
+                className="ml-4 px-3 py-1 rounded bg-yellow-200 hover:bg-yellow-300 text-yellow-900"
+                onClick={() => setSocketAlert(null)}
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold text-gray-900">Reservation List</h1>
