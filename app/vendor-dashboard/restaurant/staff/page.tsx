@@ -6,6 +6,7 @@ import { Users, UserCheck, UserX, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { apiFetcher } from "@/app/lib/fetcher";
 
 interface StaffMember {
   id: string;
@@ -30,8 +31,8 @@ export default function RestaurantStaffPage() {
     try {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
-      const res = await fetch("/api/vendor/staff" + (searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""));
-      const data = await res.json();
+      const url = `/api/vendor/staff${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""}`;
+      const data = await apiFetcher(url);
       setStaff(data || []);
     } catch {
       setStaff([]);

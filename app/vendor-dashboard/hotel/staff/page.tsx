@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Users, UserCheck, UserX, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { apiFetcher } from "@/app/lib/fetcher";
 
 interface StaffMember {
   id: string;
@@ -22,21 +23,21 @@ export default function HotelStaffPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "active" | "inactive">("all");
 
-  useEffect(() => {
-    fetchStaff();
-  }, [searchTerm]);
-
-  async function fetchStaff() {
+  const fetchStaff = useCallback(async () => {
     try {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
-      const res = await fetch("/api/vendor/hotel-staff" + (searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""));
-      const data = await res.json();
+      const url = "/api/vendor/hotel-staff" + (searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : "");
+      const data = await apiFetcher(url);
       setStaff(data || []);
     } catch {
       setStaff([]);
     }
-  }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    fetchStaff();
+  }, [fetchStaff]);
 
   const activeStaff = staff.filter((s) => s.status === "active");
   const inactiveStaff = staff.filter((s) => s.status === "inactive");

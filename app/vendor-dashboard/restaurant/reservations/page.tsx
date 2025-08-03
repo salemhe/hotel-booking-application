@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect, useCallback } from "react";
+import { apiFetcher } from "@/app/lib/fetcher";
 import { io, Socket } from "socket.io-client";
 import {
   Search,
@@ -15,8 +15,6 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-
-
 
 interface Reservation {
   id: string;
@@ -43,37 +41,7 @@ export default function RestaurantReservations() {
   const [vendorProfile, setVendorProfile] = useState<{ name: string; profileImage?: string }>({ name: '', profileImage: '' });
   const [socketAlert, setSocketAlert] = useState<{reservation: Reservation}|null>(null);
 
-  useEffect(() => {
-    fetchReservations();
-    fetchVendorProfile();
-  }, [searchTerm, filterStatus]);
-
-  // Setup WebSocket connection for real-time updates
-  useEffect(() => {
-    // You may want to use your actual backend URL here
-    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-    let socket: Socket | null = null;
-    try {
-      socket = io(BASE_URL);
-      socket.on("connect", () => {
-        // console.log("WebSocket connected");
-      });
-      socket.on("bookingsUpdate", (reservation: Reservation) => {
-        setSocketAlert({ reservation });
-        fetchReservations(); // Optionally refresh the list
-      });
-      socket.on("connect_error", () => {
-        // console.error("Socket connection error");
-      });
-    } catch {
-      // console.error("Socket error");
-    }
-    return () => {
-      if (socket) socket.disconnect();
-    };
-  }, []);
-
-  async function fetchVendorProfile() {
+  const fetchVendorProfile = useCallback(async () => {
     try {
       const { AuthService } = await import("@/app/lib/api/services/auth.service");
       const user = AuthService.getUser();
@@ -89,32 +57,63 @@ export default function RestaurantReservations() {
     } catch {
       setVendorProfile({ name: '', profileImage: '' });
     }
-  }
+  }, []);
 
-  async function fetchReservations() {
+  const fetchReservations = useCallback(async () => {
     setLoading(true);
     try {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (filterStatus && filterStatus !== "All") params.status = filterStatus;
-      const res = await axios.get("/api/vendor/reservations", { params });
-      setReservations(res.data || []);
+      const query = new URLSearchParams(params).toString();
+      const url = `/api/vendor/reservations${query ? `?${query}` : ""}`;
+      const data = await apiFetcher(url);
+      setReservations(data || []);
     } catch {
       setReservations([]);
     } finally {
       setLoading(false);
     }
-  }
+  }, [searchTerm, filterStatus]);
+
+  useEffect(() => {
+    fetchReservations();
+    fetchVendorProfile();
+  }, [fetchReservations, fetchVendorProfile]);
+
+  // Setup WebSocket connection for real-time updates
+  useEffect(() => {
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    let socket: Socket | null = null;
+    try {
+      socket = io(BASE_URL);
+      socket.on("connect", () => {});
+      socket.on("bookingsUpdate", (reservation: Reservation) => {
+        setSocketAlert({ reservation });
+        fetchReservations();
+      });
+      socket.on("connect_error", () => {});
+    } catch {}
+    return () => {
+      if (socket) socket.disconnect();
+    };
+  }, [fetchReservations]);
 
   async function handleCreateOrEditReservation(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFormLoading(true);
     try {
       if (modalType === "edit") {
-        await axios.put(`/api/vendor/reservations/${form.id}`, form);
+        await apiFetcher(`/api/vendor/reservations/${form.id}`, {
+          method: "PUT",
+          body: JSON.stringify(form),
+        });
         toast.success("Reservation updated successfully!");
       } else {
-        await axios.post(`/api/vendor/reservations`, form);
+        await apiFetcher(`/api/vendor/reservations`, {
+          method: "POST",
+          body: JSON.stringify(form),
+        });
         toast.success("Reservation created successfully!");
       }
       setShowModal(false);
@@ -127,7 +126,6 @@ export default function RestaurantReservations() {
     }
   }
 
-  
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Paid":

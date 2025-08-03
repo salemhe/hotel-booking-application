@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Card, CardContent } from "@/app/components/ui/card";
+import { apiFetcher } from "@/app/lib/fetcher";
 
 export default function AddMenuPage() {
   const router = useRouter();
@@ -31,9 +32,8 @@ export default function AddMenuPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/vendor/menus", {
+      const res = await apiFetcher("/api/vendor/menus", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
           price: Number(form.price),
@@ -41,7 +41,7 @@ export default function AddMenuPage() {
           tags: form.tags.split(",").map((s) => s.trim()),
         }),
       });
-      if (!res.ok) throw new Error("Failed to add menu");
+      if (!res || res.error || res.status === false) throw new Error("Failed to add menu");
       router.push("/vendor-dashboard/restaurant/menu");
     } catch (err: unknown) {
       if (err instanceof Error) {

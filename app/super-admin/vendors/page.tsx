@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { apiFetcher } from "@/app/lib/fetcher";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
@@ -50,8 +50,8 @@ export default function VendorsPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const vendorRes = await axios.get(`${API_URL}/super-admin/analytics/vendors`);
-        setVendorAnalytics(vendorRes.data.data);
+        const data = await apiFetcher(`${API_URL}/super-admin/analytics/vendors`);
+        setVendorAnalytics(data);
       } catch (err) {
         console.error(err);
       } finally {

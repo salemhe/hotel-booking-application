@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
+import { apiFetcher } from "@/app/lib/fetcher";
 import {
   Search,
   Bell,
@@ -91,12 +91,12 @@ export default function SuperAdminPayments() {
 
   useEffect(() => {
     fetchPayments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVendor]);
 
   async function fetchVendors() {
     try {
-      const res = await fetch("/api/super-admin/vendors");
-      const data = await res.json();
+      const data = await apiFetcher("/api/super-admin/vendors");
       setVendors(data || []);
     } catch {
       setVendors([]);
@@ -107,8 +107,7 @@ export default function SuperAdminPayments() {
     try {
       let url = "/api/super-admin/payments";
       if (selectedVendor) url += `?vendorId=${selectedVendor}`;
-      const res = await fetch(url);
-      const data = await res.json();
+      const data = await apiFetcher(url);
       setStats(data.stats || {});
       setTransactions(data.transactions || []);
       setChartData(data.chartData || []);

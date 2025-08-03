@@ -27,6 +27,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } fro
 import { useMemo } from "react";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
 
+import { apiFetcher } from "@/app/lib/fetcher";
 const getStatusColor = (status: string) => {
   switch (status) {
     case "Paid":
@@ -109,9 +110,9 @@ export default function HotelPayments() {
   const fetchAll = async () => {
     try {
       const [accRes, statsRes, transRes] = await Promise.all([
-        fetch("/api/vendor/hotel-accounts").then(r => r.json()),
-        fetch("/api/vendor/hotel-payments/stats").then(r => r.json()),
-        fetch("/api/vendor/hotel-payments/transactions").then(r => r.json()),
+        apiFetcher("/api/vendor/hotel-accounts"),
+        apiFetcher("/api/vendor/hotel-payments/stats"),
+        apiFetcher("/api/vendor/hotel-payments/transactions"),
       ]);
       setAccounts(accRes);
       setStats(statsRes);
@@ -125,12 +126,11 @@ export default function HotelPayments() {
     setVerifyError('');
     try {
       const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const res = await fetch(`${BASE_URL}/api/vendor/hotel-accounts/verify`, {
+      const data = await apiFetcher(`${BASE_URL}/api/vendor/hotel-accounts/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accountNumber })
       });
-      const data = await res.json();
       if (data.accountName) {
         setAccountForm(f => ({ ...f, accountName: data.accountName, bankLogoUrl: data.bankLogoUrl }));
       } else {
@@ -146,13 +146,13 @@ export default function HotelPayments() {
   const saveAccount = async () => {
     try {
       if (accountForm.id) {
-        await fetch(`/api/vendor/hotel-accounts/${accountForm.id}`, {
+        await apiFetcher(`/api/vendor/hotel-accounts/${accountForm.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(accountForm)
         });
       } else {
-        await fetch(`/api/vendor/hotel-accounts`, {
+        await apiFetcher(`/api/vendor/hotel-accounts`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(accountForm)

@@ -192,7 +192,7 @@ function OTPVerificationComponent() {
       // Show success toast
       toast.success("Email verified successfully!");
 
-      // Redirect to login page
+      // Redirect to login page after successful OTP verification
       router.push("/user-login");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

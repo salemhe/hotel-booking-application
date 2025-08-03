@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { apiFetcher } from "@/app/lib/fetcher";
 import { Button } from '@mui/material';
 import { Plus } from 'lucide-react';
 
@@ -26,13 +26,13 @@ const SuperAdminDashboard: React.FC = () => {
     const fetchChains = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/chains`, {
+        const data = await apiFetcher(`${API_URL}/chains`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setChains(response.data);
+        setChains(data);
       } catch (err: unknown) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data?.message || 'Failed to fetch chains');
+        if (err instanceof Error) {
+          setError(err.message || 'Failed to fetch chains');
         } else {
           setError('Failed to fetch chains');
         }
