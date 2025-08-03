@@ -12,7 +12,6 @@ import {
   Copy,
   Eye,
   MoreHorizontal,
-  ArrowLeft,
   Grid3X3,
   List,
   // Upload,
@@ -72,11 +71,10 @@ interface MenuItem {
   updatedDaysAgo: number;
 }
 
-import { useEffect } from "react";
 
 export default function MenuManagementPage() {
   const router = useRouter();
-  const { data: menuItems = [], mutate } = useSWR<MenuItem[]>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
+  const { data: menuItems = [] } = useSWR<MenuItem[]>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus] = useState("all");

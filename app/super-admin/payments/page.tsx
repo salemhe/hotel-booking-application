@@ -92,6 +92,7 @@ export default function SuperAdminPayments() {
 
   useEffect(() => {
     fetchPayments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVendor]);
 
   async function fetchVendors() {

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { apiFetcher } from "@/app/lib/fetcher";
 import {
   Search,
@@ -34,11 +35,7 @@ export default function HotelRooms() {
   // const [form, setForm] = useState<Room>({ id: '', roomNumber: "", type: "", price: 0, status: "Available", guests: 1 });
   // const [formLoading, setFormLoading] = useState(false);
 
-  useEffect(() => {
-    fetchRooms();
-  }, [searchTerm]);
-
-  async function fetchRooms() {
+  const fetchRooms = useCallback(async () => {
     setLoading(true);
     try {
       const params: Record<string, string> = {};
@@ -52,7 +49,11 @@ export default function HotelRooms() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    fetchRooms();
+  }, [fetchRooms]);
 
   // async function handleCreateOrEditRoom(e: React.FormEvent<HTMLFormElement>) {
   //   e.preventDefault();
@@ -338,7 +339,7 @@ function MultiRoomForm({ isEdit, onClose, fetchRooms, selectedRoom }: { isEdit: 
             {imageErrors[idx] && <div className="text-red-600 text-xs mt-1">{imageErrors[idx]}</div>}
             <div className="flex flex-wrap gap-2 mt-2">
               {imagePreviews[idx] && imagePreviews[idx].map((src, i) => (
-                <img key={i} src={src} alt="preview" className="w-20 h-20 object-cover rounded border" />
+                <Image key={i} src={src} alt="preview" width={80} height={80} className="w-20 h-20 object-cover rounded border" />
               ))}
             </div>
           </div>

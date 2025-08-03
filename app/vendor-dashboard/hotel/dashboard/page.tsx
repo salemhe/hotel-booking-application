@@ -46,11 +46,11 @@ export default function HotelDashboard() {
   }
 
   // SWR hooks for real-time data
-  const { data: overview = {}, isLoading: loadingOverview } = useSWR<Overview>("/api/vendor/hotel-dashboard/overview", apiFetcher, { refreshInterval: 5000 });
-  const { data: bookings = [], isLoading: loadingBookings } = useSWR<Booking[]>("/api/vendor/hotel-bookings/recent", apiFetcher, { refreshInterval: 5000 });
-  const { data: payments = [], isLoading: loadingPayments } = useSWR<Payment[]>("/api/vendor/hotel-payments/recent", apiFetcher, { refreshInterval: 5000 });
-  const { data: branches = [], isLoading: loadingBranches } = useSWR<Branch[]>("/api/vendor/hotel-branches", apiFetcher, { refreshInterval: 5000 });
-  const { data: staff = [], isLoading: loadingStaff } = useSWR<Staff[]>("/api/vendor/hotel-staff", apiFetcher, { refreshInterval: 5000 });
+  const { data: overview = {} } = useSWR<Overview>("/api/vendor/hotel-dashboard/overview", apiFetcher, { refreshInterval: 5000 });
+  const { data: bookings = [] } = useSWR<Booking[]>("/api/vendor/hotel-bookings/recent", apiFetcher, { refreshInterval: 5000 });
+  const { data: payments = [] } = useSWR<Payment[]>("/api/vendor/hotel-payments/recent", apiFetcher, { refreshInterval: 5000 });
+  const { data: branches = [] } = useSWR<Branch[]>("/api/vendor/hotel-branches", apiFetcher, { refreshInterval: 5000 });
+  const { data: staff = [] } = useSWR<Staff[]>("/api/vendor/hotel-staff", apiFetcher, { refreshInterval: 5000 });
 
   return (
     <div className="w-full max-w-7xl mx-auto py-8 px-2 sm:px-4 md:px-6 lg:px-8">
