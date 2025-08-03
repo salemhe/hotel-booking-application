@@ -105,9 +105,13 @@ const LocationCreateForm: React.FC = () => {
       setTimeout(() => {
         router.push('/super-admin/dashboard');
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating location:', error);
-      setError(error?.message || 'Failed to create location');
+      if (error instanceof Error) {
+        setError(error.message || 'Failed to create location');
+      } else {
+        setError('Failed to create location');
+      }
     } finally {
       setLoading(false);
     }

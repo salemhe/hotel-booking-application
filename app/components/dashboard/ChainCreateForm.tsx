@@ -30,8 +30,12 @@ const SuperAdminDashboard: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setChains(data);
-      } catch (err: any) {
-        setError(err?.message || 'Failed to fetch chains');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message || 'Failed to fetch chains');
+        } else {
+          setError('Failed to fetch chains');
+        }
       } finally {
         setLoading(false);
       }
