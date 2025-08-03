@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { apiFetcher } from "@/app/lib/fetcher";
 
 export interface Branch {
   id: number;
@@ -37,8 +38,9 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
   const fetchBranches = async () => {
-    const res = await fetch("/api/branches");
-    const data = await res.json();
+    // If using JWT, get token from localStorage (or context)
+    const url = "/api/branches";
+    const data = await apiFetcher(url);
     setBranches(data);
     if (!selectedBranch && data.length > 0) setSelectedBranch(data[0]);
     if (selectedBranch) {

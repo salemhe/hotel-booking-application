@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { apiFetcher } from "@/app/lib/fetcher";
 import {
   Search,
   Bell,
@@ -13,11 +13,7 @@ import {
   X,
 } from "lucide-react";
 
-// API endpoints to be implemented by backend:
-// GET /api/vendor/hotel-rooms
-// POST /api/vendor/hotel-rooms
-// PUT /api/vendor/hotel-rooms/:id
-// DELETE /api/vendor/hotel-rooms/:id
+
 
 interface Room {
   id: string;
@@ -47,8 +43,10 @@ export default function HotelRooms() {
     try {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
-      const res = await axios.get("/api/vendor/hotel-rooms", { params });
-      setRooms(res.data || []);
+      const query = new URLSearchParams(params).toString();
+      const url = `/api/vendor/hotel-rooms${query ? `?${query}` : ""}`;
+      const data = await apiFetcher(url);
+      setRooms(data || []);
     } catch {
       setRooms([]);
     } finally {
@@ -302,16 +300,15 @@ function MultiRoomForm({ isEdit, onClose, fetchRooms, selectedRoom }: { isEdit: 
         if (roomImages[i] && roomImages[i].length > 0) {
           const formData = new FormData();
           roomImages[i].forEach(img => formData.append("images", img));
-          const res = await fetch("/api/vendor/hotel-rooms/images", {
+          const data = await apiFetcher("/api/vendor/hotel-rooms/images", {
             method: "POST",
             body: formData
           });
-          const data = await res.json();
           uploadedImageUrls = data.urls || [];
         }
         uploadedImagesPerRoom.push(uploadedImageUrls);
       }
-      await fetch("/api/vendor/hotel-rooms", {
+      await apiFetcher("/api/vendor/hotel-rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rooms: validRooms, roomImages: uploadedImagesPerRoom })

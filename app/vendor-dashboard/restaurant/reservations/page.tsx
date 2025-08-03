@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { apiFetcher } from "@/app/lib/fetcher";
 import { io, Socket } from "socket.io-client";
 import {
   Search,
@@ -97,8 +97,11 @@ export default function RestaurantReservations() {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (filterStatus && filterStatus !== "All") params.status = filterStatus;
-      const res = await axios.get("/api/vendor/reservations", { params });
-      setReservations(res.data || []);
+      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+      const query = new URLSearchParams(params).toString();
+      const url = `/api/vendor/reservations${query ? `?${query}` : ""}`;
+      const data = await apiFetcher(url);
+      setReservations(data || []);
     } catch {
       setReservations([]);
     } finally {
@@ -109,12 +112,19 @@ export default function RestaurantReservations() {
   async function handleCreateOrEditReservation(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFormLoading(true);
+    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
     try {
       if (modalType === "edit") {
-        await axios.put(`/api/vendor/reservations/${form.id}`, form);
+        await apiFetcher(`/api/vendor/reservations/${form.id}`, {
+          method: "PUT",
+          body: JSON.stringify(form),
+        });
         toast.success("Reservation updated successfully!");
       } else {
-        await axios.post(`/api/vendor/reservations`, form);
+        await apiFetcher(`/api/vendor/reservations`, {
+          method: "POST",
+          body: JSON.stringify(form),
+        });
         toast.success("Reservation created successfully!");
       }
       setShowModal(false);

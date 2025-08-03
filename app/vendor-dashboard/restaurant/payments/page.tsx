@@ -108,15 +108,31 @@ export default function RestaurantPayments() {
   }, []);
   const fetchAll = async () => {
     try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
       const [accRes, statsRes, transRes] = await Promise.all([
-        fetch("/api/vendor/accounts").then(r => r.json()),
-        fetch("/api/vendor/payments/stats").then(r => r.json()),
-        fetch("/api/vendor/payments/transactions").then(r => r.json()),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts`, {
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }).then(r => r.json()),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/payments/stats`, {
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }).then(r => r.json()),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/payments/transactions`, {
+          credentials: "include",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        }).then(r => r.json()),
       ]);
-      setAccounts(accRes);
+      // Defensive: ensure accounts is always an array
+      const accountsArray = Array.isArray(accRes) ? accRes : (accRes?.accounts || []);
+      setAccounts(accountsArray);
       setStats(statsRes);
-      setTransactions(transRes);
+      // Defensive: ensure transactions is always an array
+      const transactionsArray = Array.isArray(transRes) ? transRes : (transRes?.transactions || []);
+      setTransactions(transactionsArray);
       setChartData(statsRes.chartData || []);
+      console.log("accounts from API:", accRes);
+      console.log("transactions from API:", transRes);
     } catch {}
   };
 
@@ -125,9 +141,14 @@ export default function RestaurantPayments() {
     setVerifyError('');
     try {
       const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const token2 = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
       const res = await fetch(`${BASE_URL}/api/vendor/accounts/verify`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token2 ? { Authorization: `Bearer ${token2}` } : {}),
+        },
+        credentials: "include",
         body: JSON.stringify({ accountNumber })
       });
       const data = await res.json();
@@ -144,17 +165,26 @@ export default function RestaurantPayments() {
   };
 
   const saveAccount = async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
     try {
       if (accountForm.id) {
-        await fetch(`/api/vendor/accounts/${accountForm.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts/${accountForm.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          credentials: "include",
           body: JSON.stringify(accountForm)
         });
       } else {
-        await fetch(`/api/vendor/accounts`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          credentials: "include",
           body: JSON.stringify(accountForm)
         });
       }

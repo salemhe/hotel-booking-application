@@ -1,6 +1,8 @@
 "use client";
 
+import useSWR from "swr";
 import React, { useState } from "react";
+import { apiFetcher } from "@/app/lib/fetcher";
 import {
   Plus,
   Search,
@@ -74,19 +76,11 @@ import { useEffect } from "react";
 
 export default function MenuManagementPage() {
   const router = useRouter();
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const { data: menuItems = [], mutate } = useSWR<MenuItem[]>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus] = useState("all");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
-
-  useEffect(() => {
-    // Fetch menu items from backend API
-    fetch("/api/vendor/menus")
-      .then((res) => res.json())
-      .then((data) => setMenuItems(data))
-      .catch(() => setMenuItems([]));
-  }, []);
 
   const categories = [
     { value: "all", label: "All Category" },
@@ -274,20 +268,10 @@ export default function MenuManagementPage() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <span>Restaurant 1 - HQ</span>
-              <span className="text-gray-400">•</span>
-              <span>2</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Menu Management
-            </h1>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Menu Management
+          </h1>
         </div>
         <div className="flex items-center space-x-3">
           <Button variant="outline" size="sm">

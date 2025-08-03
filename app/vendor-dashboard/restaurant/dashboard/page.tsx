@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import useSWR from "swr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
-
-
+import { apiFetcher } from "@/app/lib/fetcher";
 
 export default function RestaurantDashboard() {
   // Types
@@ -44,48 +43,13 @@ export default function RestaurantDashboard() {
     branch: string;
     status: string;
   }
-  // Real-time state
-  const [overview, setOverview] = useState<Overview>({});
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [payments, setPayments] = useState<Payment[]>([]);
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [staff, setStaff] = useState<Staff[]>([]);
-  // const [profile, setProfile] = useState<UserProfile |  null>(null);
 
-  useEffect(() => {
-    fetchAll();
-    fetchProfile();
-  }, []);
-
-  const fetchAll = async () => {
-    try {
-      const [overviewRes, bookingsRes, paymentsRes, branchesRes, staffRes] = await Promise.all([
-        fetch("/api/vendor/dashboard/overview").then(r => r.json()),
-        fetch("/api/vendor/bookings/recent").then(r => r.json()),
-        fetch("/api/vendor/payments/recent").then(r => r.json()),
-        fetch("/api/vendor/branches").then(r => r.json()),
-        fetch("/api/vendor/staff").then(r => r.json()),
-      ]);
-      setOverview(overviewRes);
-      setBookings(bookingsRes);
-      setPayments(paymentsRes);
-      setBranches(branchesRes);
-      setStaff(staffRes);
-    } catch {}
-  };
-
-  const fetchProfile = async () => {
-    try {
-      const { AuthService } = await import("@/app/lib/api/services/auth.service");
-      const user = AuthService.getUser();
-      if (user && user.id) {
-        await AuthService.fetchMyProfile(user.id);
-        // if (realProfile) setProfile(realProfile);
-      }
-    } catch {
-      // setProfile(null);
-    }
-  };
+  // SWR hooks for real-time data
+  const { data: overview = {}, isLoading: loadingOverview } = useSWR<Overview>("/api/vendor/dashboard/overview", apiFetcher, { refreshInterval: 5000 });
+  const { data: bookings = [], isLoading: loadingBookings } = useSWR<Booking[]>("/api/vendor/bookings/recent", apiFetcher, { refreshInterval: 5000 });
+  const { data: payments = [], isLoading: loadingPayments } = useSWR<Payment[]>("/api/vendor/payments/recent", apiFetcher, { refreshInterval: 5000 });
+  const { data: branches = [], isLoading: loadingBranches } = useSWR<Branch[]>("/api/vendor/branches", apiFetcher, { refreshInterval: 5000 });
+  const { data: staff = [], isLoading: loadingStaff } = useSWR<Staff[]>("/api/vendor/staff", apiFetcher, { refreshInterval: 5000 });
 
   return (
     <div className="w-full max-w-7xl mx-auto py-8 px-2 sm:px-4 md:px-6 lg:px-8">
