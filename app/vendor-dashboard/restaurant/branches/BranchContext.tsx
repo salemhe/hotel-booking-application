@@ -52,7 +52,7 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchBranches();
-  }, []);
+  }, [fetchBranches]);
 
   return (
     <BranchContext.Provider value={{ branches, selectedBranch, setSelectedBranch, refreshBranches: fetchBranches }}>

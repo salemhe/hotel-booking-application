@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Users, UserCheck, UserX, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -23,11 +23,7 @@ export default function HotelStaffPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "active" | "inactive">("all");
 
-  useEffect(() => {
-    fetchStaff();
-  }, [searchTerm]);
-
-  async function fetchStaff() {
+  const fetchStaff = useCallback(async () => {
     try {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
@@ -37,7 +33,11 @@ export default function HotelStaffPage() {
     } catch {
       setStaff([]);
     }
-  }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    fetchStaff();
+  }, [fetchStaff]);
 
   const activeStaff = staff.filter((s) => s.status === "active");
   const inactiveStaff = staff.filter((s) => s.status === "inactive");
