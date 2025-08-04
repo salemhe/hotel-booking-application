@@ -12,6 +12,7 @@ import { AuthService } from '@/app/lib/api/services/auth.service';
 
 import API from "@/app/lib/api/axios";
 import { AxiosResponse } from 'axios';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -65,13 +66,14 @@ const RoomsManagement = () => {
   const [user] = useState<User>(mockUser);
   const [loading, setLoading] = useState(true);
   const [viewImages, setViewImages] = useState<string[] | null>(null);
+  const router = useRouter();
 
   const canEdit = ['Super Admin', 'Admin'].includes(user?.role);
 
-  const handleAddRoom = () => {
-    setEditingRoom(undefined);
-    setIsModalOpen(true);
-  };
+  // const handleAddRoom = () => {
+  //   setEditingRoom(undefined);
+  //   setIsModalOpen(true);
+  // };
 
   const handleEditRoom = (room: Room) => {
     setEditingRoom(room);
@@ -214,7 +216,9 @@ const RoomsManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Room Management</h1>
           {canEdit && (
             <button
-              onClick={handleAddRoom}
+              onClick={() => {
+                router.push("/vendor-dashboard/add-rooms");
+              }}
               className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               <Plus size={20} className="mr-2" />
