@@ -18,15 +18,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 
-interface PaymentDetalsProps {
-  accountNumber: string;
-  bankAccountName: string;
-  bankName: string;
-  bankCode: string;
-  paystackSubAccount: string;
-  percentageCharge: number;
-  recipientCode: string;
-}
+// Removed unused PaymentDetalsProps interface
 
 interface VendorProfile {
   id?: string;
