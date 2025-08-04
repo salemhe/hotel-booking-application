@@ -44,6 +44,7 @@ interface VendorProfile {
 }
 
 import { apiFetcher } from "@/app/lib/fetcher";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function VendorLoginPage() {
   const [email, setEmail] = useState("");
@@ -54,6 +55,7 @@ export default function VendorLoginPage() {
   const [userNotExist, setUserNotExist] = useState(false);
 
   const router = useRouter();
+  const { login: contextLogin } = useAuth();
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -149,6 +151,16 @@ export default function VendorLoginPage() {
             onboarded: typeof realProfile.onboarded === "boolean" ? realProfile.onboarded : false,
           },
         });
+        if (token) {
+          contextLogin({
+            // Map required User fields from VendorProfile
+            id: realProfile.id ?? realProfile._id ?? "",
+            email: realProfile.email ?? "",
+            name: realProfile.businessName ?? realProfile.email ?? "",
+            role: realProfile.role ?? "vendor",
+            // Only include fields defined in User type
+          }, token);
+        }
       }
 
       toast.success(`Welcome back, ${realProfile?.businessName || "Vendor"}!`);
