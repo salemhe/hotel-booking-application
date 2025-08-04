@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
-import { AuthService } from "@/app/lib/api/services/auth.service";
+// import { AuthService } from "@/app/lib/api/services/auth.service";
 import { BookingService } from "@/app/lib/api/services/bookings.service";
 import { DashboardService } from "@/app/lib/api/services/dashboard.service";
 import { ProfileProvider, useProfile } from "../ProfileContext";
