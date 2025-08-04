@@ -25,26 +25,31 @@ function SuperAdminDashboardContent() {
   const [branches, setBranches] = useState<Record<string, unknown>[]>([]);
   const [staff, setStaff] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const router = require('next/navigation').useRouter();
 
   useEffect(() => {
+    const user = AuthService.getUser();
+    if (!user || !user.id) {
+      router.replace('/vendor-login'); // Change to your super-admin login route if different
+      return;
+    }
+    setCheckingAuth(false);
     async function fetchData() {
       setLoading(true);
       try {
-        const user = AuthService.getUser();
-        if (user && user.id) {
-          // Fetch real bookings for this super-admin
-          const bookingsData = await BookingService.getBookings({ vendorId: user.id });
-          setBookings(bookingsData || []);
-          // Fetch payments, branches, and staff for this super-admin
-          const [paymentsData, branchesData, staffData] = await Promise.all([
-            DashboardService.getPayments(user.id),
-            DashboardService.getBranches(user.id),
-            DashboardService.getStaff(user.id),
-          ]);
-          setPayments(paymentsData || []);
-          setBranches(branchesData || []);
-          setStaff(staffData || []);
-        }
+        // Fetch real bookings for this super-admin
+        const bookingsData = await BookingService.getBookings({ vendorId: user.id });
+        setBookings(bookingsData || []);
+        // Fetch payments, branches, and staff for this super-admin
+        const [paymentsData, branchesData, staffData] = await Promise.all([
+          DashboardService.getPayments(user.id),
+          DashboardService.getBranches(user.id),
+          DashboardService.getStaff(user.id),
+        ]);
+        setPayments(paymentsData || []);
+        setBranches(branchesData || []);
+        setStaff(staffData || []);
       } catch {
         // Optionally handle error (show toast, etc.)
       } finally {
@@ -54,7 +59,7 @@ function SuperAdminDashboardContent() {
     fetchData();
   }, []);
 
-  if (loading) {
+  if (checkingAuth || loading) {
     return <div className="w-full max-w-7xl mx-auto py-8 px-2 sm:px-4 md:px-6 lg:px-8 text-center">Loading dashboard...</div>;
   }
 
