@@ -18,15 +18,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 
-interface PaymentDetalsProps {
-  accountNumber: string;
-  bankAccountName: string;
-  bankName: string;
-  bankCode: string;
-  paystackSubAccount: string;
-  percentageCharge: number;
-  recipientCode: string;
-}
+// Removed unused PaymentDetalsProps interface
 
 interface VendorProfile {
   id?: string;
@@ -88,6 +80,7 @@ export default function VendorLoginPage() {
       const response = await apiFetcher("/api/vendors/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
       if (!response || response.error || response.message === "Login failed") {
         throw new Error(response?.message || "Login failed");
@@ -111,56 +104,12 @@ export default function VendorLoginPage() {
       }
 
       if (realProfile) {
-        AuthService.setUser({
+        contextLogin({
           id: realProfile.id ?? realProfile._id ?? "",
+          name: realProfile.businessName ?? realProfile.email ?? "",
           email: realProfile.email ?? "",
-          role: realProfile.role ?? "vendor",
-          token: realProfile.token ?? "",
-          businessName: realProfile.businessName ?? "",
-          businessType: realProfile.businessType ?? "",
-          address: realProfile.address ?? "",
-          branch: realProfile.branch ?? "",
-          profileImage: realProfile.profileImage ?? "",
-          profile: {
-            id: typeof realProfile.id === "string" && realProfile.id.length > 0
-              ? realProfile.id
-              : typeof realProfile._id === "string" ? realProfile._id : "",
-            businessName: typeof realProfile.businessName === "string" ? realProfile.businessName : "",
-            businessType: typeof realProfile.businessType === "string" ? realProfile.businessType : "",
-            email: typeof realProfile.email === "string" ? realProfile.email : "",
-            address: typeof realProfile.address === "string" ? realProfile.address : "",
-            branch: typeof realProfile.branch === "string" ? realProfile.branch : "",
-            profileImage: typeof realProfile.profileImage === "string" ? realProfile.profileImage : "",
-            phone: typeof (realProfile as Record<string, unknown>).phone === "number"
-              ? (realProfile as Record<string, unknown>).phone as number
-              : 0,
-            paymentDetails: typeof (realProfile as Record<string, unknown>).paymentDetails === "object" && (realProfile as Record<string, unknown>).paymentDetails !== null
-              ? (realProfile as { paymentDetails: PaymentDetalsProps }).paymentDetails
-              : {
-                  accountNumber: "",
-                  bankAccountName: "",
-                  bankName: "",
-                  bankCode: "",
-                  paystackSubAccount: "",
-                  percentageCharge: 0,
-                  recipientCode: "",
-                },
-            recipientCode: typeof (realProfile as Record<string, unknown>).recipientCode === "string"
-              ? (realProfile as Record<string, unknown>).recipientCode as string
-              : "",
-            onboarded: typeof realProfile.onboarded === "boolean" ? realProfile.onboarded : false,
-          },
+          role: realProfile.role ?? "vendor"
         });
-        if (token) {
-          contextLogin({
-            // Map required User fields from VendorProfile
-            id: realProfile.id ?? realProfile._id ?? "",
-            email: realProfile.email ?? "",
-            name: realProfile.businessName ?? realProfile.email ?? "",
-            role: realProfile.role ?? "vendor",
-            // Only include fields defined in User type
-          }, token);
-        }
       }
 
       toast.success(`Welcome back, ${realProfile?.businessName || "Vendor"}!`);
