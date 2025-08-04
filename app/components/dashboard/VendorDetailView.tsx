@@ -55,7 +55,7 @@ const VendorDetailView = () => {
   const searchParams = useSearchParams();
   const vendorId = params.id as string;
   const vendorType = searchParams.get('vendorType');
-  const { token, user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const router = useRouter();
   
   const [loading, setLoading] = useState(true);
@@ -88,8 +88,8 @@ const VendorDetailView = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${API_URL}/super-admin/analytics/vendor/${vendorId}?vendorType=${vendorType}`, 
-          { headers: { Authorization: `Bearer ${token}` } }
+          `${API_URL}/super-admin/analytics/vendor/${vendorId}?vendorType=${vendorType}`,
+          { withCredentials: true }
         );
         
         setVendor(response.data.data);
