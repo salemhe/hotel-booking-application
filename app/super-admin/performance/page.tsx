@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import { apiFetcher } from '@/app/lib/fetcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
 import { TrendingUp, Users, DollarSign, Building2 } from 'lucide-react'
 import { Line } from 'react-chartjs-2'
@@ -18,7 +18,7 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
-const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/'
+// API_URL removed, use apiFetcher
 
 interface MonthlyData {
   period: string
@@ -79,13 +79,13 @@ export default function SuperAdminDashboard() {
       setLoading(true)
       try {
         const [vendorRes, revenueRes, chainsRes] = await Promise.all([
-          axios.get(`${API_URL}/super-admin/analytics/vendors`),
-          axios.get(`${API_URL}/super-admin/analytics/revenue`),
-          axios.get(`${API_URL}/super-admin/chains`),
+          apiFetcher(`/api/super-admin/analytics/vendors`),
+          apiFetcher(`/api/super-admin/analytics/revenue`),
+          apiFetcher(`/api/super-admin/chains`),
         ])
-        setVendorAnalytics(vendorRes.data.data)
-        setRevenueAnalytics(revenueRes.data.data)
-        setChains(chainsRes.data.data)
+        setVendorAnalytics(vendorRes.data)
+        setRevenueAnalytics(revenueRes.data)
+        setChains(chainsRes.data)
       } catch (err) {
         console.error(err)
       } finally {

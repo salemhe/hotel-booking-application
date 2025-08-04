@@ -2,7 +2,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { apiFetcher } from "@/app/lib/fetcher";
+// axios removed, use apiFetcher
 
 // Define the Reservation type
 export type Reservation = {
@@ -33,7 +34,7 @@ import {
   X,
 } from "lucide-react";
 
-const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
+// API_URL removed, use apiFetcher with path only
 
 
 function ReservationDropdown({ reservation, onView, onEdit, onDelete }: { reservation: Reservation, onView: (r: Reservation) => void, onEdit: (r: Reservation) => void, onDelete: (r: Reservation) => void }) {
@@ -116,16 +117,16 @@ export default function RestaurantDashboard() {
 
   async function fetchStats() {
     try {
-      const res = await axios.get(`${API_URL}/super-admin/analytics/summary`);
+      const res = await apiFetcher(`/api/super-admin/analytics/summary`);
       setStats({
-        reservationsToday: Number(res.data.data?.reservationsToday) || 0,
-        reservationsChange: Number(res.data.data?.reservationsChange) || 0,
-        prepaidReservations: Number(res.data.data?.prepaidReservations) || 0,
-        prepaidChange: Number(res.data.data?.prepaidChange) || 0,
-        guestsToday: Number(res.data.data?.guestsToday) || 0,
-        guestsChange: Number(res.data.data?.guestsChange) || 0,
-        pendingPayments: Number(res.data.data?.pendingPayments) || 0,
-        paymentsChange: Number(res.data.data?.paymentsChange) || 0,
+        reservationsToday: Number(res.data?.reservationsToday) || 0,
+        reservationsChange: Number(res.data?.reservationsChange) || 0,
+        prepaidReservations: Number(res.data?.prepaidReservations) || 0,
+        prepaidChange: Number(res.data?.prepaidChange) || 0,
+        guestsToday: Number(res.data?.guestsToday) || 0,
+        guestsChange: Number(res.data?.guestsChange) || 0,
+        pendingPayments: Number(res.data?.pendingPayments) || 0,
+        paymentsChange: Number(res.data?.paymentsChange) || 0,
       });
     } catch {
       setStats({
@@ -147,8 +148,9 @@ export default function RestaurantDashboard() {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (filterStatus && filterStatus !== "All") params.status = filterStatus;
-      const res = await axios.get(`${API_URL}/super-admin/reservations/today`, { params });
-      setReservations(res.data.data || []);
+      const url = `/api/super-admin/reservations/today` + (Object.keys(params).length ? `?${new URLSearchParams(params).toString()}` : "");
+      const res = await apiFetcher(url);
+      setReservations(res.data || []);
     } catch {
       setReservations([]);
     } finally {
@@ -160,7 +162,10 @@ export default function RestaurantDashboard() {
     e.preventDefault();
     setFormLoading(true);
     try {
-      await axios.post(`${API_URL}/super-admin/reservations`, form);
+      await apiFetcher(`/api/super-admin/reservations`, {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
       setShowModal(false);
       setForm({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
       fetchReservations();
@@ -174,7 +179,9 @@ export default function RestaurantDashboard() {
   async function handleDeleteReservation(reservation: Reservation) {
     if (!window.confirm("Are you sure you want to delete this reservation?")) return;
     try {
-      await axios.delete(`${API_URL}/super-admin/reservations/${reservation.id}`);
+      await apiFetcher(`/api/super-admin/reservations/${reservation.id}`, {
+        method: "DELETE",
+      });
       fetchReservations();
     } catch {
       // handle error

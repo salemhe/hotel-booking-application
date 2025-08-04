@@ -2,8 +2,8 @@
 import { jwtDecode } from "jwt-decode";
 import { api } from "@/app/lib/axios-config";
 import { SessionService } from "./session.service";
-import { getFrontendUrl } from "@/app/lib/config";
 import API from "../userAxios";
+import { apiFetcher } from "@/app/lib/fetcher";
 
 interface LoginResponse {
   message: string;
@@ -55,18 +55,16 @@ export class AuthService {
 
 
   static async setToken(token: string) {
-    await fetch(`http://localhost:5000/api/auth/set-user-token`, {
+    await apiFetcher(`/api/auth/set-user-token`, {
       method: "POST",
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
     });
   }
 
   static async getToken(): Promise<string | null> {
-    const response = await fetch(`https://hotel-booking-app-backend-30q1.onrender.com/api/auth/get-user-token`, {
+    const data = await apiFetcher(`/api/auth/get-user-token`, {
       method: "GET",
     });
-    const data = await response.json();
     return data.token;
   }
 
@@ -82,7 +80,7 @@ export class AuthService {
   }
 
   static async clearToken() {
-    await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+    await apiFetcher(`/api/auth/clear-token`, {
       method: "GET",
     });
   }
