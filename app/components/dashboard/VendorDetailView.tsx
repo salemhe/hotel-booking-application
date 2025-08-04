@@ -101,7 +101,7 @@ const VendorDetailView = () => {
     };
 
     fetchVendorDetails();
-  }, [vendorId, vendorType, token]);
+  }, [vendorId, vendorType]);
 
   if (loading) {
     return (
