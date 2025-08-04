@@ -10,6 +10,7 @@ import { BookingService } from "@/app/lib/api/services/bookings.service";
 import { DashboardService } from "@/app/lib/api/services/dashboard.service";
 import { ProfileProvider, useProfile } from "../ProfileContext";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function SuperAdminDashboard() {
   return (
@@ -26,16 +27,17 @@ function SuperAdminDashboardContent() {
   const [branches, setBranches] = useState<Record<string, unknown>[]>([]);
   const [staff, setStaff] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
-  const [checkingAuth, setCheckingAuth] = useState(true);
   const router = useRouter();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    const user = AuthService.getUser();
-    if (!user || !user.id) {
+    if (!authLoading && !isAuthenticated) {
       router.replace('/vendor-login'); // Change to your super-admin login route if different
-      return;
     }
-    setCheckingAuth(false);
+  }, [isAuthenticated, authLoading, router]);
+
+  useEffect(() => {
+    if (!user) return;
     async function fetchData() {
       if (!user) return; // TypeScript: user is now guaranteed non-null below
       setLoading(true);
@@ -57,9 +59,9 @@ function SuperAdminDashboardContent() {
       }
     }
     fetchData();
-  }, [router]);
+  }, [user]);
 
-  if (checkingAuth || loading) {
+  if (authLoading || !isAuthenticated || loading) {
     return <div className="w-full max-w-7xl mx-auto py-8 px-2 sm:px-4 md:px-6 lg:px-8 text-center">Loading dashboard...</div>;
   }
 
