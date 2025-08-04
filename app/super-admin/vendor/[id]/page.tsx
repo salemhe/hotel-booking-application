@@ -54,7 +54,7 @@ export default function VendorDetailPage() {
   const searchParams = useSearchParams();
   const vendorId = params.id as string;
   const vendorType = searchParams.get('vendorType');
-  const { token, isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const router = useRouter();
   
   const [loading, setLoading] = useState(true);
@@ -92,8 +92,8 @@ export default function VendorDetailPage() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${API_URL}/super-admin/analytics/vendor/${vendorId}?vendorType=${vendorType}`, 
-          { headers: { Authorization: `Bearer ${token}` } }
+          `${API_URL}/super-admin/analytics/vendor/${vendorId}?vendorType=${vendorType}`,
+          { withCredentials: true }
         );
         
         setVendor(response.data.data);
@@ -105,7 +105,7 @@ export default function VendorDetailPage() {
     };
 
     fetchVendorDetails();
-  }, [vendorId, vendorType, token, isAuthenticated, user]);
+  }, [vendorId, vendorType, isAuthenticated, user]);
 
   // Show loading or redirect message when not authenticated
   if (!isAuthenticated) {
