@@ -154,18 +154,32 @@ export default function VendorLoginPage() {
       toast.success(`Welcome back, ${realProfile?.businessName || "Vendor"}!`);
       localStorage.setItem("accountType", realProfile?.businessType || "");
 
-      if (realProfile?.onboarded) {
+       if (realProfile.role === "super-admin") {
+        // Super-admin: go straight to the correct dashboard
         if (realProfile.businessType === "hotel") {
-          router.push("/vendor-dashboard/hotel");
+          router.push("/super-admin/hotel");
         } else if (realProfile.businessType === "restaurant") {
-          router.push("/vendor-dashboard/restaurant");
+          router.push("/super-admin/restaurant");
         } else if (realProfile.businessType === "club") {
-          router.push("/vendor-dashboard/club");
+          router.push("/super-admin/club");
         } else {
-          router.push("/vendorDashboard");
+          router.push("/super-admin/dashboard");
         }
       } else {
-        router.push("/onboarding");
+        // Vendor logic
+        if (realProfile?.onboarded) {
+          if (realProfile.businessType === "hotel") {
+            router.push("/vendor-dashboard/hotel");
+          } else if (realProfile.businessType === "restaurant") {
+            router.push("/vendor-dashboard/restaurant");
+          } else if (realProfile.businessType === "club") {
+            router.push("/vendor-dashboard/club");
+          } else {
+            router.push("/vendorDashboard");
+          }
+        } else {
+          router.push("/onboarding");
+        }
       }
     } catch (error) {
       console.error("Submit error:", error);
