@@ -10,9 +10,8 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   loading: boolean;
-  login: (userData: User, token: string) => void;
+  login: (userData: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -21,49 +20,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for saved auth data in localStorage on component mount
-    const savedUser = localStorage.getItem('user');
-    const savedToken = localStorage.getItem('token');
-    
-    if (savedUser && savedToken) {
-      setUser(JSON.parse(savedUser));
-      setToken(savedToken);
-    }
-    
+    // Optionally, you could fetch the user from an API endpoint here
     setLoading(false);
   }, []);
 
-  const login = (userData: User, authToken: string) => {
+  const login = (userData: User) => {
     setUser(userData);
-    setToken(authToken);
-    
-    // Save to localStorage for persistence
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', authToken);
   };
 
   const logout = () => {
     setUser(null);
-    setToken(null);
-    
-    // Clear localStorage
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
   };
 
   return (
     <AuthContext.Provider 
       value={{ 
         user, 
-        token, 
         loading, 
         login, 
         logout, 
-        isAuthenticated: !!user && !!token 
+        isAuthenticated: !!user 
       }}
     >
       {children}
