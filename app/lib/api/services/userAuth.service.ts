@@ -2,7 +2,6 @@
 import { jwtDecode } from "jwt-decode";
 import { api } from "@/app/lib/axios-config";
 import { SessionService } from "./session.service";
-import { getFrontendUrl } from "@/app/lib/config";
 import API from "../userAxios";
 import { apiFetcher } from "@/app/lib/fetcher";
 
