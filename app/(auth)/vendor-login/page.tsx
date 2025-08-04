@@ -43,7 +43,7 @@ interface VendorProfile {
   [key: string]: unknown;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { apiFetcher } from "@/app/lib/fetcher";
 
 export default function VendorLoginPage() {
   const [email, setEmail] = useState("");
@@ -83,17 +83,13 @@ export default function VendorLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${BASE_URL}/api/vendors/login`, {
+      const response = await apiFetcher("/api/vendors/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        // credentials: "include", // Uncomment if you need cookies/session
       });
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Login failed");
+      if (!response || response.error || response.message === "Login failed") {
+        throw new Error(response?.message || "Login failed");
       }
-      const response = await res.json();
       const token = response.token || (response.profile && response.profile.token);
       if (token) {
         await AuthService.setToken(token);

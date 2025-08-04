@@ -17,7 +17,7 @@ import { Badge } from "@/app/components/ui/badge";
 import { Users } from "lucide-react";
 import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
 import { SidebarProvider } from "@/app/components/ui/sidebar";
-const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/';
+// API_URL removed, use apiFetcher with path only
 
 interface Vendor {
   id: string;
@@ -50,7 +50,7 @@ export default function VendorsPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await apiFetcher(`${API_URL}/super-admin/analytics/vendors`);
+        const data = await apiFetcher(`/api/super-admin/analytics/vendors`);
         setVendorAnalytics(data);
       } catch (err) {
         console.error(err);

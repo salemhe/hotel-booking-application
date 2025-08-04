@@ -13,7 +13,8 @@ import {
 import { DollarSign, Hotel, UtensilsCrossed } from "lucide-react";
 import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
 import { SidebarProvider } from "@/app/components/ui/sidebar";
-const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/';
+import { apiFetcher } from "@/app/lib/fetcher";
+// API_URL removed, use apiFetcher with path only
 
 interface MonthlyData {
   period: string;
@@ -44,8 +45,7 @@ export default function RevenuePage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const revenueRes = await fetch(`${API_URL}/super-admin/analytics/revenue`);
-        const data = await revenueRes.json();
+        const data = await apiFetcher(`/api/super-admin/analytics/revenue`);
         setRevenueAnalytics(data.data);
       } catch (err) {
         console.error(err);

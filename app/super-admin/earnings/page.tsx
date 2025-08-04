@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import { apiFetcher } from '@/app/lib/fetcher'
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
 import {
   Table,
@@ -13,7 +13,7 @@ import {
 } from '@/app/components/ui/table'
 import { DollarSign, Hotel, UtensilsCrossed } from 'lucide-react'
 
-const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/'
+// API_URL removed, use apiFetcher
 
 interface MonthlyData {
   period: string
@@ -44,8 +44,8 @@ export default function SuperAdminDashboard() {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const earningsRes = await axios.get(`${API_URL}/super-admin/analytics/revenue`)
-        setEarningsAnalytics(earningsRes.data.data)
+        const earningsRes = await apiFetcher(`/api/super-admin/analytics/revenue`)
+        setEarningsAnalytics(earningsRes.data)
       } catch (err) {
         console.error(err)
       } finally {
