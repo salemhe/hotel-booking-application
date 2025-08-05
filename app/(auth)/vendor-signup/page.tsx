@@ -189,8 +189,13 @@ export default function VendorRegistration() {
             email: realProfile.email ?? "",
             role: realProfile.role ?? "super-admin"
           });
+          // Wait a tick to ensure context is set before redirect
+          setTimeout(() => {
+            router.push("/super-admin/dashboard");
+          }, 150);
+        } else {
+          router.push("/super-admin/dashboard");
         }
-        router.push("/super-admin/dashboard");
       } else {
         router.push("/vendor-dashboard");
       }
