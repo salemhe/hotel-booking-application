@@ -115,31 +115,31 @@ export default function VendorLoginPage() {
       toast.success(`Welcome back, ${realProfile?.businessName || "Vendor"}!`);
       localStorage.setItem("accountType", realProfile?.businessType || "");
 
-       if (realProfile.role === "super-admin") {
-        // Super-admin: go straight to the correct dashboard
+      // Add a short delay to ensure context is set before redirecting
+      if (realProfile.role === "super-admin") {
         if (realProfile.businessType === "hotel") {
-          router.push("/super-admin/hotel");
+          setTimeout(() => router.push("/super-admin/hotel"), 150);
         } else if (realProfile.businessType === "restaurant") {
-          router.push("/super-admin/restaurant");
+          setTimeout(() => router.push("/super-admin/restaurant"), 150);
         } else if (realProfile.businessType === "club") {
-          router.push("/super-admin/club");
+          setTimeout(() => router.push("/super-admin/club"), 150);
         } else {
-          router.push("/super-admin/dashboard");
+          setTimeout(() => router.push("/super-admin/dashboard"), 150);
         }
       } else {
         // Vendor logic
         if (realProfile?.onboarded) {
           if (realProfile.businessType === "hotel") {
-            router.push("/vendor-dashboard/hotel");
+            setTimeout(() => router.push("/vendor-dashboard/hotel"), 150);
           } else if (realProfile.businessType === "restaurant") {
-            router.push("/vendor-dashboard/restaurant");
+            setTimeout(() => router.push("/vendor-dashboard/restaurant"), 150);
           } else if (realProfile.businessType === "club") {
-            router.push("/vendor-dashboard/club");
+            setTimeout(() => router.push("/vendor-dashboard/club"), 150);
           } else {
-            router.push("/vendorDashboard");
+            setTimeout(() => router.push("/vendorDashboard"), 150);
           }
         } else {
-          router.push("/onboarding");
+          setTimeout(() => router.push("/onboarding"), 150);
         }
       }
     } catch (error) {
