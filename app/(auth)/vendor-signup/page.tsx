@@ -29,6 +29,7 @@ import {
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
 // import { FaStore } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 
@@ -48,7 +49,7 @@ interface FormData {
 }
 
 export default function VendorRegistration() {
-    const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     businessName: "",
     email: "",
@@ -64,6 +65,7 @@ export default function VendorRegistration() {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [otp, setOTP] = useState("");
   const router = useRouter();
+  const { login: contextLogin } = useAuth();
   //Expanded errors state to accommodate all fields
   const [errors, setErrors] = useState<Partial<typeof formData>>({});
 
@@ -137,8 +139,9 @@ export default function VendorRegistration() {
         localStorage.setItem("auth_token", token);
       }
       // Fetch real user profile from backend and store it
+      let realProfile = null;
       if (userId) {
-        const realProfile = await AuthService.fetchMyProfile(userId);
+        realProfile = await AuthService.fetchMyProfile(userId);
         if (realProfile) {
           AuthService.setUser({
             ...realProfile,
@@ -150,7 +153,7 @@ export default function VendorRegistration() {
             address: realProfile.address ?? "",
             branch: realProfile.branch ?? "",
             profileImage: realProfile.profileImage ?? "",
-                                                profile: {
+            profile: {
               id: realProfile.id,
               businessName: realProfile.businessName ?? "",
               businessType: realProfile.businessType ?? "",
@@ -178,6 +181,15 @@ export default function VendorRegistration() {
       }
       // Route based on account type
       if (formData.adminType === "super-admin") {
+        // Set AuthContext for auto-login
+        if (realProfile) {
+          contextLogin({
+            id: realProfile.id ?? "",
+            name: realProfile.businessName ?? realProfile.email ?? "",
+            email: realProfile.email ?? "",
+            role: realProfile.role ?? "super-admin"
+          });
+        }
         router.push("/super-admin/dashboard");
       } else {
         router.push("/vendor-dashboard");
