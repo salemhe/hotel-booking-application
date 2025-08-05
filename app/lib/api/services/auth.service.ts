@@ -203,7 +203,8 @@ export class AuthService {
 
     static async fetchMyProfile(id: string): Promise<UserProfile | null> {
     try {
-      const response = await API.get(`/vendors/${id}`);
+      const response = await API.get(`/vendors/${id}`, { withCredentials: true });
+      console.log("fetchMyProfile response:", response);
       if (response.status === 200) {
         return response.data;
       } else {
