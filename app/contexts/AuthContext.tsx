@@ -23,16 +23,26 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Optionally, you could fetch the user from an API endpoint here
+    // On mount, check localStorage for user
+    const storedUser = typeof window !== 'undefined' ? localStorage.getItem('auth_user') : null;
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
     setLoading(false);
   }, []);
 
   const login = (userData: User) => {
     setUser(userData);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('auth_user', JSON.stringify(userData));
+    }
   };
 
   const logout = () => {
     setUser(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_user');
+    }
   };
 
   return (
