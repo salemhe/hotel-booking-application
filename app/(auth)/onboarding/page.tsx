@@ -229,29 +229,12 @@ interface Bank {
 }
 
 export default function BusinessProfileSetup() {
-  const user = AuthService.getUser();
   const router = useRouter();
-  if (!user) {
-    return <div className="p-8 text-red-600 text-center text-lg font-semibold">User not found. Please log in again.</div>;
-  }
-  // If user is already onboarded, redirect to dashboard
-  if (user.onboarded) {
-    if (user.businessType === "hotel") {
-      router.replace("/vendor-dashboard/hotel");
-    } else if (user.businessType === "restaurant") {
-      router.replace("/vendor-dashboard/restaurant");
-    } else if (user.businessType === "club") {
-      router.replace("/vendor-dashboard/club");
-    } else {
-      router.replace("/vendorDashboard");
-    }
-    return null;
-  }
-  const timeOptions = generateTimeOptions();
+  const [userState, setUserState] = useState<any | null>(null);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [redirectPath, setRedirectPath] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
-  const [businessType] = useState<"restaurant" | "hotel">(
-    (user.businessType?.toLowerCase() as "restaurant" | "hotel") || "restaurant"
-  );
+  const [businessType, setBusinessType] = useState<"restaurant" | "hotel">("restaurant");
   const [skippedSections, setSkippedSections] = useState<number[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -259,6 +242,7 @@ export default function BusinessProfileSetup() {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const timeOptions = generateTimeOptions();
 
   const [formData, setFormData] = useState<BusinessData>({
     profileImages: [],
@@ -281,6 +265,40 @@ export default function BusinessProfileSetup() {
     availableSlots: [], // New field
   });
 
+  // Initialize user data
+  useEffect(() => {
+    const user = AuthService.getUser();
+    setUserState(user);
+    
+    if (!user) {
+      return;
+    }
+    
+    // Set business type based on user data
+    setBusinessType((user.businessType?.toLowerCase() as "restaurant" | "hotel") || "restaurant");
+    
+    // Check if user is already onboarded and set redirect
+    if (user.onboarded) {
+      if (user.businessType === "hotel") {
+        setRedirectPath("/vendor-dashboard/hotel");
+      } else if (user.businessType === "restaurant") {
+        setRedirectPath("/vendor-dashboard/restaurant");
+      } else if (user.businessType === "club") {
+        setRedirectPath("/vendor-dashboard/club");
+      } else {
+        setRedirectPath("/vendorDashboard");
+      }
+      setShouldRedirect(true);
+    }
+  }, []);
+
+  // Handle redirection
+  useEffect(() => {
+    if (shouldRedirect && redirectPath) {
+      router.replace(redirectPath);
+    }
+  }, [shouldRedirect, redirectPath, router]);
+
   const handleRetry = async () => {
     try {
       setIsLoadingBanks(true);
@@ -294,6 +312,7 @@ export default function BusinessProfileSetup() {
     }
   };
 
+  // Load banks
   useEffect(() => {
     async function loadBanks() {
       try {
@@ -444,7 +463,7 @@ export default function BusinessProfileSetup() {
   // Menu item management functions
   const addMenuItem = () => {
     const newMenuItem: MenuItem = {
-      vendorId: user?.id || "",
+      vendorId: userState?.id || "",
       addOns: [],
       availabilityStatus: true,
       category: "",
@@ -668,7 +687,7 @@ export default function BusinessProfileSetup() {
 
       // Get token and add Authorization header manually
       const token = await AuthService.getToken();
-      const response = await API.post(`/vendors/onboard/${user?.id}`, form, {
+      const response = await API.post(`/vendors/onboard/${userState?.id}`, form, {
         headers: {
           "Content-Type": "multipart/form-data",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -699,6 +718,16 @@ export default function BusinessProfileSetup() {
       setIsLoading(false);
     }
   };
+
+  // Show loading or not found message
+  if (!userState) {
+    return <div className="p-8 text-red-600 text-center text-lg font-semibold">User not found. Please log in again.</div>;
+  }
+
+  // Skip rendering if redirecting
+  if (shouldRedirect) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
