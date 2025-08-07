@@ -1,6 +1,26 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import {
+  Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
+  Calendar, CreditCard, Users, DollarSign
+} from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { NativeSelect as Select } from '@/components/ui/select'
+import { 
+  getDashboardStats, 
+  getTodayReservations, 
+  getReservationTrends,
+  getCustomerFrequency,
+  getRevenueByCategory,
+  getReservationSources,
+  getUpcomingReservations,
+  getUserProfile
+} from '@/app/lib/api-service'
 
 // Define interfaces for our data structures
 interface Reservation {
@@ -28,26 +48,6 @@ interface MenuCategory {
   amount: string | number;
   color: string;
 }
-import { 
-  getDashboardStats, 
-  getTodayReservations, 
-  getReservationTrends,
-  getCustomerFrequency,
-  getRevenueByCategory,
-  getReservationSources,
-  getUpcomingReservations,
-  getUserProfile
-} from '@/app/lib/api-service'
-import {
-  Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
-  Calendar, CreditCard, Users, DollarSign
-} from 'lucide-react'
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { NativeSelect as Select } from '@/components/ui/select'
 
 export default function Dashboard() {
   const [showNotification, setShowNotification] = useState(true)
@@ -76,8 +76,6 @@ export default function Dashboard() {
     prepaidTrend: 0,
     guestsTrend: 0
   })
-  const [reservations, setReservations] = useState<Record<string, unknown>[]>([])
-  const [chartData, setChartData] = useState<Record<string, unknown>[]>([])
 const [reservations, setReservations] = useState<Reservation[]>([])
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([])
