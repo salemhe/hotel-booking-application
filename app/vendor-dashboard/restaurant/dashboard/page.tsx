@@ -17,9 +17,7 @@ import {
   getReservationTrends,
   getCustomerFrequency,
   getRevenueByCategory,
-  getReservationSources,
-  getUpcomingReservations,
-  getUserProfile
+  getReservationSources
 } from '@/app/lib/api-service'
 
 // Define interfaces for our data structures
@@ -54,16 +52,7 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  // State for upcoming reservations notification
-  const [upcomingReservations, setUpcomingReservations] = useState<Reservation[]>([])
   
-  // State for user profile
-  const [userProfile, setUserProfile] = useState({
-    name: '',
-    role: '',
-    avatar: '',
-    initials: ''
-  })
   
   // State for dashboard data
   const [stats, setStats] = useState({
@@ -373,7 +362,7 @@ const [reservations, setReservations] = useState<Reservation[]>([])
                         <div className="flex items-center space-x-4">
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={reservation.customerAvatar || "/placeholder.svg?height=40&width=40"} />
-                            <AvatarFallback>{reservation.customerInitials || reservation.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                            <AvatarFallback>{reservation.customerInitials || (reservation.name ?? '').substring(0, 2).toUpperCase()}</AvatarFallback>
                           </Avatar>
                           <div>
                             <p className="font-medium text-gray-900">{reservation.customerName}</p>
@@ -575,7 +564,7 @@ const [reservations, setReservations] = useState<Reservation[]>([])
               ) : (
                 <>
                   <div className="mb-4">
-                    <div className="text-2xl font-bold">₦{menuCategories.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}</div>
+                    <div className="text-2xl font-bold">₦{menuCategories.reduce((sum, item) => sum + (typeof item.amount === 'string' ? parseFloat(item.amount.toString().replace(/[^0-9.]/g, '')) : item.amount), 0).toLocaleString()}</div>
                     <div className="flex items-center text-green-500">
                       <TrendingUp className="h-4 w-4 mr-1" />
                       <span className="text-sm">8% vs last week</span>

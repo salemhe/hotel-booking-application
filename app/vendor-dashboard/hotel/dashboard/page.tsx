@@ -68,13 +68,13 @@ export default function Dashboard() {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([])
-  // Use this data in UI to show customer frequency
+  // Customer frequency data
   const [customerData, setCustomerData] = useState({
     newCustomers: 0,
     returningCustomers: 0,
     totalCustomers: 0
   })
-  // Use this data in UI to show reservation sources
+  // Reservation sources data
   const [reservationSources, setReservationSources] = useState({
     website: 0,
     mobile: 0,
@@ -402,7 +402,7 @@ export default function Dashboard() {
                         <div className="flex items-center space-x-4">
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={reservation.customerAvatar || "/placeholder.svg?height=40&width=40"} />
-                            <AvatarFallback>{reservation.customerInitials || reservation.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                            <AvatarFallback>{reservation.customerInitials || (reservation.name ?? '').substring(0, 2).toUpperCase()}</AvatarFallback>
                           </Avatar>
                           <div>
                             <p className="font-medium text-gray-900">{reservation.customerName}</p>
@@ -523,20 +523,20 @@ export default function Dashboard() {
                       fill="none"
                       stroke="#0d9488"
                       strokeWidth="3"
-                      strokeDasharray="45, 100"
+                      strokeDasharray={`${(customerData.newCustomers / Math.max(customerData.totalCustomers, 1)) * 100}, 100`}
                     />
                     <path
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                       fill="none"
                       stroke="#eab308"
                       strokeWidth="3"
-                      strokeDasharray="55, 100"
-                      strokeDashoffset="-45"
+                      strokeDasharray={`${(customerData.returningCustomers / Math.max(customerData.totalCustomers, 1)) * 100}, 100`}
+                      strokeDashoffset={`-${(customerData.newCustomers / Math.max(customerData.totalCustomers, 1)) * 100}`}
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xs text-gray-500">Total Customer</span>
-                    <span className="text-xl font-bold">100</span>
+                    <span className="text-xs text-gray-500">Total Customers</span>
+                    <span className="text-xl font-bold">{customerData.totalCustomers}</span>
                   </div>
                 </div>
               </div>
@@ -546,14 +546,20 @@ export default function Dashboard() {
                     <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
                     <span className="text-sm">New Customers</span>
                   </div>
-                  <span className="text-sm font-medium">45%</span>
+                  <span className="text-sm font-medium">
+                    {customerData.totalCustomers ? 
+                      Math.round((customerData.newCustomers / customerData.totalCustomers) * 100) : 0}%
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
                     <span className="text-sm">Returning Customers</span>
                   </div>
-                  <span className="text-sm font-medium">55%</span>
+                  <span className="text-sm font-medium">
+                    {customerData.totalCustomers ? 
+                      Math.round((customerData.returningCustomers / customerData.totalCustomers) * 100) : 0}%
+                  </span>
                 </div>
               </div>
             </CardContent>
