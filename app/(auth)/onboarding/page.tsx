@@ -262,7 +262,7 @@ export default function BusinessProfileSetup() {
 
   const [formData, setFormData] = useState<BusinessData>({
     profileImages: [],
-    paymentVerified: false,
+    paymentVerified: false, 
     accountName: "",
     accountNumber: "",
     bankCode: "",
