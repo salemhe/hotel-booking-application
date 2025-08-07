@@ -230,10 +230,27 @@ interface Bank {
 
 export default function BusinessProfileSetup() {
   const user = AuthService.getUser();
+  const router = useRouter();
+  if (!user) {
+    return <div className="p-8 text-red-600 text-center text-lg font-semibold">User not found. Please log in again.</div>;
+  }
+  // If user is already onboarded, redirect to dashboard
+  if (user.onboarded) {
+    if (user.businessType === "hotel") {
+      router.replace("/vendor-dashboard/hotel");
+    } else if (user.businessType === "restaurant") {
+      router.replace("/vendor-dashboard/restaurant");
+    } else if (user.businessType === "club") {
+      router.replace("/vendor-dashboard/club");
+    } else {
+      router.replace("/vendorDashboard");
+    }
+    return null;
+  }
   const timeOptions = generateTimeOptions();
   const [currentStep, setCurrentStep] = useState(1);
   const [businessType] = useState<"restaurant" | "hotel">(
-    user?.profile.businessType.toLowerCase() as "restaurant" | "hotel"
+    (user.businessType?.toLowerCase() as "restaurant" | "hotel") || "restaurant"
   );
   const [skippedSections, setSkippedSections] = useState<number[]>([]);
   const [images, setImages] = useState<string[]>([]);
@@ -242,7 +259,6 @@ export default function BusinessProfileSetup() {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const [formData, setFormData] = useState<BusinessData>({
     profileImages: [],
@@ -596,18 +612,26 @@ export default function BusinessProfileSetup() {
 
     try {
       setIsLoading(true);
+      // Log all required fields before sending
+      console.log({
+        businessDescription: formData.businessDescription,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
+        openTime: formData.openTime,
+        closeTime: formData.closeTime,
+        accountNumber: formData.accountNumber,
+        bankCode: formData.bankCode,
+      });
       const form = new FormData();
 
       // Append profile images
       for (let i = 0; i < formData.profileImages.length; i++) {
         form.append("profileImages", formData.profileImages[i]);
       }
-      for (let i = 0; i < formData.availableSlots.length; i++) {
-        form.append("availableSlots", formData.availableSlots[i]);
-      }
-      for (let i = 0; i < formData.cuisines.length; i++) {
-        form.append("cuisines", formData.cuisines[i]);
-      }
+      form.append("availableSlots", JSON.stringify(formData.availableSlots));
+      form.append("cuisines", JSON.stringify(formData.cuisines));
 
       // Append basic fields
       form.append("accountName", formData.accountName);
@@ -653,7 +677,16 @@ export default function BusinessProfileSetup() {
 
       if (response.status === 200) {
         toast.success("Profile setup completed successfully!");
-        router.push("/vendorDashboard");
+        // Redirect to dashboard based on business type
+        if (businessType === "hotel") {
+          router.push("/vendor-dashboard/hotel");
+        } else if (businessType === "restaurant") {
+          router.push("/vendor-dashboard/restaurant");
+        } else if (businessType === "club") {
+          router.push("/vendor-dashboard/club");
+        } else {
+          router.push("/vendorDashboard");
+        }
       } else {
         toast.error(
           response.data?.message || "Failed to complete profile setup."

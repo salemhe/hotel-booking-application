@@ -88,6 +88,7 @@ export default function VendorLoginPage() {
       const token = response.token || (response.profile && response.profile.token);
       if (token) {
         await AuthService.setToken(token);
+        localStorage.setItem("auth_token", token);
       }
 
       let realProfile: VendorProfile = response.profile as VendorProfile;
@@ -116,24 +117,29 @@ export default function VendorLoginPage() {
       localStorage.setItem("accountType", realProfile?.businessType || "");
 
       // Add a short delay to ensure context is set before redirecting
-      if (realProfile.role === "super-admin") {
-        if (realProfile.businessType === "hotel") {
+      // Use safe property access to prevent undefined errors
+      const userRole = realProfile?.role || "vendor";
+      const businessType = realProfile?.businessType || "";
+      const isOnboarded = realProfile?.onboarded || false;
+
+      if (userRole === "super-admin") {
+        if (businessType === "hotel") {
           setTimeout(() => router.push("/super-admin/hotel"), 150);
-        } else if (realProfile.businessType === "restaurant") {
+        } else if (businessType === "restaurant") {
           setTimeout(() => router.push("/super-admin/restaurant"), 150);
-        } else if (realProfile.businessType === "club") {
+        } else if (businessType === "club") {
           setTimeout(() => router.push("/super-admin/club"), 150);
         } else {
           setTimeout(() => router.push("/super-admin/dashboard"), 150);
         }
       } else {
         // Vendor logic
-        if (realProfile?.onboarded) {
-          if (realProfile.businessType === "hotel") {
+        if (isOnboarded) {
+          if (businessType === "hotel") {
             setTimeout(() => router.push("/vendor-dashboard/hotel"), 150);
-          } else if (realProfile.businessType === "restaurant") {
+          } else if (businessType === "restaurant") {
             setTimeout(() => router.push("/vendor-dashboard/restaurant"), 150);
-          } else if (realProfile.businessType === "club") {
+          } else if (businessType === "club") {
             setTimeout(() => router.push("/vendor-dashboard/club"), 150);
           } else {
             setTimeout(() => router.push("/vendorDashboard"), 150);
@@ -143,9 +149,11 @@ export default function VendorLoginPage() {
         }
       }
     } catch (error) {
-      console.error("Submit error:", error);
-
-      if (
+      // TypeScript-safe error handling for Axios
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((error as any).isAxiosError && (error as any).response && (error as any).response.data) {
+        toast.error((error as any).response.data?.message || "Login failed");
+      } else if (
         error instanceof Error &&
         (error.message.toLowerCase().includes("user does not exist") ||
           error.message.toLowerCase().includes("user not found"))
@@ -246,7 +254,9 @@ export default function VendorLoginPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your secure password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
                       aria-describedby="password-error"
                       className={`pl-10 pr-10 h-10 sm:h-12 rounded-md border-gray-100 bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8] focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out ${
                         errors.password ? "border-red-600 ring-red-600" : ""

@@ -488,11 +488,11 @@ const Form = () => {
 
     try {
       const { data } = await AuthService.login(email, password);
-      await AuthService.setToken(data.token);
+      console.log("Setting token in localStorage:", data.token);
       localStorage.setItem("auth_token", data.token);
-
+      document.cookie = `user-token=${data.token}; path=/;`;
       toast.success("Welcome back!");
-      router.push(redirectTo);
+      window.location.href = redirectTo;
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");

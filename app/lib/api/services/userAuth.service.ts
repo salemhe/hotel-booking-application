@@ -62,10 +62,10 @@ export class AuthService {
   }
 
   static async getToken(): Promise<string | null> {
-    const data = await apiFetcher(`/api/auth/get-user-token`, {
-      method: "GET",
-    });
-    return data.token;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(this.AUTH_TOKEN_KEY);
+    }
+    return null;
   }
 
   static async getUser(id: string): Promise<UserProfile | null> {
@@ -94,15 +94,19 @@ export class AuthService {
 
   static async isAuthenticated(): Promise<boolean> {
     const token = await this.getToken();
-    return !!token && this.validateToken(token);
+    const valid = !!token && this.validateToken(token);
+    return valid;
   }
 
   static validateToken(token: string): boolean {
     try {
       const decodedToken = jwtDecode<DecodedToken>(token);
-      if (!decodedToken.id || !decodedToken.exp) return false;
-      return decodedToken.exp * 1000 > Date.now() + 5000;
-    } catch {
+      if (!decodedToken.id || !decodedToken.exp) {
+        return false;
+      }
+      const valid = decodedToken.exp * 1000 > Date.now() + 5000;
+      return valid;
+    } catch (e) {
       return false;
     }
   }

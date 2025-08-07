@@ -73,6 +73,7 @@ export interface AuthUser {
   address?: string;
   branch?: string;
   profileImage?: string;
+  onboarded?: boolean;
   profile: {
     id: string;
     businessName: string;
