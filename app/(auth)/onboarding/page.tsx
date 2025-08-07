@@ -40,7 +40,7 @@ import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import Image from "next/image";
 import { getBanks, verifyBankAccount } from "@/app/lib/action";
 import { BankCombobox } from "@/app/components/BankComboBox";
-import { AuthService } from "@/app/lib/api/services/auth.service";
+import { AuthService, AuthUser } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 import API from "@/app/lib/api/axios";
 import { useRouter } from "next/navigation";
@@ -230,30 +230,7 @@ interface Bank {
 
 export default function BusinessProfileSetup() {
   const router = useRouter();
-  // Define the user type based on what AuthService.getUser() returns
-  interface UserType {
-    id: string;
-    role: string;
-    email: string;
-    onboarded?: boolean;
-    businessType?: string;
-    token?: string;
-    profile?: {
-      id: string;
-      businessName: string;
-      businessType: string;
-      email: string;
-      address: string;
-      branch: string;
-      profileImage: string;
-      phone: number;
-      paymentDetails?: any;
-      recipientCode?: string;
-      onboarded: boolean;
-    };
-  }
-  
-  const [userState, setUserState] = useState<UserType | null>(null);
+  const [userState, setUserState] = useState<AuthUser | null>(null);
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const [redirectPath, setRedirectPath] = useState("");
   const [currentStep, setCurrentStep] = useState(1);

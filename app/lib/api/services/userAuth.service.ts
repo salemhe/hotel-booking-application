@@ -106,8 +106,8 @@ export class AuthService {
       }
       const valid = decodedToken.exp * 1000 > Date.now() + 5000;
       return valid;
-    } catch (error) {
-      // Using error instead of e to avoid unused variable warning
+    } catch (_) {
+      // Using underscore to indicate an unused variable
       return false;
     }
   }

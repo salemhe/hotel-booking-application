@@ -1,47 +1,159 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
-  Calendar, CreditCard, Users, DollarSign, BadgeDollarSign, 
-  CalendarClock, ShoppingBag, MessageSquare, Check, Phone, 
-  MessagesSquare 
+  Calendar, CreditCard, Users, DollarSign
 } from 'lucide-react'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { NativeSelect as Select } from '@/components/ui/select'
+import { 
+  getDashboardStats, 
+  getTodayReservations, 
+  getReservationTrends,
+  getCustomerFrequency,
+  getRevenueByCategory,
+  getReservationSources,
+  getUpcomingReservations,
+  getUserProfile
+} from '@/app/lib/api-service'
 
 export default function Dashboard() {
   const [showNotification, setShowNotification] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  // State for dashboard data
+  const [stats, setStats] = useState({
+    reservationsToday: 0,
+    prepaidReservations: 0,
+    expectedGuests: 0,
+    pendingPayments: 0,
+    pendingPaymentsTrend: 0,
+    reservationsTrend: 0,
+    prepaidTrend: 0,
+    guestsTrend: 0
+  })
+  const [reservations, setReservations] = useState<any[]>([])
+  const [chartData, setChartData] = useState<any[]>([])
+  const [menuCategories, setMenuCategories] = useState<any[]>([])
+  const [customerData, setCustomerData] = useState({
+    newCustomers: 0,
+    returningCustomers: 0,
+    totalCustomers: 0
+  })
+  const [reservationSources, setReservationSources] = useState({
+    website: 0,
+    mobile: 0,
+    walkIn: 0,
+    total: 0
+  })
+  const [selectedPeriod, setSelectedPeriod] = useState('weekly')
+  
+  // State for upcoming reservations notification
+  const [upcomingReservations, setUpcomingReservations] = useState<any[]>([])
+  
+  // State for user profile
+  const [userProfile, setUserProfile] = useState({
+    name: '',
+    role: '',
+    avatar: '',
+    initials: ''
+  })
 
-  const reservations = [
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'Upcoming' },
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'Upcoming' },
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'In 30 mins' },
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'In 30 mins' },
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'In 30 mins' },
-  ]
-
-  const chartData = [
-    { day: 'Mon', value1: 20, value2: 15, value3: 10 },
-    { day: 'Tues', value1: 35, value2: 20, value3: 15 },
-    { day: 'Wed', value1: 40, value2: 25, value3: 20 },
-    { day: 'Thurs', value1: 30, value2: 20, value3: 15 },
-    { day: 'Fri', value1: 50, value2: 30, value3: 25 },
-    { day: 'Sat', value1: 60, value2: 35, value3: 30 },
-    { day: 'Sun', value1: 55, value2: 32, value3: 28 },
-  ]
-
-  const menuCategories = [
-    { name: 'Main Dish', percentage: 50, amount: '#110,000', color: 'bg-teal-600' },
-    { name: 'Drinks', percentage: 22.7, amount: '#50,000', color: 'bg-red-500' },
-    { name: 'Starters', percentage: 13.6, amount: '#30,000', color: 'bg-yellow-500' },
-    { name: 'Desserts', percentage: 9.3, amount: '#20,500', color: 'bg-blue-400' },
-    { name: 'Sides', percentage: 4.7, amount: '#10,000', color: 'bg-purple-400' },
-  ]
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        
+        // Fetch all dashboard data in parallel
+        const [statsData, todayReservations, trendsData, frequencyData, revenueData, sourcesData, upcomingReservationsData, profileData] = await Promise.all([
+          getDashboardStats(),
+          getTodayReservations(),
+          getReservationTrends(selectedPeriod),
+          getCustomerFrequency(selectedPeriod),
+          getRevenueByCategory(selectedPeriod),
+          getReservationSources(selectedPeriod),
+          getUpcomingReservations(),
+          getUserProfile()
+        ])
+        
+        // Update state with fetched data
+        setStats({
+          reservationsToday: statsData.reservationsToday || 0,
+          prepaidReservations: statsData.prepaidReservations || 0,
+          expectedGuests: statsData.expectedGuests || 0,
+          pendingPayments: statsData.pendingPayments || 0,
+          pendingPaymentsTrend: statsData.pendingPaymentsTrend || 0,
+          reservationsTrend: statsData.reservationsTrend || 0,
+          prepaidTrend: statsData.prepaidTrend || 0,
+          guestsTrend: statsData.guestsTrend || 0
+        })
+        
+        setReservations(todayReservations || [])
+        setChartData(trendsData?.chartData || [])
+        
+        setCustomerData({
+          newCustomers: frequencyData?.newCustomers || 0,
+          returningCustomers: frequencyData?.returningCustomers || 0,
+          totalCustomers: frequencyData?.totalCustomers || 0
+        })
+        
+        setMenuCategories(revenueData?.categories || [])
+        
+        setReservationSources({
+          website: sourcesData?.website || 0,
+          mobile: sourcesData?.mobile || 0,
+          walkIn: sourcesData?.walkIn || 0,
+          total: sourcesData?.total || 0
+        })
+        
+        // Set upcoming reservations for notification
+        setUpcomingReservations(upcomingReservationsData || [])
+        
+        // Set user profile data
+        setUserProfile({
+          name: profileData?.name || 'Guest User',
+          role: profileData?.role || 'User',
+          avatar: profileData?.avatar || '',
+          initials: profileData?.initials || 'GU'
+        })
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err)
+        setError('Failed to load dashboard data. Please try again later.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    fetchDashboardData()
+    
+    // Set up real-time polling for upcoming reservations (every minute)
+    const upcomingReservationsInterval = setInterval(async () => {
+      try {
+        const upcomingReservationsData = await getUpcomingReservations()
+        setUpcomingReservations(upcomingReservationsData || [])
+      } catch (err) {
+        console.error('Error fetching upcoming reservations:', err)
+      }
+    }, 60000) // 60 seconds
+    
+    // Clean up interval on component unmount
+    return () => {
+      clearInterval(upcomingReservationsInterval)
+    }
+  }, [selectedPeriod])
+  
+  // Handler for period change
+  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPeriod(e.target.value)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -64,13 +176,12 @@ export default function Dashboard() {
               <span className="absolute -top-1 -right-1 h-3 w-3 bg-blue-600 rounded-full"></span>
             </Button>
             <div className="flex items-center space-x-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                <AvatarFallback>JE</AvatarFallback>
-              </Avatar>
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">Joseph Eyebiokin</p>
-                <p className="text-xs text-gray-500">Admin</p>
+              <Avatar className="h-8 w-8"><AvatarImage src={userProfile.avatar || "/placeholder.svg?height=32&width=32"} />
+              <AvatarFallback>{userProfile.initials}</AvatarFallback>
+            </Avatar>
+            <div className="hidden sm:block">
+              <p className="text-sm font-medium text-gray-900">{userProfile.name}</p>
+              <p className="text-xs text-gray-500">{userProfile.role}</p>
               </div>
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
@@ -79,7 +190,7 @@ export default function Dashboard() {
       </header>
 
       {/* Notification Banner */}
-      {showNotification && (
+      {showNotification && upcomingReservations.length > 0 && (
         <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 mx-4 sm:mx-6 lg:mx-8 mt-4 rounded">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -88,7 +199,7 @@ export default function Dashboard() {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-yellow-800">
-                  3 Reservations commencing in the next 30 minutes
+                  {upcomingReservations.length} {upcomingReservations.length === 1 ? 'Reservation' : 'Reservations'} commencing in the next 30 minutes
                 </p>
               </div>
             </div>
@@ -109,7 +220,7 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Welcome Back, Joseph!</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Welcome Back, {userProfile.name.split(' ')[0]}!</h1>
             <p className="text-gray-600 mt-1">{"Here's what is happening today."}</p>
           </div>
           <Button className="mt-4 sm:mt-0 bg-teal-600 hover:bg-teal-700">
@@ -125,10 +236,19 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Reservations made today</p>
-                  <p className="text-3xl font-bold text-gray-900">32</p>
+                  <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.reservationsToday}</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-500">12% vs last week</span>
+                    {stats.reservationsTrend >= 0 ? (
+                      <>
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-500">{stats.reservationsTrend}% vs last week</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-500">{Math.abs(stats.reservationsTrend)}% vs last week</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -143,10 +263,19 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Prepaid Reservations</p>
-                  <p className="text-3xl font-bold text-gray-900">16</p>
+                  <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.prepaidReservations}</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-500">8% vs last week</span>
+                    {stats.prepaidTrend >= 0 ? (
+                      <>
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-500">{stats.prepaidTrend}% vs last week</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-500">{Math.abs(stats.prepaidTrend)}% vs last week</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -161,10 +290,19 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Expected Guests Today</p>
-                  <p className="text-3xl font-bold text-gray-900">80</p>
+                  <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.expectedGuests}</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-500">8% vs last week</span>
+                    {stats.guestsTrend >= 0 ? (
+                      <>
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-500">{stats.guestsTrend}% vs last week</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-500">{Math.abs(stats.guestsTrend)}% vs last week</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -179,10 +317,21 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Pending Payments</p>
-                  <p className="text-3xl font-bold text-gray-900">$2,546.00</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {isLoading ? '-' : `₦${stats.pendingPayments.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+                  </p>
                   <div className="flex items-center mt-2">
-                    <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-                    <span className="text-sm text-red-500">5% vs last week</span>
+                    {stats.pendingPaymentsTrend >= 0 ? (
+                      <>
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-500">{stats.pendingPaymentsTrend}% vs last week</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-500">{Math.abs(stats.pendingPaymentsTrend)}% vs last week</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -205,35 +354,49 @@ export default function Dashboard() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {reservations.map((reservation, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src="/placeholder.svg?height=40&width=40" />
-                          <AvatarFallback>EJ</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium text-gray-900">{reservation.name}</p>
-                          <p className="text-sm text-gray-500">ID: {reservation.id}</p>
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-48">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+                  </div>
+                ) : error ? (
+                  <div className="flex justify-center items-center h-48">
+                    <p className="text-red-500">{error}</p>
+                  </div>
+                ) : reservations.length === 0 ? (
+                  <div className="flex justify-center items-center h-48">
+                    <p className="text-gray-500">No reservations for today</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {reservations.map((reservation) => (
+                      <div key={reservation.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-4">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={reservation.customerAvatar || "/placeholder.svg?height=40&width=40"} />
+                            <AvatarFallback>{reservation.customerInitials || reservation.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-gray-900">{reservation.customerName}</p>
+                            <p className="text-sm text-gray-500">ID: {reservation.id}</p>
+                          </div>
                         </div>
+                        <div className="text-right">
+                          <p className="text-sm text-gray-900">{new Date(reservation.date).toLocaleDateString()}</p>
+                          <p className="text-sm text-gray-500">Time: {reservation.time}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium">{reservation.guests} Guests</p>
+                        </div>
+                        <Badge
+                          variant={reservation.status === 'Upcoming' ? 'secondary' : 'default'}
+                          className={reservation.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}
+                        >
+                          {reservation.status}
+                        </Badge>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-900">{reservation.date}</p>
-                        <p className="text-sm text-gray-500">Time: {reservation.time}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-sm font-medium">{reservation.guests} Guests</p>
-                      </div>
-                      <Badge
-                        variant={reservation.status === 'Upcoming' ? 'secondary' : 'default'}
-                        className={reservation.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}
-                      >
-                        {reservation.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -247,14 +410,13 @@ export default function Dashboard() {
                   <Button variant="ghost" className="text-blue-600 hover:text-blue-700">
                     View All →
                   </Button>
-                  <Select defaultValue="weekly">
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                    </SelectContent>
+                  <Select 
+                    value={selectedPeriod} 
+                    onChange={handlePeriodChange}
+                    className="w-24"
+                  >
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
                   </Select>
                 </div>
               </CardHeader>
@@ -308,14 +470,13 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Customer Frequency</CardTitle>
-              <Select defaultValue="weekly">
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
+              <Select 
+                value={selectedPeriod} 
+                onChange={handlePeriodChange}
+                className="w-24"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
               </Select>
             </CardHeader>
             <CardContent>
@@ -373,14 +534,13 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Revenue (Menu Category)</CardTitle>
-              <Select defaultValue="weekly">
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
+              <Select 
+                value={selectedPeriod} 
+                onChange={handlePeriodChange}
+                className="w-24"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
               </Select>
             </CardHeader>
             <CardContent>
@@ -417,14 +577,13 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Reservation Source</CardTitle>
-              <Select defaultValue="weekly">
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
+              <Select 
+                value={selectedPeriod} 
+                onChange={handlePeriodChange}
+                className="w-24"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
               </Select>
             </CardHeader>
             <CardContent>

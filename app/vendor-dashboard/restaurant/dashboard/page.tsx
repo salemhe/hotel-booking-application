@@ -1,47 +1,120 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
+  getDashboardStats, 
+  getTodayReservations, 
+  getReservationTrends,
+  getCustomerFrequency,
+  getRevenueByCategory,
+  getReservationSources,
+  getUpcomingReservations,
+  getUserProfile
+} from '@/app/lib/api-service'
+import {
   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
-  Calendar, CreditCard, Users, DollarSign, BadgeDollarSign, 
-  CalendarClock, ShoppingBag, MessageSquare, Check, Phone, 
-  MessagesSquare 
+  Calendar, CreditCard, Users, DollarSign
 } from 'lucide-react'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { NativeSelect as Select } from '@/components/ui/select'
 
 export default function Dashboard() {
   const [showNotification, setShowNotification] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  // State for dashboard data
+  const [stats, setStats] = useState({
+    reservationsToday: 0,
+    prepaidReservations: 0,
+    expectedGuests: 0,
+    pendingPayments: 0,
+    pendingPaymentsTrend: 0,
+    reservationsTrend: 0,
+    prepaidTrend: 0,
+    guestsTrend: 0
+  })
+  const [reservations, setReservations] = useState<any[]>([])
+  const [chartData, setChartData] = useState<any[]>([])
+  const [menuCategories, setMenuCategories] = useState<any[]>([])
+  const [customerData, setCustomerData] = useState({
+    newCustomers: 0,
+    returningCustomers: 0,
+    totalCustomers: 0
+  })
+  const [reservationSources, setReservationSources] = useState({
+    website: 0,
+    mobile: 0,
+    walkIn: 0,
+    total: 0
+  })
+  const [selectedPeriod, setSelectedPeriod] = useState('weekly')
 
-  const reservations = [
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'Upcoming' },
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'Upcoming' },
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'In 30 mins' },
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'In 30 mins' },
-    { id: '#12345', name: 'Emily Johnson', date: 'June 5, 2025', time: '7:30 pm', guests: 4, status: 'In 30 mins' },
-  ]
-
-  const chartData = [
-    { day: 'Mon', value1: 20, value2: 15, value3: 10 },
-    { day: 'Tues', value1: 35, value2: 20, value3: 15 },
-    { day: 'Wed', value1: 40, value2: 25, value3: 20 },
-    { day: 'Thurs', value1: 30, value2: 20, value3: 15 },
-    { day: 'Fri', value1: 50, value2: 30, value3: 25 },
-    { day: 'Sat', value1: 60, value2: 35, value3: 30 },
-    { day: 'Sun', value1: 55, value2: 32, value3: 28 },
-  ]
-
-  const menuCategories = [
-    { name: 'Main Dish', percentage: 50, amount: '#110,000', color: 'bg-teal-600' },
-    { name: 'Drinks', percentage: 22.7, amount: '#50,000', color: 'bg-red-500' },
-    { name: 'Starters', percentage: 13.6, amount: '#30,000', color: 'bg-yellow-500' },
-    { name: 'Desserts', percentage: 9.3, amount: '#20,500', color: 'bg-blue-400' },
-    { name: 'Sides', percentage: 4.7, amount: '#10,000', color: 'bg-purple-400' },
-  ]
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        
+        // Fetch all dashboard data in parallel
+        const [statsData, todayReservations, trendsData, frequencyData, revenueData, sourcesData] = await Promise.all([
+          getDashboardStats(),
+          getTodayReservations(),
+          getReservationTrends(selectedPeriod),
+          getCustomerFrequency(selectedPeriod),
+          getRevenueByCategory(selectedPeriod),
+          getReservationSources(selectedPeriod)
+        ])
+        
+        // Update state with fetched data
+        setStats({
+          reservationsToday: statsData.reservationsToday || 0,
+          prepaidReservations: statsData.prepaidReservations || 0,
+          expectedGuests: statsData.expectedGuests || 0,
+          pendingPayments: statsData.pendingPayments || 0,
+          pendingPaymentsTrend: statsData.pendingPaymentsTrend || 0,
+          reservationsTrend: statsData.reservationsTrend || 0,
+          prepaidTrend: statsData.prepaidTrend || 0,
+          guestsTrend: statsData.guestsTrend || 0
+        })
+        
+        setReservations(todayReservations || [])
+        setChartData(trendsData?.chartData || [])
+        
+        setCustomerData({
+          newCustomers: frequencyData?.newCustomers || 0,
+          returningCustomers: frequencyData?.returningCustomers || 0,
+          totalCustomers: frequencyData?.totalCustomers || 0
+        })
+        
+        setMenuCategories(revenueData?.categories || [])
+        
+        setReservationSources({
+          website: sourcesData?.website || 0,
+          mobile: sourcesData?.mobile || 0,
+          walkIn: sourcesData?.walkIn || 0,
+          total: sourcesData?.total || 0
+        })
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err)
+        setError('Failed to load dashboard data. Please try again later.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    fetchDashboardData()
+  }, [selectedPeriod])
+  
+  // Handler for period change
+  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPeriod(e.target.value)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -125,10 +198,19 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Reservations made today</p>
-                  <p className="text-3xl font-bold text-gray-900">32</p>
+                  <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.reservationsToday}</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-500">12% vs last week</span>
+                    {stats.reservationsTrend >= 0 ? (
+                      <>
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-500">{stats.reservationsTrend}% vs last week</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-500">{Math.abs(stats.reservationsTrend)}% vs last week</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -143,10 +225,19 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Prepaid Reservations</p>
-                  <p className="text-3xl font-bold text-gray-900">16</p>
+                  <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.prepaidReservations}</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-500">8% vs last week</span>
+                    {stats.prepaidTrend >= 0 ? (
+                      <>
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-500">{stats.prepaidTrend}% vs last week</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-500">{Math.abs(stats.prepaidTrend)}% vs last week</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -161,10 +252,19 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Expected Guests Today</p>
-                  <p className="text-3xl font-bold text-gray-900">80</p>
+                  <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.expectedGuests}</p>
                   <div className="flex items-center mt-2">
-                    <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                    <span className="text-sm text-green-500">8% vs last week</span>
+                    {stats.guestsTrend >= 0 ? (
+                      <>
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-500">{stats.guestsTrend}% vs last week</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-500">{Math.abs(stats.guestsTrend)}% vs last week</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -179,10 +279,21 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Pending Payments</p>
-                  <p className="text-3xl font-bold text-gray-900">$2,546.00</p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {isLoading ? '-' : `₦${stats.pendingPayments.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+                  </p>
                   <div className="flex items-center mt-2">
-                    <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-                    <span className="text-sm text-red-500">5% vs last week</span>
+                    {stats.pendingPaymentsTrend >= 0 ? (
+                      <>
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-500">{stats.pendingPaymentsTrend}% vs last week</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-500">{Math.abs(stats.pendingPaymentsTrend)}% vs last week</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -205,35 +316,49 @@ export default function Dashboard() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {reservations.map((reservation, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src="/placeholder.svg?height=40&width=40" />
-                          <AvatarFallback>EJ</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium text-gray-900">{reservation.name}</p>
-                          <p className="text-sm text-gray-500">ID: {reservation.id}</p>
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-48">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+                  </div>
+                ) : error ? (
+                  <div className="flex justify-center items-center h-48">
+                    <p className="text-red-500">{error}</p>
+                  </div>
+                ) : reservations.length === 0 ? (
+                  <div className="flex justify-center items-center h-48">
+                    <p className="text-gray-500">No reservations for today</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {reservations.map((reservation) => (
+                      <div key={reservation.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-4">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={reservation.customerAvatar || "/placeholder.svg?height=40&width=40"} />
+                            <AvatarFallback>{reservation.customerInitials || reservation.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-gray-900">{reservation.customerName}</p>
+                            <p className="text-sm text-gray-500">ID: {reservation.id}</p>
+                          </div>
                         </div>
+                        <div className="text-right">
+                          <p className="text-sm text-gray-900">{new Date(reservation.date).toLocaleDateString()}</p>
+                          <p className="text-sm text-gray-500">Time: {reservation.time}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium">{reservation.guests} Guests</p>
+                        </div>
+                        <Badge
+                          variant={reservation.status === 'Upcoming' ? 'secondary' : 'default'}
+                          className={reservation.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}
+                        >
+                          {reservation.status}
+                        </Badge>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-900">{reservation.date}</p>
-                        <p className="text-sm text-gray-500">Time: {reservation.time}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-sm font-medium">{reservation.guests} Guests</p>
-                      </div>
-                      <Badge
-                        variant={reservation.status === 'Upcoming' ? 'secondary' : 'default'}
-                        className={reservation.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}
-                      >
-                        {reservation.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -247,25 +372,28 @@ export default function Dashboard() {
                   <Button variant="ghost" className="text-blue-600 hover:text-blue-700">
                     View All →
                   </Button>
-                  <Select defaultValue="weekly">
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                    </SelectContent>
+                  <Select 
+                    value={selectedPeriod} 
+                    onChange={handlePeriodChange}
+                  >
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
                   </Select>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent>{isLoading ? (
+                <div className="flex justify-center items-center h-32 mb-4">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
+                </div>
+              ) : (
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-2xl font-bold">104</div>
+                  <div className="text-2xl font-bold">{chartData.reduce((sum, item) => sum + item.value1, 0)}</div>
                   <div className="flex items-center text-green-500">
                     <TrendingUp className="h-4 w-4 mr-1" />
                     <span className="text-sm">8% vs last week</span>
                   </div>
                 </div>
+              )}
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="flex items-center">
                     <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
@@ -277,25 +405,31 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex items-end justify-between h-32 space-x-2">
-                  {chartData.map((data, index) => (
-                    <div key={index} className="flex flex-col items-center flex-1">
-                      <div className="w-full flex flex-col justify-end h-24 space-y-1">
-                        <div
-                          className="w-full bg-blue-400 rounded-t"
-                          style={{ height: `${(data.value1 / 60) * 100}%` }}
-                        ></div>
-                        <div
-                          className="w-full bg-teal-600 rounded"
-                          style={{ height: `${(data.value2 / 60) * 100}%` }}
-                        ></div>
-                        <div
-                          className="w-full bg-yellow-400 rounded-b"
-                          style={{ height: `${(data.value3 / 60) * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-xs text-gray-500 mt-2">{data.day}</span>
+                  {chartData.length === 0 && !isLoading ? (
+                    <div className="w-full flex items-center justify-center h-24">
+                      <p className="text-gray-500 text-sm">No data available</p>
                     </div>
-                  ))}
+                  ) : (
+                    chartData.map((data, index) => (
+                      <div key={index} className="flex flex-col items-center flex-1">
+                        <div className="w-full flex flex-col justify-end h-24 space-y-1">
+                          <div
+                            className="w-full bg-blue-400 rounded-t"
+                            style={{ height: `${Math.max((data.value1 / (chartData.length ? Math.max(...chartData.map(d => d.value1)) : 1)) * 100, 5)}%` }}
+                          ></div>
+                          <div
+                            className="w-full bg-teal-600 rounded"
+                            style={{ height: `${Math.max((data.value2 / (chartData.length ? Math.max(...chartData.map(d => d.value2)) : 1)) * 100, 5)}%` }}
+                          ></div>
+                          <div
+                            className="w-full bg-yellow-400 rounded-b"
+                            style={{ height: `${Math.max((data.value3 / (chartData.length ? Math.max(...chartData.map(d => d.value3)) : 1)) * 100, 5)}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-xs text-gray-500 mt-2">{data.day}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -308,64 +442,77 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Customer Frequency</CardTitle>
-              <Select defaultValue="weekly">
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
+              <Select 
+                value={selectedPeriod} 
+                onChange={handlePeriodChange}
+                className="w-24"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
               </Select>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-center mb-4">
-                <div className="relative w-32 h-32">
-                  <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#e5e7eb"
-                      strokeWidth="3"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#0d9488"
-                      strokeWidth="3"
-                      strokeDasharray="45, 100"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#eab308"
-                      strokeWidth="3"
-                      strokeDasharray="55, 100"
-                      strokeDashoffset="-45"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xs text-gray-500">Total Customer</span>
-                    <span className="text-xl font-bold">100</span>
-                  </div>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-48">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
-                    <span className="text-sm">New Customers</span>
+              ) : (
+                <>
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="relative w-32 h-32">
+                      <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="#e5e7eb"
+                          strokeWidth="3"
+                        />
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="#0d9488"
+                          strokeWidth="3"
+                          strokeDasharray={`${(customerData.newCustomers / customerData.totalCustomers) * 100}, 100`}
+                        />
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="#eab308"
+                          strokeWidth="3"
+                          strokeDasharray={`${(customerData.returningCustomers / customerData.totalCustomers) * 100}, 100`}
+                          strokeDashoffset={`-${(customerData.newCustomers / customerData.totalCustomers) * 100}`}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-xs text-gray-500">Total Customers</span>
+                        <span className="text-xl font-bold">{customerData.totalCustomers}</span>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">45%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                    <span className="text-sm">Returning Customers</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
+                        <span className="text-sm">New Customers</span>
+                      </div>
+                      <span className="text-sm font-medium">
+                        {customerData.totalCustomers ? 
+                          Math.round((customerData.newCustomers / customerData.totalCustomers) * 100) : 0}%
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                        <span className="text-sm">Returning Customers</span>
+                      </div>
+                      <span className="text-sm font-medium">
+                        {customerData.totalCustomers ? 
+                          Math.round((customerData.returningCustomers / customerData.totalCustomers) * 100) : 0}%
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">55%</span>
-                </div>
-              </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -373,43 +520,54 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Revenue (Menu Category)</CardTitle>
-              <Select defaultValue="weekly">
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
+              <Select 
+                value={selectedPeriod} 
+                onChange={handlePeriodChange}
+                className="w-24"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
               </Select>
             </CardHeader>
             <CardContent>
-              <div className="mb-4">
-                <div className="text-2xl font-bold">#220,500</div>
-                <div className="flex items-center text-green-500">
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  <span className="text-sm">8% vs last week</span>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-48">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
                 </div>
-              </div>
-              <div className="space-y-3">
-                {menuCategories.map((category, index) => (
-                  <div key={index}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-600">{category.name}</span>
-                      <div className="text-right">
-                        <span className="text-sm font-medium">{category.percentage}%</span>
-                        <span className="text-xs text-gray-500 ml-2">({category.amount})</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`${category.color} h-2 rounded-full`}
-                        style={{ width: `${category.percentage}%` }}
-                      ></div>
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <div className="text-2xl font-bold">₦{menuCategories.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}</div>
+                    <div className="flex items-center text-green-500">
+                      <TrendingUp className="h-4 w-4 mr-1" />
+                      <span className="text-sm">8% vs last week</span>
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-3">
+                    {menuCategories.length === 0 ? (
+                      <p className="text-gray-500 text-sm">No data available</p>
+                    ) : (
+                      menuCategories.map((category, index) => (
+                        <div key={index}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm text-gray-600">{category.name}</span>
+                            <div className="text-right">
+                              <span className="text-sm font-medium">{category.percentage}%</span>
+                              <span className="text-xs text-gray-500 ml-2">(₦{category.amount.toLocaleString()})</span>
+                            </div>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className={`${category.color} h-2 rounded-full`}
+                              style={{ width: `${category.percentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -417,79 +575,95 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Reservation Source</CardTitle>
-              <Select defaultValue="weekly">
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                </SelectContent>
+              <Select 
+                value={selectedPeriod} 
+                onChange={handlePeriodChange}
+                className="w-24"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
               </Select>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-center mb-4">
-                <div className="relative w-32 h-32">
-                  <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#e5e7eb"
-                      strokeWidth="3"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#0d9488"
-                      strokeWidth="3"
-                      strokeDasharray="50, 100"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#eab308"
-                      strokeWidth="3"
-                      strokeDasharray="30, 100"
-                      strokeDashoffset="-50"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#3b82f6"
-                      strokeWidth="3"
-                      strokeDasharray="20, 100"
-                      strokeDashoffset="-80"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xs text-gray-500">Total Reservation</span>
-                    <span className="text-xl font-bold">100</span>
-                  </div>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-48">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
-                    <span className="text-sm">50 websites</span>
+              ) : (
+                <>
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="relative w-32 h-32">
+                      <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="#e5e7eb"
+                          strokeWidth="3"
+                        />
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="#0d9488"
+                          strokeWidth="3"
+                          strokeDasharray={`${(reservationSources.website / reservationSources.total) * 100}, 100`}
+                        />
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="#eab308"
+                          strokeWidth="3"
+                          strokeDasharray={`${(reservationSources.mobile / reservationSources.total) * 100}, 100`}
+                          strokeDashoffset={`-${(reservationSources.website / reservationSources.total) * 100}`}
+                        />
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="#3b82f6"
+                          strokeWidth="3"
+                          strokeDasharray={`${(reservationSources.walkIn / reservationSources.total) * 100}, 100`}
+                          strokeDashoffset={`-${((reservationSources.website + reservationSources.mobile) / reservationSources.total) * 100}`}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-xs text-gray-500">Total Reservations</span>
+                        <span className="text-xl font-bold">{reservationSources.total}</span>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">50%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                    <span className="text-sm">30 mobile</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
+                        <span className="text-sm">{reservationSources.website} website</span>
+                      </div>
+                      <span className="text-sm font-medium">
+                        {reservationSources.total ? 
+                          Math.round((reservationSources.website / reservationSources.total) * 100) : 0}%
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                        <span className="text-sm">{reservationSources.mobile} mobile</span>
+                      </div>
+                      <span className="text-sm font-medium">
+                        {reservationSources.total ? 
+                          Math.round((reservationSources.mobile / reservationSources.total) * 100) : 0}%
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                        <span className="text-sm">{reservationSources.walkIn} walk-in</span>
+                      </div>
+                      <span className="text-sm font-medium">
+                        {reservationSources.total ? 
+                          Math.round((reservationSources.walkIn / reservationSources.total) * 100) : 0}%
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">30%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                    <span className="text-sm">20 walk-in</span>
-                  </div>
-                  <span className="text-sm font-medium">20%</span>
-                </div>
-              </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
