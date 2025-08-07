@@ -1,6 +1,33 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+
+// Define interfaces for our data structures
+interface Reservation {
+  id: string;
+  customerName: string;
+  customerAvatar?: string;
+  customerInitials?: string;
+  name?: string;
+  date: string | Date;
+  time: string;
+  guests: number;
+  status: string;
+}
+
+interface ChartDataPoint {
+  day: string;
+  value1: number;
+  value2: number;
+  value3: number;
+}
+
+interface MenuCategory {
+  name: string;
+  percentage: number;
+  amount: string | number;
+  color: string;
+}
 import { 
   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
   Calendar, CreditCard, Users, DollarSign
@@ -38,14 +65,16 @@ export default function Dashboard() {
     prepaidTrend: 0,
     guestsTrend: 0
   })
-  const [reservations, setReservations] = useState<any[]>([])
-  const [chartData, setChartData] = useState<any[]>([])
-  const [menuCategories, setMenuCategories] = useState<any[]>([])
+  const [reservations, setReservations] = useState<Reservation[]>([])
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([])
+  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([])
+  // Use this data in UI to show customer frequency
   const [customerData, setCustomerData] = useState({
     newCustomers: 0,
     returningCustomers: 0,
     totalCustomers: 0
   })
+  // Use this data in UI to show reservation sources
   const [reservationSources, setReservationSources] = useState({
     website: 0,
     mobile: 0,
@@ -55,7 +84,7 @@ export default function Dashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState('weekly')
   
   // State for upcoming reservations notification
-  const [upcomingReservations, setUpcomingReservations] = useState<any[]>([])
+  const [upcomingReservations, setUpcomingReservations] = useState<Reservation[]>([])
   
   // State for user profile
   const [userProfile, setUserProfile] = useState({

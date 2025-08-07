@@ -34,14 +34,14 @@ export const getBranchById = async (id: number) => {
   return apiFetcher(`/api/branches/${id}`);
 };
 
-export const createBranch = async (branchData: any) => {
+export const createBranch = async (branchData: Record<string, unknown>) => {
   return apiFetcher('/api/branches', {
     method: 'POST',
     body: JSON.stringify(branchData),
   });
 };
 
-export const updateBranch = async (id: number, branchData: any) => {
+export const updateBranch = async (id: number, branchData: Record<string, unknown>) => {
   return apiFetcher(`/api/branches/${id}`, {
     method: 'PUT',
     body: JSON.stringify(branchData),

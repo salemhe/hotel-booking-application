@@ -1,6 +1,33 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+
+// Define interfaces for our data structures
+interface Reservation {
+  id: string;
+  customerName: string;
+  customerAvatar?: string;
+  customerInitials?: string;
+  name?: string;
+  date: string | Date;
+  time: string;
+  guests: number;
+  status: string;
+}
+
+interface ChartDataPoint {
+  day: string;
+  value1: number;
+  value2: number;
+  value3: number;
+}
+
+interface MenuCategory {
+  name: string;
+  percentage: number;
+  amount: string | number;
+  color: string;
+}
 import { 
   getDashboardStats, 
   getTodayReservations, 
@@ -27,6 +54,17 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
+  // State for upcoming reservations notification
+  const [upcomingReservations, setUpcomingReservations] = useState<Reservation[]>([])
+  
+  // State for user profile
+  const [userProfile, setUserProfile] = useState({
+    name: '',
+    role: '',
+    avatar: '',
+    initials: ''
+  })
+  
   // State for dashboard data
   const [stats, setStats] = useState({
     reservationsToday: 0,
@@ -38,9 +76,11 @@ export default function Dashboard() {
     prepaidTrend: 0,
     guestsTrend: 0
   })
-  const [reservations, setReservations] = useState<any[]>([])
-  const [chartData, setChartData] = useState<any[]>([])
-  const [menuCategories, setMenuCategories] = useState<any[]>([])
+  const [reservations, setReservations] = useState<Record<string, unknown>[]>([])
+  const [chartData, setChartData] = useState<Record<string, unknown>[]>([])
+const [reservations, setReservations] = useState<Reservation[]>([])
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([])
+  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([])
   const [customerData, setCustomerData] = useState({
     newCustomers: 0,
     returningCustomers: 0,
