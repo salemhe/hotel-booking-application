@@ -150,9 +150,18 @@ export default function VendorLoginPage() {
       }
     } catch (error) {
       // TypeScript-safe error handling for Axios
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((error as any).isAxiosError && (error as any).response && (error as any).response.data) {
-        toast.error((error as any).response.data?.message || "Login failed");
+      interface AxiosErrorData {
+        isAxiosError?: boolean;
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+      }
+      
+      const axiosError = error as AxiosErrorData;
+      if (axiosError.isAxiosError && axiosError.response && axiosError.response.data) {
+        toast.error(axiosError.response.data?.message || "Login failed");
       } else if (
         error instanceof Error &&
         (error.message.toLowerCase().includes("user does not exist") ||

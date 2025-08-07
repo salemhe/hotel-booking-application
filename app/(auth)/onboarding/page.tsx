@@ -230,7 +230,30 @@ interface Bank {
 
 export default function BusinessProfileSetup() {
   const router = useRouter();
-  const [userState, setUserState] = useState<any | null>(null);
+  // Define the user type based on what AuthService.getUser() returns
+  interface UserType {
+    id: string;
+    role: string;
+    email: string;
+    onboarded?: boolean;
+    businessType?: string;
+    token?: string;
+    profile?: {
+      id: string;
+      businessName: string;
+      businessType: string;
+      email: string;
+      address: string;
+      branch: string;
+      profileImage: string;
+      phone: number;
+      paymentDetails?: any;
+      recipientCode?: string;
+      onboarded: boolean;
+    };
+  }
+  
+  const [userState, setUserState] = useState<UserType | null>(null);
   const [shouldRedirect, setShouldRedirect] = useState(false);
   const [redirectPath, setRedirectPath] = useState("");
   const [currentStep, setCurrentStep] = useState(1);

@@ -1,10 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Bell, ChevronDown, X, Plus, TrendingUp, TrendingDown, MoreHorizontal, Calendar, CreditCard, Users, DollarSign } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { 
+  Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
+  Calendar, CreditCard, Users, DollarSign, BadgeDollarSign, 
+  CalendarClock, ShoppingBag, MessageSquare, Check, Phone, 
+  MessagesSquare 
+} from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
