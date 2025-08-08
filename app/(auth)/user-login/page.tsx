@@ -389,7 +389,7 @@
 "use client";
 import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Mail,
   Lock,
