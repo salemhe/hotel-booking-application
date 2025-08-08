@@ -491,7 +491,7 @@ const Form = () => {
       const { data } = await AuthService.login(email, password);
       console.log("Setting token in localStorage:", data.token);
       localStorage.setItem("auth_token", data.token);
-      document.cookie = `user-token=${data.token}; path=/;`;
+      document.cookie = `user-token=${data.token}; path=/; Secure; SameSite=None`;
       toast.success("Welcome back!");
       router.push(redirectTo);
     } catch (error: unknown) {
