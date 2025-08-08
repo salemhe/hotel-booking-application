@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -13,12 +13,12 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/app/components/ui/card";
+} from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
-
-// Removed unused PaymentDetalsProps interface
+import { useAuth } from "@/app/contexts/AuthContext";
+import API from "@/app/lib/api/axios";
 
 interface VendorProfile {
   id?: string;
@@ -35,9 +35,6 @@ interface VendorProfile {
   [key: string]: unknown;
 }
 
-import { apiFetcher } from "@/app/lib/fetcher";
-import { useAuth } from "@/app/contexts/AuthContext";
-
 export default function VendorLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,6 +42,8 @@ export default function VendorLoginPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [userNotExist, setUserNotExist] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
+  const [apiResponse, setApiResponse] = useState<string>("");
 
   const router = useRouter();
   const { login: contextLogin } = useAuth();
@@ -69,71 +68,119 @@ export default function VendorLoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // For direct API testing
+  const testDirectApi = async () => {
+    try {
+      setApiResponse("Testing direct API connection...");
+      setLoading(true);
+      
+      const BASE_URL = "https://hotel-booking-app-backend-30q1.onrender.com";
+      console.log(`Testing direct API: ${BASE_URL}/api/vendors/login`);
+      
+      const response = await fetch(`${BASE_URL}/api/vendors/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: "include"
+      });
+      
+      const responseText = await response.text();
+      console.log("Direct API test response:", {
+        status: response.status,
+        body: responseText
+      });
+      
+      setApiResponse(JSON.stringify({
+        status: response.status,
+        statusText: response.statusText,
+        body: responseText
+      }, null, 2));
+    } catch (error) {
+      console.error("Direct API test error:", error);
+      setApiResponse(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUserNotExist(false);
+    setApiResponse("");
+    console.log("Starting login process with:", { email, password: "[REDACTED]", length: password.length });
 
     if (!validate()) return;
     setLoading(true);
 
     try {
-      const response = await apiFetcher("/api/vendors/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
-      if (!response || response.error || response.message === "Login failed") {
-        throw new Error(response?.message || "Login failed");
+      // Use AuthService directly for consistency
+      const loginResponse = await AuthService.login(email, password);
+      console.log("Login response:", loginResponse);
+      
+      if (!loginResponse || !loginResponse.profile) {
+        throw new Error("Login failed - invalid response");
       }
-      const token = response.token || (response.profile && response.profile.token);
-      if (token) {
-        await AuthService.setToken(token);
-      }
-
-      let realProfile: VendorProfile = response.profile as VendorProfile;
-      try {
-        if (token) {
-          const userId = response.profile?.id || (response.profile as VendorProfile)?._id || "";
-          const fetchedProfile = await AuthService.fetchMyProfile(userId);
-          if (fetchedProfile) {
-            realProfile = fetchedProfile as unknown as VendorProfile;
+      
+      // Get profile and token from the response
+      const authToken = loginResponse.profile.token || loginResponse.token;
+      let vendorProfile: VendorProfile = loginResponse.profile as VendorProfile;
+      
+      if (authToken) {
+        // Store token in localStorage
+        localStorage.setItem("auth_token", authToken);
+        
+        // Try to get more profile details if possible
+        try {
+          const userId = loginResponse.profile?.id || (loginResponse.profile as VendorProfile)?._id || "";
+          if (userId) {
+            const fetchedProfile = await API.get(`/vendors/${userId}`, { withCredentials: true });
+            if (fetchedProfile && fetchedProfile.data) {
+              vendorProfile = fetchedProfile.data as VendorProfile;
+            }
           }
+        } catch (profileError) {
+          console.error("Could not fetch detailed profile, using login profile", profileError);
         }
-      } catch (fetchError) {
-        console.error("Could not fetch latest profile, using login profile.", fetchError);
       }
 
-      if (realProfile) {
+      if (vendorProfile) {
         contextLogin({
-          id: realProfile.id ?? realProfile._id ?? "",
-          name: realProfile.businessName ?? realProfile.email ?? "",
-          email: realProfile.email ?? "",
-          role: realProfile.role ?? "vendor"
+          id: vendorProfile.id ?? vendorProfile._id ?? "",
+          name: vendorProfile.businessName ?? vendorProfile.email ?? "",
+          email: vendorProfile.email ?? "",
+          role: vendorProfile.role ?? "vendor"
         });
       }
 
-      toast.success(`Welcome back, ${realProfile?.businessName || "Vendor"}!`);
-      localStorage.setItem("accountType", realProfile?.businessType || "");
+      toast.success(`Welcome back, ${vendorProfile?.businessName || "Vendor"}!`);
+      localStorage.setItem("accountType", vendorProfile?.businessType || "");
 
-      // Add a short delay to ensure context is set before redirecting
-      if (realProfile.role === "super-admin") {
-        if (realProfile.businessType === "hotel") {
+      // Added a short delay to ensure context is set before redirecting
+      // Use safe property access to prevent undefined errors
+      const userRole = vendorProfile?.role || "vendor";
+      const businessType = vendorProfile?.businessType || "";
+      const isOnboarded = vendorProfile?.onboarded || false;
+
+      if (userRole === "super-admin") {
+        if (businessType === "hotel") {
           setTimeout(() => router.push("/super-admin/hotel"), 150);
-        } else if (realProfile.businessType === "restaurant") {
+        } else if (businessType === "restaurant") {
           setTimeout(() => router.push("/super-admin/restaurant"), 150);
-        } else if (realProfile.businessType === "club") {
+        } else if (businessType === "club") {
           setTimeout(() => router.push("/super-admin/club"), 150);
         } else {
           setTimeout(() => router.push("/super-admin/dashboard"), 150);
         }
       } else {
         // Vendor logic
-        if (realProfile?.onboarded) {
-          if (realProfile.businessType === "hotel") {
-            setTimeout(() => router.push("/vendor-dashboard/hotel"), 150);
-          } else if (realProfile.businessType === "restaurant") {
-            setTimeout(() => router.push("/vendor-dashboard/restaurant"), 150);
-          } else if (realProfile.businessType === "club") {
+        if (isOnboarded) {
+          if (businessType === "hotel") {
+            setTimeout(() => router.push("/vendor-dashboard/hotel/dashboard"), 150);
+          } else if (businessType === "restaurant") {
+            setTimeout(() => router.push("/vendor-dashboard/restaurant/dashboard"), 150);
+          } else if (businessType === "club") {
             setTimeout(() => router.push("/vendor-dashboard/club"), 150);
           } else {
             setTimeout(() => router.push("/vendorDashboard"), 150);
@@ -143,9 +190,30 @@ export default function VendorLoginPage() {
         }
       }
     } catch (error) {
-      console.error("Submit error:", error);
-
-      if (
+      console.error("Login error details:", error);
+      
+      // TypeScript-safe error handling for Axios
+      interface AxiosErrorData {
+        isAxiosError?: boolean;
+        response?: {
+          data?: {
+            message?: string;
+          };
+          status?: number;
+        };
+        message?: string;
+      }
+      
+      const axiosError = error as AxiosErrorData;
+      console.log("Error structure:", {
+        isAxiosError: axiosError.isAxiosError,
+        status: axiosError.response?.status,
+        message: axiosError.response?.data?.message || axiosError.message
+      });
+      
+      if (axiosError.isAxiosError && axiosError.response && axiosError.response.data) {
+        toast.error(axiosError.response.data?.message || "Login failed");
+      } else if (
         error instanceof Error &&
         (error.message.toLowerCase().includes("user does not exist") ||
           error.message.toLowerCase().includes("user not found"))
@@ -246,7 +314,9 @@ export default function VendorLoginPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your secure password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
                       aria-describedby="password-error"
                       className={`pl-10 pr-10 h-10 sm:h-12 rounded-md border-gray-100 bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8] focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out ${
                         errors.password ? "border-red-600 ring-red-600" : ""
@@ -338,6 +408,51 @@ export default function VendorLoginPage() {
                 </Link>
               </div>
             </CardFooter>
+            
+            {/* Debug Mode Toggle */}
+            <div className="mt-4 border-t pt-4 px-6">
+              <button 
+                type="button" 
+                onClick={() => setDebugMode(!debugMode)}
+                className="text-xs text-gray-500 hover:text-gray-700"
+              >
+                {debugMode ? "Hide Debug Tools" : "Show Debug Tools"}
+              </button>
+              
+              {debugMode && (
+                <div className="mt-4 space-y-4">
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={testDirectApi}
+                      className="text-xs bg-gray-100 px-3 py-2 rounded hover:bg-gray-200"
+                      disabled={loading}
+                    >
+                      Test Direct API
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        localStorage.clear();
+                        setApiResponse("Local storage cleared");
+                      }}
+                      className="text-xs bg-gray-100 px-3 py-2 rounded hover:bg-gray-200"
+                    >
+                      Clear Local Storage
+                    </button>
+                  </div>
+                  
+                  {apiResponse && (
+                    <div className="mt-2">
+                      <p className="text-xs font-medium mb-1">API Response:</p>
+                      <pre className="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40">
+                        {apiResponse}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </Card>
         </div>
       </div>

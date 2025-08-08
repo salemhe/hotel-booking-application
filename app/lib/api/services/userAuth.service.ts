@@ -1,4 +1,5 @@
 // src/services/userAuth.services.ts
+
 import { jwtDecode } from "jwt-decode";
 import { api } from "@/app/lib/axios-config";
 import { SessionService } from "./session.service";
@@ -62,10 +63,10 @@ export class AuthService {
   }
 
   static async getToken(): Promise<string | null> {
-    const data = await apiFetcher(`/api/auth/get-user-token`, {
-      method: "GET",
-    });
-    return data.token;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(this.AUTH_TOKEN_KEY);
+    }
+    return null;
   }
 
   static async getUser(id: string): Promise<UserProfile | null> {
@@ -94,15 +95,20 @@ export class AuthService {
 
   static async isAuthenticated(): Promise<boolean> {
     const token = await this.getToken();
-    return !!token && this.validateToken(token);
+    const valid = !!token && this.validateToken(token);
+    return valid;
   }
 
   static validateToken(token: string): boolean {
     try {
       const decodedToken = jwtDecode<DecodedToken>(token);
-      if (!decodedToken.id || !decodedToken.exp) return false;
-      return decodedToken.exp * 1000 > Date.now() + 5000;
+      if (!decodedToken.id || !decodedToken.exp) {
+        return false;
+      }
+      const valid = decodedToken.exp * 1000 > Date.now() + 5000;
+      return valid;
     } catch {
+      // Handle token validation error
       return false;
     }
   }
@@ -200,8 +206,8 @@ export class AuthService {
       }
 
       return true;
-    } catch (error) {
-      console.log("Session validation failed:", error);
+    } catch (err) {
+      console.log("Session validation failed:", err);
       this.clearToken();
       return false;
     }
@@ -219,8 +225,8 @@ export class AuthService {
         return false;
       }
       return true;
-    } catch (error) {
-      console.error("Check session error:", error);
+    } catch (err) {
+      console.error("Check session error:", err);
       this.clearToken();
       return false;
     }

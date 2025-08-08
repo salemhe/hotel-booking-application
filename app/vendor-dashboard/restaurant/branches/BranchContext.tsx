@@ -38,15 +38,21 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
   const fetchBranches = async () => {
-    // If using JWT, get token from localStorage (or context)
-    const url = "/api/branches";
-    const data = await apiFetcher(url);
-    setBranches(data);
-    if (!selectedBranch && data.length > 0) setSelectedBranch(data[0]);
-    if (selectedBranch) {
-      // Update selectedBranch if it exists in the new data
-      const found = data.find((b: Branch) => b.id === selectedBranch.id);
-      if (found) setSelectedBranch(found);
+    try {
+      // If using JWT, get token from localStorage (or context)
+      const url = "/api/branches";
+      const data = await apiFetcher(url);
+      setBranches(data);
+      if (!selectedBranch && data.length > 0) setSelectedBranch(data[0]);
+      if (selectedBranch) {
+        // Update selectedBranch if it exists in the new data
+        const found = data.find((b: Branch) => b.id === selectedBranch.id);
+        if (found) setSelectedBranch(found);
+      }
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+      // Set empty branches array to prevent undefined errors
+      setBranches([]);
     }
   };
 
