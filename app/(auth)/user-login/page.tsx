@@ -389,7 +389,7 @@
 "use client";
 import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Mail,
   Lock,
@@ -463,6 +463,7 @@ const Form = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -492,7 +493,7 @@ const Form = () => {
       localStorage.setItem("auth_token", data.token);
       document.cookie = `user-token=${data.token}; path=/;`;
       toast.success("Welcome back!");
-      window.location.href = redirectTo;
+      router.push(redirectTo);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");
