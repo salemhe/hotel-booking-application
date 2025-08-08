@@ -212,7 +212,7 @@
 // "use client";
 // import React, { useState } from "react";
 // import Link from "next/link";
-// import { useRouter, useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 // import { Mail, Lock, Loader2, ArrowRight, AlertCircle } from "lucide-react";
 // import { Button } from "@/app/components/ui/button";
 // import { Input } from "@/app/components/ui/input";
@@ -461,7 +461,6 @@ const Form = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
-  // Using window.location.href instead of router.push
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/userDashboard/search";

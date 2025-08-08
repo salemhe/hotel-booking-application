@@ -17,7 +17,6 @@ import {
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
-import { apiFetcher } from "@/app/lib/fetcher";
 import { useAuth } from "@/app/contexts/AuthContext";
 import API from "@/app/lib/api/axios";
 

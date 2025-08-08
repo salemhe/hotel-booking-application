@@ -62,11 +62,12 @@ export default function Dashboard() {
     pendingPaymentsTrend: 0,
     reservationsTrend: 0,
     prepaidTrend: 0,
-    guestsTrend: 0
+    guestsTrend: 0,
+    totalRevenue: 0,
+    revenueTrend: 0
   })
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
-  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([])
   // Customer frequency data
   const [customerData, setCustomerData] = useState({
     newCustomers: 0,
@@ -113,7 +114,9 @@ export default function Dashboard() {
           pendingPaymentsTrend: statsData.pendingPaymentsTrend || 0,
           reservationsTrend: statsData.reservationsTrend || 0,
           prepaidTrend: statsData.prepaidTrend || 0,
-          guestsTrend: statsData.guestsTrend || 0
+          guestsTrend: statsData.guestsTrend || 0,
+          totalRevenue: revenueData?.totalRevenue || 0,
+          revenueTrend: revenueData?.revenueTrend || 0
         })
         
         setReservations(todayReservations || [])
@@ -125,9 +128,7 @@ export default function Dashboard() {
           totalCustomers: frequencyData?.totalCustomers || 0
         })
         
-        setMenuCategories(revenueData?.categories || [])
-        
-        // We don't need to set reservation sources as we're using hardcoded values in the UI
+        // No need to set menu categories as they're hardcoded in the UI
         
         // Set upcoming reservations for notification
         setUpcomingReservations(upcomingReservationsData || [])
@@ -468,10 +469,10 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-2xl font-bold">104</div>
+                  <div className="text-2xl font-bold">{isLoading ? '-' : stats.reservationsToday + stats.prepaidReservations}</div>
                   <div className="flex items-center text-green-500">
                     <TrendingUp className="h-4 w-4 mr-1" />
-                    <span className="text-sm">8% vs last week</span>
+                    <span className="text-sm">{stats.reservationsTrend}% vs last week</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4 mb-4">
@@ -512,6 +513,76 @@ export default function Dashboard() {
 
         {/* Bottom Analytics */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Revenue */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Revenue</CardTitle>
+              <Select
+                value={selectedPeriod}
+                onChange={handlePeriodChange}
+                className="w-24"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </Select>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                <div className="text-2xl font-bold">₦{isLoading ? '-' : stats.totalRevenue.toLocaleString()}</div>
+                <div className="flex items-center text-green-500">
+                  <TrendingUp className="h-4 w-4 mr-1" />
+                  <span className="text-sm">{stats.revenueTrend}% vs last period</span>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {isLoading ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500"></div>
+                  </div>
+                ) : (
+                  <div className="rounded-lg bg-gray-50 p-4">
+                    <div className="text-sm text-gray-600 mb-2">Revenue Breakdown</div>
+                    <div className="space-y-3">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm text-gray-600">Room Bookings</span>
+                          <div className="text-right">
+                            <span className="text-sm font-medium">65%</span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="bg-teal-600 h-2 rounded-full" style={{ width: '65%' }}></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm text-gray-600">Food & Beverage</span>
+                          <div className="text-right">
+                            <span className="text-sm font-medium">20%</span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="bg-blue-500 h-2 rounded-full" style={{ width: '20%' }}></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm text-gray-600">Additional Services</span>
+                          <div className="text-right">
+                            <span className="text-sm font-medium">15%</span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '15%' }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Customer Frequency */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">

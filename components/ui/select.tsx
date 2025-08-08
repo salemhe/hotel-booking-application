@@ -107,13 +107,10 @@ export function SelectTrigger({ children, ...props }: SelectTriggerProps) {
 
 export function SelectContent({ children }: SelectContentProps) {
   return <div className="bg-white border border-gray-200 rounded-md mt-1 shadow-lg z-10">{children}</div>;
-}
-
-interface SelectItemProps {
+}interface SelectItemProps {
   children: React.ReactNode;
   value: string;
-}
-export function SelectItem(_props: SelectItemProps) {
+}export function SelectItem(): null {
   // This is just a placeholder component for the structure
   // The actual rendering is handled by Select component
   return null;

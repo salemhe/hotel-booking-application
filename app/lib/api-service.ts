@@ -5,6 +5,10 @@ export const getDashboardStats = async () => {
   return apiFetcher('/api/dashboard/stats');
 };
 
+export const getHotelRevenueBreakdown = async (period: string = 'weekly') => {
+  return apiFetcher(`/api/dashboard/hotel/revenue-breakdown?period=${period}`);
+};
+
 export const getReservationTrends = async (period: string = 'weekly') => {
   return apiFetcher(`/api/dashboard/trends?period=${period}`);
 };

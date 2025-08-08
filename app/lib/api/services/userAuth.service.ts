@@ -107,9 +107,7 @@ export class AuthService {
       }
       const valid = decodedToken.exp * 1000 > Date.now() + 5000;
       return valid;
-
-
-    } catch (error) {
+    } catch {
       // Handle token validation error
       return false;
     }
@@ -208,8 +206,8 @@ export class AuthService {
       }
 
       return true;
-    } catch (error) {
-      console.log("Session validation failed:", error);
+    } catch (err) {
+      console.log("Session validation failed:", err);
       this.clearToken();
       return false;
     }
@@ -227,8 +225,8 @@ export class AuthService {
         return false;
       }
       return true;
-    } catch (error) {
-      console.error("Check session error:", error);
+    } catch (err) {
+      console.error("Check session error:", err);
       this.clearToken();
       return false;
     }
