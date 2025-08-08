@@ -665,5 +665,3 @@ export default function Dashboard() {
     </div></>
   )
 }
-
-type SelectItemProps = { /* ... */ }
