@@ -110,7 +110,12 @@ export function SelectContent({ children }: SelectContentProps) {
 }interface SelectItemProps {
   children: React.ReactNode;
   value: string;
-}export function SelectItem({ children, value }: SelectItemProps): null {
+}export function SelectItem({ 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  children, 
+  value 
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+}: SelectItemProps): null {
   // This is just a placeholder component for the structure
   // The actual rendering is handled by Select component
   return null;
