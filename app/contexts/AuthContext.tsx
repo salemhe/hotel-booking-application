@@ -22,13 +22,18 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // On mount, check localStorage for user and token
   useEffect(() => {
-    // On mount, check localStorage for user
-    const storedUser = typeof window !== 'undefined' ? localStorage.getItem('auth_user') : null;
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('auth_user');
+      const token = localStorage.getItem('auth_token');
+      if (storedUser && token) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = (userData: User) => {
@@ -42,6 +47,7 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     setUser(null);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_token');
     }
   };
 
