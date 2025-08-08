@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
-// import { AuthService } from "@/app/lib/api/services/auth.service";
 import { BookingService } from "@/app/lib/api/services/bookings.service";
 import { DashboardService } from "@/app/lib/api/services/dashboard.service";
 import { ProfileProvider, useProfile } from "../ProfileContext";
@@ -30,30 +29,36 @@ function SuperAdminDashboardContent() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
 
+  // Authentication and role check
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.replace('/vendor-login'); // Change to your super-admin login route if different
+    const token = localStorage.getItem("auth_token");
+    if (
+      !authLoading &&
+      (!isAuthenticated || !token || !user || user.role !== "super-admin")
+    ) {
+      router.replace('/super-admin-login');
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, user, router]);
 
+  // Data fetching
   useEffect(() => {
-    if (!user) return;
+    if (!user || user.role !== "super-admin") return;
     async function fetchData() {
-      if (!user) return; // TypeScript: user is now guaranteed non-null below
       setLoading(true);
       try {
-        const bookingsData = await BookingService.getBookings({ vendorId: user.id });
+        // TypeScript knows user is not null here due to the guard above
+        const bookingsData = await BookingService.getBookings({ vendorId: user!.id });
         setBookings(bookingsData || []);
         const [paymentsData, branchesData, staffData] = await Promise.all([
-          DashboardService.getPayments(user.id),
-          DashboardService.getBranches(user.id),
-          DashboardService.getStaff(user.id),
+          DashboardService.getPayments(user!.id),
+          DashboardService.getBranches(user!.id),
+          DashboardService.getStaff(user!.id),
         ]);
         setPayments(paymentsData || []);
         setBranches(branchesData || []);
         setStaff(staffData || []);
       } catch {
-        // Optionally handle error (show toast, etc.)
+        // Optionally handle error
       } finally {
         setLoading(false);
       }
@@ -61,7 +66,7 @@ function SuperAdminDashboardContent() {
     fetchData();
   }, [user]);
 
-  if (authLoading || !isAuthenticated || loading) {
+  if (authLoading || !isAuthenticated || !user || user.role !== "super-admin" || loading) {
     return <div className="w-full max-w-7xl mx-auto py-8 px-2 sm:px-4 md:px-6 lg:px-8 text-center">Loading dashboard...</div>;
   }
 
