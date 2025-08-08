@@ -75,7 +75,7 @@ export default function VendorLoginPage() {
       setLoading(true);
       
       const BASE_URL = "https://hotel-booking-app-backend-30q1.onrender.com";
-      console.log(`Testing direct API: ${BASE_URL}/api/vendors/login`);
+
       
       const response = await fetch(`${BASE_URL}/api/vendors/login`, {
         method: "POST",
@@ -87,10 +87,7 @@ export default function VendorLoginPage() {
       });
       
       const responseText = await response.text();
-      console.log("Direct API test response:", {
-        status: response.status,
-        body: responseText
-      });
+     
       
       setApiResponse(JSON.stringify({
         status: response.status,
@@ -98,7 +95,7 @@ export default function VendorLoginPage() {
         body: responseText
       }, null, 2));
     } catch (error) {
-      console.error("Direct API test error:", error);
+    
       setApiResponse(`Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setLoading(false);
@@ -109,7 +106,7 @@ export default function VendorLoginPage() {
     e.preventDefault();
     setUserNotExist(false);
     setApiResponse("");
-    console.log("Starting login process with:", { email, password: "[REDACTED]", length: password.length });
+    
 
     if (!validate()) return;
     setLoading(true);
@@ -117,7 +114,7 @@ export default function VendorLoginPage() {
     try {
       // Use AuthService directly for consistency
       const loginResponse = await AuthService.login(email, password);
-      console.log("Login response:", loginResponse);
+;
       
       if (!loginResponse || !loginResponse.profile) {
         throw new Error("Login failed - invalid response");
