@@ -1,4 +1,5 @@
 // src/services/userAuth.services.ts
+
 import { jwtDecode } from "jwt-decode";
 import { api } from "@/app/lib/axios-config";
 import { SessionService } from "./session.service";
@@ -106,8 +107,10 @@ export class AuthService {
       }
       const valid = decodedToken.exp * 1000 > Date.now() + 5000;
       return valid;
-    } catch (_) {
-      // Using underscore to indicate an unused variable
+
+
+    } catch (error) {
+      // Handle token validation error
       return false;
     }
   }

@@ -31,7 +31,7 @@ export const apiFetcher = async (url: string, options: RequestInit = {}) => {
       let errorData;
       try {
         errorData = JSON.parse(errorText);
-      } catch (e) {
+      } catch (error) {
         errorData = { message: errorText };
       }
       

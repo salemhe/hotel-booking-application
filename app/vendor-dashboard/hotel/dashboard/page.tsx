@@ -185,7 +185,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <><div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -195,8 +195,7 @@ export default function Dashboard() {
               <Input
                 type="text"
                 placeholder="Search"
-                className="pl-10 bg-gray-50 border-gray-200"
-              />
+                className="pl-10 bg-gray-50 border-gray-200" />
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -206,11 +205,11 @@ export default function Dashboard() {
             </Button>
             <div className="flex items-center space-x-3">
               <Avatar className="h-8 w-8"><AvatarImage src={userProfile.avatar || "/placeholder.svg?height=32&width=32"} />
-              <AvatarFallback>{userProfile.initials}</AvatarFallback>
-            </Avatar>
-            <div className="hidden sm:block">
-              <p className="text-sm font-medium text-gray-900">{userProfile.name}</p>
-              <p className="text-xs text-gray-500">{userProfile.role}</p>
+                <AvatarFallback>{userProfile.initials}</AvatarFallback>
+              </Avatar>
+              <div className="hidden sm:block">
+                <p className="text-sm font-medium text-gray-900">{userProfile.name}</p>
+                <p className="text-xs text-gray-500">{userProfile.role}</p>
               </div>
               <ChevronDown className="h-4 w-4 text-gray-400" />
             </div>
@@ -347,7 +346,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-sm text-gray-600">Pending Payments</p>
                   <p className="text-3xl font-bold text-gray-900">
-                    {isLoading ? '-' : `₦${stats.pendingPayments.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+                    {isLoading ? '-' : `₦${stats.pendingPayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                   </p>
                   <div className="flex items-center mt-2">
                     {stats.pendingPaymentsTrend >= 0 ? (
@@ -383,6 +382,38 @@ export default function Dashboard() {
                 </Button>
               </CardHeader>
               <CardContent>
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative w-32 h-32">
+                  <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#e5e7eb"
+                      strokeWidth="3"
+                    />
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#0d9488"
+                      strokeWidth="3"
+                      strokeDasharray={`${(customerData.newCustomers / Math.max(customerData.totalCustomers, 1)) * 100}, 100`}
+                    />
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#eab308"
+                      strokeWidth="3"
+                      strokeDasharray={`${(customerData.returningCustomers / Math.max(customerData.totalCustomers, 1)) * 100}, 100`}
+                      strokeDashoffset={`-${(customerData.newCustomers / Math.max(customerData.totalCustomers, 1)) * 100}`}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-xs text-gray-500">Total Customers</span>
+                    <span className="text-xl font-bold">{customerData.totalCustomers}</span>
+                  </div>
+                </div>
+              </div>
+              
                 {isLoading ? (
                   <div className="flex justify-center items-center h-48">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
@@ -439,8 +470,8 @@ export default function Dashboard() {
                   <Button variant="ghost" className="text-blue-600 hover:text-blue-700">
                     View All →
                   </Button>
-                  <Select 
-                    value={selectedPeriod} 
+                  <Select
+                    value={selectedPeriod}
                     onChange={handlePeriodChange}
                     className="w-24"
                   >
@@ -499,121 +530,8 @@ export default function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Customer Frequency</CardTitle>
-              <Select 
-                value={selectedPeriod} 
-                onChange={handlePeriodChange}
-                className="w-24"
-              >
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-              </Select>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center mb-4">
-                <div className="relative w-32 h-32">
-                  <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#e5e7eb"
-                      strokeWidth="3"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#0d9488"
-                      strokeWidth="3"
-                      strokeDasharray={`${(customerData.newCustomers / Math.max(customerData.totalCustomers, 1)) * 100}, 100`}
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#eab308"
-                      strokeWidth="3"
-                      strokeDasharray={`${(customerData.returningCustomers / Math.max(customerData.totalCustomers, 1)) * 100}, 100`}
-                      strokeDashoffset={`-${(customerData.newCustomers / Math.max(customerData.totalCustomers, 1)) * 100}`}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xs text-gray-500">Total Customers</span>
-                    <span className="text-xl font-bold">{customerData.totalCustomers}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
-                    <span className="text-sm">New Customers</span>
-                  </div>
-                  <span className="text-sm font-medium">
-                    {customerData.totalCustomers ? 
-                      Math.round((customerData.newCustomers / customerData.totalCustomers) * 100) : 0}%
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                    <span className="text-sm">Returning Customers</span>
-                  </div>
-                  <span className="text-sm font-medium">
-                    {customerData.totalCustomers ? 
-                      Math.round((customerData.returningCustomers / customerData.totalCustomers) * 100) : 0}%
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Revenue by Menu Category */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Revenue (Menu Category)</CardTitle>
-              <Select 
-                value={selectedPeriod} 
-                onChange={handlePeriodChange}
-                className="w-24"
-              >
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-              </Select>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <div className="text-2xl font-bold">#220,500</div>
-                <div className="flex items-center text-green-500">
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  <span className="text-sm">8% vs last week</span>
-                </div>
-              </div>
-              <div className="space-y-3">
-                {menuCategories.map((category, index) => (
-                  <div key={index}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-600">{category.name}</span>
-                      <div className="text-right">
-                        <span className="text-sm font-medium">{category.percentage}%</span>
-                        <span className="text-xs text-gray-500 ml-2">({category.amount})</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`${category.color} h-2 rounded-full`}
-                        style={{ width: `${category.percentage}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Reservation Source */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Reservation Source</CardTitle>
-              <Select 
-                value={selectedPeriod} 
+              <Select
+                value={selectedPeriod}
                 onChange={handlePeriodChange}
                 className="w-24"
               >
@@ -656,8 +574,8 @@ export default function Dashboard() {
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xs text-gray-500">Total Reservation</span>
-                    <span className="text-xl font-bold">100</span>
+                    <span className="text-xs text-gray-500">Total Customers</span>
+                    <span className="text-xl font-bold">{customerData.totalCustomers}</span>
                   </div>
                 </div>
               </div>
@@ -665,29 +583,35 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
-                    <span className="text-sm">50 websites</span>
+                    <span className="text-sm">New Customers</span>
                   </div>
-                  <span className="text-sm font-medium">50%</span>
+                  <span className="text-sm font-medium">
+                    {customerData.totalCustomers ?
+                      Math.round((customerData.newCustomers / customerData.totalCustomers) * 100) : 0}%
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                    <span className="text-sm">30 mobile</span>
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
+                    <span className="text-sm">Returning Customers</span>
                   </div>
-                  <span className="text-sm font-medium">30%</span>
+                  <span className="text-sm font-medium">
+                    {customerData.totalCustomers ?
+                      Math.round((customerData.returningCustomers / customerData.totalCustomers) * 100) : 0}%
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                    <span className="text-sm">20 walk-in</span>
+                    <div className="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
+                    <span className="text-sm">Total Customers</span>
                   </div>
-                  <span className="text-sm font-medium">20%</span>
+                  <span className="text-sm font-medium">{customerData.totalCustomers}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </main>
-    </div>
+    </div></>
   )
 }

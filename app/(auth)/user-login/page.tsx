@@ -461,8 +461,7 @@ const Form = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
-  // Remove unused router variable
-  // const router = useRouter();
+  // Using window.location.href instead of router.push
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/userDashboard/search";

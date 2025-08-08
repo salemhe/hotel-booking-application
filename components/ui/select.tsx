@@ -33,10 +33,9 @@ export function Select({ children, defaultValue, className, onChange }: SelectPr
   // Reference to the container element for handling outside clicks
   const selectRef = React.useRef<HTMLDivElement>(null);// Get option children to display the value
   const options = React.Children.toArray(children)
-    .filter((child): child is React.ReactElement => React.isValidElement(child) && child.type === SelectItem)
-    .map((child: React.ReactElement) => ({
-      value: (child.props as any).value,
-      label: (child.props as any).children
+    .filter((child): child is React.ReactElement => React.isValidElement(child) && child.type === SelectItem).map((child: React.ReactElement) => ({
+      value: (child.props as { value: string }).value,
+      label: (child.props as { children: React.ReactNode }).children
     }));
     
   const selectedLabel = options.find(option => option.value === value)?.label || "";
@@ -114,7 +113,7 @@ interface SelectItemProps {
   children: React.ReactNode;
   value: string;
 }
-export function SelectItem({ children, value }: SelectItemProps) {
+export function SelectItem(_props: SelectItemProps) {
   // This is just a placeholder component for the structure
   // The actual rendering is handled by Select component
   return null;
