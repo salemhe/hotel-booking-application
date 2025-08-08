@@ -21,13 +21,6 @@ interface ChartDataPoint {
   value2: number;
   value3: number;
 }
-
-interface MenuCategory {
-  name: string;
-  percentage: number;
-  amount: string | number;
-  color: string;
-}
 import { 
   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
   Calendar, CreditCard, Users, DollarSign
