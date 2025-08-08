@@ -110,7 +110,9 @@ export function SelectContent({ children }: SelectContentProps) {
 }interface SelectItemProps {
   children: React.ReactNode;
   value: string;
-}export function SelectItem(): null {
+}
+
+export function SelectItem(): null {
   // This is just a placeholder component for the structure
   // The actual rendering is handled by Select component
   return null;
