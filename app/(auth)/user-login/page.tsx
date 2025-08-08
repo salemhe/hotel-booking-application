@@ -493,7 +493,12 @@ const Form = () => {
       localStorage.setItem("auth_token", data.token);
       document.cookie = `user-token=${data.token}; path=/; Secure; SameSite=None`;
       toast.success("Welcome back!");
-      router.push(redirectTo);
+      
+      // Create a slight delay to ensure the toast is visible
+      setTimeout(() => {
+        // Use window.location for a hard navigation
+        window.location.href = redirectTo;
+      }, 800);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");
