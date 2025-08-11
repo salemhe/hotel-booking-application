@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 import React, { useState } from "react";
-import { apiFetcher } from "@/app/lib/fetcher";
+import { apiFetcher, ApiResponse } from "@/app/lib/fetcher";
 import {
   Plus,
   Search,
@@ -74,7 +74,8 @@ interface MenuItem {
 
 export default function MenuManagementPage() {
   const router = useRouter();
-  const { data: menuItems = [] } = useSWR<MenuItem[]>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
+  const { data: apiResponse } = useSWR<ApiResponse<MenuItem[]>>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
+  const menuItems = (apiResponse && !('isError' in apiResponse)) ? apiResponse : [];
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus] = useState("all");

@@ -1,6 +1,6 @@
 // app/lib/fetcher.ts
 // Define type for API error responses
-interface ApiErrorDetails {
+export interface ApiErrorDetails {
   message: string;
   status?: number;
   details?: unknown;
@@ -9,16 +9,16 @@ interface ApiErrorDetails {
   code?: string;
 }
 
-interface ApiErrorResponse {
+export interface ApiErrorResponse {
   isError: true;
   error: ApiErrorDetails;
 }
 
 // Define type for successful responses with various potential formats
-type ApiSuccessResponse<T = any> = T;
+export type ApiSuccessResponse<T = any> = T;
 
 // Combined response type
-type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse;
+export type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 // Helper function to create consistent error objects
 const createApiError = (message: string, details?: any, status?: number, url?: string): ApiErrorResponse => {
