@@ -39,7 +39,9 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const login = (userData: User) => {
     setUser(userData);
     if (typeof window !== 'undefined') {
+      // Store user data in localStorage for persistence
       localStorage.setItem('auth_user', JSON.stringify(userData));
+      console.log('Auth context updated with user:', userData);
     }
   };
 

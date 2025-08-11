@@ -21,6 +21,41 @@ interface ChartDataPoint {
   value2: number;
   value3: number;
 }
+
+// Define API response data interfaces at the module level
+interface StatsData {
+  reservationsToday?: number;
+  prepaidReservations?: number;
+  expectedGuests?: number;
+  pendingPayments?: number;
+  pendingPaymentsTrend?: number;
+  reservationsTrend?: number;
+  prepaidTrend?: number;
+  guestsTrend?: number;
+}
+
+interface TrendsData {
+  chartData?: ChartDataPoint[];
+}
+
+interface FrequencyData {
+  newCustomers?: number;
+  returningCustomers?: number;
+  totalCustomers?: number;
+}
+
+interface RevenueData {
+  totalRevenue?: number;
+  revenueTrend?: number;
+  categories?: any[];
+}
+
+interface SourcesData {
+  website?: number;
+  mobile?: number;
+  walkIn?: number;
+  total?: number;
+}
 import { 
   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
   Calendar, CreditCard, Users, DollarSign
@@ -80,23 +115,177 @@ export default function Dashboard() {
     initials: ''
   })
 
-  // Fetch dashboard data
+  // Set up WebSocket connection for real-time updates
   useEffect(() => {
+    // Function to establish WebSocket connection for real-time data
+    const setupWebSocket = () => {
+      try {
+        // Check if WebSocket is supported
+        if (typeof window !== 'undefined' && 'WebSocket' in window) {
+          // Replace with your actual WebSocket endpoint
+          const wsEndpoint = process.env.NEXT_PUBLIC_WS_ENDPOINT || 'wss://api.example.com/ws';
+          
+          console.log('Attempting to establish WebSocket connection for hotel dashboard...');
+          
+          // Create WebSocket connection
+          const socket = new WebSocket(wsEndpoint);
+          
+          // Connection opened
+          socket.addEventListener('open', (event) => {
+            console.log('WebSocket connection established for hotel dashboard');
+            
+            // Subscribe to relevant data channels
+            socket.send(JSON.stringify({
+              action: 'subscribe',
+              channels: ['hotel_stats', 'hotel_reservations', 'hotel_notifications']
+            }));
+          });
+          
+          // Listen for messages from the server
+          socket.addEventListener('message', (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              console.log('Real-time hotel update received:', data.type);
+              
+              // Handle different types of updates
+              switch (data.type) {
+                case 'stats_update':
+                  // Update dashboard stats
+                  setStats(prevStats => ({
+                    ...prevStats,
+                    ...data.stats
+                  }));
+                  break;
+                  
+                case 'new_reservation':
+                  // Add new reservation to the list
+                  setReservations(prev => [data.reservation, ...prev]);
+                  break;
+                  
+                case 'upcoming_reservation':
+                  // Update upcoming reservations
+                  setUpcomingReservations(prev => {
+                    const exists = prev.some(r => r.id === data.reservation.id);
+                    if (!exists) {
+                      setShowNotification(true);
+                      return [data.reservation, ...prev];
+                    }
+                    return prev;
+                  });
+                  break;
+                  
+                case 'room_availability_update':
+                  // Handle room availability updates
+                  console.log('Room availability updated:', data.availability);
+                  break;
+                  
+                default:
+                  console.log('Unknown hotel update type:', data.type);
+              }
+            } catch (error) {
+              console.error('Error processing hotel WebSocket message:', error);
+            }
+          });
+          
+          // Handle errors
+          socket.addEventListener('error', (event) => {
+            console.error('Hotel WebSocket error:', event);
+          });
+          
+          // Handle connection closing
+          socket.addEventListener('close', (event) => {
+            console.log('Hotel WebSocket connection closed:', event.code, event.reason);
+            
+            // Attempt to reconnect after a delay
+            setTimeout(() => {
+              console.log('Attempting to reconnect hotel WebSocket...');
+              setupWebSocket();
+            }, 5000);
+          });
+          
+          // Return cleanup function
+          return socket;
+        } else {
+          console.log('WebSocket not supported, falling back to polling for hotel dashboard');
+          return null;
+        }
+      } catch (error) {
+        console.error('Error setting up hotel WebSocket:', error);
+        return null;
+      }
+    };
+    
+    // Initially set up WebSocket
+    const socket = setupWebSocket();
+    
+    // Fetch dashboard data - fallback to regular API calls
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true)
         setError(null)
         
-        // Fetch all dashboard data in parallel
-        const [statsData, todayReservations, trendsData, frequencyData, revenueData, upcomingReservationsData, profileData] = await Promise.all([
-          getDashboardStats(),
-          getTodayReservations(),
-          getReservationTrends(selectedPeriod),
-          getCustomerFrequency(selectedPeriod),
-          getRevenueByCategory(selectedPeriod),
-          getUpcomingReservations(),
-          getUserProfile()
-        ])
+        console.log("Fetching real-time hotel dashboard data...");
+        
+        // Use the interfaces defined at the module level
+        
+        // Helper function to safely fetch data and handle errors
+        const safelyFetchData = async <T,>(fetchFn: () => Promise<any>, defaultValue: T): Promise<T> => {
+          try {
+            const result = await fetchFn();
+            
+            // Check for error object
+            if (result && typeof result === 'object' && 'isError' in result && result.isError) {
+              const errorObj = result.error || {};
+              const errorMessage = typeof errorObj === 'object' && 'message' in errorObj 
+                ? errorObj.message 
+                : (typeof errorObj === 'string' ? errorObj : 'Unknown error');
+                
+              console.log(`API Error fetching hotel data: ${errorMessage}`);
+              return defaultValue;
+            }
+            
+            // Check for empty object
+            if (result && typeof result === 'object' && 
+                !Array.isArray(result) && 
+                Object.keys(result).length === 0) {
+              console.log('Received empty object from API');
+              return defaultValue;
+            }
+            
+            return result || defaultValue;
+          } catch (error) {
+            let errorMessage = 'Unknown error';
+            if (error) {
+              if (typeof error === 'string') {
+                errorMessage = error;
+              } else if (typeof error === 'object' && error !== null) {
+                // Use proper type checking to access the message property
+                errorMessage = error && 'message' in error && typeof error.message === 'string'
+                  ? error.message
+                  : JSON.stringify(error);
+              }
+            }
+            console.log(`Exception fetching hotel data: ${errorMessage}`);
+            return defaultValue;
+          }
+        };
+        
+        // Fetch each data set sequentially to avoid overwhelming the API
+        const statsData = await safelyFetchData<StatsData>(() => getDashboardStats(), {});
+        const todayReservations = await safelyFetchData<Reservation[]>(() => getTodayReservations(), []);
+        const trendsData = await safelyFetchData<TrendsData>(() => getReservationTrends(selectedPeriod), {});
+        const frequencyData = await safelyFetchData<FrequencyData>(() => getCustomerFrequency(selectedPeriod), {});
+        const revenueData = await safelyFetchData<RevenueData>(() => getRevenueByCategory(selectedPeriod), {});
+        const upcomingReservationsData = await safelyFetchData<Reservation[]>(() => getUpcomingReservations(), []);
+        
+        // Profile data needs special handling with retries
+        let profileData = {};
+        for (let retry = 0; retry < 3; retry++) {
+          profileData = await safelyFetchData<any>(() => getUserProfile(), {});
+          if (profileData && Object.keys(profileData).length > 0) break;
+          console.log(`Retrying profile fetch for hotel, attempt ${retry + 1}/3`);
+          await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms between retries
+        }
         
         // Update state with fetched data
         setStats({
@@ -126,13 +315,102 @@ export default function Dashboard() {
         // Set upcoming reservations for notification
         setUpcomingReservations(upcomingReservationsData || [])
         
-        // Set user profile data
-        setUserProfile({
-          name: profileData?.name || 'Guest User',
-          role: profileData?.role || 'User',
-          avatar: profileData?.avatar || '',
-          initials: profileData?.initials || 'GU'
-        })
+        // Set user profile data with enhanced flexibility for different API response formats
+        try {
+          // Try to get the profile data from localStorage first if API failed
+          let vendorName = '';
+          let vendorRole = '';
+          let vendorAvatar = '';
+          let vendorInitials = 'HD';
+          
+          if (typeof window !== 'undefined') {
+            // Check if we have business name in localStorage
+            const storedBusinessName = localStorage.getItem('businessName');
+            const storedRole = localStorage.getItem('user_role');
+            
+            if (storedBusinessName && storedBusinessName !== 'undefined' && storedBusinessName !== 'null') {
+              vendorName = storedBusinessName;
+            }
+            
+            if (storedRole && storedRole !== 'undefined' && storedRole !== 'null') {
+              vendorRole = storedRole;
+            }
+          }
+          
+          // Prioritize API data over localStorage data
+          if (profileData && Object.keys(profileData).length > 0) {
+            // Cast profileData to any to allow indexing with strings
+            const profileDataAny = profileData as any;
+            
+            // Try multiple possible property names for the business name
+            const possibleNameProps = ['businessName', 'name', 'companyName', 'hotelName', 'restaurantName'];
+            for (const prop of possibleNameProps) {
+              if (profileDataAny[prop] && typeof profileDataAny[prop] === 'string' && profileDataAny[prop].trim() !== '') {
+                vendorName = profileDataAny[prop];
+                break;
+              }
+            }
+            
+            // If no business name found, try to construct from first and last name
+            if (!vendorName && profileDataAny.firstName) {
+              vendorName = profileDataAny.lastName ? 
+                `${profileDataAny.firstName} ${profileDataAny.lastName}` : 
+                profileDataAny.firstName;
+            }
+            
+            // Get role information
+            vendorRole = profileDataAny.role || profileDataAny.businessType || vendorRole || 'Hotel Manager';
+            
+            // Get avatar information
+            vendorAvatar = profileDataAny.avatar || profileDataAny.profileImage || profileDataAny.image || '';
+            
+            // Store in localStorage for future use
+            if (vendorName && typeof window !== 'undefined') {
+              try {
+                localStorage.setItem('businessName', vendorName);
+                if (vendorRole) {
+                  localStorage.setItem('user_role', vendorRole);
+                }
+              } catch (e) {
+                console.warn('Failed to store hotel vendor info in localStorage:', e);
+              }
+            }
+          }
+          
+          // If we still don't have a name, use a friendly default rather than 'Guest User'
+          if (!vendorName) {
+            vendorName = 'Hotel Dashboard';
+          }
+          
+          // Generate initials from the name
+          if (vendorName && vendorName !== 'Guest User' && vendorName !== 'Hotel Dashboard') {
+            const nameParts = vendorName.split(' ').filter(part => part.length > 0);
+            if (nameParts.length === 1) {
+              vendorInitials = nameParts[0].charAt(0).toUpperCase();
+            } else if (nameParts.length > 1) {
+              vendorInitials = (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+            }
+          }
+          
+          // Update the profile state
+          setUserProfile({
+            name: vendorName,
+            role: vendorRole,
+            avatar: vendorAvatar,
+            initials: vendorInitials
+          });
+          
+          console.log('Hotel profile loaded:', { name: vendorName, initials: vendorInitials, role: vendorRole });
+        } catch (profileError) {
+          console.error('Error processing hotel profile data:', profileError);
+          // Fallback to ensure UI doesn't break
+          setUserProfile({
+            name: 'Hotel Dashboard',
+            role: 'Hotel Manager',
+            avatar: '',
+            initials: 'HD'
+          });
+        }
       } catch (err) {
         console.error('Error fetching dashboard data:', err)
         setError('Failed to load dashboard data. Please try again later.')
@@ -143,19 +421,136 @@ export default function Dashboard() {
     
     fetchDashboardData()
     
-    // Set up real-time polling for upcoming reservations (every minute)
-    const upcomingReservationsInterval = setInterval(async () => {
-      try {
-        const upcomingReservationsData = await getUpcomingReservations()
-        setUpcomingReservations(upcomingReservationsData || [])
-      } catch (err) {
-        console.error('Error fetching upcoming reservations:', err)
-      }
-    }, 60000) // 60 seconds
+    // Set up real-time polling for upcoming reservations and dashboard data
+// Set up fallback polling for when WebSocket is not available or disconnects
+    let upcomingReservationsInterval: NodeJS.Timeout | null = null;
+    let dashboardStatsInterval: NodeJS.Timeout | null = null;
     
-    // Clean up interval on component unmount
+    // Only set up polling if WebSocket isn't available
+    if (!socket) {
+      console.log('Setting up fallback polling for hotel dashboard');
+      
+      // Set up real-time polling for upcoming reservations
+      upcomingReservationsInterval = setInterval(async () => {
+        try {
+          console.log('Polling for real-time hotel upcoming reservations...');
+          const upcomingReservationsData = await getUpcomingReservations();
+          if (upcomingReservationsData && Array.isArray(upcomingReservationsData)) {
+            setUpcomingReservations(upcomingReservationsData);
+            // Show notification if there are upcoming reservations
+            if (upcomingReservationsData.length > 0) {
+              setShowNotification(true);
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching hotel upcoming reservations:', err);
+        }
+      }, 15000); // 15 seconds - increased frequency for better real-time experience
+      
+      // Set up additional polling for hotel dashboard stats
+      dashboardStatsInterval = setInterval(async () => {
+        try {
+          console.log('Refreshing hotel dashboard stats...');
+          // Use the local intervalSafelyFetchData function
+          const statsData = await intervalSafelyFetchData<StatsData>(() => getDashboardStats(), {});
+          const todayReservations = await intervalSafelyFetchData<Reservation[]>(() => getTodayReservations(), []);
+          
+          // Update the most time-sensitive stats
+          setStats(prevStats => ({
+            ...prevStats,
+            reservationsToday: statsData.reservationsToday || prevStats.reservationsToday,
+            prepaidReservations: statsData.prepaidReservations || prevStats.prepaidReservations,
+            expectedGuests: statsData.expectedGuests || prevStats.expectedGuests,
+            pendingPayments: statsData.pendingPayments || prevStats.pendingPayments
+          }));
+          
+          // Update reservations list
+          if (todayReservations.length > 0) {
+            setReservations(todayReservations);
+          }
+        } catch (err) {
+          console.error('Error refreshing hotel dashboard stats:', err);
+        }
+      }, 30000); // 30 seconds
+    }
+    
+    // Set up regular polling regardless of WebSocket for reliability
+    upcomingReservationsInterval = setInterval(async () => {
+      try {
+        console.log('Polling for real-time hotel upcoming reservations...');
+        const upcomingReservationsData = await getUpcomingReservations();
+        if (upcomingReservationsData && Array.isArray(upcomingReservationsData)) {
+          setUpcomingReservations(upcomingReservationsData);
+          // Show notification if there are upcoming reservations
+          if (upcomingReservationsData.length > 0) {
+            setShowNotification(true);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching hotel upcoming reservations:', err);
+      }
+    }, 30000); // 30 seconds - increased frequency for more real-time data
+    
+    // Define safelyFetchData function for the interval scope
+    const intervalSafelyFetchData = async <T,>(fetchFn: () => Promise<any>, defaultValue: T): Promise<T> => {
+      try {
+        const result = await fetchFn();
+        
+        // Check for error object
+        if (result && typeof result === 'object' && 'isError' in result && result.isError) {
+          const errorObj = result.error || {};
+          const errorMessage = typeof errorObj === 'object' && 'message' in errorObj 
+            ? errorObj.message 
+            : (typeof errorObj === 'string' ? errorObj : 'Unknown error');
+            
+          console.log(`API Error fetching hotel data: ${errorMessage}`);
+          return defaultValue;
+        }
+        
+        return result || defaultValue;
+      } catch (error) {
+        console.log(`Exception fetching hotel data in interval: ${error}`);
+        return defaultValue;
+      }
+    };
+    
+    // Set up additional polling for hotel dashboard stats to keep them up-to-date
+    dashboardStatsInterval = setInterval(async () => {
+      try {
+        console.log('Refreshing hotel dashboard stats...');
+        // Use the local intervalSafelyFetchData function
+        const statsData = await intervalSafelyFetchData<StatsData>(() => getDashboardStats(), {});
+        const todayReservations = await intervalSafelyFetchData<Reservation[]>(() => getTodayReservations(), []);
+        
+        // Update the most time-sensitive stats
+        setStats(prevStats => ({
+          ...prevStats,
+          reservationsToday: statsData.reservationsToday || prevStats.reservationsToday,
+          prepaidReservations: statsData.prepaidReservations || prevStats.prepaidReservations,
+          expectedGuests: statsData.expectedGuests || prevStats.expectedGuests,
+          pendingPayments: statsData.pendingPayments || prevStats.pendingPayments
+        }));
+        
+        // Update reservations list
+        if (todayReservations.length > 0) {
+          setReservations(todayReservations);
+        }
+      } catch (err) {
+        console.error('Error refreshing hotel dashboard stats:', err);
+      }
+    }, 60000); // 60 seconds
+    
+    // Clean up function
     return () => {
-      clearInterval(upcomingReservationsInterval)
+      // Close WebSocket if it exists
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log('Closing WebSocket connection for hotel dashboard');
+        socket.close();
+      }
+      
+      // Clear intervals if they exist
+      if (upcomingReservationsInterval) clearInterval(upcomingReservationsInterval);
+      if (dashboardStatsInterval) clearInterval(dashboardStatsInterval);
     }
   }, [selectedPeriod])
   
@@ -228,7 +623,11 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Welcome Back, {userProfile.name.split(' ')[0]}!</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Welcome Back, {userProfile.name ? (
+                userProfile.name.split(' ')[0].replace(/[^a-zA-Z0-9 ]/g, '')
+              ) : 'there'}!
+            </h1>
             <p className="text-gray-600 mt-1">{"Here's what is happening today."}</p>
           </div>
           <Button className="mt-4 sm:mt-0 bg-teal-600 hover:bg-teal-700">
