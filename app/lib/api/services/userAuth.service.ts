@@ -32,6 +32,7 @@ export interface DecodedToken {
   id?: string;
   exp?: number;
   iat?: number;
+  role?: string;
 }
 
 export class AuthService {

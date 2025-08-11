@@ -29,16 +29,7 @@ function SuperAdminDashboardContent() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
 
-  // Authentication and role check
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (
-      !authLoading &&
-      (!isAuthenticated || !token || !user || user.role !== "super-admin")
-    ) {
-      router.replace('/super-admin-login');
-    }
-  }, [isAuthenticated, authLoading, user, router]);
+  // Authentication handled by layout.tsx - no need for additional checks here
 
   // Data fetching
   useEffect(() => {

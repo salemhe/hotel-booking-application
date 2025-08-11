@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeProvider } from "./ThemeContext";
+import { useAuth } from "@/app/contexts/AuthContext";
 import {
   ChevronLeft,
   Menu as MenuIcon,
@@ -25,13 +26,67 @@ const sidebarItems = [
   { icon: CreditCard, label: "Payments", href: "/super-admin/payments" },
   { icon: Users, label: "Staff", href: "/super-admin/staff" },
   { icon: Settings, label: "Settings", href: "/super-admin/settings" },
-  { icon: LogOut, label: "Logout", href: "/logout" },
-];
-
-export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
+  { icon: LogOut, label: "Logout", href: "#", onClick: () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    window.location.href = '/vendor-login';
+  }},
+];export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
+  const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const sidebarWidth = sidebarCollapsed ? "w-16" : "w-64";
+  
+  // Authentication check on mount and when auth state changes
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('auth_token');
+      console.log('Super admin layout auth check:', {
+        isAuthenticated,
+        hasToken: !!token,
+        userRole: user?.role,
+        loading: authLoading
+      });
+      
+      if (!authLoading) {
+        if (isAuthenticated && token && user?.role === 'super-admin') {
+          console.log('Super admin authorization confirmed');
+          setAuthorized(true);
+          setLoading(false);
+        } else {
+          console.log('Not authorized as super admin, redirecting to login');
+          setAuthorized(false);
+          setLoading(false);
+          // Use immediate hard navigation for most reliable redirect
+          window.location.href = '/vendor-login';
+        }
+      }
+    };
+
+    checkAuth();
+  }, [isAuthenticated, user, authLoading, router]);
+
+  // Show loading state
+  if (loading || authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4 text-center">Loading Super Admin Dashboard</h2>
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-800"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Block rendering if not authorized
+  if (!authorized) {
+    return null; // Will redirect in useEffect
+  }
 
   return (
     <ThemeProvider>
@@ -45,7 +100,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
               <span className="text-teal-800 font-extrabold text-lg">B</span>
             </div>
             {!sidebarCollapsed && (
-              <span className="text-2xl font-extrabold tracking-wide transition-all duration-300">Bookies</span>
+              <span className="text-2xl font-extrabold tracking-wide transition-all duration-300">Bookie</span>
             )}
           </div>
           {!sidebarCollapsed && (
@@ -65,14 +120,28 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
               const isActive = pathname === item.href;
               const Icon = item.icon;
               return (
-                <li key={index}>
-                  <Link
-                    href={item.href}
-                    className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-4 py-3'} rounded-lg transition-all duration-200 w-full text-left font-medium text-base gap-3
-                      ${isActive ? "bg-white/10 text-white shadow-inner" : "text-teal-100 hover:bg-white/10 hover:text-white"}
-                    `}
-                    prefetch={false}
-                  >
+                <li key={index}>{item.onClick ? (
+                    <button
+                      onClick={item.onClick}
+                      className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-4 py-3'} rounded-lg transition-all duration-200 w-full text-left font-medium text-base gap-3
+                        ${isActive ? "bg-white/10 text-white shadow-inner" : "text-teal-100 hover:bg-white/10 hover:text-white"}
+                      `}
+                    >
+                      <span className="flex justify-center items-center w-8 h-8">
+                        <Icon className="w-5 h-5" />
+                      </span>
+                      {!sidebarCollapsed && (
+                        <span className="ml-1 transition-all duration-300 group-hover:font-semibold">{item.label}</span>
+                      )}
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-4 py-3'} rounded-lg transition-all duration-200 w-full text-left font-medium text-base gap-3
+                        ${isActive ? "bg-white/10 text-white shadow-inner" : "text-teal-100 hover:bg-white/10 hover:text-white"}
+                      `}
+                      prefetch={false}
+                    >
                     <span className="flex justify-center items-center w-8 h-8">
                       <Icon className="w-5 h-5" />
                     </span>
@@ -80,6 +149,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
                       <span className="ml-1 transition-all duration-300 group-hover:font-semibold">{item.label}</span>
                     )}
                   </Link>
+                  )}
                 </li>
               );
             })}

@@ -42,8 +42,6 @@ export default function VendorLoginPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [userNotExist, setUserNotExist] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-  const [apiResponse, setApiResponse] = useState<string>("");
 
   const router = useRouter();
   const { login: contextLogin } = useAuth();
@@ -68,53 +66,26 @@ export default function VendorLoginPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // For direct API testing
-  const testDirectApi = async () => {
-    try {
-      setApiResponse("Testing direct API connection...");
-      setLoading(true);
-      
-      const BASE_URL = "https://hotel-booking-app-backend-30q1.onrender.com";
-
-      
-      const response = await fetch(`${BASE_URL}/api/vendors/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: "include"
-      });
-      
-      const responseText = await response.text();
-     
-      
-      setApiResponse(JSON.stringify({
-        status: response.status,
-        statusText: response.statusText,
-        body: responseText
-      }, null, 2));
-    } catch (error) {
-    
-      setApiResponse(`Error: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUserNotExist(false);
-    setApiResponse("");
     
 
     if (!validate()) return;
     setLoading(true);
 
     try {
+      console.log("Starting login process with AuthService");
+      
       // Use AuthService directly for consistency
       const loginResponse = await AuthService.login(email, password);
-;
+      
+      console.log("Login response received:", {
+        hasProfile: !!loginResponse?.profile,
+        hasToken: !!(loginResponse?.profile?.token || loginResponse?.token)
+      });
       
       if (!loginResponse || !loginResponse.profile) {
         throw new Error("Login failed - invalid response");
@@ -122,9 +93,7 @@ export default function VendorLoginPage() {
       
       // Get profile and token from the response
       const authToken = loginResponse.profile.token || loginResponse.token;
-      let vendorProfile: VendorProfile = loginResponse.profile as VendorProfile;
-      
-      if (authToken) {
+      let vendorProfile: VendorProfile = loginResponse.profile as VendorProfile;if (authToken) {
         // Store token in localStorage
         localStorage.setItem("auth_token", authToken);
         
@@ -151,41 +120,99 @@ export default function VendorLoginPage() {
         });
       }
 
+      // Log relevant login data to help with debugging
+      console.log("Login successful. Preparing to redirect with data:", { 
+            role: vendorProfile?.role,
+            businessType: vendorProfile?.businessType,
+            onboarded: vendorProfile?.onboarded,
+            id: vendorProfile?.id || vendorProfile?._id
+          });
+      
       toast.success(`Welcome back, ${vendorProfile?.businessName || "Vendor"}!`);
-      localStorage.setItem("accountType", vendorProfile?.businessType || "");
+      
+      // Safely store data in localStorage with proper type handling
+      try {
+        // Store business type
+        const businessType = vendorProfile?.businessType || "";
+        localStorage.setItem("accountType", businessType);
+        
+        // Store role
+        const role = vendorProfile?.role || "vendor";
+        localStorage.setItem("user_role", role);
+        
+        // Store user ID with explicit handling for undefined
+        let userId = "";
+        if (typeof vendorProfile?.id === "string") {
+          userId = vendorProfile.id;
+        } else if (typeof vendorProfile?._id === "string") {
+          userId = vendorProfile._id;
+        }
+        
+        if (userId) {
+          localStorage.setItem("userId", userId);
+        }
+      } catch (localStorageError) {
+        console.error("Error storing auth data in localStorage:", localStorageError);
+        // Continue with login flow even if localStorage fails
+      }
 
-      // Added a short delay to ensure context is set before redirecting
       // Use safe property access to prevent undefined errors
       const userRole = vendorProfile?.role || "vendor";
       const businessType = vendorProfile?.businessType || "";
       const isOnboarded = vendorProfile?.onboarded || false;
 
+      // Determine the redirect URL based on user role and business type
+      let redirectUrl = "/";
       if (userRole === "super-admin") {
-        if (businessType === "hotel") {
-          setTimeout(() => router.push("/super-admin/hotel"), 150);
-        } else if (businessType === "restaurant") {
-          setTimeout(() => router.push("/super-admin/restaurant"), 150);
-        } else if (businessType === "club") {
-          setTimeout(() => router.push("/super-admin/club"), 150);
-        } else {
-          setTimeout(() => router.push("/super-admin/dashboard"), 150);
-        }
+        console.log("Super admin login detected");
+        // Direct all super-admin users to the dashboard
+        redirectUrl = "/super-admin/dashboard";
       } else {
         // Vendor logic
         if (isOnboarded) {
           if (businessType === "hotel") {
-            setTimeout(() => router.push("/vendor-dashboard/hotel/dashboard"), 150);
+            redirectUrl = "/vendor-dashboard/hotel/dashboard";
           } else if (businessType === "restaurant") {
-            setTimeout(() => router.push("/vendor-dashboard/restaurant/dashboard"), 150);
+            redirectUrl = "/vendor-dashboard/restaurant/dashboard";
           } else if (businessType === "club") {
-            setTimeout(() => router.push("/vendor-dashboard/club"), 150);
+            redirectUrl = "/vendor-dashboard/club";
           } else {
-            setTimeout(() => router.push("/vendorDashboard"), 150);
+            redirectUrl = "/vendorDashboard";
           }
         } else {
-          setTimeout(() => router.push("/onboarding"), 150);
+          redirectUrl = "/onboarding";
         }
       }
+      
+      console.log("Redirecting to:", redirectUrl);
+      
+      // SUPER ADMIN SPECIFIC HANDLING - completely separate flow
+      if (userRole === "super-admin") {
+        console.log("Super admin login detected - using special navigation");
+        
+        // Store a flag to indicate we're in the middle of a super-admin redirect
+        localStorage.setItem("super_admin_redirect", "true");
+        
+        // Store the current timestamp to help debugging redirect issues
+        localStorage.setItem("last_login_time", Date.now().toString());
+        
+        // Special super admin redirection with NO TIMEOUT
+        console.log("Executing immediate redirect to", redirectUrl);
+        
+        // Use the most reliable navigation method for this browser
+        window.location.href = redirectUrl;
+        
+        // Return early to prevent any other code execution
+        return;
+      }
+      
+      // NORMAL VENDOR FLOW
+      console.log(`Redirecting ${userRole} to ${redirectUrl} with standard navigation`); 
+      
+      // For normal vendor flow, use router with a small delay
+      setTimeout(() => {
+        router.push(redirectUrl);
+      }, 300);
     } catch (error) {
       console.error("Login error details:", error);
       
@@ -405,51 +432,6 @@ export default function VendorLoginPage() {
                 </Link>
               </div>
             </CardFooter>
-            
-            {/* Debug Mode Toggle */}
-            <div className="mt-4 border-t pt-4 px-6">
-              <button 
-                type="button" 
-                onClick={() => setDebugMode(!debugMode)}
-                className="text-xs text-gray-500 hover:text-gray-700"
-              >
-                {debugMode ? "Hide Debug Tools" : "Show Debug Tools"}
-              </button>
-              
-              {debugMode && (
-                <div className="mt-4 space-y-4">
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={testDirectApi}
-                      className="text-xs bg-gray-100 px-3 py-2 rounded hover:bg-gray-200"
-                      disabled={loading}
-                    >
-                      Test Direct API
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        localStorage.clear();
-                        setApiResponse("Local storage cleared");
-                      }}
-                      className="text-xs bg-gray-100 px-3 py-2 rounded hover:bg-gray-200"
-                    >
-                      Clear Local Storage
-                    </button>
-                  </div>
-                  
-                  {apiResponse && (
-                    <div className="mt-2">
-                      <p className="text-xs font-medium mb-1">API Response:</p>
-                      <pre className="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40">
-                        {apiResponse}
-                      </pre>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
           </Card>
         </div>
       </div>
