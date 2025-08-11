@@ -248,7 +248,13 @@ export default function RestaurantReservations() {
                     >
                       {status}
                     </button>
-                  ))}
+                  )) : (
+                      <tr>
+                        <td colSpan={8} className="px-6 py-10 text-center text-gray-500">
+                          No reservations found. {loading ? 'Loading...' : ''}
+                        </td>
+                      </tr>
+                    )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="relative">
@@ -312,9 +318,10 @@ export default function RestaurantReservations() {
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                     </tr>
-                  </thead><tbody className="bg-white divide-y divide-gray-200">
-                      {Array.isArray(reservations) && reservations.length > 0 ? reservations.map((reservation) => (
-                        <tr key={reservation.id} className="hover:bg-gray-50">
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {Array.isArray(reservations) && reservations.length > 0 ? reservations.map((reservation) => (
+                      <tr key={reservation.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <input type="checkbox" className="rounded border-gray-300" />
                         </td>
@@ -367,13 +374,7 @@ export default function RestaurantReservations() {
                           </div>
                         </td>
                       </tr>
-                    )) : (
-                      <tr>
-                        <td colSpan={8} className="px-6 py-10 text-center text-gray-500">
-                          No reservations found. {loading ? 'Loading...' : ''}
-                        </td>
-                      </tr>
-                    )}
+                    ))}
                   </tbody>
                 </table>
               )}

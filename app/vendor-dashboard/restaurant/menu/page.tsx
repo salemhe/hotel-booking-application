@@ -74,8 +74,9 @@ interface MenuItem {
 
 export default function MenuManagementPage() {
   const router = useRouter();
-  const { data: apiResponse } = useSWR<ApiResponse<MenuItem[]>>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
-  const menuItems = (apiResponse && !('isError' in apiResponse)) ? apiResponse : [];
+  const { data } = useSWR<ApiResponse<MenuItem[]>>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
+  // Safely handle the data which might be an error response
+  const menuItems: MenuItem[] = data && !('isError' in data) ? data : [];
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus] = useState("all");
