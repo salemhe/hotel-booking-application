@@ -79,15 +79,11 @@ export default function VendorLoginPage() {
     setLoading(true);
 
     try {
-      console.log("Starting login process with AuthService");
+
       
       // Use AuthService directly for consistency
       const loginResponse = await AuthService.login(email, password);
-      
-      console.log("Login response received:", {
-        hasProfile: !!loginResponse?.profile,
-        hasToken: !!(loginResponse?.profile?.token || loginResponse?.token)
-      });
+
       
       if (!loginResponse || !loginResponse.profile) {
         throw new Error("Login failed - invalid response");
@@ -122,13 +118,6 @@ export default function VendorLoginPage() {
         });
       }
 
-      // Log relevant login data to help with debugging
-      console.log("Login successful. Preparing to redirect with data:", { 
-            role: vendorProfile?.role,
-            businessType: vendorProfile?.businessType,
-            onboarded: vendorProfile?.onboarded,
-            id: vendorProfile?.id || vendorProfile?._id
-          });
       
       toast.success(`Welcome back, ${vendorProfile?.businessName || "Vendor"}!`);
       
@@ -169,7 +158,8 @@ export default function VendorLoginPage() {
       if (userRole === "super-admin") {
         
         // Direct all super-admin users to the dashboard
-        redirectUrl = "/super-administrator/dashboard";
+        // redirectUrl = "/super-administrator/dashboard";
+        redirectUrl = "/vendor-dashboard/hotel/dashboard";
 
       } else {
         // Vendor logic
@@ -207,7 +197,7 @@ export default function VendorLoginPage() {
         // window.location.href = redirectTo || redirectUrl;
        
         // router.push(redirectTo || redirectUrl);
-        console.log(redirectTo || redirectUrl);
+        console.log("HERE!!!!!:", redirectTo || redirectUrl);
               setTimeout(() => {
          window.location.href = redirectUrl;
         // router.push(redirectUrl);
