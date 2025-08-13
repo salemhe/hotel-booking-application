@@ -158,8 +158,7 @@ export default function VendorLoginPage() {
       if (userRole === "super-admin") {
         
         // Direct all super-admin users to the dashboard
-        // redirectUrl = "/super-administrator/dashboard";
-        redirectUrl = "/vendor-dashboard/hotel/dashboard";
+        redirectUrl = "/super-administrator/dashboard";
 
       } else {
         // Vendor logic
