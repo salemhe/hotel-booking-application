@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,8 +43,10 @@ export default function VendorLoginPage() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [userNotExist, setUserNotExist] = useState(false);
 
-  const router = useRouter();
+
   const { login: contextLogin } = useAuth();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -162,11 +164,13 @@ export default function VendorLoginPage() {
       const isOnboarded = vendorProfile?.onboarded || false;
 
       // Determine the redirect URL based on user role and business type
+      const redirectTo = searchParams.get("redirect")
       let redirectUrl = "/";
       if (userRole === "super-admin") {
-        console.log("Super admin login detected");
+        
         // Direct all super-admin users to the dashboard
-        redirectUrl = "/super-admin/dashboard";
+        redirectUrl = "/super-administrator/dashboard";
+
       } else {
         // Vendor logic
         if (isOnboarded) {
@@ -200,8 +204,15 @@ export default function VendorLoginPage() {
         console.log("Executing immediate redirect to", redirectUrl);
         
         // Use the most reliable navigation method for this browser
-        window.location.href = redirectUrl;
-        
+        // window.location.href = redirectTo || redirectUrl;
+       
+        // router.push(redirectTo || redirectUrl);
+        console.log(redirectTo || redirectUrl);
+              setTimeout(() => {
+         window.location.href = redirectUrl;
+        // router.push(redirectUrl);
+      }, 300);
+
         // Return early to prevent any other code execution
         return;
       }
@@ -211,6 +222,7 @@ export default function VendorLoginPage() {
       
       // For normal vendor flow, use router with a small delay
       setTimeout(() => {
+        //  window.location.href = redirectUrl;
         router.push(redirectUrl);
       }, 300);
     } catch (error) {
@@ -254,6 +266,8 @@ export default function VendorLoginPage() {
       setLoading(false);
     }
   };
+
+ 
 
   return (
     <>

@@ -8,7 +8,7 @@ import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
 import { BookingService } from "@/app/lib/api/services/bookings.service";
 import { DashboardService } from "@/app/lib/api/services/dashboard.service";
 import { ProfileProvider, useProfile } from "../ProfileContext";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function SuperAdminDashboard() {
@@ -26,7 +26,7 @@ function SuperAdminDashboardContent() {
   const [branches, setBranches] = useState<Record<string, unknown>[]>([]);
   const [staff, setStaff] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  // const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   // Authentication handled by layout.tsx - no need for additional checks here
