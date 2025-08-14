@@ -11,7 +11,8 @@ const API = axios.create({
 
 // Attach token dynamically
 API.interceptors.request.use(async (config) => {
-  const token = await AuthService.getToken()
+  const token = await AuthService.getToken();
+  console.log("Axios interceptor token:", token); // DEBUG LOG
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
     API.defaults.headers.common["x-api-secret"] = "diys684iyu2hpre87u386";

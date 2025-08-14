@@ -212,7 +212,7 @@
 // "use client";
 // import React, { useState } from "react";
 // import Link from "next/link";
-// import { useRouter, useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 // import { Mail, Lock, Loader2, ArrowRight, AlertCircle } from "lucide-react";
 // import { Button } from "@/app/components/ui/button";
 // import { Input } from "@/app/components/ui/input";
@@ -389,7 +389,7 @@
 "use client";
 import React, { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Mail,
   Lock,
@@ -461,10 +461,11 @@ const Form = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  // const router = useRouter();
+  const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -488,10 +489,16 @@ const Form = () => {
 
     try {
       const { data } = await AuthService.login(email, password);
-      await AuthService.setToken(data.token);
-
+      console.log("Setting token in localStorage:", data.token);
+      localStorage.setItem("auth_token", data.token);
+      document.cookie = `user-token=${data.token}; path=/; Secure; SameSite=None`;
       toast.success("Welcome back!");
-      router.push(redirectTo);
+      
+      // Create a slight delay to ensure the toast is visible
+      setTimeout(() => {
+        // Use window.location for a hard navigation
+        window.location.href = redirectTo;
+      }, 800);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");

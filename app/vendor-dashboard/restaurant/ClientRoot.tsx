@@ -1,5 +1,5 @@
 "use client";
-import { ThemeProvider } from "@/app/super-admin/ThemeContext";
+import { ThemeProvider } from "@/app/super-administrator/ThemeContext";
 import { BranchProvider } from "./branches/BranchContext";
 
 export default function ClientRoot({ children }: { children: React.ReactNode }) {

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect, useCallback } from "react";
+import { apiFetcher } from "@/app/lib/fetcher";
+import { io, Socket } from "socket.io-client";
 import {
   Search,
   Bell,
@@ -13,12 +14,7 @@ import {
   Check,
   X,
 } from "lucide-react";
-
-// API endpoints to be implemented by backend:
-// GET /api/vendor/reservations
-// POST /api/vendor/reservations
-// PUT /api/vendor/reservations/:id
-// DELETE /api/vendor/reservations/:id
+import { toast } from "sonner";
 
 interface Reservation {
   id: string;
@@ -42,46 +38,100 @@ export default function RestaurantReservations() {
   const [selectedReservation, setSelectedReservation] = useState<Reservation|null>(null);
   const [form, setForm] = useState<Reservation>({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
   const [formLoading, setFormLoading] = useState(false);
+  const [vendorProfile, setVendorProfile] = useState<{ name: string; profileImage?: string }>({ name: '', profileImage: '' });
+  const [socketAlert, setSocketAlert] = useState<{reservation: Reservation}|null>(null);
 
-  useEffect(() => {
-    fetchReservations();
-  }, [searchTerm, filterStatus]);
+  const fetchVendorProfile = useCallback(async () => {
+    try {
+      const { AuthService } = await import("@/app/lib/api/services/auth.service");
+      const user = AuthService.getUser();
+      if (user && user.id) {
+        const realProfile = await AuthService.fetchMyProfile(user.id);
+        if (realProfile) {
+          setVendorProfile({
+            name: realProfile.businessName || realProfile.name || '',
+            profileImage: realProfile.profileImage || ''
+          });
+        }
+      }
+    } catch {
+      setVendorProfile({ name: '', profileImage: '' });
+    }
+  }, []);
 
-  async function fetchReservations() {
+  const fetchReservations = useCallback(async () => {
     setLoading(true);
     try {
       const params: Record<string, string> = {};
       if (searchTerm) params.search = searchTerm;
       if (filterStatus && filterStatus !== "All") params.status = filterStatus;
-      const res = await axios.get("/api/vendor/reservations", { params });
-      setReservations(res.data || []);
+      const query = new URLSearchParams(params).toString();
+      const url = `/api/vendor/reservations${query ? `?${query}` : ""}`;
+      const data = await apiFetcher(url);
+      // Ensure data is always an array
+      if (Array.isArray(data)) {
+        setReservations(data);
+      } else {
+        console.error('API returned non-array data for reservations:', data);
+        setReservations([]);
+      }
     } catch {
       setReservations([]);
     } finally {
       setLoading(false);
     }
-  }
+  }, [searchTerm, filterStatus]);
+
+  useEffect(() => {
+    fetchReservations();
+    fetchVendorProfile();
+  }, [fetchReservations, fetchVendorProfile]);
+
+  // Setup WebSocket connection for real-time updates
+  useEffect(() => {
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    let socket: Socket | null = null;
+    try {
+      socket = io(BASE_URL);
+      socket.on("connect", () => {});
+      socket.on("bookingsUpdate", (reservation: Reservation) => {
+        setSocketAlert({ reservation });
+        fetchReservations();
+      });
+      socket.on("connect_error", () => {});
+    } catch {}
+    return () => {
+      if (socket) socket.disconnect();
+    };
+  }, [fetchReservations]);
 
   async function handleCreateOrEditReservation(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFormLoading(true);
     try {
       if (modalType === "edit") {
-        await axios.put(`/api/vendor/reservations/${form.id}`, form);
+        await apiFetcher(`/api/vendor/reservations/${form.id}`, {
+          method: "PUT",
+          body: JSON.stringify(form),
+        });
+        toast.success("Reservation updated successfully!");
       } else {
-        await axios.post(`/api/vendor/reservations`, form);
+        await apiFetcher(`/api/vendor/reservations`, {
+          method: "POST",
+          body: JSON.stringify(form),
+        });
+        toast.success("Reservation created successfully!");
       }
       setShowModal(false);
       setForm({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
       fetchReservations();
     } catch {
-      // handle error
+      toast.error("Failed to save reservation. Please try again.");
     } finally {
       setFormLoading(false);
     }
   }
 
-  
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Paid":
@@ -128,16 +178,39 @@ export default function RestaurantReservations() {
             <div className="flex items-center space-x-4">
               <Bell className="w-6 h-6 text-gray-400" />
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">JE</span>
-                </div>
-                <span className="text-sm font-medium">Vendor Name</span>
+                {vendorProfile.profileImage ? (
+                  <img
+                    src={vendorProfile.profileImage}
+                    alt={vendorProfile.name}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">
+                      {vendorProfile.name.trim().length > 0 ? vendorProfile.name.split(" ").map(n => n[0]).join("") : "?"}
+                    </span>
+                  </div>
+                )}
+                <span className="text-sm font-medium">{vendorProfile.name || "Vendor"}</span>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </div>
             </div>
           </div>
         </header>
         <main className="flex-1 overflow-auto p-6">
+          {socketAlert && (
+            <div className="mb-4 p-4 rounded bg-yellow-100 border-l-4 border-yellow-500 text-yellow-900 flex items-center justify-between">
+              <div>
+                <b>New Reservation Alert:</b> {socketAlert.reservation.name} ({socketAlert.reservation.paymentStatus}) for {socketAlert.reservation.date} at {socketAlert.reservation.time}
+              </div>
+              <button
+                className="ml-4 px-3 py-1 rounded bg-yellow-200 hover:bg-yellow-300 text-yellow-900"
+                onClick={() => setSocketAlert(null)}
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold text-gray-900">Reservation List</h1>
@@ -239,10 +312,9 @@ export default function RestaurantReservations() {
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {reservations.map((reservation) => (
-                      <tr key={reservation.id} className="hover:bg-gray-50">
+                  </thead><tbody className="bg-white divide-y divide-gray-200">
+                      {Array.isArray(reservations) && reservations.length > 0 ? reservations.map((reservation) => (
+                        <tr key={reservation.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <input type="checkbox" className="rounded border-gray-300" />
                         </td>
@@ -295,7 +367,13 @@ export default function RestaurantReservations() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    )) : (
+                      <tr>
+                        <td colSpan={8} className="px-6 py-10 text-center text-gray-500">
+                          No reservations found. {loading ? 'Loading...' : ''}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               )}

@@ -16,6 +16,8 @@ interface AddBranchModalProps {
   branch?: Branch | null
 }
 
+import { apiFetcher } from "@/app/lib/fetcher";
+
 export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddBranchModalProps) {
   const [loading, setLoading] = useState(false)
   const [selectedDays, setSelectedDays] = useState<string[]>(branch?.selectedDays || [])
@@ -45,6 +47,11 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
   const [closesAt, setClosesAt] = useState(branch?.closesAt || "22:00");
   const [manager, setManager] = useState(branch?.manager || "");
   const [menu, setMenu] = useState(branch?.menu || "");
+  // Business Type: hotel or restaurant
+  const [businessType, setBusinessType] = useState(branch?.businessType || "hotel");
+  // Email and Password for branch login
+  const [email, setEmail] = useState(branch?.email || "");
+  const [password, setPassword] = useState("");
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -71,24 +78,35 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         manager,
         menu,
         importMenuItems,
+        businessType, // Add business type to payload
+        email, // Add email to payload
+        password, // Add password to payload
       };
       let res;
+      // Dynamically import AuthService to avoid SSR issues
+      const AuthService = (await import("@/app/lib/api/services/auth.service")).AuthService;
+      const token = await AuthService.getToken();
+      console.log('Token used for branch save:', token);
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json"
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
       if (branch) {
         // Edit mode
-        res = await fetch(`/api/branches/${branch.id ?? branch.branchName}`, {
+        res = await apiFetcher(`/super-admin/branches/${branch.id ?? branch.branchName}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(branchData)
+          body: JSON.stringify(branchData),
         })
       } else {
         // Add mode
-        res = await fetch("/api/branches", {
+        res = await apiFetcher("/super-admin/branches", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(branchData)
+          body: JSON.stringify(branchData),
         })
       }
-      if (res && res.ok) {
+      if (res && (res.ok || res.status === true)) {
         if (onSave) onSave(branchData as Branch);
         onClose();
         // Reset form
@@ -105,7 +123,8 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         setMenu("");
         setImportMenuItems(false);
       } else {
-        alert("Failed to save branch.");
+        alert("Failed to save branch");
+        console.error("Failed to save branch:", res);
       }
     } finally {
       setLoading(false)
@@ -116,7 +135,7 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" style={{ minHeight: '600px', overflowY: 'auto' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-900">Add New Branch</h2>
@@ -125,6 +144,21 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
           </button>
         </div>
         <div className="p-6 space-y-6">
+          {/* Business Type - moved to top for visibility */}
+          <div className="space-y-2">
+            <Label htmlFor="business-type" className="text-sm font-medium text-gray-700">
+              Business Type<span className="text-red-500">*</span>
+            </Label>
+            <select
+              id="business-type"
+              className="w-full border rounded px-3 py-2"
+              value={businessType}
+              onChange={e => setBusinessType(e.target.value as "hotel" | "restaurant")}
+            >
+              <option value="hotel">Hotel</option>
+              <option value="restaurant">Restaurant</option>
+            </select>
+          </div>
           {/* Branch Name */}
           <div className="space-y-2">
             <Label htmlFor="branch-name" className="text-sm font-medium text-gray-700">
@@ -239,6 +273,35 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
                 </div>
               </div>
             </div>
+          </div>
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="branch-email" className="text-sm font-medium text-gray-700">
+              Branch Email<span className="text-red-500">*</span>
+            </Label>
+            <Input id="branch-email" placeholder="branch@email.com" className="w-full" value={email} onChange={e => setEmail(e.target.value)} />
+          </div>
+          {/* Password */}
+          <div className="space-y-2">
+            <Label htmlFor="branch-password" className="text-sm font-medium text-gray-700">
+              Branch Password<span className="text-red-500">*</span>
+            </Label>
+            <Input id="branch-password" type="password" placeholder="Enter password" className="w-full" value={password} onChange={e => setPassword(e.target.value)} />
+          </div>
+          {/* Business Type */}
+          <div className="space-y-2">
+            <Label htmlFor="business-type" className="text-sm font-medium text-gray-700">
+              Business Type<span className="text-red-500">*</span>
+            </Label>
+            <select
+              id="business-type"
+              className="w-full border rounded px-3 py-2"
+              value={businessType}
+              onChange={e => setBusinessType(e.target.value as "hotel" | "restaurant")}
+            >
+              <option value="hotel">Hotel</option>
+              <option value="restaurant">Restaurant</option>
+            </select>
           </div>
           {/* Management & Menu */}
           <div className="space-y-4">

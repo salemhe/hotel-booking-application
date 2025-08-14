@@ -1,18 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { CheckCircle, XCircle, Loader2, Moon, Sun } from "lucide-react";
-import { useTheme } from "@/app/super-admin/ThemeContext";
+import { useTheme } from "@/app/super-administrator/ThemeContext";
 
 export default function RestaurantSettings() {
   const [profile, setProfile] = useState({
-    name: "Joseph Eyebiokin",
-    email: "joseph@bookies.com",
-    phone: "+2347012345678",
+    name: "",
+    email: "",
+    phone: "",
+    profileImage: ""
   });
   const { theme, setTheme } = useTheme();
   const [savingProfile, setSavingProfile] = useState(false);
@@ -23,6 +24,29 @@ export default function RestaurantSettings() {
   const [passwordMsg, setPasswordMsg] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [themeMsg, setThemeMsg] = useState("");
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { AuthService } = await import("@/app/lib/api/services/auth.service");
+        const user = AuthService.getUser();
+        if (user && user.id) {
+          const realProfile = await AuthService.fetchMyProfile(user.id);
+          if (realProfile) {
+            setProfile({
+              name: realProfile.businessName || realProfile.name || "",
+              email: realProfile.email || "",
+              phone: realProfile.phone || "",
+              profileImage: realProfile.profileImage || ""
+            });
+          }
+        }
+      } catch {
+        setProfile({ name: "", email: "", phone: "", profileImage: "" });
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleProfileChange = (field: string, value: string) => {
     setProfile((prev) => ({ ...prev, [field]: value }));

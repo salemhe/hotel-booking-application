@@ -7,20 +7,10 @@ import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-
 export default function VendorMenuPage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const data = async () => {
-      const menu = await fetchMenu();
-      setData(menu);
-      console.log("menu", menu);
-    };
-    data();
-  }, []);
-
-  const user = AuthService.getUser()
+  const user = AuthService.getUser();
 
   const fetchMenu = async () => {
     try {
@@ -35,6 +25,15 @@ export default function VendorMenuPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const dataFetch = async () => {
+      const menu = await fetchMenu();
+      setData(menu);
+      console.log("menu", menu);
+    };
+    dataFetch();
+  }, [fetchMenu]);
 
   return (
     <div className="container mx-auto py-8 px-4">

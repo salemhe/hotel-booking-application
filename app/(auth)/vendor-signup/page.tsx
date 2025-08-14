@@ -29,6 +29,7 @@ import {
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
 // import { FaStore } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 
@@ -48,7 +49,7 @@ interface FormData {
 }
 
 export default function VendorRegistration() {
-    const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     businessName: "",
     email: "",
@@ -64,6 +65,7 @@ export default function VendorRegistration() {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [otp, setOTP] = useState("");
   const router = useRouter();
+  const { login: contextLogin } = useAuth();
   //Expanded errors state to accommodate all fields
   const [errors, setErrors] = useState<Partial<typeof formData>>({});
 
@@ -88,14 +90,22 @@ export default function VendorRegistration() {
       newErrors.address = "Address is required.";
     }
     setErrors(newErrors);
+    console.log("validateForm called", { formData, newErrors, valid: Object.keys(newErrors).length === 0 });
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    console.log("handleSubmit called", { currentStep, formData });
+    if (!validateForm()) {
+      console.log("Validation failed");
+      return;
+    }
     setLoading(true);
     try {
-      const data = await AuthService.register(formData);
+      const dataToSend = { ...formData, role: formData.adminType };
+      console.log("Submitting registration", dataToSend);
+      const data = await AuthService.register(dataToSend);
+      console.log("Registration response", data);
       if (data.success !== false) {
         setShowOTPInput(true);
         toast.success("Please check your email for the OTP verification code.")
@@ -103,6 +113,7 @@ export default function VendorRegistration() {
         toast.error(data.message || "Registration failed");
       }
     } catch (error) {
+      console.error("Registration error", error);
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
@@ -118,8 +129,76 @@ export default function VendorRegistration() {
     setLoading(true);
     try {
       await AuthService.verifyOTP(formData.email, otp);
-      toast.success("Your account has been verified. Please log in.");
-      router.push("/vendor-login");
+      toast.success("Your account has been verified.");
+      // Automatically log in the user after verification
+      const loginResponse = await AuthService.login(formData.email, formData.password);
+      const token = loginResponse.token || (loginResponse.profile && loginResponse.profile.token);
+       const userId = loginResponse.profile?.id;
+      if (token) {
+        await AuthService.setToken(token);
+        localStorage.setItem("auth_token", token);
+      }
+      // Fetch real user profile from backend and store it
+      let realProfile = null;
+      if (userId) {
+        realProfile = await AuthService.fetchMyProfile(userId);
+        if (realProfile) {
+          AuthService.setUser({
+            ...realProfile,
+            email: realProfile.email,
+            role: realProfile.role,
+            id: realProfile.id,
+            businessName: realProfile.businessName ?? "",
+            businessType: realProfile.businessType ?? "",
+            address: realProfile.address ?? "",
+            branch: realProfile.branch ?? "",
+            profileImage: realProfile.profileImage ?? "",
+            profile: {
+              id: realProfile.id,
+              businessName: realProfile.businessName ?? "",
+              businessType: realProfile.businessType ?? "",
+              email: realProfile.email ?? "",
+              address: realProfile.address ?? "",
+              branch: realProfile.branch ?? "",
+              profileImage: realProfile.profileImage ?? "",
+              phone: typeof realProfile.phone === "number" ? realProfile.phone : 0,
+              paymentDetails: typeof realProfile.paymentDetails === "object" && realProfile.paymentDetails !== null
+                ? realProfile.paymentDetails
+                : {
+                    accountNumber: "",
+                    bankAccountName: "",
+                    bankCode: "",
+                    bankName: "",
+                    paystackSubAccount: "",
+                    percentageCharge: 0,
+                    recipientCode: "",
+                  },
+              recipientCode: typeof realProfile.recipientCode === "string" ? realProfile.recipientCode : "",
+              onboarded: typeof realProfile.onboarded === "boolean" ? realProfile.onboarded : false,
+            },
+          });
+        }
+      }
+      // Route based on account type
+      if (formData.adminType === "super-admin") {
+        // Set AuthContext for auto-login
+        if (realProfile) {
+          contextLogin({
+            id: realProfile.id ?? "",
+            name: realProfile.businessName ?? realProfile.email ?? "",
+            email: realProfile.email ?? "",
+            role: realProfile.role ?? "super-admin"
+          });
+          // Wait a tick to ensure context is set before redirect
+          setTimeout(() => {
+            router.push("/super-admin/dashboard");
+          }, 150);
+        } else {
+          router.push("/super-admin/dashboard");
+        }
+      } else {
+        router.push("/vendor-dashboard");
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

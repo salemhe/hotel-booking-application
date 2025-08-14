@@ -4,21 +4,25 @@ import { jwtDecode } from "jwt-decode";
 import API from "../axios";
 import { SessionService } from "./session.service";
 import { DecodedToken } from "./userAuth.service";
-import { getFrontendUrl } from "@/app/lib/config";
 interface LoginResponse {
-  message: string;
-  profile: {
-    id: string;
-    name: string;
-    businessName: string;
-    businessType: string;
-    email: string;
-    address: string;
-    branch: string;
-    profileImage: string;
-    services: string[];
-    token: string;
-    onboarded: boolean;
+  message?: string;
+  token?: string;
+  error?: string; // Added error field for type safety
+  status?: string;
+  profile?: {
+    id?: string;
+    name?: string;
+    businessName?: string;
+    businessType?: string;
+    email?: string;
+    address?: string;
+    branch?: string;
+    profileImage?: string;
+    services?: string[];
+    token?: string;
+    onboarded?: boolean;
+    role?: string;
+    _id?: string; // Added for MongoDB ID field
   };
 }
 
@@ -35,6 +39,9 @@ export interface UserProfile {
   role: string;
   onboarded: boolean;
   services: string[];
+  profileImage?: string;
+  paymentDetails?: PaymentDetalsProps;
+  recipientCode?: string;
 }
 
 interface RegisterData {
@@ -64,6 +71,12 @@ export interface AuthUser {
   role: string;
   token?: string;
   id: string;
+  businessName?: string;
+  businessType?: string;
+  address?: string;
+  branch?: string;
+  profileImage?: string;
+  onboarded?: boolean;
   profile: {
     id: string;
     businessName: string;
@@ -142,26 +155,59 @@ export class AuthService {
   // auth.services.ts - Enhanced error handling
   static async login(email: string, password: string): Promise<LoginResponse> {
     try {
-      console.log("Starting login attempt with:", { email }); // Log the attempt
-
-      const response = await fetch(`${this.BASE_URL}/api/vendors/login`, {
+      console.log("Starting login attempt with:", { email, passwordLength: password.length });
+      console.log("API URL:", `${this.BASE_URL}/api/vendors/login`);
+      
+      // Log the exact request payload
+      const payload = { email, password };
+      console.log("Request payload:", payload);
+      
+      const requestOptions = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
+          "Accept": "application/json"
         },
-        body: JSON.stringify({ email, password }),
-        credentials: "same-origin", // Change from 'include' to 'same-origin' if cookies are on the same domain
+        body: JSON.stringify(payload),
+        credentials: "include" as RequestCredentials
+      };
+      
+      console.log("Request options:", { 
+        method: requestOptions.method,
+        headers: requestOptions.headers,
+        credentials: requestOptions.credentials
       });
 
-      console.log("Response status:", response.status); // Log the response status
-
-      const data = await response.json();
-      this.setToken(data.profile.token);
-      console.log("Response data:", data); // Log the response data
-
+      // Make the request
+      const response = await fetch(`${this.BASE_URL}/api/vendors/login`, requestOptions);
+      console.log("Response received:", { 
+        status: response.status, 
+        statusText: response.statusText,
+        headers: [...response.headers.entries()].reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {})
+      });
+      
+      // Get the raw response text first
+      const responseText = await response.text();
+      console.log("Raw response body:", responseText);
+      
+      // Attempt to parse JSON
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+        console.log("Parsed response data:", data);
+      } catch (parseError) {
+        console.error("JSON parse error:", parseError);
+        throw new Error(`Server returned invalid JSON: ${responseText}`);
+      }
+      
       if (!response.ok) {
+        console.error(`Authentication failed with status ${response.status}: ${data.message || 'No error message provided'}`);
         throw new Error(data.message || "Login failed");
+      }
+
+      // Only set token if it exists in the response
+      if (data.profile && data.profile.token) {
+        await this.setToken(data.profile.token);
       }
 
       // Create session
@@ -194,7 +240,8 @@ export class AuthService {
 
     static async fetchMyProfile(id: string): Promise<UserProfile | null> {
     try {
-      const response = await API.get(`/vendors/${id}`);
+      const response = await API.get(`/vendors/${id}`, { withCredentials: true });
+      console.log("fetchMyProfile response:", response);
       if (response.status === 200) {
         return response.data;
       } else {
@@ -233,18 +280,24 @@ export class AuthService {
   }
 
   static async setToken(token: string) {
-    await fetch(`${getFrontendUrl()}/api/auth/set-vendor-token`, {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("auth_token", token);
+    }
+    // Optionally, also send to backend if needed
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
+    await fetch(`${backendUrl}/api/auth/set-vendor-token`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
+      credentials: "include"
     });
   }
 
   static async getToken(): Promise<string | null> {
-    const response = await fetch(`${getFrontendUrl()}/api/auth/get-vendor-token`, {
-      method: "GET",
-    });
-    const data = await response.json();
-    return data.token;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("auth_token");
+    }
+    return null;
   }
   static getUser(): AuthUser | null {
     if (typeof window !== "undefined") {
@@ -275,7 +328,7 @@ export class AuthService {
   }
 
   private static async clearAuth():  Promise<void> {
-    await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+    await fetch(`https://hotel-booking-app-backend-30q1.onrender.com/api/auth/clear-token`, {
       method: "GET",
     });
   }
