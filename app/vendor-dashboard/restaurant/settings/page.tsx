@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { CheckCircle, XCircle, Loader2, Moon, Sun } from "lucide-react";
-import { useTheme } from "@/app/super-admin/ThemeContext";
+import { useTheme } from "@/app/super-administrator/ThemeContext";
 
 export default function RestaurantSettings() {
   const [profile, setProfile] = useState({

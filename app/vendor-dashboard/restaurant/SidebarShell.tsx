@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeProvider } from "@/app/super-admin/ThemeContext";
+import { ThemeProvider } from "@/app/super-administrator/ThemeContext";
 import { BranchProvider, useBranchContext } from "./branches/BranchContext";
 import {
   ChevronLeft,
