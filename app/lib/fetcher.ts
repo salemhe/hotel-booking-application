@@ -38,7 +38,7 @@ const createApiError = (message: string, details?: any, status?: number, url?: s
 export const apiFetcher = async <T = any>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
   // Check if API URL is properly defined
   if (!process.env.NEXT_PUBLIC_API_URL) {
-    console.error('NEXT_PUBLIC_API_URL environment variable is not defined');
+
     return createApiError('API URL is not configured');
   }
 

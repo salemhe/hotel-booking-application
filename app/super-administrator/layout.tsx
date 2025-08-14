@@ -19,13 +19,13 @@ import {
 } from "lucide-react";
 
 const sidebarItems = [
-  { icon: Home, label: "Dashboard", href: "/super-admin/dashboard" },
-  { icon: Calendar, label: "Reservations", href: "/super-admin/reservations" },
-  { icon: MapPin, label: "Branches", href: "/super-admin/branches" },
-  { icon: UtensilsCrossed, label: "Menu Management", href: "/super-admin/menu" },
-  { icon: CreditCard, label: "Payments", href: "/super-admin/payments" },
-  { icon: Users, label: "Staff", href: "/super-admin/staff" },
-  { icon: Settings, label: "Settings", href: "/super-admin/settings" },
+  { icon: Home, label: "Dashboard", href: "/super-administrator/dashboard" },
+  { icon: Calendar, label: "Reservations", href: "/super-administrator/reservations" },
+  { icon: MapPin, label: "Branches", href: "/super-administrator/branches" },
+  { icon: UtensilsCrossed, label: "Menu Management", href: "/super-administrator/menu" },
+  { icon: CreditCard, label: "Payments", href: "/super-administrator/payments" },
+  { icon: Users, label: "Staff", href: "/super-administrator/staff" },
+  { icon: Settings, label: "Settings", href: "/super-administrator/settings" },
   { icon: LogOut, label: "Logout", href: "#", onClick: () => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
