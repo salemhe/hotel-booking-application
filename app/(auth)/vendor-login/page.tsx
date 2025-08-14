@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -259,6 +259,7 @@ export default function VendorLoginPage() {
  
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <>
       <style jsx global>{`
         @keyframes errorPop {
@@ -439,5 +440,7 @@ export default function VendorLoginPage() {
         </div>
       </div>
     </>
+    </Suspense>
+
   );
 }
