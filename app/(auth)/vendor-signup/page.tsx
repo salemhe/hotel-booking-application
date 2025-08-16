@@ -191,10 +191,10 @@ export default function VendorRegistration() {
           });
           // Wait a tick to ensure context is set before redirect
           setTimeout(() => {
-            router.push("/super-admin/dashboard");
+            router.push("/super-administrator/dashboard");
           }, 150);
         } else {
-          router.push("/super-admin/dashboard");
+          router.push("/super-administrator/dashboard");
         }
       } else {
         router.push("/vendor-dashboard");
