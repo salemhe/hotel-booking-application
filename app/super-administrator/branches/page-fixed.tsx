@@ -1,4 +1,3 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -28,7 +27,44 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Removed unused sidebarItems
+// Helper function to get the correct token
+const getAuthToken = () => {
+  const tokenKeys = ["auth_token", "token", "vendor-token"];
+  for (const key of tokenKeys) {
+    const token = localStorage.getItem(key);
+    if (token) {
+      console.log(`Found token in ${key}:`, token.substring(0, 20) + "...");
+      return token;
+    }
+  }
+  console.log("No authentication token found in localStorage");
+  return null;
+};
+
+// Helper function to check if user is authenticated
+const checkAuthStatus = () => {
+  const token = getAuthToken();
+  const user = localStorage.getItem("auth_user");
+  
+  if (!token) {
+    console.error("Authentication token missing");
+    return false;
+  }
+  
+  if (!user) {
+    console.error("User data missing");
+    return false;
+  }
+  
+  try {
+    const userData = JSON.parse(user);
+    console.log("Current user:", userData);
+    return true;
+  } catch (error) {
+    console.error("Invalid user data:", error);
+    return false;
+  }
+};
 
 function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onBranchAdded: () => void }) {
   const [formData, setFormData] = useState({
@@ -49,18 +85,26 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
     assignedMenu: "",
     importAllMenuItems: false,
   });
-    // Removed unused variable 'saving'
+  
   type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
   const days: DayOfWeek[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const countryCodes = ["+234", "+1", "+44", "+91", "+86"];
+  
   const handleDayChange = (day: DayOfWeek, checked: boolean) => {
     setFormData((prev) => ({ ...prev, openingDays: { ...prev.openingDays, [day]: checked } }));
   };
+  
   const handleSubmit = async (action: string) => {
     try {
-      // POST to backend with Authorization header
-          const token = localStorage.getItem("auth_token") || localStorage.getItem("token");
-      console.log('Token:', token); // Log the token
+      const token = getAuthToken();
+      
+      if (!token) {
+        alert("Authentication required. Please log in again.");
+        return;
+      }
+
+      console.log('Creating branch with token:', token.substring(0, 20) + '...');
+      
       const response = await axios.post(
         `${API_URL}/api/super-admin/branches`,
         {
@@ -84,7 +128,10 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           },
         }
       );
-      onBranchAdded(); // Refresh branch list
+      
+      console.log('Branch created successfully:', response.data);
+      onBranchAdded();
+      
       if (action === "saveAndAdd") {
         setFormData({
           branchName: "",
@@ -102,7 +149,6 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           assignedMenu: "",
           importAllMenuItems: false,
         });
-        setIsOpen(true);
       } else {
         setIsOpen(false);
       }
@@ -115,9 +161,9 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         console.error('Error:', err);
         alert("Failed to save branch. Please try again.");
       }
-    } finally {
     }
   };
+  
   return (
     <>
       <div className={isOpen ? "fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30" : "hidden"}>
@@ -150,7 +196,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
             {/* Branch Name */}
             <div className="space-y-2">
               <label htmlFor="branchName" className="text-sm font-medium">Branch name*</label>
-              <Input id="branchName" placeholder="e.g. Joe&apos;s Chicken and Grill - Ikeja" value={formData.branchName} onChange={e => setFormData(prev => ({ ...prev, branchName: e.target.value }))} className="w-full" />
+              <Input id="branchName" placeholder="e.g. Joe's Chicken and Grill - Ikeja" value={formData.branchName} onChange={e => setFormData(prev => ({ ...prev, branchName: e.target.value }))} className="w-full" />
             </div>
             {/* Address */}
             <div className="space-y-2">
@@ -256,14 +302,21 @@ export default function BranchesDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
-   const [branches, setBranches] = useState<Array<Record<string, unknown>>>([]);
+  const [branches, setBranches] = useState<Array<Record<string, unknown>>>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAddBranch, setShowAddBranch] = useState(false);
-  // Removed unused variables 'router' and 'pathname'
 
   useEffect(() => {
+    // Check authentication status before fetching
+    if (!checkAuthStatus()) {
+      console.error("User not authenticated, redirecting to login...");
+      // You might want to redirect to login here
+      setLoading(false);
+      return;
+    }
+    
     fetchBranches();
     // eslint-disable-next-line
   }, [searchTerm, activeTab, page]);
@@ -275,17 +328,33 @@ export default function BranchesDashboard() {
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       
-      const token = localStorage.getItem("auth_token") || localStorage.getItem("token");
+      const token = getAuthToken();
+      
+      if (!token) {
+        console.error("No authentication token found");
+        setBranches([]);
+        setTotalPages(1);
+        return;
+      }
+      
+      console.log('Fetching branches with token:', token.substring(0, 20) + '...');
+      
       const res = await axios.get(`${API_URL}/api/super-admin/branches`, { 
         params,
         headers: {
           Authorization: `Bearer ${token}`,
         }
       });
+      
+      console.log('Branches fetched successfully:', res.data);
       setBranches(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       console.error('Error fetching branches:', err);
+      if (axios.isAxiosError(err) && err.response) {
+        console.error('Response data:', err.response.data);
+        console.error('Response status:', err.response.status);
+      }
       setBranches([]);
       setTotalPages(1);
     } finally {
@@ -293,11 +362,10 @@ export default function BranchesDashboard() {
     }
   }
 
-  const filteredBranches = branches; // Already filtered by backend
+  const filteredBranches = branches;
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar removed: now handled by layout.tsx */}
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
@@ -439,11 +507,11 @@ export default function BranchesDashboard() {
                       <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{String(branch.name).replace(/'/g, "&apos;")}</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today&apos;s Reservation</span>
+                          <span className="text-sm text-gray-600">Today's Reservation</span>
                           <span className="text-sm font-semibold">{String(branch.todayReservation)}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">Today&apos;s Revenue</span>
+                          <span className="text-sm text-gray-600">Today's Revenue</span>
                           <span className="text-sm font-semibold">₦{branch.todayRevenue?.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between items-center">
@@ -471,7 +539,6 @@ export default function BranchesDashboard() {
             </div>
           ) : (
             <div className="mb-8">
-              {/* List view can be implemented here if needed */}
               <div className="text-center text-gray-500">List view coming soon...</div>
             </div>
           )}
