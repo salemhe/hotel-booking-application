@@ -237,3 +237,54 @@ export const cuisineTypes = [
       rating: 5,
     },
   ];
+
+  // Add this helper function at the top of your component file, after your imports
+
+/**
+ * Formats a date string to "Month Day, Year" format
+ * @param {string} dateString - ISO date string or any valid date format
+ * @returns {string} Formatted date string (e.g., "December 25, 2024")
+ */
+export const formatDate = (dateString: string): string => {
+  if (!dateString) return 'N/A';
+  
+  try {
+    const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'Invalid Date';
+  }
+};
+
+// Alternative shorter format function (e.g., "Dec 25, 2024")
+export const formatDateShort = (dateString: string): string => {
+  if (!dateString) return 'N/A';
+  
+  try {
+    const date = new Date(dateString);
+    
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'Invalid Date';
+  }
+};

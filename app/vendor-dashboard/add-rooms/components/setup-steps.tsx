@@ -1,5 +1,6 @@
 "use client";
 
+import SvgIcon, { Amenities, Plate } from '@/public/icons/icons';
 import { Check } from 'lucide-react';
 
 interface SetupStepsProps {
@@ -8,9 +9,9 @@ interface SetupStepsProps {
 
 export function SetupSteps({ currentStep }: SetupStepsProps) {
   const steps = [
-    { id: 1, title: 'Basic information', icon: '1' },
-    { id: 2, title: 'Room Configuration', icon: '2' },
-    { id: 3, title: 'Amenities', icon: '3' },
+    { id: 1, title: 'Basic information', icon: <SvgIcon /> },
+    { id: 2, title: 'Room Configuration', icon: <Plate color={currentStep === 2 ? "#fff" : "#606368"}/> },
+    { id: 3, title: 'Amenities', icon: <Amenities color={currentStep === 3 ? "#fff" : "#606368"} /> },
   ];
 
   return (

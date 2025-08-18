@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -61,21 +61,21 @@ export function BookingTable({ bookings }: BookingTableProps) {
                 <td className="py-4 px-4 sm:px-6">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={booking.customer.avatar} />
+                      {/* <AvatarImage src={booking.customer.avatar} /> */}
                       <AvatarFallback className="bg-blue-100 text-blue-600">
-                        {booking.customer.name.split(' ').map(n => n[0]).join('')}
+                        {booking?.customer?.customerName.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-gray-900">{booking.customer.name}</p>
-                      <p className="text-sm text-gray-500">ID: {booking.customer.id}</p>
+                      <p className="font-medium text-gray-900">{booking.customer?.customerName}</p>
+                      <p className="text-sm text-gray-500">ID: {booking.customer?.userId}</p>
                     </div>
                   </div>
                 </td>
-                <td className="py-4 px-4 sm:px-6 text-gray-600">{booking.checkInDate}</td>
-                <td className="py-4 px-4 sm:px-6 text-gray-600">{booking.checkOutDate}</td>
-                <td className="py-4 px-4 sm:px-6 text-gray-600">{booking.roomType}</td>
-                <td className="py-4 px-4 sm:px-6 text-gray-600">{booking.numberOfGuests}</td>
+                <td className="py-4 px-4 sm:px-6 text-gray-600">{booking?.checkInDate}</td>
+                <td className="py-4 px-4 sm:px-6 text-gray-600">{booking?.checkOutDate}</td>
+                <td className="py-4 px-4 sm:px-6 text-gray-600">{booking?.roomType}</td>
+                <td className="py-4 px-4 sm:px-6 text-gray-600">{booking?.numberOfGuests}</td>
                 <td className="py-4 px-4 sm:px-6">
                   <Badge 
                     variant={getPaymentStatusVariant(booking.paymentStatus)}

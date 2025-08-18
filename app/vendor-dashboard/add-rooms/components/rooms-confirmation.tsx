@@ -6,6 +6,7 @@ import { Checkbox } from '@/app/components/ui/checkbox';
 import { Separator } from '@/app/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Amenities } from '@/public/icons/icons';
 import {
    Bed,
    Building,
@@ -308,7 +309,8 @@ export default function HotelBookingInterface() {
               <label className="text-sm font-medium text-gray-500 mb-3 block">Payment Options</label>
               <div className="flex flex-wrap gap-3 mb-4">
                 {bookingSettings.paymentOptions.map((option) => (
-                  <Badge key={option} variant="outline" className="px-3 py-1.5 text-sm">
+                  <Badge key={option} variant="outline" className="px-3 py-1.5 flex item-center justify-center text-sm">
+                     {option === "Cash" && <Amenities color="#067463"/>}
                     {option}
                   </Badge>
                 ))}
