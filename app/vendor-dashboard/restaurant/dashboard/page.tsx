@@ -470,12 +470,12 @@ const [reservations, setReservations] = useState<Reservation[]>([])
     
     fetchDashboardData()
     
-// Set up fallback polling for when WebSocket is not available or disconnects
+    // Set up fallback polling for when WebSocket is not available or disconnects
     let upcomingReservationsInterval: NodeJS.Timeout | null = null;
     let dashboardStatsInterval: NodeJS.Timeout | null = null;
     
-    // Only set up polling if WebSocket isn't available
-    if (!socket) {
+    // Only set up polling if WebSocket isn't available or not connected
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
       console.log('Setting up fallback polling for restaurant dashboard');
       
       // Set up real-time polling for upcoming reservations
