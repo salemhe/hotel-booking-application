@@ -470,96 +470,40 @@ export default function MenuManagementPage() {
               </TabsTrigger>
             ))}
           </TabsList>
-        </Tabs>
 
-        {viewMode === "table" ? (
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Menu name</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Menu Type</TableHead>
-                    <TableHead>Meal Times</TableHead>
-                    <TableHead>Orders</TableHead>
-                    <TableHead>Tags</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Active</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredItems.map((item) => (
-                    <MenuItemTableRow key={item.id} item={item} />
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredItems.map((item) => (
-              <MenuItemCard key={item.id} item={item} />
-            ))}
-          </div>
-        )}
-
-        {filteredItems.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-500 mb-4">No items found</div>
-            <Button
-              variant="outline"
-              onClick={() => router.push("/vendor-dashboard/restaurant/menu/add")}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add New Item
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-500">
-          Page {menuData.pagination.page} of {menuData.pagination.totalPages}
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-          >
-            Previous
-          </Button>
-          <div className="flex space-x-1">
-            {Array.from({ length: menuData.pagination.totalPages }, (_, i) => i + 1)
-              .slice(Math.max(0, currentPage - 3), Math.min(menuData.pagination.totalPages, currentPage + 3))
-              .map((page) => (
-                <Button
-                  key={page}
-                  variant={page === currentPage ? "default" : "ghost"}
-                  size="sm"
-                  className={page === currentPage ? "bg-teal-600 hover:bg-teal-700" : ""}
-                  onClick={() => setCurrentPage(page)}
-                >
-                  {page}
-                </Button>
+          {viewMode === "table" ? (
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Image</TableHead>
+                      <TableHead>Menu name</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Menu Type</TableHead>
+                      <TableHead>Meal Times</TableHead>
+                      <TableHead>Orders</TableHead>
+                      <TableHead>Tags</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Active</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredItems.map((item) => (
+                      <MenuItemTableRow key={item.id} item={item} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredItems.map((item) => (
+                <MenuItemCard key={item.id} item={item} />
               ))}
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm"
-            disabled={currentPage === menuData.pagination.totalPages}
-            onClick={() => setCurrentPage(prev => Math.min(menuData.pagination.totalPages, prev + 1))}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
+            </div>
+          )}
+
+          {filteredItems.length

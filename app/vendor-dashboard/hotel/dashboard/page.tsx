@@ -115,105 +115,112 @@ export default function Dashboard() {
     initials: ''
   })
 
-  // Set up WebSocket connection for real-time updates
-  useEffect(() => {
-    // Function to establish WebSocket connection for real-time data
-    const setupWebSocket = () => {
-      try {
-        // Check if WebSocket is supported
-        if (typeof window !== 'undefined' && 'WebSocket' in window) {
-          // Replace with your actual WebSocket endpoint
-          const wsEndpoint = process.env.NEXT_PUBLIC_WS_ENDPOINT || 'wss://api.example.com/ws';
-          
-          console.log('Attempting to establish WebSocket connection for hotel dashboard...');
-          
-          // Create WebSocket connection
-          const socket = new WebSocket(wsEndpoint);
-          
-          // Connection opened
-          socket.addEventListener('open', (event) => {
-            console.log('WebSocket connection established for hotel dashboard');
-            
-            // Subscribe to relevant data channels
-            socket.send(JSON.stringify({
-              action: 'subscribe',
-              channels: ['hotel_stats', 'hotel_reservations', 'hotel_notifications']
-            }));
-          });
-          
-          // Listen for messages from the server
-          socket.addEventListener('message', (event) => {
+    // Set up WebSocket connection for real-time updates
+    useEffect(() => {
+        // Function to establish WebSocket connection for real-time data
+        const setupWebSocket = () => {
             try {
-              const data = JSON.parse(event.data);
-              console.log('Real-time hotel update received:', data.type);
-              
-              // Handle different types of updates
-              switch (data.type) {
-                case 'stats_update':
-                  // Update dashboard stats
-                  setStats(prevStats => ({
-                    ...prevStats,
-                    ...data.stats
-                  }));
-                  break;
-                  
-                case 'new_reservation':
-                  // Add new reservation to the list
-                  setReservations(prev => [data.reservation, ...prev]);
-                  break;
-                  
-                case 'upcoming_reservation':
-                  // Update upcoming reservations
-                  setUpcomingReservations(prev => {
-                    const exists = prev.some(r => r.id === data.reservation.id);
-                    if (!exists) {
-                      setShowNotification(true);
-                      return [data.reservation, ...prev];
-                    }
-                    return prev;
-                  });
-                  break;
-                  
-                case 'room_availability_update':
-                  // Handle room availability updates
-                  console.log('Room availability updated:', data.availability);
-                  break;
-                  
-                default:
-                  console.log('Unknown hotel update type:', data.type);
-              }
+                // Check if WebSocket is supported
+                if (typeof window !== 'undefined' && 'WebSocket' in window) {
+                    // Use proper WebSocket endpoint from environment or config
+                    const wsEndpoint = process.env.NEXT_PUBLIC_WS_URL || 'wss://hotel-booking-app-backend-30q1.onrender.com';
+                    
+                    console.log('Attempting to establish WebSocket connection for hotel dashboard...');
+                    
+                    // Create WebSocket connection with error handling
+                    const socket = new WebSocket(wsEndpoint);
+                    
+                    // Connection opened
+                    socket.addEventListener('open', (event) => {
+                        console.log('WebSocket connection established for hotel dashboard');
+                        
+                        // Subscribe to relevant data channels
+                        try {
+                            socket.send(JSON.stringify({
+                                action: 'subscribe',
+                                channels: ['hotel_stats', 'hotel_reservations', 'hotel_notifications']
+                            }));
+                        } catch (sendError) {
+                            console.error('Error sending subscription message:', sendError);
+                        }
+                    });
+                    
+                    // Listen for messages from the server
+                    socket.addEventListener('message', (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            console.log('Real-time hotel update received:', data.type);
+                            
+                            // Handle different types of updates
+                            switch (data.type) {
+                                case 'stats_update':
+                                    // Update dashboard stats
+                                    setStats(prevStats => ({
+                                        ...prevStats,
+                                        ...data.stats
+                                    }));
+                                    break;
+                                    
+                                case 'new_reservation':
+                                    // Add new reservation to the list
+                                    setReservations(prev => [data.reservation, ...prev]);
+                                    break;
+                                    
+                                case 'upcoming_reservation':
+                                    // Update upcoming reservations
+                                    setUpcomingReservations(prev => {
+                                        const exists = prev.some(r => r.id === data.reservation.id);
+                                        if (!exists) {
+                                            setShowNotification(true);
+                                            return [data.reservation, ...prev];
+                                        }
+                                        return prev;
+                                    });
+                                    break;
+                                    
+                                case 'room_availability_update':
+                                    // Handle room availability updates
+                                    console.log('Room availability updated:', data.availability);
+                                    break;
+                                    
+                                default:
+                                    console.log('Unknown hotel update type:', data.type);
+                            }
+                        } catch (error) {
+                            console.error('Error processing hotel WebSocket message:', error);
+                        }
+                    });
+                    
+                    // Handle errors with detailed logging
+                    socket.addEventListener('error', (event) => {
+                        console.error('Hotel WebSocket error:', event);
+                        console.warn('WebSocket connection failed, falling back to polling mode');
+                    });
+                    
+                    // Handle connection closing
+                    socket.addEventListener('close', (event) => {
+                        console.log('Hotel WebSocket connection closed:', event.code, event.reason);
+                        
+                        // Only attempt reconnection if it wasn't a normal closure
+                        if (event.code !== 1000 && event.code !== 1001) {
+                            setTimeout(() => {
+                                console.log('Attempting to reconnect hotel WebSocket...');
+                                setupWebSocket();
+                            }, 5000);
+                        }
+                    });
+                    
+                    return socket;
+                } else {
+                    console.log('WebSocket not supported, using polling mode for hotel dashboard');
+                    return null;
+                }
             } catch (error) {
-              console.error('Error processing hotel WebSocket message:', error);
+                console.error('Error setting up hotel WebSocket:', error);
+                console.warn('Falling back to polling mode due to WebSocket error');
+                return null;
             }
-          });
-          
-          // Handle errors
-          socket.addEventListener('error', (event) => {
-            console.error('Hotel WebSocket error:', event);
-          });
-          
-          // Handle connection closing
-          socket.addEventListener('close', (event) => {
-            console.log('Hotel WebSocket connection closed:', event.code, event.reason);
-            
-            // Attempt to reconnect after a delay
-            setTimeout(() => {
-              console.log('Attempting to reconnect hotel WebSocket...');
-              setupWebSocket();
-            }, 5000);
-          });
-          
-          // Return cleanup function
-          return socket;
-        } else {
-          console.log('WebSocket not supported, falling back to polling for hotel dashboard');
-          return null;
-        }
-      } catch (error) {
-        console.error('Error setting up hotel WebSocket:', error);
-        return null;
-      }
-    };
+        };
     
     // Initially set up WebSocket
     const socket = setupWebSocket();

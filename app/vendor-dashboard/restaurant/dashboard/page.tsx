@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -128,28 +129,41 @@ const [reservations, setReservations] = useState<Reservation[]>([])
 
   // Set up WebSocket connection for real-time updates
   useEffect(() => {
+    let ws: WebSocket | null = null;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 3;
+    const reconnectDelay = 3000; // 3 seconds
+    
     // Function to establish WebSocket connection for real-time data
     const setupWebSocket = () => {
       try {
         // Check if WebSocket is supported
         if (typeof window !== 'undefined' && 'WebSocket' in window) {
-          // Replace with your actual WebSocket endpoint
-          const wsEndpoint = process.env.NEXT_PUBLIC_WS_ENDPOINT || 'wss://api.example.com/ws';
+          // Use proper WebSocket endpoint from environment or config
+          const wsEndpoint = process.env.NEXT_PUBLIC_WS_URL || 
+                           (window.location.protocol === 'https:' 
+                             ? 'wss://hotel-booking-app-backend-30q1.onrender.com' 
+                             : 'ws://localhost:3001');
           
           console.log('Attempting to establish WebSocket connection for restaurant dashboard...');
           
-          // Create WebSocket connection
+          // Create WebSocket connection with proper error handling
           const socket = new WebSocket(wsEndpoint);
           
           // Connection opened
           socket.addEventListener('open', (event) => {
             console.log('WebSocket connection established for restaurant dashboard');
+            reconnectAttempts = 0; // Reset reconnect attempts on successful connection
             
             // Subscribe to relevant data channels
-            socket.send(JSON.stringify({
-              action: 'subscribe',
-              channels: ['restaurant_stats', 'restaurant_reservations', 'restaurant_notifications']
-            }));
+            try {
+              socket.send(JSON.stringify({
+                action: 'subscribe',
+                channels: ['restaurant_stats', 'restaurant_reservations', 'restaurant_notifications']
+              }));
+            } catch (sendError) {
+              console.error('Error sending subscription message:', sendError);
+            }
           });
           
           // Listen for messages from the server
@@ -193,23 +207,31 @@ const [reservations, setReservations] = useState<Reservation[]>([])
             }
           });
           
-          // Handle errors
+          // Handle errors with detailed logging
           socket.addEventListener('error', (event) => {
             console.error('WebSocket error:', event);
+            // Don't throw error here, let close handler handle reconnection
           });
           
           // Handle connection closing
           socket.addEventListener('close', (event) => {
             console.log('WebSocket connection closed:', event.code, event.reason);
             
-            // Attempt to reconnect after a delay
-            setTimeout(() => {
-              console.log('Attempting to reconnect WebSocket...');
-              setupWebSocket();
-            }, 5000);
+            // Only attempt reconnection if not manually closed and within retry limit
+            if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
+              reconnectAttempts++;
+              console.log(`Attempting to reconnect WebSocket... (${reconnectAttempts}/${maxReconnectAttempts})`);
+              
+              setTimeout(() => {
+                if (reconnectAttempts <= maxReconnectAttempts) {
+                  setupWebSocket();
+                } else {
+                  console.log('Max reconnection attempts reached, falling back to polling');
+                }
+              }, reconnectDelay * reconnectAttempts);
+            }
           });
           
-          // Return cleanup function
           return socket;
         } else {
           console.log('WebSocket not supported, falling back to polling');
@@ -222,7 +244,7 @@ const [reservations, setReservations] = useState<Reservation[]>([])
     };
     
     // Initially set up WebSocket
-    const socket = setupWebSocket();
+    ws = setupWebSocket();
     
     // Fetch dashboard data - fallback to regular API calls
     const fetchDashboardData = async () => {
@@ -569,9 +591,9 @@ const [reservations, setReservations] = useState<Reservation[]>([])
     // Clean up function
     return () => {
       // Close WebSocket if it exists
-      if (socket && socket.readyState === WebSocket.OPEN) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
         console.log('Closing WebSocket connection for restaurant dashboard');
-        socket.close();
+        ws.close(1000, 'Component unmounting');
       }
       
       // Clear intervals if they exist
