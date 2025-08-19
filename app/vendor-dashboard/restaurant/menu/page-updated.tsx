@@ -506,4 +506,20 @@ export default function MenuManagementPage() {
             </div>
           )}
 
-          {filteredItems.length
+          {filteredItems.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-500 mb-4">No menu items found</div>
+              <Button
+                onClick={() => router.push("/vendor-dashboard/restaurant/menu/add")}
+                className="bg-teal-600 hover:bg-teal-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Your First Menu Item
+              </Button>
+            </div>
+          )}
+        </Tabs>
+      </div>
+    </div>
+  );
+}
