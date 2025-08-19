@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Branch {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  phoneNumber String?
+  email       String   @unique
+  password    String
+  businessType String  @default("restaurant")
+  openingDays String[]
+  opensAt     String   @default("08:00")
+  closesAt    String   @default("22:00")
+  status      String   @default("Active")
+  assignedManager String?
+  assignedMenu String?
+  importAllMenuItems Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  reservations Reservation[]
+  menuItems    MenuItem[]
+  reviews      Review[]
+}
+
+model Reservation {
+  id          String   @id @default(cuid())
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  totalAmount Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  image       String
+  category    String
+  status      String   @default("available")
+  orders      Int      @default(0)
+  menuType    String
+  mealTimes   String[]
+  tags        String[]
+  isActive    Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  createdAt DateTime @default(now())
+}
