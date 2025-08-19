@@ -339,7 +339,7 @@ export default function BranchesDashboard() {
       
       console.log('Fetching branches with token:', token.substring(0, 20) + '...');
       
-      const res = await axios.get(`${API_URL}/api/super-admin/branches`, { 
+      const res = await axios.get(`${API_URL}/api/super-admin/branches`, {
         params,
         headers: {
           Authorization: `Bearer ${token}`,

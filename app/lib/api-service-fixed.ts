@@ -1,97 +1,171 @@
-import { apiFetcher } from './fetcher';
+import { getSession } from 'next-auth/react';
 
-// Dashboard API endpoints - now fetching real-time data
-export const getDashboardStats = async () => {
-  return apiFetcher('/api/dashboard/stats');
-};
+// Create a proper API service with NextAuth integration
+class ApiService {
+  private baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-export const getHotelRevenueBreakdown = async (period: string = 'weekly') => {
-  return apiFetcher(`/api/dashboard/hotel/revenue-breakdown?period=${period}`);
-};
+  private async getAuthHeaders() {
+    const session = await getSession();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
 
-export const getReservationTrends = async (period: string = 'weekly') => {
-  return apiFetcher(`/api/dashboard/trends?period=${period}`);
-};
+    if (session?.accessToken) {
+      headers['Authorization'] = `Bearer ${session.accessToken}`;
+    }
 
-export const getTodayReservations = async () => {
-  return apiFetcher('/api/dashboard/reservations/today');
-};
+    return headers;
+  }
 
-export const getCustomerFrequency = async (period: string = 'weekly') => {
-  return apiFetcher(`/api/dashboard/customers/frequency?period=${period}`);
-};
+  private async handleResponse(response: Response) {
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'An error occurred' }));
+      throw new Error(error.message || 'Request failed');
+    }
+    return response.json();
+  }
 
-export const getRevenueByCategory = async (period: string = 'weekly') => {
-  return apiFetcher(`/api/dashboard/revenue/by-category?period=${period}`);
-};
+  // Dashboard API endpoints
+  async getDashboardStats() {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/dashboard/stats`, { headers });
+    return this.handleResponse(response);
+  }
 
-export const getReservationSources = async (period: string = 'weekly') => {
-  return apiFetcher(`/api/dashboard/reservations/sources?period=${period}`);
-};
+  async getHotelRevenueBreakdown(period: string = 'weekly') {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(
+      `${this.baseURL}/api/dashboard/hotel/revenue-breakdown?period=${period}`,
+      { headers }
+    );
+    return this.handleResponse(response);
+  }
 
-// Branch API endpoints - now fetching real-time data
-export const getBranches = async () => {
-  return apiFetcher('/api/branches');
-};
+  async getReservationTrends(period: string = 'weekly') {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(
+      `${this.baseURL}/api/dashboard/trends?period=${period}`,
+      { headers }
+    );
+    return this.handleResponse(response);
+  }
 
-export const getBranchById = async (id: number) => {
-  return apiFetcher(`/api/branches/${id}`);
-};
+  async getTodayReservations() {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/dashboard/reservations/today`, { headers });
+    return this.handleResponse(response);
+  }
 
-export const createBranch = async (branchData: Record<string, unknown>) => {
-  return apiFetcher('/api/branches', {
-    method: 'POST',
-    body: JSON.stringify(branchData),
-  });
-};
+  // Branch API endpoints
+  async getBranches(params?: Record<string, unknown>) {
+    const headers = await this.getAuthHeaders();
+    const url = new URL(`${this.baseURL}/api/super-admin/branches`);
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          url.searchParams.append(key, String(value));
+        }
+      });
+    }
 
-export const updateBranch = async (id: number, branchData: Record<string, unknown>) => {
-  return apiFetcher(`/api/branches/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(branchData),
-  });
-};
+    const response = await fetch(url.toString(), { headers });
+    return this.handleResponse(response);
+  }
 
-export const deleteBranch = async (id: number) => {
-  return apiFetcher(`/api/branches/${id}`, {
-    method: 'DELETE',
-  });
-};
+  async createBranch(branchData: Record<string, unknown>) {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/super-admin/branches`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(branchData),
+    });
+    return this.handleResponse(response);
+  }
 
-// Hotel specific API endpoints - now fetching real-time data
-export const getRoomAvailability = async (startDate: string, endDate: string) => {
-  return apiFetcher(`/api/hotel/rooms/availability?startDate=${startDate}&endDate=${endDate}`);
-};
+  async updateBranch(id: string, branchData: Record<string, unknown>) {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/super-admin/branches/${id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(branchData),
+    });
+    return this.handleResponse(response);
+  }
 
-export const getRoomTypes = async () => {
-  return apiFetcher('/api/hotel/room-types');
-};
+  async deleteBranch(id: string) {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/super-admin/branches/${id}`, {
+      method: 'DELETE',
+      headers,
+    });
+    return this.handleResponse(response);
+  }
 
-export const getHotelBookings = async (status?: string) => {
-  const url = status ? `/api/hotel/bookings?status=${status}` : '/api/hotel/bookings';
-  return apiFetcher(url);
-};
+  // Hotel specific API endpoints
+  async getRoomAvailability(startDate: string, endDate: string) {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(
+      `${this.baseURL}/api/hotel/rooms/availability?startDate=${startDate}&endDate=${endDate}`,
+      { headers }
+    );
+    return this.handleResponse(response);
+  }
 
-// Restaurant specific API endpoints - now fetching real-time data
-export const getMenuCategories = async () => {
-  return apiFetcher('/api/restaurant/menu/categories');
-};
+  async getRoomTypes() {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/hotel/room-types`, { headers });
+    return this.handleResponse(response);
+  }
 
-export const getMenuItems = async (categoryId?: number) => {
-  const url = categoryId ? `/api/restaurant/menu/items?categoryId=${categoryId}` : '/api/restaurant/menu/items';
-  return apiFetcher(url);
-};
+  async getHotelBookings(status?: string) {
+    const headers = await this.getAuthHeaders();
+    const url = status 
+      ? `${this.baseURL}/api/hotel/bookings?status=${status}` 
+      : `${this.baseURL}/api/hotel/bookings`;
+    const response = await fetch(url, { headers });
+    return this.handleResponse(response);
+  }
 
-export const getRestaurantReservations = async (status?: string) => {
-  const url = status ? `/api/restaurant/reservations?status=${status}` : '/api/restaurant/reservations';
-  return apiFetcher(url);
-};
+  // Restaurant specific API endpoints
+  async getMenuCategories() {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/restaurant/menu/categories`, { headers });
+    return this.handleResponse(response);
+  }
 
-// Common API endpoints - now fetching real-time data
-export const getUpcomingReservations = async () => {
-  return apiFetcher('/api/reservations/upcoming');
-};
+  async getMenuItems(categoryId?: number) {
+    const headers = await this.getAuthHeaders();
+    const url = categoryId 
+      ? `${this.baseURL}/api/restaurant/menu/items?categoryId=${categoryId}` 
+      : `${this.baseURL}/api/restaurant/menu/items`;
+    const response = await fetch(url, { headers });
+    return this.handleResponse(response);
+  }
 
-export const getUserProfile = async () => {
-  return apiFetcher('/api/user/profile');
-};
+  async getRestaurantReservations(status?: string) {
+    const headers = await this.getAuthHeaders();
+    const url = status 
+      ? `${this.baseURL}/api/restaurant/reservations?status=${status}` 
+      : `${this.baseURL}/api/restaurant/reservations`;
+    const response = await fetch(url, { headers });
+    return this.handleResponse(response);
+  }
+
+  // Common API endpoints
+  async getUpcomingReservations() {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/reservations/upcoming`, { headers });
+    return this.handleResponse(response);
+  }
+
+  async getUserProfile() {
+    const headers = await this.getAuthHeaders();
+    const response = await fetch(`${this.baseURL}/api/user/profile`, { headers });
+    return this.handleResponse(response);
+  }
+}
+
+// Export singleton instance
+export const apiService = new ApiService();
+export default apiService;

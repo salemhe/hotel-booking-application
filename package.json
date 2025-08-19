@@ -1,7 +1,8 @@
 {
   "name": "hotel-booking-application",
   "version": "0.1.0",
-  "private": true,"scripts": {
+  "private": true,
+  "scripts": {
     "dev": "next dev",
     "build": "next build --no-lint",
     "start": "next start",
@@ -16,6 +17,7 @@
     "@mui/material": "^7.1.2",
     "@next/font": "^14.2.15",
     "@paystack/inline-js": "^2.22.3",
+    "@prisma/client": "^6.14.0",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-checkbox": "^1.1.3",
     "@radix-ui/react-collapsible": "^1.1.2",

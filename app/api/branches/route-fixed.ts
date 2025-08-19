@@ -1,12 +1,12 @@
+// app/api/branches/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/auth';
 
-// Real-time branch management endpoints
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     
     if (!session) {
       return NextResponse.json(
@@ -24,10 +24,8 @@ export async function GET(request: NextRequest) {
     let branches = [];
     
     if (restaurantId) {
-      // Real implementation - filter by restaurant ID
       branches = await fetchBranchesByRestaurant(restaurantId);
     } else {
-      // Real implementation - fetch all branches
       branches = await fetchAllBranches();
     }
 
@@ -43,7 +41,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     
     if (!session) {
       return NextResponse.json(

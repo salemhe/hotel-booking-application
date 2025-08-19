@@ -17,7 +17,7 @@ export default function SuperAdminDashboard() {
       <SuperAdminDashboardContent />
     </ProfileProvider>
   );
-}
+} 
 
 function SuperAdminDashboardContent() {
   const { profile } = useProfile();
