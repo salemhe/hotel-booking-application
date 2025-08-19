@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import axios from 'axios';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
+    const { id } = await params;
 
-    
     if (!session) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -21,7 +19,7 @@ export async function GET(
       );
     }
 
-    const branchId = parseInt(params.id);
+    const branchId = parseInt(id);
     
     // Fetch branch from backend
     const response = await axios.get(`${BASE_URL}/api/branches/${branchId}`, {
@@ -50,12 +48,12 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
+    const { id } = await params;
 
-    
     if (!session) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -63,7 +61,7 @@ export async function PUT(
       );
     }
 
-    const branchId = parseInt(params.id);
+    const branchId = parseInt(id);
     const body = await request.json();
 
     // Update branch in backend
@@ -98,12 +96,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
+    const { id } = await params;
 
-    
     if (!session) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -111,7 +109,7 @@ export async function DELETE(
       );
     }
 
-    const branchId = parseInt(params.id);
+    const branchId = parseInt(id);
 
     // Delete branch from backend
     await axios.delete(`${BASE_URL}/api/branches/${branchId}`, {
