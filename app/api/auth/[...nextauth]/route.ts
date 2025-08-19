@@ -4,7 +4,7 @@ import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-const authConfig = {
+const handler = NextAuth({
   providers: [
     Credentials({
       name: "Credentials",
@@ -78,9 +78,7 @@ const authConfig = {
       return session;
     },
   },
-  secret: process.env.AUTH_SECRET || "your-secret-key",
-};
-
-const handler = NextAuth(authConfig);
+  secret: process.env.NEXT_PUBLIC_AUTH_SECRET || "your-secret-key",
+});
 
 export { handler as GET, handler as POST };
