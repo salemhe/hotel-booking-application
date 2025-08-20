@@ -1,3 +1,12 @@
 {
-    "codium.codeCompletion.enable": false
+  "json.schemaDownload.enable": false,
+  "json.validate.enable": false,
+  "http.proxy": "",
+  "http.proxyStrictSSL": false,
+  "json.schemas": [
+    {
+      "fileMatch": ["package.json"],
+      "url": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/package.json"
+    }
+  ]
 }

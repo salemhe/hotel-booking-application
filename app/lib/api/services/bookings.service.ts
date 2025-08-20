@@ -1,7 +1,27 @@
+
 // src/services/booking.services.js
 // import API from "@/utils/axios";
 
 import API from "../userAxios";
+// Debug utilities inline since module path issue
+const debugAPI = {
+  logRequest: (method: string, url: string, params?: any) => {
+    console.log(`🔍 API Request: ${method} ${url}`, params ? { params } : '');
+  },
+  
+  logResponse: (method: string, url: string, status: number, data?: any) => {
+    console.log(`✅ API Response: ${method} ${url} - Status: ${status}`, data ? { data } : '');
+  },
+  
+  logError: (method: string, url: string, error: any) => {
+    console.error(`❌ API Error: ${method} ${url}`, {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message
+    });
+  }
+};
 
 export interface BookingResponse {
   _id: string;
@@ -51,10 +71,26 @@ export class BookingService {
       const endpoint = queryString
         ? `bookings?${queryString}`
         : "bookings";
+      
+      console.log("Fetching bookings from endpoint:", endpoint);
       const response = await API.get(endpoint);
+      console.log("Bookings response:", response);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching bookings:", error);
+      
+      // Handle specific error cases
+      if (error.response?.status === 404) {
+        console.error("Bookings endpoint not found:", error.response?.data);
+        // Return empty array instead of throwing for 404
+        return [];
+      }
+      
+      if (error.response?.status === 403) {
+        console.error("Access denied to bookings:", error.response?.data);
+        throw new Error("You don't have permission to view bookings");
+      }
+      
       throw error;
     }
   }

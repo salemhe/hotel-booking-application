@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Branch {
-  id          String   @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   address     String
   city        String
@@ -32,8 +32,8 @@ model Branch {
 }
 
 model Reservation {
-  id          String   @id @default(cuid())
-  branchId    String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  branchId    String   @db.ObjectId
   branch      Branch   @relation(fields: [branchId], references: [id])
   totalAmount Float?
   createdAt   DateTime @default(now())
@@ -41,7 +41,7 @@ model Reservation {
 }
 
 model MenuItem {
-  id          String   @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
   price       Float
@@ -54,15 +54,15 @@ model MenuItem {
   tags        String[]
   isActive    Boolean  @default(true)
   updatedAt   DateTime @updatedAt
-  branchId    String
+  branchId    String   @db.ObjectId
   branch      Branch   @relation(fields: [branchId], references: [id])
   createdAt   DateTime @default(now())
 }
 
 model Review {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   rating    Int
-  branchId  String
+  branchId  String   @db.ObjectId
   branch    Branch   @relation(fields: [branchId], references: [id])
   createdAt DateTime @default(now())
 }

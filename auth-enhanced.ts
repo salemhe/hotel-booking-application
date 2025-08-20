@@ -46,13 +46,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null;
           }
 
-            return {
-              id: String(userData.id),
-              name: userData.name || userData.email, // Ensure name is included
-              email: credentials.email as string,
-              token: userData.token,
-              role: credentials.role,
-            };
+          return {
+            id: String(userData.id),
+            name: userData.name || userData.email,
+            email: userData.email,
+            role: credentials.role,
+            token: userData.token,
+          };
         } catch (error) {
           console.error("Error during authorization:", error);
           return null;

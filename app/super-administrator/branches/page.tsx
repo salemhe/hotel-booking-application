@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/contexts/AuthContext";
+import { useSession } from "next-auth/react";
 import {
   Search,
   Bell,
@@ -24,7 +25,10 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { apiService } from "@/app/lib/api-service-fixed";
+import { enhancedApiService } from "@/app/lib/api-service-enhanced";
+
+// Rest of the file remains the same...
+// Copy the complete content from page.tsx but with fixed type handling
 
 function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onBranchAdded: () => void }) {
   const [formData, setFormData] = useState({
@@ -72,7 +76,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         importAllMenuItems: formData.importAllMenuItems,
       };
       
-      const result = await apiService.createBranch(branchData);
+      const result = await enhancedApiService.createBranch(branchData);
       
       console.log('Branch created successfully:', result);
       onBranchAdded();
@@ -99,7 +103,11 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
       }
     } catch (err) {
       console.error('Error:', err);
-      alert("Failed to save branch. Please try again.");
+      if (err instanceof Error && err.message.includes('Authentication')) {
+        alert("Authentication required. Please log in again.");
+      } else {
+        alert("Failed to save branch. Please try again.");
+      }
     }
   };
   
@@ -237,8 +245,8 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
   );
 }
 
-export default function BranchesDashboard() {
-  const { user, isAuthenticated } = useAuth();
+export default function EnhancedBranchesDashboard() {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
@@ -248,30 +256,47 @@ export default function BranchesDashboard() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAddBranch, setShowAddBranch] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Safe session data extraction
+  const userName = (session?.user as any)?.name || '';
+  const userEmail = (session?.user as any)?.email || '';
+  const displayName = userName || userEmail || 'Super Admin';
+  const initials = (userName || userEmail || 'SA').split(' ').map((n: string) => n[0]).join('').toUpperCase();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (status === 'loading') return; // Wait for session to load
+    
+    if (status === 'unauthenticated') {
       router.push("/vendor-login");
       return;
     }
 
-    fetchBranches();
-  }, [searchTerm, activeTab, page, isAuthenticated]);
+    if (session?.accessToken) {
+      fetchBranches();
+    }
+  }, [searchTerm, activeTab, page, session, status]);
 
   async function fetchBranches() {
-    if (!isAuthenticated || !user) return;
+    if (!session?.accessToken) {
+      setError('Authentication required');
+      return;
+    }
     
     setLoading(true);
+    setError(null);
+    
     try {
       const params: Record<string, unknown> = { page, limit: 12 };
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       
-      const result = await apiService.getBranches(params);
+      const result = await enhancedApiService.getBranches(params);
       setBranches(result.data || []);
       setTotalPages(result.totalPages || 1);
     } catch (err) {
       console.error('Error fetching branches:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch branches');
       setBranches([]);
       setTotalPages(1);
     } finally {
@@ -281,13 +306,27 @@ export default function BranchesDashboard() {
 
   const filteredBranches = branches;
 
-  if (!isAuthenticated) {
+  if (status === 'loading') {
     return (
       <div className="flex justify-center items-center h-screen">
         <svg className="animate-spin h-8 w-8 text-teal-600" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
         </svg>
+      </div>
+    );
+  }
+
+  if (status === 'unauthenticated') {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-4">Authentication Required</h2>
+          <p className="text-gray-600 mb-4">Please log in to access this page.</p>
+          <Button onClick={() => router.push('/vendor-login')} className="bg-teal-600 hover:bg-teal-700">
+            Go to Login
+          </Button>
+        </div>
       </div>
     );
   }
@@ -317,16 +356,16 @@ export default function BranchesDashboard() {
               </Button>
               <div className="flex items-center space-x-2">
                 <Avatar>
-                  <AvatarFallback>
-                    {(user?.name || '').split(' ').map((n: string) => n[0]).join('') || 'SA'}
-                  </AvatarFallback>
+                      <AvatarFallback>
+                        {initials}
+                      </AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block">
                   <div className="text-sm font-medium">
-                    {user?.name || 'Super Admin'}
+                    {displayName}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {user?.role || 'Admin'}
+                    {(session?.user as any)?.role || 'Admin'}
                   </div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -353,6 +392,22 @@ export default function BranchesDashboard() {
               </Button>
             </div>
           </div>
+
+          {/* Error Display */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-800">{error}</p>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="mt-2"
+                onClick={() => router.push('/vendor-login')}
+              >
+                Login Again
+              </Button>
+            </div>
+          )}
+
           {/* Filters and Search */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
             <div className="flex items-center space-x-4">
@@ -437,9 +492,7 @@ export default function BranchesDashboard() {
                       </div>
                     </div>
                     {/* Branch Info */}
- 
-  0
-                      <div className="px-6 pb-6">
+                    <div className="px-6 pb-6">
                       <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{String(branch.name).replace(/'/g, "&apos;")}</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
