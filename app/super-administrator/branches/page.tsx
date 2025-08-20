@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 import {
   Search,
   Bell,
@@ -238,7 +238,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
 }
 
 export default function BranchesDashboard() {
-  const { data: session, status } = useSession();
+  const { user, isAuthenticated } = useAuth();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
@@ -250,18 +250,16 @@ export default function BranchesDashboard() {
   const [showAddBranch, setShowAddBranch] = useState(false);
 
   useEffect(() => {
-    if (status === "loading") return;
-    
-    if (!session) {
-      router.push("/login");
+    if (!isAuthenticated) {
+      router.push("/vendor-login");
       return;
     }
 
     fetchBranches();
-  }, [searchTerm, activeTab, page, session, status]);
+  }, [searchTerm, activeTab, page, isAuthenticated]);
 
   async function fetchBranches() {
-    if (!session) return;
+    if (!isAuthenticated || !user) return;
     
     setLoading(true);
     try {
@@ -283,7 +281,7 @@ export default function BranchesDashboard() {
 
   const filteredBranches = branches;
 
-  if (status === "loading") {
+  if (!isAuthenticated) {
     return (
       <div className="flex justify-center items-center h-screen">
         <svg className="animate-spin h-8 w-8 text-teal-600" viewBox="0 0 24 24">
@@ -320,15 +318,15 @@ export default function BranchesDashboard() {
               <div className="flex items-center space-x-2">
                 <Avatar>
                   <AvatarFallback>
-                    {((session?.user as any)?.name || '').split(' ').map((n: string) => n[0]).join('') || 'SA'}
+                    {(user?.name || '').split(' ').map((n: string) => n[0]).join('') || 'SA'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block">
                   <div className="text-sm font-medium">
-                    {(session?.user as any)?.name || 'Super Admin'}
+                    {user?.name || 'Super Admin'}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {(session?.user as any)?.role || 'Admin'}
+                    {user?.role || 'Admin'}
                   </div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -344,15 +342,15 @@ export default function BranchesDashboard() {
               <h1 className="text-2xl font-bold text-gray-900">All Branches</h1>
             </div>
             <div className="flex items-center space-x-3">
-            <Button variant="secondary" size="sm">
-            <Export className="w-4 h-4 mr-2" />
-            Export
-            </Button>
-            <AddNewBranchModal isOpen={showAddBranch} setIsOpen={setShowAddBranch} onBranchAdded={fetchBranches} />
-            <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => setShowAddBranch(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Branch
-            </Button>
+              <Button variant="secondary" size="sm">
+                <Export className="w-4 h-4 mr-2" />
+                Export
+              </Button>
+              <AddNewBranchModal isOpen={showAddBranch} setIsOpen={setShowAddBranch} onBranchAdded={fetchBranches} />
+              <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => setShowAddBranch(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Branch
+              </Button>
             </div>
           </div>
           {/* Filters and Search */}
@@ -439,7 +437,9 @@ export default function BranchesDashboard() {
                       </div>
                     </div>
                     {/* Branch Info */}
-                    <div className="px-6 pb-6">
+ 
+  0
+                      <div className="px-6 pb-6">
                       <h3 className="text-lg font-semibold text-center mb-4 text-gray-900">{String(branch.name).replace(/'/g, "&apos;")}</h3>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
