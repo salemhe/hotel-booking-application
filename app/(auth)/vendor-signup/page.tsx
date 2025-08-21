@@ -181,14 +181,14 @@ export default function VendorRegistration() {
       }
       // Route based on account type
       if (formData.adminType === "super-admin") {
-        // Set AuthContext for auto-login
-        if (realProfile) {
-          contextLogin({
-            id: realProfile.id ?? "",
-            name: realProfile.businessName ?? realProfile.email ?? "",
-            email: realProfile.email ?? "",
-            role: realProfile.role ?? "super-admin"
-          });
+      // Set AuthContext for auto-login
+      if (realProfile) {
+        contextLogin({
+          id: realProfile.id ?? "",
+          name: realProfile.businessName ?? realProfile.email ?? "",
+          email: realProfile.email ?? "",
+          role: realProfile.role ?? "super-admin"
+        }, token || "");
           // Wait a tick to ensure context is set before redirect
           setTimeout(() => {
             router.push("/super-administrator/dashboard");
