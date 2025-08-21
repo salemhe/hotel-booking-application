@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import {
   Search,
@@ -26,7 +27,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { API_URL } from "@/app/config";
+import { getAuthToken, getAuthUser, isAuthenticated } from "@/app/utils/auth";
 
 // Removed unused sidebarItems
 
@@ -59,8 +61,13 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
   const handleSubmit = async (action: string) => {
     try {
       // POST to backend with Authorization header
-          const token = localStorage.getItem("auth_token") || localStorage.getItem("token");
+      const token = getAuthToken();
       console.log('Token:', token); // Log the token
+      
+      if (!token) {
+        alert("Authentication required. Please log in again.");
+        return;
+      }
       const response = await axios.post(
         `${API_URL}/api/super-admin/branches`,
         {
@@ -253,6 +260,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
 }
 
 export default function BranchesDashboard() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
@@ -261,7 +269,6 @@ export default function BranchesDashboard() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAddBranch, setShowAddBranch] = useState(false);
-  // Removed unused variables 'router' and 'pathname'
 
   useEffect(() => {
     fetchBranches();
@@ -275,7 +282,14 @@ export default function BranchesDashboard() {
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       
-      const token = localStorage.getItem("auth_token") || localStorage.getItem("token");
+      const token = getAuthToken();
+      if (!token) {
+        console.error("No authentication token found");
+        setBranches([]);
+        setTotalPages(1);
+        return;
+      }
+      
       const res = await axios.get(`${API_URL}/api/super-admin/branches`, { 
         params,
         headers: {
@@ -286,6 +300,12 @@ export default function BranchesDashboard() {
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       console.error('Error fetching branches:', err);
+      if (axios.isAxiosError(err) && err.response) {
+        console.error('API error response:', err.response.data);
+        if (err.response.status === 401) {
+          alert("Authentication failed. Please log in again.");
+        }
+      }
       setBranches([]);
       setTotalPages(1);
     } finally {
@@ -321,11 +341,15 @@ export default function BranchesDashboard() {
               </Button>
               <div className="flex items-center space-x-2">
                 <Avatar>
-                  <AvatarFallback>{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).name?.split(' ').map((n: string) => n[0]).join('') : 'SA'}</AvatarFallback>
+                  <AvatarFallback>{
+                    typeof window !== 'undefined' ? 
+                    (getAuthUser()?.name?.split(' ').map((n: string) => n[0]).join('') || 'SA') : 
+                    'SA'
+                  }</AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block">
-                  <div className="text-sm font-medium">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).name : 'Super Admin'}</div>
-                  <div className="text-xs text-gray-500">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).role : 'Admin'}</div>
+                  <div className="text-sm font-medium">{getAuthUser()?.name || 'Super Admin'}</div>
+                  <div className="text-xs text-gray-500">{getAuthUser()?.role || 'Admin'}</div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </div>
