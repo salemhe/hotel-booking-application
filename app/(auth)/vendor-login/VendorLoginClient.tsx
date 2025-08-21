@@ -101,7 +101,7 @@ export default function VendorLoginClient() {
           name: vendorProfile.businessName ?? vendorProfile.email ?? "",
           email: vendorProfile.email ?? "",
           role: vendorProfile.role ?? "vendor",
-        });
+        }, authToken || "");
       }
 
       toast.success(`Welcome back, ${vendorProfile.businessName || "Vendor"}!`);
