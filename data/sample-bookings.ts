@@ -5,8 +5,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '1',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
@@ -18,8 +18,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '2',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
@@ -31,8 +31,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '3',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
@@ -44,8 +44,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '4',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
@@ -57,8 +57,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '5',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
@@ -70,8 +70,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '6',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
@@ -83,8 +83,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '7',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
@@ -96,8 +96,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '8',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
@@ -109,8 +109,8 @@ export const sampleBookings: Booking[] = [
   {
     id: '9',
     customer: {
-      id: '#12345',
-      name: 'Emily Johnson',
+      userId: '#12345',
+      customerName: 'Emily Johnson',
       avatar: '/api/placeholder/40/40'
     },
     checkInDate: 'June 5, 2025',
