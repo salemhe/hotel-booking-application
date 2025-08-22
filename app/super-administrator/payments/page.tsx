@@ -106,7 +106,7 @@ export default function SuperAdminPayments() {
 
   async function fetchPayments() {
     try {
-      let url = "/api/super-admin/payments";
+      let url = "/api/super-admini/payments";
       if (selectedVendor) url += `?vendorId=${selectedVendor}`;
       const data = await apiFetcher(url);
       setStats(data.stats || {});
