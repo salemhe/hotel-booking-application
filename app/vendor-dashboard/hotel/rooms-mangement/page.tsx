@@ -259,7 +259,7 @@ console.log(editingRoom?._id)
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Room Management</h1>
-          {canEdit && (
+          {/* {canEdit && ( */}
             <button
               onClick={() => {
                 router.push("/vendor-dashboard/add-rooms");
@@ -269,7 +269,7 @@ console.log(editingRoom?._id)
               <Plus size={20} className="mr-2" />
               Add Room
             </button>
-          )}
+          {/* )} */}
         </div>
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
