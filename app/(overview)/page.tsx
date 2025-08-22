@@ -258,10 +258,10 @@ export default function Home() {
           <div className="text-center mt-16">
             {activeTab === "restaurants" ? (
               <>
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
                   Find your Perfect Table
                 </h1>
-                <p className="text-xl text-white/90 mb-8">
+                <p className="text-sm md:text-xl text-white/90 mb-8">
                   Discover and reserve the best restaurants in your city
                 </p>
               </>
@@ -299,6 +299,8 @@ export default function Home() {
         </div>
       </div>
 
+
+{/* stop */}
       {activeTab === "restaurants" ? (
         <div className="max-w-7xl mt-[65px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {isLoading ? (
@@ -358,3 +360,25 @@ export default function Home() {
     </main>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
