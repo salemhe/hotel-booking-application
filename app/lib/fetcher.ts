@@ -36,11 +36,8 @@ const createApiError = (message: string, details?: any, status?: number, url?: s
 };
 
 export const apiFetcher = async <T = any>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
-  // Check if API URL is properly defined
-  if (!process.env.NEXT_PUBLIC_API_URL) {
-
-    return createApiError('API URL is not configured');
-  }
+  // Use fallback API URL if environment variable is not set
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://hotel-booking-app-backend-30q1.onrender.com/api';
 
   // Get auth token with safeguards against undefined localStorage
   let token = null;
