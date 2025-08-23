@@ -75,7 +75,7 @@ const Form = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
-  // const router = useRouter();
+  const router = useRouter();
   const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
   
   const handleSubmit = async (e: React.FormEvent) => {
