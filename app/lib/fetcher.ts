@@ -55,15 +55,15 @@ export const apiFetcher = async <T = any>(url: string, options: RequestInit = {}
     ...(options.headers || {}),
   };
   
-  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}${url}`;
+  const apiUrl = `${apiBaseUrl}${url}`;
   console.log(`Making request to: ${apiUrl}`);
-  
+
   try {
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-    
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
+
+    const response = await fetch(`${apiBaseUrl}${url}`, {
       ...options,
       headers,
       credentials: "include",
