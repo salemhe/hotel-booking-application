@@ -1,16 +1,29 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+// eslint.config.mjs
+import next from "eslint-config-next";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export default [
+  // Base Next.js rules (TypeScript + React)
+  ...next(),
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+  // Ignore build output and deps
+  {
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      "dist/**",
+      "coverage/**",
+      ".vercel/**",
+    ],
+  },
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Project-level rule overrides
+  {
+    rules: {
+      // Allow <img> if you intentionally don't want next/image somewhere
+      "@next/next/no-img-element": "off",
+      // Feel free to extend with your preferences:
+      // "react/jsx-key": "error",
+      // "no-console": ["warn", { allow: ["warn", "error"] }],
+    },
+  },
 ];
-
-export default eslintConfig;
