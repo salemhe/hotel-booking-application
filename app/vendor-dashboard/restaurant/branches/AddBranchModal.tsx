@@ -16,6 +16,8 @@ interface AddBranchModalProps {
   branch?: Branch | null
 }
 
+import { apiFetcher } from "@/app/lib/fetcher";
+
 export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddBranchModalProps) {
   const [loading, setLoading] = useState(false)
   const [selectedDays, setSelectedDays] = useState<string[]>(branch?.selectedDays || [])
@@ -93,22 +95,18 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
       }
       if (branch) {
         // Edit mode
-        res = await fetch(`/super-admin/branches/${branch.id ?? branch.branchName}`, {
+        res = await apiFetcher(`/super-admin/branches/${branch.id ?? branch.branchName}`, {
           method: "PUT",
-          headers,
           body: JSON.stringify(branchData),
-          credentials: "include"
         })
       } else {
         // Add mode
-        res = await fetch("/super-admin/branches", {
+        res = await apiFetcher("/super-admin/branches", {
           method: "POST",
-          headers,
           body: JSON.stringify(branchData),
-          credentials: "include"
         })
       }
-      if (res && res.ok) {
+      if (res && (res.ok || res.status === true)) {
         if (onSave) onSave(branchData as Branch);
         onClose();
         // Reset form
@@ -125,9 +123,8 @@ export default function AddBranchModal({ isOpen, onClose, onSave, branch }: AddB
         setMenu("");
         setImportMenuItems(false);
       } else {
-        const errorText = await res.text();
-        alert("Failed to save branch: " + errorText);
-        console.error("Failed to save branch:", errorText);
+        alert("Failed to save branch");
+        console.error("Failed to save branch:", res);
       }
     } finally {
       setLoading(false)

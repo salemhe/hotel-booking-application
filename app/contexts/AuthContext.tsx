@@ -10,7 +10,6 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   loading: boolean;
   login: (userData: User, token: string) => void;
   logout: () => void;
@@ -21,49 +20,46 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // On mount, check localStorage for user and token using utility functions
   useEffect(() => {
-    // Check for saved auth data in localStorage on component mount
     if (typeof window !== 'undefined') {
-      const savedUser = localStorage.getItem('user');
-      const savedToken = localStorage.getItem('token');
-
-      if (savedUser && savedToken) {
+      const storedUser = localStorage.getItem('auth_user');
+      const token = localStorage.getItem('auth_token');
+      if (storedUser && token) {
         try {
-          setUser(JSON.parse(savedUser));
-          setToken(savedToken);
+          setUser(JSON.parse(storedUser));
         } catch (error) {
-          console.error('Error parsing saved user data:', error);
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');
+          console.error('Error parsing stored user data:', error);
+          setUser(null);
         }
+      } else {
+        setUser(null);
       }
+      setLoading(false);
     }
-
-    setLoading(false);
   }, []);
 
-  const login = (userData: User, authToken: string) => {
+  const login = (userData: User, token: string) => {
     setUser(userData);
-    setToken(authToken);
-
-    // Save to localStorage for persistence
     if (typeof window !== 'undefined') {
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', authToken);
+      // Store user data and token in localStorage for persistence
+      localStorage.setItem('auth_user', JSON.stringify(userData));
+      localStorage.setItem('auth_token', token);
+      console.log('Auth context updated with user:', userData);
     }
   };
 
   const logout = () => {
     setUser(null);
-    setToken(null);
-
-    // Clear localStorage
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
+      // Clear all authentication data using utility function
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('vendor-token');
     }
   };
 
@@ -71,11 +67,10 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     <AuthContext.Provider 
       value={{ 
         user, 
-        token, 
         loading, 
         login, 
         logout, 
-        isAuthenticated: !!user && !!token 
+        isAuthenticated: !!user 
       }}
     >
       {children}

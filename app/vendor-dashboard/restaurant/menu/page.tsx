@@ -2,6 +2,8 @@
 
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
+import useSWR from "swr";
+import { apiFetcher, ApiResponse } from "@/app/lib/fetcher";
 import {
   Card,
   CardContent,
@@ -69,123 +71,12 @@ interface MenuItem {
   updatedDaysAgo: number;
 }
 
-const mockMenuItems: MenuItem[] = [
-  {
-    id: "1",
-    name: "Joe's Platter",
-    description: "Hummus, baba ghanoush, tzatziki, pita bread",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 3,
-  },
-  {
-    id: "2",
-    name: "Mezze Platter",
-    description: "Hummus, baba ghanoush, tzatzaki, pita bread",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 3,
-  },
-  {
-    id: "3",
-    name: "Weekend Buffet",
-    description: "Weekend special buffet selection",
-    price: 45000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "buffet",
-    status: "available",
-    orders: 12,
-    menuType: "Buffet",
-    mealTimes: ["Brunch", "Dinner"],
-    tags: ["Vegan Options", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 5,
-  },
-  {
-    id: "4",
-    name: "Kid's Happy Menu",
-    description: "Special menu for children",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "fixed",
-    status: "available",
-    orders: 4,
-    menuType: "Fixed",
-    mealTimes: ["All Day"],
-    tags: ["Kids", "Sweet", "Small Bites"],
-    isActive: true,
-    updatedDaysAgo: 2,
-  },
-  {
-    id: "5",
-    name: "Chef's Special",
-    description: "Daily chef special selection",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 1,
-  },
-  {
-    id: "6",
-    name: "Grilled Salmon",
-    description: "Fresh grilled salmon with herbs",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "Buffet, A la carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 4,
-  },
-  {
-    id: "7",
-    name: "Chicken springrolls",
-    description: "Crispy chicken spring rolls",
-    price: 7000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "starters",
-    status: "unavailable",
-    orders: 0,
-    menuType: "Set Menu, Buffet",
-    mealTimes: ["All day"],
-    tags: ["Sweet", "Savory"],
-    isActive: false,
-    updatedDaysAgo: 1,
-  },
-];
 
 export default function MenuManagementPage() {
   const router = useRouter();
+  const { data } = useSWR<ApiResponse<MenuItem[]>>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
+  // Safely handle the data which might be an error response
+  const menuItems: MenuItem[] = data && !('isError' in data) ? data : [];
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus] = useState("all");
@@ -242,7 +133,7 @@ export default function MenuManagementPage() {
     // { value: "sides", label: "Sides" },
   ];
 
-  const filteredItems = mockMenuItems.filter((item) => {
+  const filteredItems = menuItems.filter((item) => {
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -425,20 +316,10 @@ export default function MenuManagementPage() {
       {/* Header */}
       
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          {/* <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button> */}
-          <div>
-            {/* <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <span>Restaurant 1 - HQ</span>
-              <span className="text-gray-400">•</span>
-              <span>2</span>
-            </div> */}
-            <h1 className="text-2xl font-bold text-gray-900">
-              Menu Management
-            </h1>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Menu Management
+          </h1>
         </div>
         <div className="flex items-center space-x-3">
           <Button variant="outline" size="sm">

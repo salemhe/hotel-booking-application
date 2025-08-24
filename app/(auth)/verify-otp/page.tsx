@@ -60,6 +60,8 @@ function OTPVerificationComponent() {
     try {
       await api.post("/users/verify-otp", { email, otp });
       toast.success("Email verified successfully!");
+
+      // Redirect to login page after successful OTP verification
       router.push("/user-login");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

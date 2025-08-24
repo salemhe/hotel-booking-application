@@ -28,7 +28,6 @@ import Link from "next/link";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
 
 
-
 export default function VendorMenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MenuItem[]>([]);
@@ -332,6 +331,15 @@ export default function VendorMenuPage() {
       </div>
     );
   }
+
+  // useEffect(() => {
+  //   const dataFetch = async () => {
+  //     const menu = await fetchMenu();
+  //     setData(menu);
+  //     console.log("menu", menu);
+  //   };
+  //   dataFetch();
+  // }, [fetchMenu]);
 
   return (
     <div className="container mx-auto py-6 px-4 bg-gray-50 min-h-screen">

@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
 
   let tokenCookieName = "user-token";
   if (isVendor) tokenCookieName = "vendor-token";
-  if (isSuperAdmin) tokenCookieName = "vendor-token"; // Adjust if you have a dedicated super-admin token
+  if (isSuperAdmin) tokenCookieName = "vendor-token"; // Using vendor token for super-admin
 
   const token = request.cookies.get(tokenCookieName)?.value;
 
@@ -24,10 +24,32 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  const decoded = jwtDecode<DecodedToken>(token);
-  const currentTime = Math.floor(Date.now() / 1000);
+  try {
+    const decoded = jwtDecode<DecodedToken>(token);
+    const currentTime = Math.floor(Date.now() / 1000);
 
   if (!decoded?.exp || decoded.exp < currentTime) {
+      let loginPath = "/user-login";
+      if (isVendor || isSuperAdmin) loginPath = "/vendor-login";
+      const redirectUrl = new URL(loginPath, origin);
+      redirectUrl.searchParams.set("redirect", redirectPath);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // For super-admin redirects, ensure proper handling
+    if (isSuperAdmin) {
+      // Check if role property exists and is super-admin
+      const userRole = decoded.role;
+      if (userRole === 'super-admin') {
+        // Allow access to super-admin routes
+        return NextResponse.next();
+      } else {
+        // If trying to access super-admin routes but not a super-admin
+        return NextResponse.redirect(new URL('/', origin));
+      }
+    }
+  } catch (error) {
+    // If token is invalid or can't be decoded, redirect to login
     let loginPath = "/user-login";
     if (isVendor || isSuperAdmin) loginPath = "/vendor-login";
     const redirectUrl = new URL(loginPath, origin);

@@ -29,6 +29,7 @@ import {
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useAuth } from "@/app/contexts/AuthContext";
 // import { FaStore } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 
@@ -48,7 +49,7 @@ interface FormData {
 }
 
 export default function VendorRegistration() {
-    const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     businessName: "",
     email: "",
@@ -64,6 +65,7 @@ export default function VendorRegistration() {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [otp, setOTP] = useState("");
   const router = useRouter();
+  const { login: contextLogin } = useAuth();
   //Expanded errors state to accommodate all fields
   const [errors, setErrors] = useState<Partial<typeof formData>>({});
 
@@ -131,14 +133,70 @@ export default function VendorRegistration() {
 
       // Automatically log in the user after verification
       const loginResponse = await AuthService.login(formData.email, formData.password);
-      await AuthService.setToken(loginResponse?.profile?.token ?? "");
-
-      toast.success(`Welcome, ${loginResponse?.profile?.businessName}!`);
-      localStorage.setItem("accountType", loginResponse?.profile?.businessType ?? "");
-
-      // Route based on admin type and business type
+      const token = loginResponse.token || (loginResponse.profile && loginResponse.profile.token);
+       const userId = loginResponse.profile?.id;
+      if (token) {
+        await AuthService.setToken(token);
+        localStorage.setItem("auth_token", token);
+      }
+      // Fetch real user profile from backend and store it
+      let realProfile = null;
+      if (userId) {
+        realProfile = await AuthService.fetchMyProfile(userId);
+        if (realProfile) {
+          AuthService.setUser({
+            ...realProfile,
+            email: realProfile.email,
+            role: realProfile.role,
+            id: realProfile.id,
+            businessName: realProfile.businessName ?? "",
+            businessType: realProfile.businessType ?? "",
+            address: realProfile.address ?? "",
+            branch: realProfile.branch ?? "",
+            profileImage: realProfile.profileImage ?? "",
+            profile: {
+              id: realProfile.id,
+              businessName: realProfile.businessName ?? "",
+              businessType: realProfile.businessType ?? "",
+              email: realProfile.email ?? "",
+              address: realProfile.address ?? "",
+              branch: realProfile.branch ?? "",
+              profileImage: realProfile.profileImage ?? "",
+              phone: typeof realProfile.phone === "number" ? realProfile.phone : 0,
+              paymentDetails: typeof realProfile.paymentDetails === "object" && realProfile.paymentDetails !== null
+                ? realProfile.paymentDetails
+                : {
+                    accountNumber: "",
+                    bankAccountName: "",
+                    bankCode: "",
+                    bankName: "",
+                    paystackSubAccount: "",
+                    percentageCharge: 0,
+                    recipientCode: "",
+                  },
+              recipientCode: typeof realProfile.recipientCode === "string" ? realProfile.recipientCode : "",
+              onboarded: typeof realProfile.onboarded === "boolean" ? realProfile.onboarded : false,
+            },
+          });
+        }
+      }
+      // Route based on account type
       if (formData.adminType === "super-admin") {
-        router.push("/super-admin/dashboard");
+      // Set AuthContext for auto-login
+      if (realProfile) {
+        contextLogin({
+          id: realProfile.id ?? "",
+          name: realProfile.businessName ?? realProfile.email ?? "",
+          email: realProfile.email ?? "",
+          role: realProfile.role ?? "super-admin"
+        }, token || "");
+          // Wait a tick to ensure context is set before redirect
+          setTimeout(() => {
+            router.push("/super-administrator/dashboard");
+          }, 150);
+        } else {
+          router.push("/super-administrator/dashboard");
+        }
       } else {
         // Route to appropriate vendor dashboard based on business type
         if (loginResponse?.profile?.onboarded) {

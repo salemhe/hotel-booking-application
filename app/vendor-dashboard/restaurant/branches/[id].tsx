@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetcher } from "@/app/lib/fetcher";
 import { useParams } from "next/navigation";
 import { Bell, Search, ChevronDown, Users, Calendar, DollarSign, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
@@ -46,14 +47,10 @@ export default function BranchDetailPage() {
       setLoading(true);
       setError("");
       try {
-        const branchRes = await fetch(`/api/branches/${branchId}`);
-        if (!branchRes.ok) throw new Error("Failed to fetch branch details");
-        const branchData = await branchRes.json();
+        const branchData = await apiFetcher(`/api/branches/${branchId}`);
         setBranch(branchData);
 
-        const resRes = await fetch(`/api/branches/${branchId}/reservations`);
-        if (!resRes.ok) throw new Error("Failed to fetch reservations");
-        const reservationsData = await resRes.json();
+        const reservationsData = await apiFetcher(`/api/branches/${branchId}/reservations`);
         setReservations(reservationsData);
       } catch (err) {
         if (err instanceof Error) {

@@ -6,6 +6,23 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/app/lib/utils"
 
+// Define a simple native select component for basic use cases
+export interface NativeSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  children: React.ReactNode;
+}function BasicSelect({ children, className, ...props }: NativeSelectProps) {
+  return (
+    <select
+      className={cn(
+        "block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </select>
+  );
+}
+
 const Select = SelectPrimitive.Root
 
 const SelectGroup = SelectPrimitive.Group
@@ -150,10 +167,10 @@ export {
   SelectGroup,
   SelectValue,
   SelectTrigger,
-  SelectContent,
-  SelectLabel,
+  SelectContent,SelectLabel,
   SelectItem,
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
+  BasicSelect as NativeSelect,
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { apiFetcher } from "@/app/lib/fetcher";
 import {
   Calendar,
   Users,
@@ -27,21 +27,21 @@ export default function VendorDashboard({ vendorId, vendorType }: { vendorId: st
       setLoading(true);
       try {
         // Fetch vendor details
-        const vendorRes = await axios.get(`${API_URL}/super-admin/analytics/vendor/${vendorId}?vendorType=${vendorType}`);
-        setVendor(vendorRes.data.data);
+        const vendorData = await apiFetcher(`${API_URL}/super-admin/analytics/vendor/${vendorId}?vendorType=${vendorType}`);
+        setVendor(vendorData.data);
         // Fetch reservations for this vendor
-        const reservationsRes = await axios.get(`${API_URL}/vendor/${vendorId}/reservations`);
-        setReservations(reservationsRes.data.data || []);
+        const reservationsData = await apiFetcher(`${API_URL}/vendor/${vendorId}/reservations`);
+        setReservations(reservationsData.data || []);
         // Fetch stats (if available)
         setStats({
-          totalRevenue: vendorRes.data.data.totalRevenue,
-          totalBookings: vendorRes.data.data.totalBookings,
-          activeBookings: vendorRes.data.data.activeBookings,
-          monthlyAverage: vendorRes.data.data.monthlyAverage,
-          platformFee: vendorRes.data.data.platformFee,
+          totalRevenue: vendorData.data.totalRevenue,
+          totalBookings: vendorData.data.totalBookings,
+          activeBookings: vendorData.data.activeBookings,
+          monthlyAverage: vendorData.data.monthlyAverage,
+          platformFee: vendorData.data.platformFee,
         });
         // Fetch chart data (if available)
-        setChartData(vendorRes.data.data.monthlyRevenue || []);
+        setChartData(vendorData.data.monthlyRevenue || []);
       } catch {
         setVendor(null);
         setReservations([]);

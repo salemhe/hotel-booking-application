@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import AddBranchModal from "./AddBranchModal"
+import { apiFetcher } from "@/app/lib/fetcher";
 
 export interface Branch {
   id?: string;
@@ -37,11 +38,8 @@ export default function RestaurantDashboard() {
   // Fetch branches from backend
   const fetchBranches = async () => {
     try {
-      const res = await fetch("/api/branches")
-      if (res.ok) {
-        const data = await res.json()
-        setBranches(data)
-      }
+      const data = await apiFetcher("/api/branches");
+      setBranches(data);
     } catch {
       // Optionally handle error
     }

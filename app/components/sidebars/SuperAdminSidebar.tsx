@@ -14,13 +14,13 @@ import ReportIcon from "@mui/icons-material/Report";
 // import BuildIcon from "@mui/icons-material/Build";
 
 const navItems = [
-  { text: "Dashboard", icon: <DashboardIcon />, href: "/super-admin/dashboard" },
-  { text: "Vendors", icon: <BusinessIcon />, href: "/super-admin/vendors" },
-  { text: "Chains", icon: <BusinessIcon />, href: "/super-admin/chains" },
-  { text: "Locations", icon: <LocationOnIcon />, href: "/super-admin/locations" },
-  { text: "Earnings", icon: <MonetizationOnIcon />, href: "/super-admin/earnings" },
-  { text: "Revenue", icon: <BarChartIcon />, href: "/super-admin/revenue" },
-  { text: "Reports", icon: <ReportIcon />, href: "/super-admin/reports" },
+  { text: "Dashboard", icon: <DashboardIcon />, href: "/super-administrator/dashboard" },
+  { text: "Vendors", icon: <BusinessIcon />, href: "/super-administrator/vendors" },
+  { text: "Chains", icon: <BusinessIcon />, href: "/super-administrator/chains" },
+  { text: "Locations", icon: <LocationOnIcon />, href: "/super-administrator/locations" },
+  { text: "Earnings", icon: <MonetizationOnIcon />, href: "/super-administrator/earnings" },
+  { text: "Revenue", icon: <BarChartIcon />, href: "/super-administrator/revenue" },
+  { text: "Reports", icon: <ReportIcon />, href: "/super-administrator/reports" },
 ];
 
 function SuperAdminSidebar() {

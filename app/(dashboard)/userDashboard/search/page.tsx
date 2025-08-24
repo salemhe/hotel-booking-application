@@ -9,6 +9,8 @@ import { Input } from "@/app/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import API from "@/app/lib/api/userAxios";
 import { AxiosError } from "axios";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,6 +26,16 @@ export default function Home() {
   const [initailLoad, setInitialLoad] = useState(true);
 
   const { toast } = useToast();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  // Authentication check
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (!authLoading && (!isAuthenticated || !token || !user)) {
+      router.replace("/user-login");
+    }
+  }, [isAuthenticated, authLoading, user, router]);
 
   interface filtersType {
     cuisineType: string[];
@@ -47,7 +59,6 @@ export default function Home() {
   });
 
   // Get user location on mount
-
   useEffect(() => {
     setSuggestions([
       "Jollof Rice",
@@ -169,10 +180,6 @@ export default function Home() {
     initialSearch();
   }, [searchRestaurants])
 
-  // useEffect(() => {
-  //   searchRestaurants("");
-  // }, [searchRestaurants]);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     searchRestaurants(searchQuery);
@@ -197,14 +204,12 @@ export default function Home() {
 
   const applyFilters = (newFilters: filtersType) => {
     setFilters(newFilters);
-    // In a real app, you would apply these filters to your API call
     setShowFilters(false);
   };
 
   const applySorting = (sortOption: string) => {
     setSortBy(sortOption);
 
-    // Apply sorting logic
     const sortedRestaurants = [...restaurants];
 
     switch (sortOption) {
@@ -226,7 +231,6 @@ export default function Home() {
         });
         break;
       case "distance":
-        // In a real app, you would sort by actual distance
         break;
       case "newest":
         sortedRestaurants.sort(
@@ -235,14 +239,12 @@ export default function Home() {
         );
         break;
       default:
-        // Default is relevance, which is the order from the API
         break;
     }
 
     setRestaurants(sortedRestaurants);
   };
 
-  // Count active filters
   const activeFilterCount = Object.entries(filters).reduce(
     (count, [key, value]) => {
       if (Array.isArray(value)) {

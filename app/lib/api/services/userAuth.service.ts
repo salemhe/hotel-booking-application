@@ -1,9 +1,10 @@
 // src/services/userAuth.services.ts
+
 import { jwtDecode } from "jwt-decode";
 import { api } from "@/app/lib/axios-config";
 import { SessionService } from "./session.service";
-import { getFrontendUrl } from "@/app/lib/config";
 import API from "../userAxios";
+import { apiFetcher } from "@/app/lib/fetcher";
 
 interface LoginResponse {
   message: string;
@@ -31,6 +32,7 @@ export interface DecodedToken {
   id?: string;
   exp?: number;
   iat?: number;
+  role?: string;
 }
 
 export class AuthService {
@@ -55,19 +57,17 @@ export class AuthService {
 
 
   static async setToken(token: string) {
-    await fetch(`http://localhost:5000/api/auth/set-user-token`, {
+    await apiFetcher(`/api/auth/set-user-token`, {
       method: "POST",
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
     });
   }
 
   static async getToken(): Promise<string | null> {
-    const response = await fetch(`https://hotel-booking-app-backend-30q1.onrender.com/api/auth/get-user-token`, {
-      method: "GET",
-    });
-    const data = await response.json();
-    return data.token;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(this.AUTH_TOKEN_KEY);
+    }
+    return null;
   }
 
   static async getUser(id: string): Promise<UserProfile | null> {
@@ -82,7 +82,7 @@ export class AuthService {
   }
 
   static async clearToken() {
-    await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
+    await apiFetcher(`/api/auth/clear-token`, {
       method: "GET",
     });
   }
@@ -96,15 +96,20 @@ export class AuthService {
 
   static async isAuthenticated(): Promise<boolean> {
     const token = await this.getToken();
-    return !!token && this.validateToken(token);
+    const valid = !!token && this.validateToken(token);
+    return valid;
   }
 
   static validateToken(token: string): boolean {
     try {
       const decodedToken = jwtDecode<DecodedToken>(token);
-      if (!decodedToken.id || !decodedToken.exp) return false;
-      return decodedToken.exp * 1000 > Date.now() + 5000;
+      if (!decodedToken.id || !decodedToken.exp) {
+        return false;
+      }
+      const valid = decodedToken.exp * 1000 > Date.now() + 5000;
+      return valid;
     } catch {
+      // Handle token validation error
       return false;
     }
   }
@@ -202,8 +207,8 @@ export class AuthService {
       }
 
       return true;
-    } catch (error) {
-      console.log("Session validation failed:", error);
+    } catch (err) {
+      console.log("Session validation failed:", err);
       this.clearToken();
       return false;
     }
@@ -221,8 +226,8 @@ export class AuthService {
         return false;
       }
       return true;
-    } catch (error) {
-      console.error("Check session error:", error);
+    } catch (err) {
+      console.error("Check session error:", err);
       this.clearToken();
       return false;
     }

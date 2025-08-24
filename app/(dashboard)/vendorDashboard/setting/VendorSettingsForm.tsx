@@ -5,6 +5,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
+import { apiFetcher } from "@/app/lib/fetcher";
 
 export default function VendorSettingsForm() {
   const [formData, setFormData] = useState({
@@ -39,11 +40,10 @@ export default function VendorSettingsForm() {
     formData.images.forEach((file) => form.append("images", file));
 
     try {
-      const res = await fetch("http://localhost:5000/api/restaurant/update", {
+      await apiFetcher("/api/restaurant/update", {
         method: "POST",
         body: form,
       });
-      await res.json();
       toast.success("Restaurant info updated successfully!");
     } catch (error) {
       console.error(error)

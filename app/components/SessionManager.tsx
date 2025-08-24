@@ -12,7 +12,16 @@ export default function SessionManager({ children }: { children: React.ReactNode
       const isValidSession = await AuthService.checkSession();
       if (!isValidSession) {
         router.push('/vendor-login'); 
+        return;
       }
+      // Check role and redirect super-admins
+      const role = AuthService.getUserRole && AuthService.getUserRole();
+      if (role === "super-admin") {
+        router.replace("/super-admin/dashboard");
+        return;
+      }
+      // For other users, you can add onboarding logic here if needed
+      // e.g., router.replace("/onboarding");
     };
 
     checkSession();
