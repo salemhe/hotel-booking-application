@@ -25,7 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
- import { AuthService } from "@/app/lib/api/services/userAuth.service";
+ import { AuthService } from "@/app/lib/api/services/auth.service";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -94,11 +94,16 @@ export default function RestaurantPayments() {
     fetchAll();
     const fetchVendor = async () => {
       try {
-        if (await AuthService.isAuthenticated()) {
-          const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!);
-          const profile = await AuthService.fetchMyProfile(id!);
-          setVendor(profile);
+        if (AuthService.isAuthenticated()) {
+          const id = await AuthService.getId();
+          if (id) {
+            const profile = await AuthService.fetchMyProfile(id);
+            setVendor({
+              businessName: (profile as any)?.businessName || (profile as any)?.name,
+              role: (profile as any)?.role || (profile as any)?.businessType || 'Vendor',
+              profileImage: (profile as any)?.profileImage
+            });
+          }
         }
       } catch {
         setVendor(null);
@@ -108,7 +113,7 @@ export default function RestaurantPayments() {
   }, []);
   const fetchAll = async () => {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
       const [accRes, statsRes, transRes] = await Promise.all([
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts`, {
           credentials: "include",
@@ -141,8 +146,8 @@ export default function RestaurantPayments() {
     setVerifyError('');
     try {
       const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const token2 = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
-      const res = await fetch(`${BASE_URL}/api/vendor/accounts/verify`, {
+      const token2 = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+      const res = await fetch(`${BASE_URL}/api/vendors/accounts/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -165,7 +170,7 @@ export default function RestaurantPayments() {
   };
 
   const saveAccount = async () => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
     try {
       if (accountForm.id) {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts/${accountForm.id}`, {

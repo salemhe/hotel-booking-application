@@ -69,9 +69,10 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
               return fetchWithRetry(retries - 1);
             }
             
-            // Log detailed error after all retries fail
-            console.error("All branch API retries failed:", { 
-              error: result.error, 
+            // Log detailed error after all retries fail (downgraded to warning to avoid overlay)
+            console.warn("All branch API retries failed:", {
+              message: result && typeof result === 'object' && 'error' in result && result.error && typeof result.error === 'object' && 'message' in result.error ? (result.error as any).message : 'Unknown error',
+              status: result && typeof result === 'object' && 'error' in result && result.error && typeof result.error === 'object' && 'status' in result.error ? (result.error as any).status : undefined,
               url: "/api/branches"
             });
             
@@ -119,15 +120,18 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
       
       // Update state with fetched data
       setBranches(data);
-      
-      // Update selected branch if needed
-      if (!selectedBranch && data.length > 0) {
-        setSelectedBranch(data[0]);
-      } else if (selectedBranch && data.length > 0) {
-        // Update selectedBranch if it exists in the new data
-        const found = data.find(b => b.id === selectedBranch.id);
-        if (found) setSelectedBranch(found);
-      }
+
+      // Update selected branch using functional update to avoid stale closures
+      setSelectedBranch(prev => {
+        if (!prev && data.length > 0) {
+          return data[0];
+        }
+        if (prev && data.length > 0) {
+          const found = data.find(b => b.id === prev.id);
+          return found || prev;
+        }
+        return prev;
+      });
     } catch (error) {
       console.error("Error in branch fetching:", 
         error && typeof error === 'object' && 'message' in error ? error.message : 'Unknown error');
@@ -138,7 +142,8 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchBranches();
-  }, [fetchBranches]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <BranchContext.Provider value={{ branches, selectedBranch, setSelectedBranch, refreshBranches: fetchBranches }}>

@@ -19,9 +19,9 @@ import {
   getRevenueByCategory,
 
   getReservationSources,
-  getUserProfile,
   getUpcomingReservations
 } from '@/app/lib/api-service'
+import { AuthService } from '@/app/lib/api/services/auth.service'
 
 // Define interfaces for our data structures
 interface Reservation {
@@ -133,8 +133,13 @@ const [reservations, setReservations] = useState<Reservation[]>([])
       try {
         // Check if WebSocket is supported
         if (typeof window !== 'undefined' && 'WebSocket' in window) {
-          // Replace with your actual WebSocket endpoint
-          const wsEndpoint = process.env.NEXT_PUBLIC_WS_ENDPOINT || 'wss://api.example.com/ws';
+          // Only initialize WebSocket if endpoint is configured properly; otherwise fall back to polling
+          const wsEnv = process.env.NEXT_PUBLIC_WS_ENDPOINT;
+          if (!wsEnv || !/^wss?:\/\//.test(wsEnv)) {
+            console.warn('WebSocket endpoint not configured; falling back to polling');
+            return null;
+          }
+          const wsEndpoint = wsEnv;
           
           console.log('Attempting to establish WebSocket connection for restaurant dashboard...');
           
@@ -193,9 +198,9 @@ const [reservations, setReservations] = useState<Reservation[]>([])
             }
           });
           
-          // Handle errors
+          // Handle errors (downgraded to warning to avoid Next overlay)
           socket.addEventListener('error', (event) => {
-            console.error('WebSocket error:', event);
+            console.warn('WebSocket error suppressed:', event);
           });
           
           // Handle connection closing
@@ -302,7 +307,14 @@ const [reservations, setReservations] = useState<Reservation[]>([])
         
         // Profile data needs special handling with retries
         for (let retry = 0; retry < 3; retry++) {
-          profileData = await safelyFetchData<any>(() => getUserProfile(), {});
+          try {
+            if (AuthService.isAuthenticated()) {
+              const id = await AuthService.getId();
+              if (id) {
+                profileData = await AuthService.fetchMyProfile(id);
+              }
+            }
+          } catch {}
           if (profileData && Object.keys(profileData).length > 0) break;
           console.log(`Retrying profile fetch, attempt ${retry + 1}/3`);
           await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms between retries
@@ -364,11 +376,10 @@ const [reservations, setReservations] = useState<Reservation[]>([])
           
           // Prioritize API data over localStorage data
           if (profileData && Object.keys(profileData).length > 0) {
-            // Try multiple possible property names for the business name
             const possibleNameProps = ['businessName', 'name', 'companyName', 'restaurantName', 'hotelName'];
             for (const prop of possibleNameProps) {
-              if (profileData[prop] && typeof profileData[prop] === 'string' && profileData[prop].trim() !== '') {
-                vendorName = profileData[prop];
+              if ((profileData as any)[prop] && typeof (profileData as any)[prop] === 'string' && (profileData as any)[prop].trim() !== '') {
+                vendorName = (profileData as any)[prop];
                 break;
               }
             }
