@@ -65,7 +65,7 @@ export function BookingFilters({
         </div>
         
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:items-center">
-          <Select value="today"  >
+          <Select defaultValue="today"  >
             <SelectTrigger className="w-full sm:w-32">
               <SelectValue placeholder="Today" />
             </SelectTrigger>
@@ -76,7 +76,7 @@ export function BookingFilters({
             </SelectContent>
           </Select>
 
-          <Select value={paymentStatus} onChange={handleChange}>
+          <Select defaultValue={paymentStatus} onChange={() => handleChange}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Payment Status" />
             </SelectTrigger>
