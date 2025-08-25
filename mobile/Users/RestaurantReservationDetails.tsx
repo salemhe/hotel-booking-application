@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, Star, MapPin, Edit3, Clock, Users, X } from 'lucide-react';
-import { Card, CardContent } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Textarea } from '../../components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '../../components/ui/radio-group';
-import { Label } from '../../components/ui/label';
+import { Card, CardContent } from '../../app/components/ui/card';
+import { Button } from '../../app/components/ui/button';
+import { Input } from '../../app/components/ui/input';
+import { Textarea } from '../../app/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '../../app/components/ui/radio-group';
+import { Label } from '../../app/components/ui/label';
 import BottomNavigation from './BottomNavigation';
 
 interface ReservationData {
