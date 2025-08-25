@@ -308,6 +308,7 @@ import {
 
 - **User Demo**: `/mobile-demo` - Showcase all user components
 - **Vendor Demo**: `/vendor-mobile-demo` - Showcase all vendor components
+- **Admin Demo**: `/admin-mobile-demo` - Showcase all admin components
 
 ## Design System
 
