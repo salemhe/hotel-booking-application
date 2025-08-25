@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Users, UserCheck, UserX, EyeOff, ArrowUp, ArrowDown } from "lucide-react";
+import { Users, UserCheck, UserX, EyeOff, ArrowUp, ArrowDown,Eye, EyeClosed, UserRoundPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -23,7 +23,7 @@ interface StaffMember {
   status: string;
   phone: string;
   email: string;
-  profileImages: string[];
+  profileImage: string;
   createdAt: string;
 
 }
@@ -55,6 +55,7 @@ export default function HotelStaffPage() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [staffStats, setStaffStats] = useState<StaffStats | undefined>();
   const [searchTerm, setSearchTerm] = useState("");
+  const [hide, setHide] = useState(false);
   const [activeTab, setActiveTab] = useState<"all" | "active" | "inactive">("all");
 
   const fetchStaff = useCallback(async () => {
@@ -65,7 +66,7 @@ export default function HotelStaffPage() {
       const queryString = new URLSearchParams(params).toString();
       const url = `/api/vendors/staff${queryString ? `?${queryString}` : ""}`;
 
-      const data = await apiFetcher(url); // assuming apiFetcher returns parsed JSON
+      const data = await apiFetcher(url); 
       console.log(data)
       // Backend response shape: { message, staffs }
       setStaff(data?.staffs || []);
@@ -79,7 +80,7 @@ export default function HotelStaffPage() {
     try {
       const url = `/api/vendors/staff/stats`;
 
-      const data = await apiFetcher(url); // assuming apiFetcher returns parsed JSON
+      const data = await apiFetcher(url);
       console.log("DATA", data)
       // Backend response shape: { message, staffs }
       setStaffStats(data?.stats || {
@@ -90,12 +91,6 @@ export default function HotelStaffPage() {
       });
     } catch (error) {
       console.error("Failed to fetch staff stats:", error);
-      // setStaffStats({
-      //   totalStaff: { count: 0, change: 0 },
-      //   activeStaff: { count: 0, change: 0 },
-      //   inactiveStaff: { count: 0, change: 0 },
-      //   noShowStaff: { count: 0, change: 0 }
-      // });
     }
   }, []);
 
@@ -124,7 +119,17 @@ export default function HotelStaffPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h2 className="text-2xl font-bold mb-6">Staff List</h2>
+      <div className="flex flex-row justify-between">
+        <h2 className="text-2xl font-bold mb-6">Staff List</h2>
+      <div className="flex flex-row justify-between p-8 gap-4">
+        <button className="flex flex-row gap-2 px-4 py-2 border-2 cursor-pointer rounded-md bg-white text-gray" onClick={() => setHide(!hide)}>
+         {hide? <EyeClosed className="w-6 h-6" /> : <Eye className="w-6 h-6"  />} <span>Hide</span>
+        </button>
+        <button className="flex flex-row gap-2 px-4 py-2 cursor-pointer rounded-md bg-[#0A6C6D] text-white" onClick={() => window.location.href = '/vendor-dashboard/hotel/add-staff'}>
+         <UserRoundPlus className="w-6 h-6" /> Add Staff
+        </button>
+      </div>
+      </div>
       {/* Staff Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 bg-white rounded-lg shadow p-5">
         <div className="flex flex-row justify-between items-center gap-4 p-6 border-r border-gray-300">

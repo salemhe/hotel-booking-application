@@ -127,3 +127,49 @@ export const apiFetcher = async <T = any>(
     return createApiError(message, error, undefined, url);
   }
 };
+
+// apiFetcher.ts
+export const fetchForFormData = async <T = any>(
+  url: string,
+  options: RequestInit = {}
+): Promise<ApiResponse<T>> => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  const headers: Record<string, string> = {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options.headers as Record<string, string>),
+  };
+
+  // ✅ Only set Content-Type to application/json if body is not FormData
+  if (options.body && !(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+    if (typeof options.body !== "string") {
+      options.body = JSON.stringify(options.body);
+    }
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}${url}`,
+    {
+      ...options,
+      headers,
+    }
+  );
+
+  // Handle errors
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Error ${response.status}: ${text}`);
+  }
+
+  // Try parsing JSON, fallback to text
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.includes("application/json")) {
+    return await response.json();
+  } else {
+    const text = await response.text();
+    return { text } as T;
+  }
+};
+

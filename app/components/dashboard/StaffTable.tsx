@@ -27,7 +27,7 @@ type StaffMember = {
   createdAt: string;
   phone: string;
   email: string;
-  profileImages: string[];
+  profileImage: string;
 };
 
 export default function StaffTable({ staff }: { staff: StaffMember[] }) {
@@ -130,7 +130,7 @@ export default function StaffTable({ staff }: { staff: StaffMember[] }) {
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id} className="hover:bg-gray-50">
-                <td className="p-5 border-b"><Image src={"/images/staff.png"} alt={row.original.staffName} width={40} height={40} className=" rounded-full" /></td>
+                <td className="p-5 border-b"><Image src={row.original.profileImage || "/images/staff.png"} alt={row.original.staffName} width={40} height={40} className=" rounded-full" /></td>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="p-5 border-b">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
