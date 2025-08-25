@@ -28,7 +28,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-import { getAuthToken, getAuthUser, isAuthenticated } from "@/app/utils/auth";
+import { getAuthUser, isAuthenticated } from "@/app/utils/auth";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 
 // Removed unused sidebarItems
 
@@ -61,7 +62,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
   const handleSubmit = async (action: string) => {
     try {
       // POST to backend with Authorization header
-      const token = getAuthToken();
+      const token = await AuthService.getToken();
       console.log('Token:', token); // Log the token
       
       if (!token) {
@@ -70,7 +71,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
       }
       // Ensure auth cookie is set for backend session
       try {
-        await API.post('auth/set-user-token', { token });
+        await API.post('auth/set-vendor-token', { token });
       } catch (e) {
         console.warn('Failed to set vendor token cookie preflight:', e);
       }
@@ -91,6 +92,11 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           assignedManager: formData.assignedManager,
           assignedMenu: formData.assignedMenu,
           importAllMenuItems: formData.importAllMenuItems,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       onBranchAdded(); // Refresh branch list
@@ -299,7 +305,7 @@ export default function BranchesDashboard() {
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       
-      const token = getAuthToken();
+      const token = await AuthService.getToken();
       if (!token) {
         console.error("No authentication token found");
         setBranches([]);
@@ -309,13 +315,16 @@ export default function BranchesDashboard() {
       
       // Ensure auth cookie is set for backend session
       try {
-        await API.post('auth/set-user-token', { token });
+        await API.post('auth/set-vendor-token', { token });
       } catch (e) {
         console.warn('Failed to set vendor token cookie preflight:', e);
       }
 
       const res = await API.get('super-admin/branches', { 
         params,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       setBranches(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
@@ -335,9 +344,9 @@ export default function BranchesDashboard() {
         if (status === 401 && !retry) {
           // Attempt to re-establish backend session cookie, then retry once
           try {
-            const token2 = getAuthToken();
+            const token2 = await AuthService.getToken();
             if (token2) {
-              await API.post('auth/set-user-token', { token: token2 });
+              await API.post('auth/set-vendor-token', { token: token2 });
               await fetchBranches(true);
               return;
             }

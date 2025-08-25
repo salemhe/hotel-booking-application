@@ -28,7 +28,7 @@ const sidebarItems = [
   { icon: CreditCard, label: "Payments", href: "/super-administrator/payments" },
   { icon: Users, label: "Staff", href: "/super-administrator/staff" },
   { icon: Settings, label: "Settings", href: "/super-administrator/settings" },
-  { icon: LogOut, label: "Logout", href: "#", onClick: () => {
+  { icon: LogOut, label: "Logout", onClick: () => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
     window.location.href = '/vendor-login';
@@ -91,6 +91,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         }
         if (token) {
           await API.post('auth/set-vendor-token', { token });
+          await API.post('auth/set-user-token', { token });
         }
       } catch (e) {
         // non-fatal
