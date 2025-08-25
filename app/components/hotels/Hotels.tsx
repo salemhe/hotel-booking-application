@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Star,
@@ -111,7 +111,7 @@ export default function Hotels() {
   // );
 
   // Debounced search function
-  const handleSearch = async (data?: string) => {
+  const handleSearch = useCallback(async (data?: string) => {
     setIsLoading(true);
     // applyFilters();
 
@@ -137,7 +137,7 @@ export default function Hotels() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
   // Effect to handle search params and filters
   // useEffect(() => {
@@ -185,7 +185,7 @@ export default function Hotels() {
     // setCurrentPage(page)
     // setSortBy(sort)
     // setSortOrder(order)
-  }, [searchParams]);
+  }, [searchParams, handleSearch]);
 
   const resetFilters = () => {
     setCuisineFilter([]);
@@ -199,17 +199,7 @@ export default function Hotels() {
     setCurrentPage(1);
   };
 
-  useEffect(() => {
-    applyFilters();
-  }, [
-    cuisineFilter,
-    priceFilter,
-    ratingFilter,
-    sortOrder,
-    sortBy,
-    restaurants,
-  ]);
-
+ 
   const paginatedRestaurants = filteredRestaurants.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -224,7 +214,7 @@ export default function Hotels() {
     }
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = restaurants;
     // if (cuisineFilter.length > 0) {
     //   filtered = filtered.filter((restaurant) =>
@@ -256,7 +246,20 @@ export default function Hotels() {
 
     setFilteredRestaurants(filtered);
     setCurrentPage(1);
-  };
+  }, [restaurants, searchQuery, locationFilter]);
+
+   useEffect(() => {
+    applyFilters();
+  }, [
+    cuisineFilter,
+    priceFilter,
+    ratingFilter,
+    sortOrder,
+    sortBy,
+    restaurants,
+    applyFilters,
+  ]);
+
 
   const handlePriceChange = (price: string) => {
     setPriceFilter((prev) =>

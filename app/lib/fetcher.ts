@@ -22,12 +22,21 @@ export type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 // Helper function to create consistent error objects
 const createApiError = (message: string, details?: any, status?: number, url?: string): ApiErrorResponse => {
+  let detailObject: any;
+  if (details instanceof Error) {
+    detailObject = { name: details.name, message: details.message, stack: details.stack };
+  } else if (typeof details === 'object' && details !== null) {
+    detailObject = details;
+  } else if (details !== undefined) {
+    detailObject = { value: details };
+  }
+
   return {
     isError: true,
     error: {
       message: message || 'Unknown error occurred',
       status,
-      details,
+      details: detailObject,
       url,
       timestamp: new Date().toISOString(),
       code: 'API_ERROR'
@@ -38,7 +47,6 @@ const createApiError = (message: string, details?: any, status?: number, url?: s
 export const apiFetcher = async <T = any>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> => {
   // Check if API URL is properly defined
   if (!process.env.NEXT_PUBLIC_API_URL) {
-
     return createApiError('API URL is not configured');
   }
 
@@ -66,7 +74,7 @@ export const apiFetcher = async <T = any>(url: string, options: RequestInit = {}
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
+    const response = await fetch(apiUrl, {
       ...options,
       headers,
       credentials: "include",
@@ -76,37 +84,40 @@ export const apiFetcher = async <T = any>(url: string, options: RequestInit = {}
     console.log(`Response status for ${url}: ${response.status}`);
     
     if (!response.ok) {
-      // Try to get error details if available
-      let errorData: any = { message: `Error ${response.status}` };
-      
+      let errorData: any = {};
+      let message = `Request failed with status ${response.status}`;
+
       try {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const errorText = await response.text();
-          if (errorText) {
-            errorData = JSON.parse(errorText);
+        const errorText = await response.text();
+        if (errorText) {
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            try {
+              errorData = JSON.parse(errorText);
+              if (typeof errorData.message === 'string') {
+                message = errorData.message;
+              }
+            } catch (e) {
+              message = "Failed to parse JSON error response.";
+              errorData.rawResponse = errorText;
+            }
+          } else {
+            message = errorText;
           }
-        } else {
-          errorData.message = await response.text() || `Error ${response.status}`;
         }
-      } catch (parseError) {
-        errorData.parseError = true;
+      } catch (e) {
+        // Failed to read response body
+        message = `Request failed with status ${response.status} and failed to read response body.`;
       }
       
-      // Use the helper function to ensure the error has the correct type
       const formattedError = createApiError(
-        typeof errorData.message === 'string' ? errorData.message : `Error ${response.status}`,
+        message,
         errorData,
         response.status,
         url
       );
       
-      console.error('API Error:', { 
-        status: response.status, 
-        url, 
-        message: formattedError.error.message,
-        timestamp: formattedError.error.timestamp
-      });
+      console.error('API Error:', JSON.stringify(formattedError, null, 2));
       
       return formattedError;
     }
@@ -147,7 +158,7 @@ export const apiFetcher = async <T = any>(url: string, options: RequestInit = {}
       }
     }
     
-    console.error('Fetch error for', url, ':', errorMessage);
+    console.error('Fetch error for', url, ':', error);
     
     // Return structured error object using helper function
     return createApiError(errorMessage, error, undefined, url);

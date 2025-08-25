@@ -1,9 +1,10 @@
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import API from "@/app/lib/api/axios";
 import axios from "axios";
 import {
   Search,
@@ -27,8 +28,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-import { API_URL } from "@/app/config";
-import { getAuthToken, getAuthUser, isAuthenticated } from "@/app/utils/auth";
+import { getAuthUser } from "@/app/utils/auth";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 
 // Removed unused sidebarItems
 
@@ -60,16 +61,12 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
   };
   const handleSubmit = async (action: string) => {
     try {
-      // POST to backend with Authorization header
-      const token = getAuthToken();
-      console.log('Token:', token); // Log the token
-      
-      if (!token) {
-        alert("Authentication required. Please log in again.");
-        return;
-      }
-      const response = await axios.post(
-        `${API_URL}/api/super-admin/branches`,
+      // The API instance is now configured with an interceptor to add the auth token.
+      // The layout handles setting the session cookie.
+      // Manual token handling is no longer needed here.
+
+      const response = await API.post(
+        'super-admin/branches',
         {
           name: formData.branchName,
           address: formData.address,
@@ -84,11 +81,6 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           assignedManager: formData.assignedManager,
           assignedMenu: formData.assignedMenu,
           importAllMenuItems: formData.importAllMenuItems,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
       onBranchAdded(); // Refresh branch list
@@ -114,12 +106,27 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         setIsOpen(false);
       }
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        const response = err.response;
-        console.error('API error:', response.data);
-        alert("Failed to save branch: " + (response.data?.message || JSON.stringify(response.data)));
+      if (axios.isAxiosError(err)) {
+        const status = err.response?.status;
+        const data = err.response?.data;
+        let serverMessage = "";
+        if (data) {
+          if (typeof data === "string") {
+            serverMessage = data;
+          } else if (typeof data === "object") {
+            serverMessage = (data as any).message || (data as any).error || JSON.stringify(data);
+          }
+        }
+        const finalMsg = serverMessage || err.message || "Request failed";
+        // Use warn to avoid Next overlay intercepting console.error
+        console.warn("Add branch API error:", { status, data: err.response?.data });
+        if (status === 401 || status === 403) {
+          alert("Unauthorized. Please log in again.");
+        } else {
+          alert("Failed to save branch: " + finalMsg);
+        }
       } else {
-        console.error('Error:', err);
+        console.warn('Add branch error:', err);
         alert("Failed to save branch. Please try again.");
       }
     } finally {
@@ -275,36 +282,40 @@ export default function BranchesDashboard() {
     // eslint-disable-next-line
   }, [searchTerm, activeTab, page]);
 
-  async function fetchBranches() {
+  async function fetchBranches(retry = false) {
     setLoading(true);
     try {
       const params: Record<string, unknown> = { page, limit: 12 };
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       
-      const token = getAuthToken();
-      if (!token) {
-        console.error("No authentication token found");
-        setBranches([]);
-        setTotalPages(1);
-        return;
-      }
-      
-      const res = await axios.get(`${API_URL}/api/super-admin/branches`, { 
+      // The API instance is now configured with an interceptor to add the auth token.
+      // The layout handles setting the session cookie and redirects on 401.
+
+      const res = await API.get('super-admin/branches', { 
         params,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
       });
       setBranches(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
-      console.error('Error fetching branches:', err);
-      if (axios.isAxiosError(err) && err.response) {
-        console.error('API error response:', err.response.data);
-        if (err.response.status === 401) {
-          alert("Authentication failed. Please log in again.");
+      if (axios.isAxiosError(err)) {
+        const status = err.response?.status;
+        const data = err.response?.data;
+        let serverMessage = "";
+        if (data) {
+          if (typeof data === "string") {
+            serverMessage = data;
+          } else if (typeof data === "object") {
+            serverMessage = (data as any).message || (data as any).error || JSON.stringify(data);
+          }
         }
+        console.warn('Fetch branches API error:', { status, data, retry });
+        if (status === 401) {
+          // The layout's auth check will handle this by redirecting to the login page.
+          alert('Authentication failed. Please log in again.');
+        }
+      } else {
+        console.warn('Fetch branches error:', err);
       }
       setBranches([]);
       setTotalPages(1);

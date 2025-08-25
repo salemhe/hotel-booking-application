@@ -130,6 +130,7 @@ export default function VendorRegistration() {
     try {
       await AuthService.verifyOTP(formData.email, otp);
       toast.success("Your account has been verified.");
+
       // Automatically log in the user after verification
       const loginResponse = await AuthService.login(formData.email, formData.password);
       const token = loginResponse.token || (loginResponse.profile && loginResponse.profile.token);
@@ -197,7 +198,21 @@ export default function VendorRegistration() {
           router.push("/super-administrator/dashboard");
         }
       } else {
-        router.push("/vendor-dashboard");
+        // Route to appropriate vendor dashboard based on business type
+        if (loginResponse?.profile?.onboarded) {
+          if (loginResponse.profile.businessType === "hotel") {
+            router.push("/vendor-dashboard/hotel");
+          } else if (loginResponse.profile.businessType === "restaurant") {
+            router.push("/vendor-dashboard/restaurant");
+          } else if (loginResponse.profile.businessType === "club") {
+            router.push("/vendor-dashboard/club");
+          } else {
+            router.push("/vendorDashboard");
+          }
+        } else {
+          // Route to onboarding if not yet onboarded
+          router.push("/onboarding");
+        }
       }
     } catch (error) {
       if (error instanceof Error) {

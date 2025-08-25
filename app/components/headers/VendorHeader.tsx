@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import {
-  SidebarTrigger,
-} from "@/app/components/ui/sidebar"
+// import {
+//   SidebarTrigger,
+// } from "@/app/components/ui/sidebar"
 import { BellDot, ChevronDown, LogOut } from "lucide-react"
 import { getTimeBasedGreeting } from "./timeGreeting"
 import { useRouter } from 'next/navigation'
@@ -11,6 +11,7 @@ import { Button } from "../ui/button"
 import { AuthService } from "@/app/lib/api/services/auth.service"
 // import { api } from '@/lib/axios-config'
 import API from '@/app/lib/api/axios'
+import WebSocketStatus from '../WebSocketStatus'
 
 export interface VendorProfile {
   _id: string
@@ -118,7 +119,7 @@ function Header() {
     <header className="flex h-20 items-center gap-2 w-full bg-white z-10 border-b border-gray-100 md:pr-64 group-has-data-[collapsible=icon]/sidebar-wrapper:pr-12 transition-[width,height] ease-linear fixed group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
       <div className="flex items-center justify-between gap- px-4 w-full">
         <div className="flex items-center justify-center gap-3">
-          <SidebarTrigger className="-ml-1" />
+          {/* <SidebarTrigger className="-ml-1" /> */}
           <div className="hidden md:block">
             <h3 className="font-semibold text-[20px]/[30px] tracking-[0.15px] text-[#0a0a0a]">
               {timePhrase}
@@ -129,6 +130,7 @@ function Header() {
           </div>
         </div>
         <div className="flex justify-center items-center gap-4">
+          <WebSocketStatus className="mr-2" />
           <BellDot />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

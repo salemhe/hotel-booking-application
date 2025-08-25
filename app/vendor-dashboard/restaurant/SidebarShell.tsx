@@ -158,11 +158,12 @@
 
 
 "use client";
-import React, { useState } from "react";
+import Header from "@/app/components/headers/VendorHeader";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/app/super-administrator/ThemeContext";
 import { BranchProvider, useBranchContext } from "./branches/BranchContext";
+import { useState } from "react";
 
 function BranchNameDisplay({ collapsed }: { collapsed: boolean }) {
   const { selectedBranch } = useBranchContext();

@@ -7,15 +7,27 @@ const NEXT_PUBLIC_BASE_URL =
 const API = axios.create({
   baseURL: NEXT_PUBLIC_BASE_URL,
   headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
+
+API.defaults.headers.common["x-api-secret"] = "diys684iyu2hpre87u386";
 
 // Attach token dynamically
 API.interceptors.request.use(async (config) => {
-  const token = await AuthService.getToken();
+  let token = await AuthService.getToken();
+  if (typeof window !== "undefined" && (!token || token.length < 10)) {
+    token =
+      localStorage.getItem("auth_token") ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("vendor-token") ||
+      null;
+  }
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    API.defaults.headers.common["x-api-secret"] = "diys684iyu2hpre87u386";
   }
+  // Ensure cookies and secret header are present on every request
+  config.withCredentials = true;
+  config.headers["x-api-secret"] = "diys684iyu2hpre87u386";
   return config;
 });
 

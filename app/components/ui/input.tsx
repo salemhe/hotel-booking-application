@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/app/lib/utils"
 
 // No empty interface needed, cleaned up for lint
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
