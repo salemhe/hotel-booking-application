@@ -7,8 +7,8 @@ This folder contains mobile-optimized UI components for the hotel booking applic
 ```
 mobile/
 ├── Users/           # Mobile components for end users
-├── Vendor/          # Mobile components for vendors ✨ NEW
-├── Admin/           # Mobile components for administrators (to be implemented)
+├── Vendor/          # Mobile components for vendors
+├── Admin/           # Mobile components for administrators ✨ NEW
 └── README.md        # This file
 ```
 
