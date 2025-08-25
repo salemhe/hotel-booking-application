@@ -66,7 +66,7 @@ export default function ReservationDetails({
     setTime(searchQuery.time);
     setGuestCount(searchQuery.guests)
     setSpecialRequest(searchQuery.specialRequest)
-  }, []);
+  }, [fetchVendor, searchQuery.date, searchQuery.guests, searchQuery.specialRequest, searchQuery.time, setDate, setGuestCount, setSpecialRequest, setTime]);
   const router = useRouter();
 
   const preferences = [

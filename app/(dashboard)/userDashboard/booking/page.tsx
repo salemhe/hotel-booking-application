@@ -39,7 +39,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/ta
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import API from "@/app/lib/api/userAxios";
+import { ReservationService } from "@/app/lib/api/services/reservation.service";
 import { AuthService, UserProfile } from "@/app/lib/api/services/userAuth.service";
+import { toast } from "sonner";
+import { Edit, X, AlertTriangle, Star } from "lucide-react";
 
 export default function BookingList() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,13 +55,56 @@ export default function BookingList() {
   const fetchBooking = async () => {
     setIsLoading(true);
     try {
-      const bookings = await API.get(`/users/bookings`);
-      setBookings(bookings.data);
-      console.log(bookings.data);
+      const id = await AuthService.getId();
+
+      // Fetch both bookings and reservations
+      const [bookingsResponse, reservationsResponse] = await Promise.allSettled([
+        API.get(`/users/bookings`),
+        ReservationService.getUserReservations(id!)
+      ]);
+
+      let allBookings: Booking[] = [];
+
+      // Process bookings
+      if (bookingsResponse.status === 'fulfilled') {
+        allBookings = [...allBookings, ...bookingsResponse.value.data];
+      }
+
+      // Process reservations and transform them to booking format
+      if (reservationsResponse.status === 'fulfilled') {
+        const transformedReservations = reservationsResponse.value.map(reservation => ({
+          _id: reservation._id,
+          businessName: reservation.businessName,
+          date: reservation.date,
+          bookingDate: reservation.date,
+          guests: reservation.guests,
+          meals: reservation.meals?.map(meal => meal.name) || [],
+          menuId: reservation.meals?.[0]?.id || '',
+          partySize: reservation.guests,
+          specialRequest: reservation.specialRequest || '',
+          status: reservation.status,
+          tableNumber: reservation.guests, // Use guests as table number for reservations
+          tableType: `${reservation.guests}-seats`,
+          location: reservation.location,
+          image: reservation.image || '',
+          pricePerTable: reservation.totalPrice,
+          totalPrice: reservation.totalPrice,
+          userId: id!,
+          vendorId: reservation.vendorId,
+          time: reservation.time,
+          reservationType: reservation.reservationType,
+          seatingPreference: reservation.seatingPreference,
+          additionalNote: reservation.additionalNote
+        }));
+        allBookings = [...allBookings, ...transformedReservations];
+      }
+
+      setBookings(allBookings);
+      console.log(`Loaded ${allBookings.length} bookings/reservations`);
     } catch (error) {
       if (error instanceof AxiosError)
         console.error(
-          "Error fetching booking:",
+          "Error fetching bookings:",
           error.response?.data || error.message
         );
       throw error;
@@ -66,6 +112,48 @@ export default function BookingList() {
       setIsLoading(false);
     }
   };
+
+  const handleCancelBooking = async (bookingId: string) => {
+    const booking = bookings.find(b => b._id === bookingId);
+    const isReservation = booking && 'reservationType' in booking;
+
+    const confirmCancel = window.confirm(
+      `Are you sure you want to cancel this ${isReservation ? 'reservation' : 'booking'}? This action cannot be undone.`
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      if (isReservation) {
+        await ReservationService.cancelReservation(bookingId);
+      } else {
+        await API.patch(`/users/bookings/${bookingId}/cancel`);
+      }
+
+      // Update local state
+      setBookings(prev =>
+        prev.map(booking =>
+          booking._id === bookingId
+            ? { ...booking, status: 'cancelled' }
+            : booking
+        )
+      );
+
+      toast.success(`${isReservation ? 'Reservation' : 'Booking'} cancelled successfully`);
+    } catch (error) {
+      console.error("Error cancelling:", error);
+      toast.error(`Failed to cancel ${isReservation ? 'reservation' : 'booking'}. Please try again.`);
+    }
+  };
+
+  const router = useRouter();
+
+  const handleModifyBooking = (bookingId: string) => {
+    // Navigate to modification page
+    router.push(`/userDashboard/booking/${bookingId}/edit`);
+  };
+
+
 
   useEffect(() => {
     (async () => {
@@ -175,7 +263,12 @@ export default function BookingList() {
                       return bookingDate > today;
                     })
                     .map((booking) => (
-                      <BookingCard key={booking._id} booking={booking} />
+                      <BookingCard
+                        key={booking._id}
+                        booking={booking}
+                        onCancel={handleCancelBooking}
+                        onModify={handleModifyBooking}
+                      />
                     ))}
                 </div>
               ) : (
@@ -204,7 +297,12 @@ export default function BookingList() {
                       return bookingDate < today;
                     })
                     .map((booking) => (
-                      <BookingCard key={booking._id} booking={booking} />
+                      <BookingCard
+                        key={booking._id}
+                        booking={booking}
+                        onCancel={handleCancelBooking}
+                        onModify={handleModifyBooking}
+                      />
                     ))}
                 </div>
               ) : (
@@ -245,9 +343,21 @@ interface Booking {
   totalPrice: number;
   userId: string;
   vendorId: string;
+  time?: string;
+  reservationType?: string;
+  seatingPreference?: string;
+  additionalNote?: string;
 }
 
-function BookingCard({ booking }: { booking: Booking }) {
+function BookingCard({
+  booking,
+  onCancel,
+  onModify
+}: {
+  booking: Booking;
+  onCancel: (bookingId: string) => void;
+  onModify: (bookingId: string) => void;
+}) {
   const [receipt, setReceipt] = useState<Booking | null>(null);
   const router = useRouter();
   const formatPrice = (price: number) => {
@@ -263,6 +373,26 @@ function BookingCard({ booking }: { booking: Booking }) {
     setReceipt(booking);
   };
 
+  const canCancel = (): boolean => {
+    const bookingDate = new Date(booking.date);
+    const now = new Date();
+    const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return hoursDiff > 2 && !['cancelled', 'completed'].includes(booking.status);
+  };
+
+  const canModify = (): boolean => {
+    const bookingDate = new Date(booking.date);
+    const now = new Date();
+    const hoursDiff = (bookingDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return hoursDiff > 4 && !['cancelled', 'completed'].includes(booking.status);
+  };
+
+
+
+  const getStatusText = (status: string) => {
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative aspect-[4/3]">
@@ -272,15 +402,19 @@ function BookingCard({ booking }: { booking: Booking }) {
           fill
           className="object-cover"
         />
-        <div
-          className={`absolute top-2 right-2 size-3 rounded-full ${
+        <div className="absolute top-2 right-2">
+          <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
             booking.status === "confirmed"
-              ? "bg-green-500"
+              ? "bg-green-100 text-green-800 border border-green-200"
               : booking.status === "cancelled"
-              ? "bg-red-500"
-              : "bg-orange-500"
-          }`}
-        />
+              ? "bg-red-100 text-red-800 border border-red-200"
+              : booking.status === "completed"
+              ? "bg-blue-100 text-blue-800 border border-blue-200"
+              : "bg-yellow-100 text-yellow-800 border border-yellow-200"
+          }`}>
+            {getStatusText(booking.status)}
+          </div>
+        </div>
       </div>
       <CardContent className="p-4">
         <div className="space-y-3">
@@ -366,10 +500,36 @@ function BookingCard({ booking }: { booking: Booking }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Edit Booking</DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive">
-                  Cancel Booking
-                </DropdownMenuItem>
+                {canModify() && (
+                  <DropdownMenuItem
+                    onClick={() => onModify(booking._id)}
+                    className="flex items-center"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Modify Booking
+                  </DropdownMenuItem>
+                )}
+                {canCancel() && (
+                  <DropdownMenuItem
+                    onClick={() => onCancel(booking._id)}
+                    className="text-destructive flex items-center"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel Booking
+                  </DropdownMenuItem>
+                )}
+                {booking.status === 'completed' && (
+                  <DropdownMenuItem className="flex items-center">
+                    <Star className="h-4 w-4 mr-2" />
+                    Leave Review
+                  </DropdownMenuItem>
+                )}
+                {!canCancel() && !canModify() && booking.status !== 'completed' && (
+                  <DropdownMenuItem disabled className="text-gray-400">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Too late to modify
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

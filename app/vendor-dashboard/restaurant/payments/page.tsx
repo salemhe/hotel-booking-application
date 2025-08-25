@@ -1,28 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Search,
-  Bell,
-  ChevronDown,
-  Edit,
-  Plus,
-  MoreHorizontal,
-  TrendingUp,
-  DollarSign,
-  CheckCircle,
-  Clock,
-  Eye,
-  Download,
-  Filter,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  CheckCircle,
+  ChevronDown,
+  Clock,
+  DollarSign,
+  Download,
+  Edit,
+  Eye,
+  Filter,
+  MoreHorizontal,
+  Plus,
+  Search,
+  TrendingUp
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
  import { AuthService } from "@/app/lib/api/services/auth.service";
@@ -80,6 +79,7 @@ interface ChartData {
 export default function RestaurantPayments() {
   // Real-time state
   const [accounts, setAccounts] = useState<Account[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [vendor, setVendor] = useState<{ businessName?: string; role?: string; profileImage?: string } | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -354,7 +354,7 @@ export default function RestaurantPayments() {
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+        {/* <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -379,8 +379,8 @@ export default function RestaurantPayments() {
               </div>
             </div>
           </div>
-        </header>
-        <main className="flex-1 overflow-auto p-6">
+        </header> */}
+        <main className="flex-1 overflow-auto mt-20 p-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Payments & Earnings</h1>
             <div className="flex items-center space-x-2">

@@ -13,8 +13,18 @@ const nextConfig: NextConfig = {
         hostname: 'res.cloudinary.com'
       },
       {
+        protocol: 'https',
+        hostname: 'cdn.builder.io'
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com'
+      },
+      {
         protocol: 'http',
-        hostname:'http://localhost:5000/uploads/'
+        hostname: 'localhost',
+        port: '5000',
+        pathname: '/uploads/**',
       }
     ],
   },

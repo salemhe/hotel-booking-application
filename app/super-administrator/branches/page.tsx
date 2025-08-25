@@ -1,8 +1,9 @@
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
+// import { useRouter } from "next/navigation";
 import { useRouter } from "next/navigation";
 import API from "@/app/lib/api/axios";
 import axios from "axios";
@@ -28,7 +29,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-import { getAuthUser, isAuthenticated } from "@/app/utils/auth";
+import { API_URL } from "@/app/config";
+import { getAuthToken, getAuthUser } from "@/app/utils/auth";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 
 // Removed unused sidebarItems
@@ -69,6 +71,29 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         alert("Authentication required. Please log in again.");
         return;
       }
+      // const response = await axios.post(
+      //   `${API_URL}/api/super-admin/branches`,
+      //   {
+      //     name: formData.branchName,
+      //     address: formData.address,
+      //     city: formData.city,
+      //     phoneNumber: formData.countryCode + formData.phoneNumber,
+      //     email: formData.email,
+      //     password: formData.password,
+      //     businessType: "restaurant",
+      //     openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
+      //     opensAt: formData.opensAt,
+      //     closesAt: formData.closesAt,
+      //     assignedManager: formData.assignedManager,
+      //     assignedMenu: formData.assignedMenu,
+      //     importAllMenuItems: formData.importAllMenuItems,
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
       // Ensure auth cookie is set for backend session
       try {
         await API.post('auth/set-vendor-token', { token });
@@ -283,7 +308,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
 }
 
 export default function BranchesDashboard() {
-  const router = useRouter();
+  // const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");

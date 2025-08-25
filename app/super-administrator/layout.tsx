@@ -7,9 +7,8 @@ import { ThemeProvider } from "./ThemeContext";
 import { useAuth } from "@/app/contexts/AuthContext";
 import API from "@/app/lib/api/axios";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Menu as MenuIcon,
+  ChevronLeft, 
+  ChevronRight, 
   Home,
   Calendar,
   MapPin,
@@ -20,7 +19,14 @@ import {
   LogOut,
 } from "lucide-react";
 
-const sidebarItems = [
+interface SidebarItemType {
+  icon: React.ElementType;
+  label: string;
+  href?: string;
+  onClick?: () => void;
+}
+
+const sidebarItems: SidebarItemType[] = [
   { icon: Home, label: "Dashboard", href: "/super-administrator/dashboard" },
   { icon: Calendar, label: "Reservations", href: "/super-administrator/reservations" },
   { icon: MapPin, label: "Branches", href: "/super-administrator/branches" },
@@ -28,81 +34,105 @@ const sidebarItems = [
   { icon: CreditCard, label: "Payments", href: "/super-administrator/payments" },
   { icon: Users, label: "Staff", href: "/super-administrator/staff" },
   { icon: Settings, label: "Settings", href: "/super-administrator/settings" },
-  { icon: LogOut, label: "Logout", onClick: () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
-    window.location.href = '/vendor-login';
-  }},
+  {
+    icon: LogOut,
+    label: "Logout",
+    onClick: () => {
+      // TODO: It's good practice to also notify the backend to invalidate the session/token.
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_user");
+      // Hard redirect to ensure all state is cleared.
+      window.location.href = "/vendor-login";
+    },
+  },
 ];
+
+type SidebarItemProps = {
+  item: SidebarItemType;
+  isCollapsed: boolean;
+  isActive: boolean;
+};
+
+const SidebarItem = ({ item, isCollapsed, isActive }: SidebarItemProps) => {
+  const { icon: Icon, label, href, onClick } = item;
+
+  const commonClasses = `group flex items-center rounded-lg transition-all duration-200 w-full text-left font-medium text-sm gap-3 ${
+    isCollapsed ? "justify-center px-0 py-3" : "px-3 py-3"
+  } ${
+    isActive
+      ? "bg-emerald-500 text-white shadow-lg"
+      : "text-gray-300 hover:bg-white hover:bg-opacity-10 hover:text-white"
+  }`;
+
+  const content = (
+    <>
+      <span className="flex justify-center items-center w-8 h-8">
+        <Icon className="w-5 h-5" />
+      </span>
+      {!isCollapsed && <span className="ml-1 transition-all duration-300">{label}</span>}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={commonClasses}>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={href!} className={commonClasses} prefetch={false}>
+      {content}
+    </Link>
+  );
+};
 
 export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [authorized, setAuthorized] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false); // Used to gate rendering and trigger effects
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const sidebarWidth = sidebarCollapsed ? "w-16" : "w-64";
 
   // Split main and bottom items (Settings, Logout at bottom) while preserving originals
-  const mainItems = sidebarItems.filter(i => i.label !== 'Settings' && i.label !== 'Logout');
-  const bottomItems = sidebarItems.filter(i => i.label === 'Settings' || i.label === 'Logout');
-  
-  // Authentication check on mount and when auth state changes
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('auth_token');
-      console.log('Super admin layout auth check:', {
-        isAuthenticated,
-        hasToken: !!token,
-        userRole: user?.role,
-        loading: authLoading
-      });
-      
-      if (!authLoading) {
-        if (isAuthenticated && token && user?.role === 'super-admin') {
-          console.log('Super admin authorization confirmed');
-          setAuthorized(true);
-          setLoading(false);
-        } else {
-          console.log('Not authorized as super admin, redirecting to login');
-          setAuthorized(false);
-          setLoading(false);
-          // Use immediate hard navigation for most reliable redirect
-          window.location.href = '/vendor-login';
-        }
-      }
-    };
+  const mainItems = sidebarItems.filter((i) => i.label !== "Settings" && i.label !== "Logout");
+  const bottomItems = sidebarItems.filter((i) => i.label === "Settings" || i.label === "Logout");
 
-    checkAuth();
+  // Authentication check
+  useEffect(() => {
+    if (authLoading) return; // Wait for auth context to load
+
+    const token = localStorage.getItem("auth_token");
+    if (isAuthenticated && token && user?.role === "super-admin") {
+      setAuthorized(true);
+    } else {
+      // Using replace to avoid adding to history stack
+      router.replace("/vendor-login");
+    }
   }, [isAuthenticated, user, authLoading, router]);
 
-  // Ensure backend session cookie is set once authorized
+  // Effect to sync localStorage token with a backend session cookie
   useEffect(() => {
+    if (!authorized) return;
+
     const setCookie = async () => {
       try {
-        if (!authorized) return;
-        let token: string | null = null;
-        if (typeof window !== 'undefined') {
-          token =
-            localStorage.getItem('auth_token') ||
-            localStorage.getItem('token') ||
-            localStorage.getItem('vendor-token');
-        }
+        const token = localStorage.getItem("auth_token");
         if (token) {
-          await API.post('auth/set-vendor-token', { token });
-          await API.post('auth/set-user-token', { token });
+          // These calls likely set HttpOnly cookies for subsequent API requests
+          await API.post("auth/set-vendor-token", { token });
+          await API.post("auth/set-user-token", { token });
         }
       } catch (e) {
-        // non-fatal
-        console.warn('Failed to set vendor token cookie in layout:', e);
+        console.warn("Failed to set session token cookie in layout:", e);
       }
     };
     setCookie();
   }, [authorized]);
 
-  // Show loading state
-  if (loading || authLoading) {
+  // Show a loading spinner while checking auth or if not yet authorized (during redirect)
+  if (authLoading || !authorized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md">
@@ -114,18 +144,13 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
       </div>
     );
   }
-  
-  // Block rendering if not authorized
-  if (!authorized) {
-    return null; // Will redirect in useEffect
-  }
 
   return (
     <ThemeProvider>
       <div className="flex h-screen bg-gray-50">
         {/* Sidebar */}
         <div
-          className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-gray-900 text-white shadow-xl border-r border-gray-800 transition-all duration-300 ${sidebarWidth}`}
+          className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-gray-900 text-white shadow-xl border-r border-gray-800 transition-all duration-300 ${sidebarCollapsed ? "w-16" : "w-64"}`}
           style={{ minWidth: sidebarCollapsed ? '4rem' : '16rem', width: sidebarCollapsed ? '4rem' : '16rem' }}
         >
           {/* Header */}
@@ -156,40 +181,13 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
           <nav className="flex-1 px-2 py-4 overflow-y-auto">
             <ul className="space-y-1">
               {mainItems.map((item, index) => {
-                const isActive = pathname === item.href;
-                const Icon = item.icon;
                 return (
                   <li key={index}>
-                    {item.onClick ? (
-                      <button
-                        onClick={item.onClick}
-                        className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-3 py-3'} rounded-lg transition-all duration-200 w-full text-left font-medium text-sm gap-3
-                          ${isActive ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 hover:text-white'}
-                        `}
-                      >
-                        <span className="flex justify-center items-center w-8 h-8">
-                          <Icon className="w-5 h-5" />
-                        </span>
-                        {!sidebarCollapsed && (
-                          <span className="ml-1 transition-all duration-300">{item.label}</span>
-                        )}
-                      </button>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-3 py-3'} rounded-lg transition-all duration-200 w-full text-left font-medium text-sm gap-3
-                          ${isActive ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 hover:text-white'}
-                        `}
-                        prefetch={false}
-                      >
-                        <span className="flex justify-center items-center w-8 h-8">
-                          <Icon className="w-5 h-5" />
-                        </span>
-                        {!sidebarCollapsed && (
-                          <span className="ml-1 transition-all duration-300">{item.label}</span>
-                        )}
-                      </Link>
-                    )}
+                    <SidebarItem
+                      item={item}
+                      isCollapsed={sidebarCollapsed}
+                      isActive={pathname === item.href}
+                    />
                   </li>
                 );
               })}
@@ -200,40 +198,13 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
           <div className="px-2 py-3 border-t border-gray-800">
             <ul className="space-y-1">
               {bottomItems.map((item, index) => {
-                const isActive = pathname === item.href;
-                const Icon = item.icon;
                 return (
                   <li key={index}>
-                    {item.onClick ? (
-                      <button
-                        onClick={item.onClick}
-                        className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-3 py-3'} rounded-lg transition-all duration-200 w-full text-left font-medium text-sm gap-3
-                          ${isActive ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 hover:text-white'}
-                        `}
-                      >
-                        <span className="flex justify-center items-center w-8 h-8">
-                          <Icon className="w-5 h-5" />
-                        </span>
-                        {!sidebarCollapsed && (
-                          <span className="ml-1 transition-all duration-300">{item.label}</span>
-                        )}
-                      </button>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-0 py-3' : 'px-3 py-3'} rounded-lg transition-all duration-200 w-full text-left font-medium text-sm gap-3
-                          ${isActive ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 hover:text-white'}
-                        `}
-                        prefetch={false}
-                      >
-                        <span className="flex justify-center items-center w-8 h-8">
-                          <Icon className="w-5 h-5" />
-                        </span>
-                        {!sidebarCollapsed && (
-                          <span className="ml-1 transition-all duration-300">{item.label}</span>
-                        )}
-                      </Link>
-                    )}
+                    <SidebarItem
+                      item={item}
+                      isCollapsed={sidebarCollapsed}
+                      isActive={pathname === item.href}
+                    />
                   </li>
                 );
               })}
@@ -250,12 +221,11 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
             aria-label="Open sidebar"
           >
             <span className="text-emerald-600 font-extrabold text-lg pointer-events-none select-none">B</span>
-            <MenuIcon className="w-4 h-4 absolute opacity-0" />
           </button>
         )}
 
         {/* Main Content */}
-        <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 pl-0 md:pl-${sidebarCollapsed ? '16' : '64'}`} style={{ marginLeft: sidebarCollapsed ? '4rem' : '16rem' }}>
+        <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${sidebarCollapsed ? "ml-16" : "ml-64"}`}>
           {children}
         </div>
       </div>

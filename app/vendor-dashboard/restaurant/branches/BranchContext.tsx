@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { apiFetcher } from "@/app/lib/fetcher";
 
 export interface Branch {
@@ -37,7 +37,7 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
 
-  const fetchBranches = async () => {
+  const fetchBranches = useCallback( async () => {
     try {
       // Use a more robust approach with retry mechanism and better error handling
       const fetchWithRetry = async (retries = 2): Promise<Branch[]> => {
@@ -138,7 +138,7 @@ export const BranchProvider = ({ children }: { children: React.ReactNode }) => {
       // Set empty branches array to prevent undefined errors
       setBranches([]);
     }
-  };
+  }, [selectedBranch]);
 
   useEffect(() => {
     fetchBranches();
