@@ -198,12 +198,12 @@ The Admin folder contains a comprehensive mobile interface for administrators to
 
 ```typescript
 // User Components
-import { 
-  HomePage, 
-  RestaurantProfile, 
+import {
+  HomePage,
+  RestaurantProfile,
   HotelProfile,
   PaymentPage,
-  BookingConfirmation 
+  BookingConfirmation
 } from './mobile/Users';
 
 // Vendor Components
@@ -218,9 +218,21 @@ import {
   AddBranch
 } from './mobile/Vendor';
 
+// Admin Components
+import {
+  AdminDashboard,
+  AdminVendorsList,
+  AdminUserManagement,
+  AdminReservations,
+  AdminPayments,
+  AdminSettings
+} from './mobile/Admin';
+
 // Use in your React app
 <VendorDashboard />
 <MenuManagement />
+<AdminDashboard />
+<AdminPayments />
 ```
 
 ## User Booking Flow
