@@ -3,7 +3,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// import { useRouter } from "next/navigation";
 import { useRouter } from "next/navigation";
 import API from "@/app/lib/api/axios";
 import axios from "axios";
@@ -29,8 +28,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-import { API_URL } from "@/app/config";
-import { getAuthToken, getAuthUser } from "@/app/utils/auth";
+import { getAuthUser } from "@/app/utils/auth";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 
 // Removed unused sidebarItems
@@ -63,43 +61,9 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
   };
   const handleSubmit = async (action: string) => {
     try {
-      // POST to backend with Authorization header
-      const token = await AuthService.getToken();
-      console.log('Token:', token); // Log the token
-      
-      if (!token) {
-        alert("Authentication required. Please log in again.");
-        return;
-      }
-      // const response = await axios.post(
-      //   `${API_URL}/api/super-admin/branches`,
-      //   {
-      //     name: formData.branchName,
-      //     address: formData.address,
-      //     city: formData.city,
-      //     phoneNumber: formData.countryCode + formData.phoneNumber,
-      //     email: formData.email,
-      //     password: formData.password,
-      //     businessType: "restaurant",
-      //     openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
-      //     opensAt: formData.opensAt,
-      //     closesAt: formData.closesAt,
-      //     assignedManager: formData.assignedManager,
-      //     assignedMenu: formData.assignedMenu,
-      //     importAllMenuItems: formData.importAllMenuItems,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //   }
-      // );
-      // Ensure auth cookie is set for backend session
-      try {
-        await API.post('auth/set-vendor-token', { token });
-      } catch (e) {
-        console.warn('Failed to set vendor token cookie preflight:', e);
-      }
+      // The API instance is now configured with an interceptor to add the auth token.
+      // The layout handles setting the session cookie.
+      // Manual token handling is no longer needed here.
 
       const response = await API.post(
         'super-admin/branches',
@@ -117,11 +81,6 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           assignedManager: formData.assignedManager,
           assignedMenu: formData.assignedMenu,
           importAllMenuItems: formData.importAllMenuItems,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
       onBranchAdded(); // Refresh branch list
@@ -308,7 +267,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
 }
 
 export default function BranchesDashboard() {
-  // const router = useRouter();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
@@ -330,26 +289,11 @@ export default function BranchesDashboard() {
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
       
-      const token = await AuthService.getToken();
-      if (!token) {
-        console.error("No authentication token found");
-        setBranches([]);
-        setTotalPages(1);
-        return;
-      }
-      
-      // Ensure auth cookie is set for backend session
-      try {
-        await API.post('auth/set-vendor-token', { token });
-      } catch (e) {
-        console.warn('Failed to set vendor token cookie preflight:', e);
-      }
+      // The API instance is now configured with an interceptor to add the auth token.
+      // The layout handles setting the session cookie and redirects on 401.
 
       const res = await API.get('super-admin/branches', { 
         params,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
       setBranches(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
@@ -366,20 +310,8 @@ export default function BranchesDashboard() {
           }
         }
         console.warn('Fetch branches API error:', { status, data, retry });
-        if (status === 401 && !retry) {
-          // Attempt to re-establish backend session cookie, then retry once
-          try {
-            const token2 = await AuthService.getToken();
-            if (token2) {
-              await API.post('auth/set-vendor-token', { token: token2 });
-              await fetchBranches(true);
-              return;
-            }
-          } catch (e) {
-            console.warn('Retry set cookie failed:', e);
-          }
-          alert('Authentication failed. Please log in again.');
-        } else if (status === 401) {
+        if (status === 401) {
+          // The layout's auth check will handle this by redirecting to the login page.
           alert('Authentication failed. Please log in again.');
         }
       } else {
