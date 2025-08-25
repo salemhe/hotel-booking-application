@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, CreditCard, Building, Smartphone, Check } from 'lucide-react';
-import { Card, CardContent } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Checkbox } from '../../components/ui/checkbox';
+import { Card, CardContent } from '../../app/components/ui/card';
+import { Button } from '../../app/components/ui/button';
+import { Input } from '../../app/components/ui/input';
+import { Label } from '../../app/components/ui/label';
+import { Checkbox } from '../../app/components/ui/checkbox';
 import BottomNavigation from './BottomNavigation';
 
 interface PaymentData {
