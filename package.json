@@ -10,10 +10,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "autoprefixer": "^10.4.21",
     "next": "14.2.5",
+    "postcss": "^8.5.6",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-icons": "^5.2.1"
+    "react-icons": "^5.2.1",
+    "tailwindcss": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
