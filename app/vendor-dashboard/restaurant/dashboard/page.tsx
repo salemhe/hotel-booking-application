@@ -224,7 +224,7 @@ if (loading) {
         <div className="w-full self-stretch flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              Welcome Back, Joseph!
+              Welcome Back, {dashboardData?.vendorName || 'Vendor'}!
             </h1>
             <p className="text-sm text-gray-500">
               Here’s what is happening today.
