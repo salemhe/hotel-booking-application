@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@/app/lib/utils"
+import { cn } from "../../lib/utils"
 
 // No empty interface needed, cleaned up for lint
 const Textarea = React.forwardRef<
