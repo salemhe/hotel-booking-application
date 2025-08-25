@@ -102,6 +102,72 @@ The Vendor folder contains a complete mobile interface for restaurant/hotel vend
 ### 🧭 **Vendor Navigation**
 - **VendorBottomNavigation**: Vendor-specific navigation (Search, Home, Reservations, Analytics, More)
 
+## Admin Components ✨ NEW
+
+The Admin folder contains a comprehensive mobile interface for administrators to manage the entire platform:
+
+### 📊 **AdminDashboard**
+- Welcome screen with admin greeting
+- Key performance metrics (Active Vendors, Registered Users, Total Revenue, Pending Payments)
+- Recent transaction history with detailed records
+- Today's reservations with customer details
+- Hotel bookings overview with revenue tracking
+- Growth indicators and trend analytics
+- Real-time data with percentage changes
+
+### 🏢 **AdminVendorsList**
+- Complete vendor directory
+- Advanced search and filtering capabilities
+- Vendor status management (Active/Inactive)
+- Branch and reservation count tracking
+- Contact information display
+- Performance metrics per vendor
+- Quick actions and vendor details
+
+### 👥 **AdminUserManagement**
+- User database with comprehensive details
+- Search functionality across all user data
+- Activity tracking (last active dates)
+- Reservation history per user
+- Contact information management
+- User status monitoring
+- Quick filtering and sorting options
+
+### 📅 **AdminReservations**
+- Platform-wide reservation monitoring
+- Advanced filtering (All, Upcoming, Completed, Canceled, No shows)
+- Real-time reservation status tracking
+- Customer and reservation details
+- Payment status indicators (Paid, Part Payment, Pay at Restaurant)
+- Time remaining notifications
+- Multi-status badge system
+
+### 💰 **AdminPayments**
+- Comprehensive payment dashboard with three main tabs:
+  - **Overview**: Total earnings, weekly earnings, completed/pending payments
+  - **Vendor's Earning**: Individual vendor financial tracking
+  - **Payout History**: Complete transaction history
+- Available balance tracking with bank account management
+- Earnings trends with visual charts
+- Transaction search and filtering
+- Payment method tracking
+- Revenue analytics and reporting
+- Bank account verification system
+
+### ⚙️ **AdminSettings**
+- Multi-tab settings interface:
+  - **General Info**: Business information and contact details
+  - **Branch Settings**: Branch-specific configurations
+  - **Reservation**: Platform reservation policies
+- Business profile management
+- Logo upload and branding
+- Contact information updates
+- System-wide configuration options
+- Form validation and data management
+
+### 🧭 **Admin Navigation**
+- **AdminBottomNavigation**: Admin-specific navigation (Search, Home, Vendors, Analytics, Settings)
+
 ## Design Features
 
 ### 🎨 **UI/UX**
