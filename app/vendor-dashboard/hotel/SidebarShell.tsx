@@ -14,11 +14,13 @@ import {
   Settings,
   LogOut
 } from "lucide-react";
+import { MdRoomService } from "react-icons/md";
 
 const mainSidebarItems = [
   { icon: Home, label: "Dashboard", href: "/vendor-dashboard/hotel/dashboard" },
   { icon: Calendar, label: "Reservations", href: "/vendor-dashboard/hotel/reservations" },
   { icon: CreditCard, label: "Payments", href: "/vendor-dashboard/hotel/payments" },
+  { icon: MdRoomService, label: "Room Management", href: "/vendor-dashboard/hotel/rooms-management" },
   { icon: Users, label: "Staff", href: "/vendor-dashboard/hotel/staff" },
 ];
 const bottomSidebarItems = [
