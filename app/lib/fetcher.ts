@@ -134,7 +134,7 @@ export const fetchForFormData = async <T = any>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> => {
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
 
   const headers: Record<string, string> = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),

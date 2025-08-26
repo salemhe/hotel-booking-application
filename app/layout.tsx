@@ -1,6 +1,7 @@
 import ErrorBoundary from "@/app/components/Errorboundary";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { ToastContainer } from 'react-toastify';
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/app/contexts/AuthContext";
@@ -28,6 +29,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <Toaster />
+            <ToastContainer />
           </AuthProvider>
         </ErrorBoundary>
       </body>

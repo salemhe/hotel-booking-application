@@ -1,12 +1,17 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Check } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { fetchForFormData } from "@/app/lib/fetcher";
 import { toast } from "react-toastify";
+import { Input } from "@/components/ui/input";
+import { Search, Bell, ChevronDown} from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
+import {getUserProfile} from '@/app/lib/api-service'
 
 export default function AddStaffPage() {
   const [step, setStep] = useState(1);
@@ -24,8 +29,169 @@ export default function AddStaffPage() {
   const [jobRole, setJobRole] = useState("");
   const [customPermissions, setCustomPermissions] = useState<{ permissionModule: string; permissions: string[]; }[]>([]);
 
-  const token = localStorage.getItem("auth_token");
-  console.log(token)
+
+
+      // State for user profile
+    const [userProfile, setUserProfile] = useState({
+      name: '',
+      role: '',
+      avatar: '',
+      initials: ''
+    })
+  
+    useEffect(() => {
+      const fetchDashboardData = async () => {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const safelyFetchData = async <T,>(fetchFn: () => Promise<any>, defaultValue: T): Promise<T> => {
+            try {
+              const result = await fetchFn();
+              
+              // Check for error object
+              if (result && typeof result === 'object' && 'isError' in result && result.isError) {
+                const errorObj = result.error || {};
+                const errorMessage = typeof errorObj === 'object' && 'message' in errorObj 
+                  ? errorObj.message 
+                  : (typeof errorObj === 'string' ? errorObj : 'Unknown error');
+                  
+                console.log(`API Error fetching hotel data: ${errorMessage}`);
+                return defaultValue;
+              }
+              
+              // Check for empty object
+              if (result && typeof result === 'object' && 
+                  !Array.isArray(result) && 
+                  Object.keys(result).length === 0) {
+                console.log('Received empty object from API');
+                return defaultValue;
+              }
+              
+              return result || defaultValue;
+            } catch (error) {
+              let errorMessage = 'Unknown error';
+              if (error) {
+                if (typeof error === 'string') {
+                  errorMessage = error;
+                } else if (typeof error === 'object' && error !== null) {
+                  // Use proper type checking to access the message property
+                  errorMessage = error && 'message' in error && typeof error.message === 'string'
+                    ? error.message
+                    : JSON.stringify(error);
+                }
+              }
+              console.log(`Exception fetching hotel data: ${errorMessage}`);
+              return defaultValue;
+            }
+          };
+          let profileData = {};
+          for (let retry = 0; retry < 3; retry++) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            profileData = await safelyFetchData<any>(() => getUserProfile(), {});
+            if (profileData && Object.keys(profileData).length > 0) break;
+            console.log(`Retrying profile fetch for hotel, attempt ${retry + 1}/3`);
+            await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms between retries
+          }
+          try {
+            // Try to get the profile data from localStorage first if API failed
+            let vendorName = '';
+            let vendorRole = '';
+            let vendorAvatar = '';
+            let vendorInitials = 'HD';
+            
+            if (typeof window !== 'undefined') {
+              // Check if we have business name in localStorage
+              const storedBusinessName = localStorage.getItem('businessName');
+              const storedRole = localStorage.getItem('user_role');
+              
+              if (storedBusinessName && storedBusinessName !== 'undefined' && storedBusinessName !== 'null') {
+                vendorName = storedBusinessName;
+              }
+              
+              if (storedRole && storedRole !== 'undefined' && storedRole !== 'null') {
+                vendorRole = storedRole;
+              }
+            }
+            
+            // Prioritize API data over localStorage data
+            if (profileData && Object.keys(profileData).length > 0) {
+              // Cast profileData to any to allow indexing with strings
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const profileDataAny = profileData as any;
+              
+              // Try multiple possible property names for the business name
+              const possibleNameProps = ['businessName', 'name', 'companyName', 'hotelName', 'restaurantName'];
+              for (const prop of possibleNameProps) {
+                if (profileDataAny[prop] && typeof profileDataAny[prop] === 'string' && profileDataAny[prop].trim() !== '') {
+                  vendorName = profileDataAny[prop];
+                  break;
+                }
+              }
+              
+              // If no business name found, try to construct from first and last name
+              if (!vendorName && profileDataAny.firstName) {
+                vendorName = profileDataAny.lastName ? 
+                  `${profileDataAny.firstName} ${profileDataAny.lastName}` : 
+                  profileDataAny.firstName;
+              }
+              
+              // Get role information
+              vendorRole = profileDataAny.role || profileDataAny.businessType || vendorRole || 'Hotel Manager';
+              
+              // Get avatar information
+              vendorAvatar = profileDataAny.avatar || profileDataAny.profileImage || profileDataAny.image || '';
+              
+              // Store in localStorage for future use
+              if (vendorName && typeof window !== 'undefined') {
+                try {
+                  localStorage.setItem('businessName', vendorName);
+                  if (vendorRole) {
+                    localStorage.setItem('user_role', vendorRole);
+                  }
+                } catch (e) {
+                  console.warn('Failed to store hotel vendor info in localStorage:', e);
+                }
+              }
+            }
+            
+            // If we still don't have a name, use a friendly default rather than 'Guest User'
+            if (!vendorName) {
+              vendorName = 'Hotel Dashboard';
+            }
+            
+            // Generate initials from the name
+            if (vendorName && vendorName !== 'Guest User' && vendorName !== 'Hotel Dashboard') {
+              const nameParts = vendorName.split(' ').filter(part => part.length > 0);
+              if (nameParts.length === 1) {
+                vendorInitials = nameParts[0].charAt(0).toUpperCase();
+              } else if (nameParts.length > 1) {
+                vendorInitials = (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+              }
+            }
+            
+            // Update the profile state
+            setUserProfile({
+              name: vendorName,
+              role: vendorRole,
+              avatar: vendorAvatar,
+              initials: vendorInitials
+            });
+            
+            console.log('Hotel profile loaded:', { name: vendorName, initials: vendorInitials, role: vendorRole });
+          } catch (profileError) {
+            console.error('Error processing hotel profile data:', profileError);
+            // Fallback to ensure UI doesn't break
+            setUserProfile({
+              name: 'Hotel Dashboard',
+              role: 'Hotel Manager',
+              avatar: '',
+              initials: 'HD'
+            });
+          }
+        }catch{}
+      }
+  
+      fetchDashboardData()
+    },[])
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -126,12 +292,8 @@ const handleCustomPermission = (
 
     console.log("Custom Permissions:", customPermissions)
     try {
-
       const response = await fetchForFormData(`/api/vendors/staff`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
       
@@ -149,9 +311,40 @@ const handleCustomPermission = (
   };
 
   return (
-    <div className="mx-[34] bg-white rounded-2xl shadow-lg py-9 px-40">
+    <>
+          <header className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex-1 max-w-lg">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search"
+                className="pl-10 bg-gray-50 border-gray-200" />
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" size="sm" className="relative">
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 h-3 w-3 bg-blue-600 rounded-full"></span>
+            </Button>
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-8 w-8"><AvatarImage src={userProfile.avatar || "/placeholder.svg?height=32&width=32"} />
+                <AvatarFallback>{userProfile.initials}</AvatarFallback>
+              </Avatar>
+              <div className="hidden sm:block">
+                <p className="text-sm font-medium text-gray-900">{userProfile.name}</p>
+                <p className="text-xs text-gray-500">{userProfile.role}</p>
+              </div>
+              <ChevronDown className="h-4 w-4 text-gray-400" />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-[34] bg-white rounded-2xl shadow-lg py-9 px-40">
       {/* Progress Bar */}
-      <div className="flex items-center mb-6">
+      <div className="flex items-center mb-6 mt-6">
         <div className="flex-1 relative">
           <div className="absolute top-1/2 left-0 h-1 w-full bg-gray-200 -translate-y-1/2"></div>
           <div
@@ -423,5 +616,7 @@ const handleCustomPermission = (
         </div>
       )}
     </div>
+    </>
+
   );
 }
