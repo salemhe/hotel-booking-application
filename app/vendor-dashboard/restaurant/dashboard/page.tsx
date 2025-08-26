@@ -13,20 +13,14 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip} from "recharts";
-
+import { useVendorDashboardSocket } from '@/hooks/useVendorDashboardSocket';
+import { API_URL } from '../../../config';
+import DashboardLoader from '../../../components/DashboardLoader';
 
 
 export default function Dashboard() {
-  // ----- dummy data for charts -----
-  const reservationTrend = [
-    { name: "Mon", web: 10, walkin: 5 },
-    { name: "Tue", web: 25, walkin: 8 },
-    { name: "Wed", web: 15, walkin: 6 },
-    { name: "Thu", web: 20, walkin: 12 },
-    { name: "Fri", web: 60, walkin: 18 },
-    { name: "Sat", web: 90, walkin: 22 },
-    { name: "Sun", web: 70, walkin: 20 },
-  ];
+  const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || API_URL;
+  const { dashboardData, loading } = useVendorDashboardSocket(API_URL, socketUrl);
 
   ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Legend);
 
@@ -37,21 +31,21 @@ export default function Dashboard() {
   datasets: [
     {
       label: "Walk-in",
-      data: [5, 8, 9, 4, 20, 25, 15],
+      data: dashboardData?.reservationTrends?.walkIn || [],
       backgroundColor: "#FACC15", // yellow
       borderRadius: 6, // rounded edges
       stack: "stack1",
     },
     {
       label: "Web",
-      data: [10, 12, 14, 6, 25, 30, 20],
+      data: dashboardData?.reservationTrends?.web || [],
       backgroundColor: "#22C55E", // green
       borderRadius: 6,
       stack: "stack1",
     },
     {
       label: "Others",
-      data: [15, 18, 20, 10, 30, 25, 28],
+      data: dashboardData?.reservationTrends?.others || [],
       backgroundColor: "#60A5FA", // blue
       borderRadius: 6,
       stack: "stack1",
@@ -104,18 +98,21 @@ const options = {
 
 //CUSTOMER FREQUENCY DATA
 const chartData = [
-  { name: "New Customers", value: 45, color: "#0A6C6D" },
-  { name: "Returning Customers", value: 55, color: "#EAB308" },
+  { name: "New Customers", value: dashboardData?.customerFrequency?.new || 0, color: "#0A6C6D" },
+  { name: "Returning Customers", value: dashboardData?.customerFrequency?.returning || 0, color: "#EAB308" },
 ];
 
 //RESERVATION SOURCE DATA
 const ReservationChartData = [
-  { name: "Websites", value: 50, color: "#0A6C6D" },
-  { name: "Mobile", value: 30, color: "#EAB308" },
-  { name: "Walk in", value: 20, color: "#60A5FA"}
+  { name: "Websites", value: dashboardData?.reservationSource?.website || 0, color: "#0A6C6D" },
+  { name: "Mobile", value: dashboardData?.reservationSource?.mobile || 0, color: "#EAB308" },
+  { name: "Walk in", value: dashboardData?.reservationSource?.walkIn || 0, color: "#60A5FA"}
 ];
 
 
+if (loading) {
+    return <DashboardLoader />;
+}
 
   return (
     <div 
@@ -164,7 +161,7 @@ const ReservationChartData = [
               <div className="w-9 h-9 rounded-full bg-gray-300" />
               <div className="hidden sm:block">
                 <p className="text-sm font-medium text-gray-900">
-                  Joseph Eyebiokin
+                  {dashboardData?.vendorName || 'Vendor'}
                 </p>
                 <p className="text-xs text-gray-500">Admin</p>
               </div>
@@ -227,7 +224,7 @@ const ReservationChartData = [
         <div className="w-full self-stretch flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              Welcome Back, Joseph!
+              Welcome Back, {dashboardData?.vendorName || 'Vendor'}!
             </h1>
             <p className="text-sm text-gray-500">
               Here’s what is happening today.
@@ -259,7 +256,7 @@ const ReservationChartData = [
       <div className="flex w-[312px] h-[124px] items-center justify-between px-[29px] py-[20px]">
         <div className="flex flex-col justify-center">
           <p className="text-[12px] text-gray-500">Reservations made today</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">32</p>
+          <p className="text-xl font-semibold text-gray-900 mt-1">{dashboardData?.reservationsMadeToday}</p>
           <div className="flex items-center text-xs mt-1">
             <span className="mr-1 text-green-500">↑ 12%</span>
             <span className="text-gray-400">vs last week</span>
@@ -302,7 +299,7 @@ const ReservationChartData = [
       <div className="flex w-[312px] h-[124px] items-center justify-between px-[29px] py-[20px]">
         <div className="flex flex-col justify-center">
           <p className="text-[12px] text-gray-500">Prepaid Reservations</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">16</p>
+          <p className="text-xl font-semibold text-gray-900 mt-1">{dashboardData?.prepaidReservations}</p>
           <div className="flex items-center text-xs mt-1">
             <span className="mr-1 text-green-500">↑ 8%</span>
             <span className="text-gray-400">vs last week</span>
@@ -337,7 +334,7 @@ const ReservationChartData = [
       <div className="flex w-[312px] h-[124px] items-center justify-between px-[29px] py-[20px]">
         <div className="flex flex-col justify-center">
           <p className="text-[12px] text-gray-500">Expected Guests Today</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">80</p>
+          <p className="text-xl font-semibold text-gray-900 mt-1">{dashboardData?.expectedGuestsToday}</p>
           <div className="flex items-center text-xs mt-1">
             <span className="mr-1 text-green-500">↑ 8%</span>
             <span className="text-gray-400">vs last week</span>
@@ -372,7 +369,7 @@ const ReservationChartData = [
       <div className="flex w-[312px] h-[124px] items-center justify-between px-[29px] py-[20px]">
         <div className="flex flex-col justify-center">
           <p className="text-[12px] text-gray-500">Pending Payments</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">$2,546.00</p>
+          <p className="text-xl font-semibold text-gray-900 mt-1">{dashboardData?.pendingPayments}</p>
           <div className="flex items-center text-xs mt-1">
             <span className="mr-1 text-red-500">↓ 5%</span>
             <span className="text-gray-400">vs last week</span>
@@ -420,11 +417,11 @@ const ReservationChartData = [
 
             {/* content */}
             <div className="flex w-full px-3 py-1 flex-col items-start gap-3">
-              {[1, 2, 3, 4].map((i) => {
-                const isUpcoming = i % 2 === 0;
+              {dashboardData?.todaysReservations?.map((reservation: any) => {
+                const isUpcoming = reservation.status === "Upcoming";
                 return (
                 <div
-                  key={i}
+                  key={reservation.reservationId}
                   className="w-full flex items-center justify-between py-2 border-b last:border-b-0"
                 >
                   <div className="flex items-center gap-3">
@@ -432,18 +429,18 @@ const ReservationChartData = [
                     <div className="w-9 h-9 rounded-full bg-gray-200" />
                     <div>
                       <p className="text-sm font-medium text-gray-900">
-                        Emily Johnson
+                        {reservation.customerName}
                       </p>
-                      <p className="text-xs text-gray-500">ID: #12345</p>
+                      <p className="text-xs text-gray-500">ID: #{reservation.reservationId}</p>
                     </div>
                   </div>
 
                   <div className="hidden md:flex flex-col items-start text-xs text-gray-600">
-                    <span>June 5, 2025</span>
-                    <span>Time: 7:30 pm</span>
+                    <span>{reservation.date}</span>
+                    <span>Time: {reservation.time}</span>
                   </div>
 
-                  <div className="text-sm text-gray-700">4 Guests</div>
+                  <div className="text-sm text-gray-700">{reservation.guests} Guests</div>
 
                   {/* Status Badge */}
                   <div>
@@ -759,17 +756,3 @@ const ReservationChartData = [
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

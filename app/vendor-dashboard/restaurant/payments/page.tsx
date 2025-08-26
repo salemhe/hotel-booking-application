@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
  import { AuthService } from "@/app/lib/api/services/auth.service";
+import { useVendorDashboardSocket } from "@/hooks/useVendorDashboardSocket";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -77,8 +78,7 @@ interface ChartData {
 }
 
 export default function RestaurantPayments() {
-  // Real-time state
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const { accounts, stats, transactions, loading } = useVendorDashboardSocket(process.env.NEXT_PUBLIC_API_URL || 'https://hotel-booking-app-backend-30q1.onrender.com', process.env.NEXT_PUBLIC_SOCKET_URL || 'https://hotel-booking-app-backend-30q1.onrender.com');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [vendor, setVendor] = useState<{ businessName?: string; role?: string; profileImage?: string } | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -86,12 +86,9 @@ export default function RestaurantPayments() {
   const [accountForm, setAccountForm] = useState<Account>({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState('');
-  const [stats, setStats] = useState<Stats>({});
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [chartData, setChartData] = useState<ChartData[]>([]);
 
   useEffect(() => {
-    fetchAll();
     const fetchVendor = async () => {
       try {
         if (AuthService.isAuthenticated()) {
@@ -111,35 +108,12 @@ export default function RestaurantPayments() {
     };
     fetchVendor();
   }, []);
-  const fetchAll = async () => {
-    try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-      const [accRes, statsRes, transRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }).then(r => r.json()),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/payments/stats`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }).then(r => r.json()),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/payments/transactions`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }).then(r => r.json()),
-      ]);
-      // Defensive: ensure accounts is always an array
-      const accountsArray = Array.isArray(accRes) ? accRes : (accRes?.accounts || []);
-      setAccounts(accountsArray);
-      setStats(statsRes);
-      // Defensive: ensure transactions is always an array
-      const transactionsArray = Array.isArray(transRes) ? transRes : (transRes?.transactions || []);
-      setTransactions(transactionsArray);
-      setChartData(statsRes.chartData || []);
-      console.log("accounts from API:", accRes);
-      console.log("transactions from API:", transRes);
-    } catch {}
-  };
+
+  useEffect(() => {
+    if (stats.chartData) {
+      setChartData(stats.chartData);
+    }
+  }, [stats]);
 
   const verifyAccount = async (accountNumber: string) => {
     setVerifying(true);
@@ -196,7 +170,6 @@ export default function RestaurantPayments() {
       setShowEditModal(false);
       setShowAddModal(false);
       setAccountForm({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
-      fetchAll();
     } catch {}
   };
 
