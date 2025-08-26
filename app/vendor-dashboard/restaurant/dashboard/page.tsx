@@ -121,54 +121,7 @@ if (loading) {
       className='max-w-[1440px]'
     >
       
-       <div 
-        className="flex top-0 w-full h-[64px] px-[32px] py-[12px] flex-col items-start gap-2 shrink-0 bg-white"
-        // className="w-[1000px] h-[64px] px-[32px] py-[12px] fixed flex-col items-start top-0 shrink-0 border-bottom:1px solid [#E9EBF3] bg-white z-10"
-      >
-        {/* inner row to place search + profile on the same line */}
-        <div className="w-full flex items-center justify-between">
-          {/* search */}
-          <div className="flex justify-center items-center w-[520px] px-3 py-2 gap-2 rounded-lg border border-[#DAE9E9] bg-[#F9FAFB]"> 
-            {/* random search svg */}
-             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <g clip-path="url(#clip0_1224_81)">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.75003 1.66667C7.62052 1.66676 6.50741 1.93697 5.50358 2.45474C4.49974 2.97252 3.63427 3.72285 2.97939 4.64313C2.32451 5.56341 1.8992 6.62696 1.73895 7.74504C1.5787 8.86312 1.68815 10.0033 2.05818 11.0705C2.4282 12.1377 3.04807 13.1009 3.86606 13.8798C4.68405 14.6587 5.67645 15.2306 6.76046 15.548C7.84446 15.8654 8.98865 15.9189 10.0975 15.7041C11.2064 15.4893 12.2479 15.0125 13.135 14.3133L16.1784 17.3567C16.3355 17.5085 16.546 17.5925 16.7645 17.5906C16.983 17.5887 17.192 17.501 17.3465 17.3465C17.501 17.192 17.5887 16.983 17.5906 16.7645C17.5925 16.546 17.5085 16.3355 17.3567 16.1783L14.3134 13.135C15.1367 12.0905 15.6493 10.8353 15.7926 9.5131C15.9359 8.19088 15.704 6.85502 15.1235 5.65841C14.5431 4.4618 13.6374 3.4528 12.5103 2.74686C11.3831 2.04092 10.08 1.66658 8.75003 1.66667ZM3.33336 8.75C3.33336 7.31341 3.90404 5.93566 4.91987 4.91984C5.93569 3.90402 7.31344 3.33333 8.75003 3.33333C10.1866 3.33333 11.5644 3.90402 12.5802 4.91984C13.596 5.93566 14.1667 7.31341 14.1667 8.75C14.1667 10.1866 13.596 11.5643 12.5802 12.5802C11.5644 13.596 10.1866 14.1667 8.75003 14.1667C7.31344 14.1667 5.93569 13.596 4.91987 12.5802C3.90404 11.5643 3.33336 10.1866 3.33336 8.75Z" fill="#606368"/>
-                </g>
-                <defs>
-                  <clipPath id="clip0_1224_81">
-                    <rect width="20" height="20" fill="white"/>
-                  </clipPath>
-                </defs>
-            </svg>
-            <input
-              placeholder="Search"
-              className="w-full h-full outline-none text-sm placeholder:text-gray-400"
-            />
-          </div>
-
-
-          {/* profile area */}
-          <div className="flex items-center gap-4">
-            {/* bell */}
-            <button className="w-10 h-10 grid place-items-center rounded-full bg-white border border-gray-200">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M16 2.66667C13.5246 2.66667 11.1507 3.65 9.40034 5.40034C7.65 7.15068 6.66667 9.52465 6.66667 12V16.704C6.66686 16.9108 6.61893 17.1149 6.52667 17.3L4.23733 21.8773C4.1255 22.101 4.0727 22.3495 4.08393 22.5992C4.09517 22.849 4.17007 23.0918 4.30153 23.3045C4.43298 23.5171 4.61663 23.6927 4.83502 23.8144C5.05342 23.9362 5.2993 24 5.54933 24H26.4507C26.7007 24 26.9466 23.9362 27.165 23.8144C27.3834 23.6927 27.567 23.5171 27.6985 23.3045C27.8299 23.0918 27.9048 22.849 27.9161 22.5992C27.9273 22.3495 27.8745 22.101 27.7627 21.8773L25.4747 17.3C25.3819 17.115 25.3336 16.9109 25.3333 16.704V12C25.3333 9.52465 24.35 7.15068 22.5997 5.40034C20.8493 3.65 18.4754 2.66667 16 2.66667ZM16 28C15.1725 28.0002 14.3653 27.7439 13.6895 27.2663C13.0138 26.7888 12.5027 26.1134 12.2267 25.3333H19.7733C19.4973 26.1134 18.9862 26.7888 18.3105 27.2663C17.6347 27.7439 16.8275 28.0002 16 28Z" fill="#111827"/>
-              </svg>
-            </button> 
-
-            {/* avatar + name */}
-             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gray-300" />
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">
-                  {dashboardData?.vendorName || 'Vendor'}
-                </p>
-                <p className="text-xs text-gray-500">Admin</p>
-              </div>
-            </div>
-          </div>
-        </div> 
-      </div> 
+        
 
 
       {/* =========================================================
