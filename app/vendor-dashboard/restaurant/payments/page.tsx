@@ -130,14 +130,23 @@ export default function RestaurantPayments() {
         credentials: "include",
         body: JSON.stringify({ accountNumber })
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Account verification API error:", errorData);
+        setVerifyError(errorData.message || "Account verification failed");
+        return;
+      }
+
       const data = await res.json();
       if (data.accountName) {
         setAccountForm(f => ({ ...f, accountName: data.accountName, bankLogoUrl: data.bankLogoUrl }));
       } else {
-        setVerifyError("Account verification failed");
+        setVerifyError("Account verification failed: No account name returned");
       }
-    } catch {
-      setVerifyError("Account verification failed");
+    } catch (error) {
+      console.error("Account verification fetch error:", error);
+      setVerifyError("Account verification failed: Network error or invalid response");
     } finally {
       setVerifying(false);
     }
@@ -253,11 +262,7 @@ export default function RestaurantPayments() {
   );
 
   // Controlled input for account number
-  const [accountNumberInput, setAccountNumberInput] = useState("");
-
-  useEffect(() => {
-    setAccountNumberInput(accountForm.accountNumber);
-  }, [accountForm.accountNumber]);
+  
 
   const AccountModal = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) => (
     open ? (
@@ -303,9 +308,8 @@ export default function RestaurantPayments() {
             </div>
             <Input
               placeholder="Account Number"
-              value={accountNumberInput}
+              value={accountForm.accountNumber}
               onChange={e => {
-                setAccountNumberInput(e.target.value);
                 setAccountForm(f => ({ ...f, accountNumber: e.target.value }));
               }}
               maxLength={10}

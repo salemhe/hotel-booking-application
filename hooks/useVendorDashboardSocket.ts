@@ -51,6 +51,7 @@ interface DashboardData {
     revenueByCategory: any;
     reservationSource: any;
     vendorName?: string;
+    vendorProfilePictureUrl?: string;
 }
 
 let socket: Socket | null = null;
