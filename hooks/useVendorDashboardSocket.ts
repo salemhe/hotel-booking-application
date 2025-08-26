@@ -64,14 +64,18 @@ export function useVendorDashboardSocket(apiUrl: string, socketUrl: string) {
 
   useEffect(() => {
     const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const fetchOptions: RequestInit = { credentials: "include" };
+    if (token) {
+      fetchOptions.headers = { Authorization: `Bearer ${token}` };
+    }
 
     // Fetch initial data
     Promise.all([
-        fetch(`${apiUrl}/api/vendors/accounts`, { credentials: "include", headers }).then(res => res.json()),
-        fetch(`${apiUrl}/api/vendors/payments/stats`, { credentials: "include", headers }).then(res => res.json()),
-        fetch(`${apiUrl}/api/vendors/payments/transactions`, { credentials: "include", headers }).then(res => res.json()),
-        fetch(`${apiUrl}/api/vendors/dashboard`, { credentials: "include", headers }).then(res => res.json())
+        fetch(`${apiUrl}/api/vendors/accounts`, fetchOptions).then(res => res.json()),
+        fetch(`${apiUrl}/api/vendors/payments/stats`, fetchOptions).then(res => res.json()),
+        fetch(`${apiUrl}/api/vendors/payments/transactions`, fetchOptions).then(res => res.json()),
+        fetch(`${apiUrl}/api/vendors/dashboard`, fetchOptions).then(res => res.json())
     ]).then(([accountsRes, statsRes, transactionsRes, dashboardRes]) => {
         setAccounts(Array.isArray(accountsRes) ? accountsRes : (accountsRes?.accounts || []));
         setStats(statsRes);
