@@ -316,7 +316,7 @@ export default function RestaurantPayments() {
               inputMode="numeric"
               autoComplete="off"
             />
-            <Button onClick={() => verifyAccount(accountNumberInput)} disabled={verifying}>
+            <Button onClick={() => verifyAccount(accountForm.accountNumber)} disabled={verifying}>
               {verifying ? "Verifying..." : "Verify Account"}
             </Button>
             {accountForm.accountName && <div className="text-green-600 font-semibold">{accountForm.accountName}</div>}
