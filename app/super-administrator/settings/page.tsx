@@ -27,7 +27,7 @@ export default function SuperAdminSettings() {
     async function fetchProfile() {
       const user = AuthService.getUser();
       if (user && user.id) {
-        const profileData = await AuthService.fetchMyProfile(user.id);
+        const profileData = await AuthService.fetchMyProfile(user.id, user.role);
         setProfile(profileData);
       }
     }
