@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ThemeProvider } from "./ThemeContext";
 import { useAuth } from "@/app/contexts/AuthContext";
 import API from "@/app/lib/api/axios";
-import { AuthService } from "../../lib/api/services/auth.service";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import {
   ChevronLeft, 
   ChevronRight, 
