@@ -43,8 +43,9 @@ export interface ReservationResponse {
   date: string;
   time: string;
   guests: number;
-  status: "pending" | "confirmed" | "completed" | "cancelled";
+    status: "pending" | "confirmed" | "completed" | "cancelled";
   totalPrice: number;
+  paymentStatus?: string;
   meals?: ReservationMeal[];
   rooms?: Array<{
     id: string;
