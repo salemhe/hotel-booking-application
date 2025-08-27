@@ -6,6 +6,9 @@ import { Card, CardContent } from '../../app/components/ui/card';
 import { Button } from '../../app/components/ui/button';
 import { Input } from '../../app/components/ui/input';
 import BottomNavigation from './BottomNavigation';
+import { useMobileNavigation } from '../../lib/hooks/useMobileNavigation';
+import { useMobile } from '../../lib/providers/MobileProvider';
+import { useOfflineStorage, offlineStorageUtils } from '../../lib/hooks/useOfflineStorage';
 
 interface Restaurant {
   id: string;
@@ -35,6 +38,10 @@ const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState('Pick date');
   const [selectedTime, setSelectedTime] = useState('Select Time');
   const [guestCount, setGuestCount] = useState('Select number');
+
+  const { navigateToRestaurant, navigateToHotel } = useMobileNavigation();
+  const { isOnline } = useMobile();
+  const { saveOfflineData } = useOfflineStorage();
 
   const restaurants: Restaurant[] = [
     {
@@ -95,8 +102,43 @@ const HomePage = () => {
     </button>
   );
 
+  const handleSearch = () => {
+    const searchData = {
+      query: searchQuery,
+      type: activeTab.toLowerCase(),
+      date: selectedDate,
+      time: selectedTime,
+      guests: guestCount,
+    };
+
+    if (!isOnline) {
+      // Save search for offline sync
+      saveOfflineData({
+        url: '/api/search',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: searchData,
+        type: 'search' as any,
+      });
+    }
+
+    // Perform search logic here
+    console.log('Search performed:', searchData);
+  };
+
+  const handleRestaurantClick = (restaurant: Restaurant) => {
+    navigateToRestaurant(restaurant.id);
+  };
+
+  const handleHotelClick = (hotel: Hotel) => {
+    navigateToHotel(hotel.id);
+  };
+
   const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => (
-    <Card className="bg-white rounded-lg overflow-hidden shadow-sm">
+    <Card 
+      className="bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+      onClick={() => handleRestaurantClick(restaurant)}
+    >
       <div className="relative">
         <img 
           src={restaurant.image} 
@@ -108,10 +150,24 @@ const HomePage = () => {
             Guest's Recommended
           </div>
         )}
-        <button className="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+        <button 
+          className="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center"
+          onClick={(e) => {
+            e.stopPropagation();
+            // Handle wishlist toggle
+            console.log('Toggle wishlist for', restaurant.id);
+          }}
+        >
           <Heart className="w-4 h-4" />
         </button>
-        <button className="absolute bottom-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+        <button 
+          className="absolute bottom-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center"
+          onClick={(e) => {
+            e.stopPropagation();
+            // Handle share
+            console.log('Share restaurant', restaurant.id);
+          }}
+        >
           <Users className="w-4 h-4" />
         </button>
       </div>
@@ -129,7 +185,10 @@ const HomePage = () => {
   );
 
   const HotelCard = ({ hotel }: { hotel: Hotel }) => (
-    <Card className="bg-white rounded-lg overflow-hidden shadow-sm">
+    <Card 
+      className="bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+      onClick={() => handleHotelClick(hotel)}
+    >
       <div className="relative">
         <img 
           src={hotel.image} 
@@ -141,10 +200,24 @@ const HomePage = () => {
             Guest's Recommended
           </div>
         )}
-        <button className="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+        <button 
+          className="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center"
+          onClick={(e) => {
+            e.stopPropagation();
+            // Handle wishlist toggle
+            console.log('Toggle wishlist for', hotel.id);
+          }}
+        >
           <Heart className="w-4 h-4" />
         </button>
-        <button className="absolute bottom-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+        <button 
+          className="absolute bottom-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center"
+          onClick={(e) => {
+            e.stopPropagation();
+            // Handle share
+            console.log('Share hotel', hotel.id);
+          }}
+        >
           <Users className="w-4 h-4" />
         </button>
       </div>
@@ -267,7 +340,10 @@ const HomePage = () => {
                 </div>
               </div>
               
-              <Button className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+              <Button 
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+                onClick={handleSearch}
+              >
                 <Search className="w-4 h-4 mr-2" />
                 Search
               </Button>
