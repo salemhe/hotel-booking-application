@@ -124,6 +124,12 @@ export default function VendorDashboard() {
     </Card>
   );
 
+  const paymentStatusColors = {
+    paid: 'bg-green-100 text-green-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    failed: 'bg-red-100 text-red-800',
+  };
+
   const ReservationCard = ({ reservation, isCompact = false }: { reservation: { _id: string; customerName: string; date: string; time: string; guests: number; status: string; totalPrice: number; paymentStatus?: string; reservationType?: string }; isCompact?: boolean }) => {
     const statusColors = {
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -132,11 +138,7 @@ export default function VendorDashboard() {
       cancelled: 'bg-red-100 text-red-800 border-red-200',
     };
 
-    const paymentStatusColors = {
-      paid: 'bg-green-100 text-green-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      failed: 'bg-red-100 text-red-800',
-    };
+    
 
     return (
       <div className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${isCompact ? 'space-y-2' : 'space-y-3'}`}>
