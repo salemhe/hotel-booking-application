@@ -124,7 +124,7 @@ export default function VendorDashboard() {
     </Card>
   );
 
-  const ReservationCard = ({ reservation, isCompact = false }: { reservation: { _id: string; customerName: string; date: string; time: string; guests: number; status: string; totalPrice: number }; isCompact?: boolean }) => {
+  const ReservationCard = ({ reservation, isCompact = false }: { reservation: { _id: string; customerName: string; date: string; time: string; guests: number; status: string; totalPrice: number; paymentStatus?: string; reservationType?: string }; isCompact?: boolean }) => {
     const statusColors = {
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
       confirmed: 'bg-green-100 text-green-800 border-green-200',
@@ -216,7 +216,7 @@ export default function VendorDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            {getTimeGreeting()}, {user?.profile?.businessName || user?.profile?.firstName || 'Joseph'}!
+            {getTimeGreeting()}, {user?.profile?.businessName || user?.profile?.firstName}!
           </h1>
           <p className="text-gray-600 mt-1">Here&apos;s what is happening today.</p>
         </div>
@@ -224,7 +224,7 @@ export default function VendorDashboard() {
           {connected && (
             <div className="flex items-center space-x-2 bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span>3 reservations coming in the next 30 minutes</span>
+              <span>Live updates enabled</span>
             </div>
           )}
           <Link href="/vendorDashboard/bookingManagement">
@@ -244,7 +244,6 @@ export default function VendorDashboard() {
           icon={Calendar}
           color="text-blue-600"
           bgColor="bg-blue-50"
-          change="12% vs last week"
         />
         <StatCard
           title="Prepaid Reservations"
@@ -252,7 +251,6 @@ export default function VendorDashboard() {
           icon={CheckCircle}
           color="text-green-600"
           bgColor="bg-green-50"
-          change="8% vs last week"
         />
         <StatCard
           title="Expected Guests Today"
@@ -260,7 +258,6 @@ export default function VendorDashboard() {
           icon={Users}
           color="text-purple-600"
           bgColor="bg-purple-50"
-          change="5% vs last week"
         />
         <StatCard
           title="Pending Payments"
@@ -268,7 +265,6 @@ export default function VendorDashboard() {
           icon={DollarSign}
           color="text-yellow-600"
           bgColor="bg-yellow-50"
-          change="6% vs last week"
         />
       </div>
 
@@ -348,8 +344,11 @@ export default function VendorDashboard() {
                         </div>
                       </td>
                       <td className="py-4">
-                        <Badge className="bg-green-100 text-green-800">Paid</Badge>
-                      </td>
+                        {reservation.paymentStatus && (
+                          <Badge className={`text-xs ${paymentStatusColors[reservation.paymentStatus as keyof typeof paymentStatusColors]}`}>
+                            {reservation.paymentStatus}
+                          </Badge>
+                        )}
                       <td className="py-4">
                         <Badge className={`${
                           reservation.status === 'confirmed' ? 'bg-green-100 text-green-800' :

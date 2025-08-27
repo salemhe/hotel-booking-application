@@ -67,7 +67,7 @@ interface Transaction {
   date: string;
   transactionId: string;
   customer: string;
-  branch: string;
+  
   method: string;
   status: string;
 }
@@ -94,7 +94,7 @@ export default function RestaurantPayments() {
         if (AuthService.isAuthenticated()) {
           const id = await AuthService.getId();
           if (id) {
-            const profile = await AuthService.fetchMyProfile(id);
+            const profile = await AuthService.fetchMyProfile(id, 'vendor');
             setVendor({
               businessName: (profile as any)?.businessName || (profile as any)?.name,
               role: (profile as any)?.role || (profile as any)?.businessType || 'Vendor',
@@ -577,7 +577,7 @@ export default function RestaurantPayments() {
                             <span>{transaction.customer}</span>
                           </div>
                         </TableCell>
-                        <TableCell>{transaction.branch}</TableCell>
+                        
                         <TableCell>{transaction.method}</TableCell>
                         <TableCell>
                           <Badge className={getStatusColor(transaction.status)}>{transaction.status}</Badge>

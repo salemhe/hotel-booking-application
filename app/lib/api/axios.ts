@@ -2,7 +2,7 @@ import axios from "axios";
 import { AuthService } from "./services/auth.service";
 
 const NEXT_PUBLIC_BASE_URL =
-  "https://hotel-booking-app-backend-30q1.onrender.com/api/";
+  "https://hotel-booking-app-backend-30q1.onrender.com/";
 
 const API = axios.create({
   baseURL: NEXT_PUBLIC_BASE_URL,

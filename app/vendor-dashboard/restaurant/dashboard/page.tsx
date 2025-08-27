@@ -22,6 +22,8 @@ export default function Dashboard() {
   const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || API_URL;
   const { dashboardData, loading } = useVendorDashboardSocket(API_URL, socketUrl);
 
+  console.log("Dashboard Data:", dashboardData);
+
   ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Legend);
 
 
@@ -108,6 +110,18 @@ const ReservationChartData = [
   { name: "Mobile", value: dashboardData?.reservationSource?.mobile || 0, color: "#EAB308" },
   { name: "Walk in", value: dashboardData?.reservationSource?.walkIn || 0, color: "#60A5FA"}
 ];
+
+// Define colors for revenue categories
+const revenueColors = [
+  "#0A6C6D", // Main Dish
+  "#EF4444", // Drinks
+  "#E0B300", // Starters
+  "#60A5FA", // Desserts
+  "#8B5CF6", // Sides
+];
+
+// Calculate total revenue
+const totalRevenue = dashboardData?.revenueByCategory?.reduce((sum: number, item: any) => sum + item.amount, 0) || 0;
 
 
 if (loading) {
@@ -565,7 +579,9 @@ if (loading) {
             {/* Center content */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <p className="text-xs text-gray-500">Total Customers</p>
-              <p className="text-xl font-semibold text-gray-900">100</p>
+              <p className="text-xl font-semibold text-gray-900">
+                {(dashboardData?.customerFrequency?.new || 0) + (dashboardData?.customerFrequency?.returning || 0)}
+              </p>
             </div>
           </div>
 
@@ -602,39 +618,36 @@ if (loading) {
           <CardContent>
         {/* Total & Change */}
         <div className="mb-5 flex gap-2">
-          <p className="text-xl font-semibold text-gray-900">#220,500</p>
+          <p className="text-xl font-semibold text-gray-900">
+            {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(totalRevenue)}
+          </p>
           <p className="text-xs text-gray-500 mt-2">
-            <span className="text-[#0A6C6D] font-medium">+8%</span> vs last week
+            <span className="text-[#0A6C6D] font-medium">+8%</span> vs last week {/* This change is hardcoded, assuming no real-time data for it */}
           </p>
         </div>
 
-        {/* Faux Stacked Bar */}
+        {/* Dynamic Stacked Bar */}
         <div className="h-3 w-full rounded-full bg-gray-200 overflow-hidden flex">
-          <div className="h-full w-[40%] bg-[#0A6C6D]" />
-          <div className="h-full w-[27%] bg-[#EF4444]" />
-          <div className="h-full w-[19%] bg-[#E0B300]" />
-          <div className="h-full w-[9%] bg-[#60A5FA]" />
-          <div className="h-full w-[5%] bg-[#8B5CF6]" />
+          {dashboardData?.revenueByCategory?.map((item: any, index: number) => (
+            <div
+              key={item.category}
+              className="h-full"
+              style={{ width: `${item.percentage}%`, backgroundColor: revenueColors[index % revenueColors.length] }}
+            />
+          ))}
         </div>
 
-        {/* Legend */}
+        {/* Dynamic Legend */}
         <div className="mt-4 gap-y-3 gap-x-4 text-xs text-gray-700 tracking-wide">
-          <div className="flex items-center gap-2">
-            Main Dish <span className="ml-auto text-[#111827] mb-3">40.0% <span className='text-gray-500'>(#110,000)</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            Drinks <span className="ml-auto text-[#111827] mb-3">27.7% <span className='text-gray-500'>(#50,000)</span></span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            Starters <span className="ml-auto text-[#111827] mb-3">19.3% <span className='text-gray-500'>(#30,000)</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            Desserts <span className="ml-auto text-[#111827] mb-3">9.0% <span className='text-gray-500'>(#20,500)</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            Sides <span className="ml-auto text-[#111827] mb-3">4.7% <span className='text-gray-500'>(#10,000)</span></span>
-          </div>
+          {dashboardData?.revenueByCategory?.map((item: any, index: number) => (
+            <div key={item.category} className="flex items-center gap-2">
+              {item.category} <span className="ml-auto text-[#111827] mb-3">
+                {item.percentage}% <span className='text-gray-500'>
+                  ({new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(item.amount)})
+                </span>
+              </span>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>
@@ -686,7 +699,9 @@ if (loading) {
             {/* Center content */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <p className="text-xs text-gray-500">Total Customers</p>
-              <p className="text-xl font-semibold text-gray-900">100</p>
+              <p className="text-xl font-semibold text-gray-900">
+                {(dashboardData?.reservationSource?.website || 0) + (dashboardData?.reservationSource?.mobile || 0) + (dashboardData?.reservationSource?.walkIn || 0)}
+              </p>
             </div>
           </div>
 

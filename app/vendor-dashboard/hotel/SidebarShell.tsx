@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/app/super-administrator/ThemeContext";
-import { BranchProvider, useBranchContext } from "../restaurant/branches/BranchContext";
+
 import {
   ChevronLeft,
   Menu as MenuIcon,
@@ -26,15 +26,7 @@ const bottomSidebarItems = [
   { icon: LogOut, label: "Logout", href: "/logout" },
 ];
 
-function BranchNameDisplay() {
-  const { selectedBranch } = useBranchContext();
-  if (!selectedBranch) return null;
-  return (
-    <div className="mb-4 px-4 py-2 bg-teal-600 text-white rounded-lg font-semibold text-lg">
-      {selectedBranch.branchName}
-    </div>
-  );
-}
+
 
 export default function SidebarShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -43,7 +35,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
 
   return (
     <ThemeProvider>
-      <BranchProvider>
+      
         <div className="flex h-screen bg-gray-50">
           {/* Sidebar */}
           <div className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-gradient-to-b from-teal-900 via-teal-800 to-teal-700 text-white shadow-xl border-r border-teal-700 transition-all duration-300 ${sidebarWidth}`} style={{ minWidth: sidebarCollapsed ? '4rem' : '16rem', width: sidebarCollapsed ? '4rem' : '16rem' }}>
@@ -71,9 +63,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
             <nav className="flex-1 px-2 py-4 overflow-y-auto flex flex-col justify-between">
               <div>
                 {/* Vendor Name Display (not editable) */}
-                {!sidebarCollapsed && (
-                  <BranchNameDisplay />
-                )}
+                
                 <ul className="space-y-1">
                   {mainSidebarItems.map((item, index) => {
                     const isActive = pathname === item.href;
@@ -144,7 +134,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
             {children}
           </div>
         </div>
-      </BranchProvider>
+      
     </ThemeProvider>
   );
 }

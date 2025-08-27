@@ -1,4 +1,5 @@
 import API from "../axios";
+import { AuthService } from "./auth.service";
 
 async function preflightAuth() {
   try {
@@ -8,7 +9,8 @@ async function preflightAuth() {
       localStorage.getItem('token') ||
       localStorage.getItem('vendor-token');
     if (token) {
-      await API.post('auth/set-vendor-token', { token });
+      // Use AuthService.setToken to handle setting the vendor token
+      await AuthService.setToken(token, "vendor");
     }
   } catch (e) {
     // non-fatal

@@ -30,7 +30,7 @@ interface Transaction {
   date: string;
   transactionId: string;
   customer: string;
-  branch: string;
+  
   method: string;
   status: string;
 }
@@ -73,10 +73,10 @@ export function useVendorDashboardSocket(apiUrl: string, socketUrl: string) {
 
     // Fetch initial data
     Promise.all([
-        fetch(`${apiUrl}/api/vendors/accounts`, fetchOptions).then(res => res.json()),
-        fetch(`${apiUrl}/api/vendors/payments/stats`, fetchOptions).then(res => res.json()),
-        fetch(`${apiUrl}/api/vendors/payments/transactions`, fetchOptions).then(res => res.json()),
-        fetch(`${apiUrl}/api/vendors/dashboard`, fetchOptions).then(res => res.json())
+        // fetch(`${apiUrl}/api/vendors/accounts`, fetchOptions).then(res => res.json()),
+        // fetch(`${apiUrl}/api/vendors/payments/stats`, fetchOptions).then(res => res.json()),
+        fetch(`${apiUrl}/api/vendors/transactions`, fetchOptions).then(res => res.json()),
+        fetch(`${apiUrl}/api/vendors/vendorDashboard`, fetchOptions).then(res => res.json())
     ]).then(([accountsRes, statsRes, transactionsRes, dashboardRes]) => {
         setAccounts(Array.isArray(accountsRes) ? accountsRes : (accountsRes?.accounts || []));
         setStats(statsRes);
@@ -114,6 +114,7 @@ export function useVendorDashboardSocket(apiUrl: string, socketUrl: string) {
     });
 
     socket.on("vendor:dashboard:update", (updatedDashboardData: DashboardData) => {
+        console.log("Received vendor:dashboard:update:", updatedDashboardData);
         setDashboardData(updatedDashboardData);
     });
 

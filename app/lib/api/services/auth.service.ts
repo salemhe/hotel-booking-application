@@ -1,5 +1,5 @@
 // services/auth.service.ts
-// import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } "jwt-decode";
 import { jwtDecode } from "jwt-decode";
 import API from "../axios";
 import { SessionService } from "./session.service";
@@ -153,10 +153,15 @@ export class AuthService {
   }
 
   // auth.services.ts - Enhanced error handling
-  static async login(email: string, password: string): Promise<LoginResponse> {
+  static async login(email: string, password: string, role: string = 'vendor'): Promise<LoginResponse> {
     try {
-      console.log("Starting login attempt with:", { email, passwordLength: password.length });
-      console.log("API URL:", `${this.BASE_URL}/api/vendors/login`);
+      let url = `${this.BASE_URL}/api/vendors/login`;
+      if (role === 'super-admin') {
+        url = `${this.BASE_URL}/api/super-admins/login`;
+      }
+
+      console.log("Starting login attempt with:", { email, passwordLength: password.length, role });
+      console.log("API URL:", url);
       
       // Log the exact request payload
       const payload = { email, password };
@@ -179,7 +184,7 @@ export class AuthService {
       });
 
       // Make the request
-      const response = await fetch(`${this.BASE_URL}/api/vendors/login`, requestOptions);
+      const response = await fetch(url, requestOptions);
       console.log("Response received:", { 
         status: response.status, 
         statusText: response.statusText,
@@ -207,7 +212,7 @@ export class AuthService {
 
       // Only set token if it exists in the response
       if (data.profile && data.profile.token) {
-        await this.setToken(data.profile.token);
+        await this.setToken(data.profile.token, data.profile.role); // Pass role here
       }
 
       // Create session
@@ -238,9 +243,13 @@ export class AuthService {
     }
   }
 
-    static async fetchMyProfile(id: string): Promise<UserProfile | null> {
+    static async fetchMyProfile(id: string, role: string): Promise<UserProfile | null> {
     try {
-      const response = await API.get(`/vendors/${id}`, { withCredentials: true });
+      let url = `/vendors/${id}`; // Default for vendors
+      if (role === "super-admin") {
+        url = `/super-admins/${id}`; // Use super-admin endpoint
+      }
+      const response = await API.get(url, { withCredentials: true });
       console.log("fetchMyProfile response:", response);
       if (response.status === 200) {
         return response.data;
@@ -279,13 +288,19 @@ export class AuthService {
     return response.json();
   }
 
-  static async setToken(token: string) {
+  static async setToken(token: string, role: string = 'vendor') {
     if (typeof window !== "undefined") {
       localStorage.setItem("auth_token", token);
     }
     // Optionally, also send to backend if needed
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
-    await fetch(`${backendUrl}/api/auth/set-vendor-token`, {
+    let endpoint = "set-vendor-token"; // Default for vendors
+    if (role === "super-admin") {
+      endpoint = "set-admin-token"; // Use set-admin-token for super-admins
+    }
+    const fetchUrl = `${backendUrl}/api/auth/${endpoint}`;
+    console.log("AuthService.setToken: Fetching URL:", fetchUrl);
+    await fetch(fetchUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),

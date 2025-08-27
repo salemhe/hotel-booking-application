@@ -68,7 +68,7 @@ interface Transaction {
   date: string;
   transactionId: string;
   customer: string;
-  branch: string;
+  
   method: string;
   status: string;
 }
@@ -560,7 +560,7 @@ export default function HotelPayments() {
                             <span>{transaction.customer}</span>
                           </div>
                         </TableCell>
-                        <TableCell>{transaction.branch}</TableCell>
+                        
                         <TableCell>{transaction.method}</TableCell>
                         <TableCell>
                           <Badge className={getStatusColor(transaction.status)}>{transaction.status}</Badge>
