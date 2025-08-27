@@ -2,52 +2,82 @@
 
 import React from 'react';
 import { Search, Home, Users, BarChart3, Settings } from 'lucide-react';
+import { useMobileNavigation, getCurrentTab } from '../../lib/hooks/useMobileNavigation';
 
 interface AdminBottomNavigationProps {
   activeTab?: string;
   onTabChange?: (tab: string) => void;
 }
 
-const AdminBottomNavigation = ({ activeTab = 'Home', onTabChange }: AdminBottomNavigationProps) => {
+const AdminBottomNavigation = ({ activeTab, onTabChange }: AdminBottomNavigationProps) => {
+  const { 
+    navigateToAdminDashboard,
+    navigateToAdminVendors,
+    navigateToAdminPayments,
+    currentPath
+  } = useMobileNavigation();
+  
+  // Determine active tab from current path if not provided
+  const currentActiveTab = activeTab || getCurrentTab(currentPath);
+
   const tabs = [
     {
       id: 'Search',
       label: 'Search',
-      icon: Search
+      icon: Search,
+      action: () => {
+        // Navigate to admin search page when implemented
+        console.log('Navigate to admin search');
+      },
     },
     {
       id: 'Home',
       label: 'Home',
-      icon: Home
+      icon: Home,
+      action: navigateToAdminDashboard,
     },
     {
       id: 'Vendors',
       label: 'Vendors',
-      icon: Users
+      icon: Users,
+      action: navigateToAdminVendors,
     },
     {
       id: 'Analytics',
       label: 'Analytics',
-      icon: BarChart3
+      icon: BarChart3,
+      action: navigateToAdminPayments,
     },
     {
       id: 'Settings',
       label: 'Settings',
-      icon: Settings
+      icon: Settings,
+      action: () => {
+        // Navigate to admin settings page when implemented
+        console.log('Navigate to admin settings');
+      },
     }
   ];
+
+  const handleTabClick = (tab: typeof tabs[0]) => {
+    // Execute navigation action
+    tab.action();
+    
+    // Call external onTabChange if provided
+    onTabChange?.(tab.id);
+  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
       <div className="flex justify-around py-2">
         {tabs.map((tab) => {
           const IconComponent = tab.icon;
-          const isActive = activeTab === tab.id;
+          const isActive = currentActiveTab === tab.id;
           
           return (
             <button
               key={tab.id}
-              onClick={() => onTabChange?.(tab.id)}
+              onClick={() => handleTabClick(tab)}
               className={`flex flex-col items-center py-2 px-3 transition-colors ${
                 isActive 
                   ? 'text-teal-600' 
