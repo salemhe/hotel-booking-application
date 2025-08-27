@@ -142,7 +142,7 @@ export default function VendorRegistration() {
       // Fetch real user profile from backend and store it
       let realProfile = null;
       if (userId) {
-        realProfile = await AuthService.fetchMyProfile(userId);
+        realProfile = await AuthService.fetchMyProfile(userId, formData.adminType);
         if (realProfile) {
           AuthService.setUser({
             ...realProfile,
