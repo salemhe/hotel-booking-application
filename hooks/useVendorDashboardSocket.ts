@@ -73,8 +73,8 @@ export function useVendorDashboardSocket(apiUrl: string, socketUrl: string) {
 
     // Fetch initial data
     Promise.all([
-        // fetch(`${apiUrl}/api/vendors/accounts`, fetchOptions).then(res => res.json()),
-        // fetch(`${apiUrl}/api/vendors/payments/stats`, fetchOptions).then(res => res.json()),
+        fetch(`${apiUrl}/api/vendors/accounts`, fetchOptions).then(res => res.json()),
+        fetch(`${apiUrl}/api/vendors/payments/stats`, fetchOptions).then(res => res.json()),
         fetch(`${apiUrl}/api/vendors/transactions`, fetchOptions).then(res => res.json()),
         fetch(`${apiUrl}/api/vendors/vendorDashboard`, fetchOptions).then(res => res.json())
     ]).then(([accountsRes, statsRes, transactionsRes, dashboardRes]) => {
