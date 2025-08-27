@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
 
   let tokenCookieName = "user-token";
   if (isVendor) tokenCookieName = "vendor-token";
-  if (isSuperAdmin) tokenCookieName = "vendor-token"; // Using vendor token for super-admin
+  if (isSuperAdmin) tokenCookieName = "admin-token"; // Using admin token for super-admin
 
   const token = request.cookies.get(tokenCookieName)?.value;
 

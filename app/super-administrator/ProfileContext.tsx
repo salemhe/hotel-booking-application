@@ -23,7 +23,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     async function fetchProfile() {
       const user = AuthService.getUser();
       if (user && user.id) {
-        const profileData = await AuthService.fetchMyProfile(user.id);
+        const profileData = await AuthService.fetchMyProfile(user.id, 'super-admin');
         setProfile(profileData);
       }
     }

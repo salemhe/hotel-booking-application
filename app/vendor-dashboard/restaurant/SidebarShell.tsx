@@ -2,33 +2,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/app/super-administrator/ThemeContext";
-import { BranchProvider, useBranchContext } from "./branches/BranchContext";
+
 import { useState } from "react";
 import { useVendorDashboardSocket } from '@/hooks/useVendorDashboardSocket';
 import { API_URL } from '../../config';
 import DashboardLoader from '../../components/DashboardLoader';
 
-function BranchNameDisplay({ collapsed }: { collapsed: boolean }) {
-  const { selectedBranch } = useBranchContext();
-  if (!selectedBranch) return null;
 
-  return (
-    <div
-      className={`bg-[#B3D1D2] text-[#042626] ${
-        collapsed ? "px-0" : "px-3"
-      } py-2 text-sm font-medium`}
-      title={selectedBranch.branchName}
-    >
-      {!collapsed ? (
-        <span>{selectedBranch.branchName}</span>
-      ) : (
-        <span className="block text-center text-[#042626]">
-          {selectedBranch.branchName.slice(0, 2).toUpperCase()}
-        </span>
-      )}
-    </div>
-  );
-}
 
 export default function RestaurantLayout({
   children,
@@ -70,7 +50,7 @@ export default function RestaurantLayout({
 
   return (
     <ThemeProvider>
-      <BranchProvider>
+      
         <div className="flex min-h-screen bg-gray-50">
           {/* Sidebar */}
           <aside
@@ -111,8 +91,7 @@ export default function RestaurantLayout({
                 </button>
               </div>
 
-              {/* Branch */}
-              <BranchNameDisplay collapsed={collapsed} />
+              
 
               {/* Navigation */}
               <nav className="mt-4 flex flex-col space-y-2 px-3">
@@ -184,7 +163,7 @@ export default function RestaurantLayout({
             {children}
           </main>
         </div>
-      </BranchProvider>
+      
     </ThemeProvider>
   );
 }

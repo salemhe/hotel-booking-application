@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ThemeProvider } from "./ThemeContext";
 import { useAuth } from "@/app/contexts/AuthContext";
 import API from "@/app/lib/api/axios";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 import {
   ChevronLeft, 
   ChevronRight, 
@@ -90,49 +91,57 @@ const SidebarItem = ({ item, isCollapsed, isActive }: SidebarItemProps) => {
 
 export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [authorized, setAuthorized] = useState(false); // Used to gate rendering and trigger effects
+  const [authorized, setAuthorized] = useState(false);
+  const [cookieSet, setCookieSet] = useState(false); // New state to track cookie status
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
 
-  // Split main and bottom items (Settings, Logout at bottom) while preserving originals
   const mainItems = sidebarItems.filter((i) => i.label !== "Settings" && i.label !== "Logout");
   const bottomItems = sidebarItems.filter((i) => i.label === "Settings" || i.label === "Logout");
 
-  // Authentication check
+  // 1. Authentication Check
   useEffect(() => {
-    if (authLoading) return; // Wait for auth context to load
+    if (authLoading) return;
 
     const token = localStorage.getItem("auth_token");
     if (isAuthenticated && token && user?.role === "super-admin") {
       setAuthorized(true);
     } else {
-      // Using replace to avoid adding to history stack
       router.replace("/vendor-login");
     }
   }, [isAuthenticated, user, authLoading, router]);
 
-  // Effect to sync localStorage token with a backend session cookie
+  // 2. Set Session Cookie
   useEffect(() => {
     if (!authorized) return;
 
     const setCookie = async () => {
       try {
         const token = localStorage.getItem("auth_token");
+        console.log("setCookie: Attempting to set session cookie.");
+        console.log("setCookie: Token found in localStorage:", !!token);
+
         if (token) {
-          // These calls likely set HttpOnly cookies for subsequent API requests
-          await API.post("auth/set-vendor-token", { token });
-          await API.post("auth/set-user-token", { token });
+          console.log("setCookie: Sending token to backend for session cookie.");
+          await AuthService.setToken(token, "super-admin");
+          console.log("setCookie: Backend response for set-admin-token:");
+          setCookieSet(true); // Mark cookie as set
+          console.log("setCookie: cookieSet state set to true.");
+        } else {
+          console.log("setCookie: No token found, redirecting to /vendor-login.");
+          router.replace("/vendor-login");
         }
       } catch (e) {
-        console.warn("Failed to set session token cookie in layout:", e);
+        console.error("setCookie: Error setting session token cookie:", e); // Changed warn to error for visibility
+        router.replace("/vendor-login");
       }
     };
     setCookie();
-  }, [authorized]);
+  }, [authorized, router]);
 
-  // Show a loading spinner while checking auth or if not yet authorized (during redirect)
-  if (authLoading || !authorized) {
+  // Show a loading spinner while checking auth or setting the cookie
+  if (authLoading || !authorized || !cookieSet) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md">
