@@ -349,6 +349,7 @@ export default function VendorDashboard() {
                             {reservation.paymentStatus}
                           </Badge>
                         )}
+                      </td>
                       <td className="py-4">
                         <Badge className={`${
                           reservation.status === 'confirmed' ? 'bg-green-100 text-green-800' :
