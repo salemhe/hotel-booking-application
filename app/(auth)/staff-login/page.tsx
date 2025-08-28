@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-// import Link from "next/link";
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -145,102 +145,105 @@ export default function StaffLoginClient() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-white flex items-center justify-center p-4 sm:p-6 md:p-8">
-      <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
-        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-xs">
-          <CardHeader className="space-y-3 pb-6 md:pb-8 px-4 sm:px-6 md:px-8">
-            <CardTitle className="text-2xl sm:text-3xl font-semibold text-center text-[#222]">
-              Staff Login 🔑
-            </CardTitle>
-            <CardDescription className="text-center text-gray-600 text-sm sm:text-base">
-              Access your vendor&apos;s dashboard with your assigned permissions
-            </CardDescription>
-          </CardHeader>
+       <Suspense fallback={<div>Loading...</div>}>
+            <div className="min-h-[100dvh] bg-white flex items-center justify-center p-4 sm:p-6 md:p-8">
+                <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
+                    <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-xs">
+                    <CardHeader className="space-y-3 pb-6 md:pb-8 px-4 sm:px-6 md:px-8">
+                        <CardTitle className="text-2xl sm:text-3xl font-semibold text-center text-[#222]">
+                        Staff Login 🔑
+                        </CardTitle>
+                        <CardDescription className="text-center text-gray-600 text-sm sm:text-base">
+                        Access your vendor&apos;s dashboard with your assigned permissions
+                        </CardDescription>
+                    </CardHeader>
 
-          <CardContent className="px-4 sm:px-6 md:px-8">
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6" noValidate>
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-light text-gray-700">
-                  Email address
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your staff email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={`pl-10 h-10 sm:h-12 ${
-                      errors.email ? "border-red-600 ring-red-600" : ""
-                    }`}
-                  />
+                    <CardContent className="px-4 sm:px-6 md:px-8">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6" noValidate>
+                        {/* Email */}
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-sm font-light text-gray-700">
+                            Email address
+                            </Label>
+                            <div className="relative">
+                            <Mail className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="Enter your staff email address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className={`pl-10 h-10 sm:h-12 ${
+                                errors.email ? "border-red-600 ring-red-600" : ""
+                                }`}
+                            />
+                            </div>
+                            {errors.email && (
+                            <p className="mt-1 text-xs text-red-600 font-light flex items-center gap-1">
+                                <AlertCircle className="w-4 h-4" />
+                                {errors.email}
+                            </p>
+                            )}
+                        </div>
+
+                        {/* Password */}
+                        <div className="space-y-2">
+                            <Label htmlFor="password" className="text-sm font-light text-gray-700">
+                            Password
+                            </Label>
+                            <div className="relative">
+                            <Lock className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
+                            <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter your secure password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className={`pl-10 pr-10 h-10 sm:h-12 ${
+                                errors.password ? "border-red-600 ring-red-600" : ""
+                                }`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                            </div>
+                            {errors.password && (
+                            <p className="mt-1 text-xs text-red-600 font-light flex items-center gap-1">
+                                <AlertCircle className="w-4 h-4" />
+                                {errors.password}
+                            </p>
+                            )}
+                        </div>
+
+                        <Button
+                            type="submit"
+                            className="w-full h-10 sm:h-12 bg-[#60A5FA] hover:bg-[#3B82F6] text-white"
+                            disabled={loading}
+                        >
+                            {loading ? "Signing you in..." : "Sign in"}
+                        </Button>
+                        </form>
+
+                        {userNotExist && (
+                        <div className="mt-4 rounded-md p-3 italic bg-red-50 text-red-700" role="alert">
+                            Staff account not found. Contact your vendor admin.
+                        </div>
+                        )}
+                    </CardContent>
+
+                    <CardFooter className="flex justify-center text-sm text-gray-500">
+                        <p>
+                        Need access? Ask your vendor admin to add you as a staff member.
+                        </p>
+                    </CardFooter>
+                    </Card>
                 </div>
-                {errors.email && (
-                  <p className="mt-1 text-xs text-red-600 font-light flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" />
-                    {errors.email}
-                  </p>
-                )}
-              </div>
+            </div>
+       </Suspense>
 
-              {/* Password */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-light text-gray-700">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your secure password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={`pl-10 pr-10 h-10 sm:h-12 ${
-                      errors.password ? "border-red-600 ring-red-600" : ""
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="mt-1 text-xs text-red-600 font-light flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" />
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-10 sm:h-12 bg-[#60A5FA] hover:bg-[#3B82F6] text-white"
-                disabled={loading}
-              >
-                {loading ? "Signing you in..." : "Sign in"}
-              </Button>
-            </form>
-
-            {userNotExist && (
-              <div className="mt-4 rounded-md p-3 italic bg-red-50 text-red-700" role="alert">
-                Staff account not found. Contact your vendor admin.
-              </div>
-            )}
-          </CardContent>
-
-          <CardFooter className="flex justify-center text-sm text-gray-500">
-            <p>
-              Need access? Ask your vendor admin to add you as a staff member.
-            </p>
-          </CardFooter>
-        </Card>
-      </div>
-    </div>
   );
 }
