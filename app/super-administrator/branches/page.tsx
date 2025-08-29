@@ -65,7 +65,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
       // Manual token handling is no longer needed here.
 
       const response = await API.post(
-        'super-admin/branches',
+        'api/super-admin/branches',
         {
           name: formData.branchName,
           address: formData.address,
@@ -291,7 +291,7 @@ export default function BranchesDashboard() {
       // The API instance is now configured with an interceptor to add the auth token.
       // The layout handles setting the session cookie and redirects on 401.
 
-      const res = await API.get('super-admin/branches', { 
+      const res = await API.get('api/super-admin/branches', { 
         params,
       });
       setBranches(res.data.data || []);
