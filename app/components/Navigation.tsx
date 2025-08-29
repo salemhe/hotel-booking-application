@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown,  } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import {
 // import AccountTypeModal from "./AccountTypeModal";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import  { SearchSectionTwo } from "./SearchSection";
+import { SearchSectionTwo } from "./SearchSection";
 export interface UserProfile {
   id: string;
   email: string;
@@ -191,7 +191,7 @@ const Navigation = () => {
           className="cursor-pointer rounded-full bg-blue-700 hover:bg-blue-700/90"
           asChild
         >
-          <Link href="user-signup">Create Account</Link>
+          <Link href="/user-signup">Create Account</Link>
         </Button>
       </>
     );
@@ -284,7 +284,7 @@ const Navigation = () => {
                 <Link href="/" className="flex items-center space-x-2">
                   <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
                   <span className={`text-2xl font-bold ${scrolled || !isHomePage ? 'text-gray-900' : 'text-[#F9FAFB]'}`}>
-                    Rhace
+                    Bookies
                   </span>
                 </Link>
               </div>
@@ -320,7 +320,7 @@ const Navigation = () => {
                 </div>
               )
             }
-            <div className="hidde md:ml-6 flex items-center space-x-4">
+            <div className="hidden md:ml-6 md:flex items-center space-x-4">
               {renderAuthButtons()}
             </div>
             {/* <div className="md:hidden flex items-center">

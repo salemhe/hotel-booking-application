@@ -12,12 +12,13 @@ import { AuthService } from '@/app/lib/api/services/auth.service';
 
 import API from "@/app/lib/api/axios";
 import { AxiosResponse } from 'axios';
+import { useRouter } from 'next/navigation';
 
-interface User {
-  id: string;
-  role: 'Super Admin' | 'Admin' | 'Hotel Owner';
-  name: string;
-}
+// interface User {
+//   id: string;
+//   role: 'Super Admin' | 'Admin' | 'Hotel Owner';
+//   name: string;
+// }
 
 interface Room {
   _id: string;
@@ -36,6 +37,22 @@ interface Room {
   updatedAt: string;
 }
 
+ interface ApiRoom {
+        _id: string;
+        roomNumber: string;
+        roomType: string;
+        roomImages?: string[];
+        roomDescription?: string;
+        price: number;
+        capacity: number;
+        amenities?: string[];
+        features?: string[];
+        isAvailable: boolean;
+        maintenanceStatus: string;
+        createdAt: string;
+        updatedAt: string;
+      }
+
 interface RoomFormData {
   roomNumber: string;
   roomType: string;
@@ -50,11 +67,11 @@ interface RoomFormData {
   images: File[]; // Add this for uploading
 }
 
-const mockUser: User = {
-  id: '1',
-  role: 'Admin',
-  name: 'John Doe'
-};
+// const mockUser: User = {
+//   id: '1',
+//   role: 'Admin',
+//   name: 'John Doe'
+// };
 
 const imageBaseUrl = "/uploads/rooms/"; // Change to your actual base path for images, or receive from API/config
 
@@ -62,16 +79,18 @@ const RoomsManagement = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | undefined>();
-  const [user] = useState<User>(mockUser);
+ 
+    const user = AuthService.getUser();
   const [loading, setLoading] = useState(true);
   const [viewImages, setViewImages] = useState<string[] | null>(null);
+  const router = useRouter();
 
-  const canEdit = ['Super Admin', 'Admin'].includes(user?.role);
+  const canEdit = user && ['Super Admin', 'Admin'].includes(user.role as string);
 
-  const handleAddRoom = () => {
-    setEditingRoom(undefined);
-    setIsModalOpen(true);
-  };
+  // const handleAddRoom = () => {
+  //   setEditingRoom(undefined);
+  //   setIsModalOpen(true);
+  // };
 
   const handleEditRoom = (room: Room) => {
     setEditingRoom(room);
@@ -89,6 +108,70 @@ const RoomsManagement = () => {
     }
   };
 
+   const fetchRooms = async () => {
+  try {
+    setLoading(true);
+    // Get the user data from AuthService
+    if (!user) {
+      console.warn("No user found in storage");
+      setLoading(false);
+      return;
+    }
+    // Get the token
+    const token = AuthService.getToken();
+    if (!token) {
+      console.warn("No token found");
+      setLoading(false);
+      return;
+    }
+    // Fetch rooms data
+    const response = await API.get(`vendors/${user.id}/available-rooms`);
+    
+    // Updated to match your actual API response structure
+    if (response.data && Array.isArray(response.data.availableRooms)) {
+      // Map the API response to match your Room interface
+     
+
+      const mappedRooms: Room[] = (response.data.availableRooms as ApiRoom[]).map((room: ApiRoom): Room => ({
+        ...room,
+        _id: room._id,
+        roomNumber: room.roomNumber,
+        roomType: room.roomType,
+        type: room.roomType, // Assuming type should be the same as roomType
+        price: room.price,
+        capacity: room.capacity,
+        amenities: room.amenities || [],
+        features: room.features || [],
+        images: room.roomImages || [], // Map roomImages to images
+        description: room.roomDescription || '', // Map roomDescription to description
+        isAvailable: room.isAvailable,
+        maintenanceStatus: room.maintenanceStatus,
+        createdAt: room.createdAt,
+        updatedAt: room.updatedAt
+      }));
+      
+      setRooms(mappedRooms);
+      console.log("Rooms loaded:", mappedRooms);
+    } else {
+      console.warn("Invalid room data format", response.data);
+      setRooms([]);
+    }
+  } catch (error: unknown) {
+    console.error("Failed to fetch room data:", error);
+    if (error && typeof error === 'object' && 'response' in error) {
+      const apiError = error as { response: { status: number; data: unknown } };
+      console.error("Error response:", apiError.response.status, apiError.response.data);
+    }
+    setRooms([]); // Set empty array on error to prevent undefined issues
+  } finally {
+    setLoading(false);
+  }
+};
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
+console.log(editingRoom?._id)
   const handleSaveRoom = async (roomData: Omit<RoomFormData, 'images'> & { images: File[] }) => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,14 +181,14 @@ const RoomsManagement = () => {
         if (roomData.images && roomData.images.length > 0) {
           const formData = new FormData();
           (roomData.images as File[]).forEach((img) => formData.append("images", img));
-          await API.post(`hotels/685dbe1b348bf4006362be1f/rooms/${editingRoom._id}/images`, formData, {
+          await API.post(`hotels/${user?.id}/rooms/${editingRoom._id}/images`, formData, {
             headers: {
               "Content-Type": "multipart/form-data"
             }
           });
         }
         // Update existing room (excluding images)
-        response = await API.put(`hotels/685dbe1b348bf4006362be1f/rooms/${editingRoom._id}`, {
+        response = await API.put(`hotels/${user?.id}/rooms/${editingRoom._id}`, {
           ...roomData,
           images: undefined // Don't send images array as part of normal data
         });
@@ -153,44 +236,8 @@ const RoomsManagement = () => {
     return isAvailable ? 'Available' : 'Occupied';
   };
 
-  const fetchRooms = async () => {
-    try {
-      setLoading(true);
-      // Get the user data from AuthService
-      const user = AuthService.getUser();
-      if (!user) {
-        console.warn("No user found in storage");
-        setLoading(false);
-        return;
-      }
-      // Get the token
-      const token = AuthService.getToken();
-      if (!token) {
-        console.warn("No token found");
-        setLoading(false);
-        return;
-      }
-      // Fetch rooms data
-      const response = await API.get(`hotels/685dbe1b348bf4006362be1f/rooms`);
-      if (response.data && response.data.success && Array.isArray(response.data.data)) {
-        setRooms(response.data.data);
-      } else {
-        console.warn("Invalid room data format");
-      }
-    } catch (error: unknown) {
-      console.error("Failed to fetch room data:", error);
-      if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as { response: { status: number; data: unknown } };
-        console.error("Error response:", apiError.response.status, apiError.response.data);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+ 
 
-  useEffect(() => {
-    fetchRooms();
-  }, []);
 
   // View images modal
   const handleViewImages = (room: Room) => {
@@ -212,15 +259,17 @@ const RoomsManagement = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Room Management</h1>
-          {canEdit && (
+          {/* {canEdit && ( */}
             <button
-              onClick={handleAddRoom}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              onClick={() => {
+                router.push("/vendor-dashboard/add-rooms");
+              }}
+              className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
             >
               <Plus size={20} className="mr-2" />
               Add Room
             </button>
-          )}
+          {/* )} */}
         </div>
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -312,7 +361,7 @@ const RoomsManagement = () => {
                         <span className="text-gray-400">No Images</span>
                       )}
                     </td>
-                    {canEdit && (
+                    {/* {canEdit && ( */}
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
                           onClick={() => handleEditRoom(room)}
@@ -327,7 +376,7 @@ const RoomsManagement = () => {
                           <Trash2 size={16} />
                         </button>
                       </td>
-                    )}
+                    {/* )} */}
                   </tr>
                 ))}
               </tbody>

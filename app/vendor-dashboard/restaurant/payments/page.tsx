@@ -1,31 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Search,
-  Bell,
-  ChevronDown,
-  Edit,
-  Plus,
-  MoreHorizontal,
-  TrendingUp,
-  DollarSign,
-  CheckCircle,
-  Clock,
-  Eye,
-  Download,
-  Filter,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  CheckCircle,
+  ChevronDown,
+  Clock,
+  DollarSign,
+  Download,
+  Edit,
+  Eye,
+  Filter,
+  MoreHorizontal,
+  Plus,
+  Search,
+  TrendingUp
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
- import { AuthService } from "@/app/lib/api/services/userAuth.service";
+ import { AuthService } from "@/app/lib/api/services/auth.service";
+import { useVendorDashboardSocket } from "@/hooks/useVendorDashboardSocket";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -67,7 +67,7 @@ interface Transaction {
   date: string;
   transactionId: string;
   customer: string;
-  branch: string;
+  
   method: string;
   status: string;
 }
@@ -78,27 +78,29 @@ interface ChartData {
 }
 
 export default function RestaurantPayments() {
-  // Real-time state
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const { accounts, stats, transactions, loading } = useVendorDashboardSocket(process.env.NEXT_PUBLIC_API_URL || 'https://hotel-booking-app-backend-30q1.onrender.com', process.env.NEXT_PUBLIC_SOCKET_URL || 'https://hotel-booking-app-backend-30q1.onrender.com');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [vendor, setVendor] = useState<{ businessName?: string; role?: string; profileImage?: string } | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [accountForm, setAccountForm] = useState<Account>({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
   const [verifying, setVerifying] = useState(false);
   const [verifyError, setVerifyError] = useState('');
-  const [stats, setStats] = useState<Stats>({});
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [chartData, setChartData] = useState<ChartData[]>([]);
 
   useEffect(() => {
-    fetchAll();
     const fetchVendor = async () => {
       try {
-        if (await AuthService.isAuthenticated()) {
-          const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!);
-          const profile = await AuthService.fetchMyProfile(id!);
-          setVendor(profile);
+        if (AuthService.isAuthenticated()) {
+          const id = await AuthService.getId();
+          if (id) {
+            const profile = await AuthService.fetchMyProfile(id, 'vendor');
+            setVendor({
+              businessName: (profile as any)?.businessName || (profile as any)?.name,
+              role: (profile as any)?.role || (profile as any)?.businessType || 'Vendor',
+              profileImage: (profile as any)?.profileImage
+            });
+          }
         }
       } catch {
         setVendor(null);
@@ -106,43 +108,20 @@ export default function RestaurantPayments() {
     };
     fetchVendor();
   }, []);
-  const fetchAll = async () => {
-    try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
-      const [accRes, statsRes, transRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }).then(r => r.json()),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/payments/stats`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }).then(r => r.json()),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/payments/transactions`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }).then(r => r.json()),
-      ]);
-      // Defensive: ensure accounts is always an array
-      const accountsArray = Array.isArray(accRes) ? accRes : (accRes?.accounts || []);
-      setAccounts(accountsArray);
-      setStats(statsRes);
-      // Defensive: ensure transactions is always an array
-      const transactionsArray = Array.isArray(transRes) ? transRes : (transRes?.transactions || []);
-      setTransactions(transactionsArray);
-      setChartData(statsRes.chartData || []);
-      console.log("accounts from API:", accRes);
-      console.log("transactions from API:", transRes);
-    } catch {}
-  };
+
+  useEffect(() => {
+    if (stats.chartData) {
+      setChartData(stats.chartData);
+    }
+  }, [stats]);
 
   const verifyAccount = async (accountNumber: string) => {
     setVerifying(true);
     setVerifyError('');
     try {
       const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const token2 = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
-      const res = await fetch(`${BASE_URL}/api/vendor/accounts/verify`, {
+      const token2 = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+      const res = await fetch(`${BASE_URL}/api/vendors/accounts/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,21 +130,30 @@ export default function RestaurantPayments() {
         credentials: "include",
         body: JSON.stringify({ accountNumber })
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Account verification API error:", errorData);
+        setVerifyError(errorData.message || "Account verification failed");
+        return;
+      }
+
       const data = await res.json();
       if (data.accountName) {
         setAccountForm(f => ({ ...f, accountName: data.accountName, bankLogoUrl: data.bankLogoUrl }));
       } else {
-        setVerifyError("Account verification failed");
+        setVerifyError("Account verification failed: No account name returned");
       }
-    } catch {
-      setVerifyError("Account verification failed");
+    } catch (error) {
+      console.error("Account verification fetch error:", error);
+      setVerifyError("Account verification failed: Network error or invalid response");
     } finally {
       setVerifying(false);
     }
   };
 
   const saveAccount = async () => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
     try {
       if (accountForm.id) {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts/${accountForm.id}`, {
@@ -191,7 +179,6 @@ export default function RestaurantPayments() {
       setShowEditModal(false);
       setShowAddModal(false);
       setAccountForm({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
-      fetchAll();
     } catch {}
   };
 
@@ -275,11 +262,7 @@ export default function RestaurantPayments() {
   );
 
   // Controlled input for account number
-  const [accountNumberInput, setAccountNumberInput] = useState("");
-
-  useEffect(() => {
-    setAccountNumberInput(accountForm.accountNumber);
-  }, [accountForm.accountNumber]);
+  
 
   const AccountModal = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) => (
     open ? (
@@ -325,16 +308,15 @@ export default function RestaurantPayments() {
             </div>
             <Input
               placeholder="Account Number"
-              value={accountNumberInput}
+              value={accountForm.accountNumber}
               onChange={e => {
-                setAccountNumberInput(e.target.value);
                 setAccountForm(f => ({ ...f, accountNumber: e.target.value }));
               }}
               maxLength={10}
               inputMode="numeric"
               autoComplete="off"
             />
-            <Button onClick={() => verifyAccount(accountNumberInput)} disabled={verifying}>
+            <Button onClick={() => verifyAccount(accountForm.accountNumber)} disabled={verifying}>
               {verifying ? "Verifying..." : "Verify Account"}
             </Button>
             {accountForm.accountName && <div className="text-green-600 font-semibold">{accountForm.accountName}</div>}
@@ -349,7 +331,7 @@ export default function RestaurantPayments() {
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+        {/* <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -374,8 +356,8 @@ export default function RestaurantPayments() {
               </div>
             </div>
           </div>
-        </header>
-        <main className="flex-1 overflow-auto p-6">
+        </header> */}
+        <main className="flex-1 overflow-auto mt-20 p-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Payments & Earnings</h1>
             <div className="flex items-center space-x-2">
@@ -595,7 +577,7 @@ export default function RestaurantPayments() {
                             <span>{transaction.customer}</span>
                           </div>
                         </TableCell>
-                        <TableCell>{transaction.branch}</TableCell>
+                        
                         <TableCell>{transaction.method}</TableCell>
                         <TableCell>
                           <Badge className={getStatusColor(transaction.status)}>{transaction.status}</Badge>

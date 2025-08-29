@@ -27,7 +27,7 @@ const Footer = () => {
               {/* small blue dot */}
               <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
               <span className="text-gray-900 text-xl font-bold leading-relaxed">
-                Rhace
+                Bookies
               </span>
             </Link>
             <p className="text-gray-900 text-base font-normal leading-normal">
@@ -40,7 +40,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold leading-snug mb-4">Explore</h3>
             <ul className="space-y-2 text-gray-600">
               <li>
-                <Link href="/restaurants" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal  text-gray-900 text-base font-normal leading-normal">
+                <Link href="/restaurants" className="hover:text-gray-900 text-gray-900 text-base font-normal leading-normal">
                   Restaurants
                 </Link>
               </li>
@@ -92,7 +92,7 @@ const Footer = () => {
           {/* Contact */}
           <div>
             <h3 className="text-lg font-semibold leading-snug mb-4">Contact</h3>
-            <ul className="space-y-2 hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+            <ul className="space-y-2 text-gray-900 text-base font-normal leading-normal">
               <li className="flex items-start">
                 <FiPhone className="mt-1 mr-2" /> +23412345678
               </li>
@@ -109,12 +109,12 @@ const Footer = () => {
 
         {/* Bottom bar */}
         <div className="mt-12 border-t border-slate-300 pt-8 flex flex-col md:flex-row justify-between items-center ">
-          <p className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">© 2025 Bookies. All Rights Reserved</p>
-          <div className="flex space-x-6 mt-4 md:mt-0 ">
-            <Link href="/privacy" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+          <p className="text-gray-900 text-base font-normal leading-normal">© 2025 Bookies. All Rights Reserved</p>
+          <div className="flex space-x-6 mt-4 md:mt-0">
+            <Link href="/privacy" className="hover:text-gray-900 text-gray-900 text-base font-normal leading-normal">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-gray-900  text-gray-900 text-base font-normal leading-normal">
+            <Link href="/terms" className="hover:text-gray-900 text-gray-900 text-base font-normal leading-normal">
               Terms of Service
             </Link>
           </div>

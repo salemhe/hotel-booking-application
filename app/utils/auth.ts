@@ -82,7 +82,7 @@ export const hasRole = (role: string): boolean => {
  * Check if user is super admin
  */
 export const isSuperAdmin = (): boolean => {
-  return hasRole("super_admin") || hasRole("super-admin");
+  return hasRole("super-admin");
 };
 
 /**

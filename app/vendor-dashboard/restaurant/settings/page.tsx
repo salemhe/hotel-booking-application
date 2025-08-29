@@ -31,7 +31,7 @@ export default function RestaurantSettings() {
         const { AuthService } = await import("@/app/lib/api/services/auth.service");
         const user = AuthService.getUser();
         if (user && user.id) {
-          const realProfile = await AuthService.fetchMyProfile(user.id);
+          const realProfile = await AuthService.fetchMyProfile(user.id, user.role);
           if (realProfile) {
             setProfile({
               name: realProfile.businessName || realProfile.name || "",

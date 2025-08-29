@@ -97,8 +97,14 @@ export default function SuperAdminPayments() {
   async function fetchVendors() {
     try {
       const data = await apiFetcher("/api/super-admin/vendors");
-    
-      setVendors(data || []);
+      if (Array.isArray(data)) {
+        setVendors(data);
+      } else if (data && Array.isArray((data as any).data)) {
+        setVendors((data as any).data);
+      } else {
+        console.error("Vendors API returned non-array response:", data);
+        setVendors([]);
+      }
     } catch {
       setVendors([]);
     }
@@ -136,7 +142,7 @@ export default function SuperAdminPayments() {
                 onChange={e => setSelectedVendor(e.target.value)}
               >
                 <option value="">All Vendors</option>
-                {vendors.map((vendor) => (
+                {Array.isArray(vendors) && vendors.map((vendor) => (
                   <option key={vendor.id} value={vendor.id}>{vendor.name}</option>
                 ))}
                 

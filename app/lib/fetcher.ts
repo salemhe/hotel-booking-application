@@ -17,6 +17,7 @@ export interface ApiErrorResponse {
 export type ApiSuccessResponse<T = any> = T;
 export type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse;
 
+
 const createApiError = (
   message: string,
   details?: any,
@@ -34,11 +35,13 @@ const createApiError = (
   },
 });
 
+
 export const apiFetcher = async <T = any>(
   url: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> => {
   if (!process.env.NEXT_PUBLIC_API_URL) {
+
     return createApiError("API URL is not configured");
   }
 
@@ -69,6 +72,7 @@ export const apiFetcher = async <T = any>(
   try {
     // Timeout controller
     const controller = new AbortController();
+
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const response = await fetch(apiUrl, {
