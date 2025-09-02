@@ -1,7 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import API from "@/app/lib/api/axios";
 import axios from "axios";
 import {
   Search,
@@ -25,7 +27,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { getAuthUser } from "@/app/utils/auth";
+import { AuthService } from "@/app/lib/api/services/auth.service";
 
 // Removed unused sidebarItems
 
@@ -57,10 +60,12 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
   };
   const handleSubmit = async (action: string) => {
     try {
-      // POST to backend with Authorization header
-      const token = localStorage.getItem("auth_token");
-      await axios.post(
-        `${API_URL}/super-admin/branches`,
+      // The API instance is now configured with an interceptor to add the auth token.
+      // The layout handles setting the session cookie.
+      // Manual token handling is no longer needed here.
+
+      const response = await API.post(
+        'api/super-admin/branches',
         {
           name: formData.branchName,
           address: formData.address,
@@ -75,11 +80,6 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           assignedManager: formData.assignedManager,
           assignedMenu: formData.assignedMenu,
           importAllMenuItems: formData.importAllMenuItems,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
         }
       );
       onBranchAdded(); // Refresh branch list
@@ -105,12 +105,27 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
         setIsOpen(false);
       }
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        const response = err.response;
-        console.error('API error:', response.data);
-        alert("Failed to save branch: " + (response.data?.message || JSON.stringify(response.data)));
+      if (axios.isAxiosError(err)) {
+        const status = err.response?.status;
+        const data = err.response?.data;
+        let serverMessage = "";
+        if (data) {
+          if (typeof data === "string") {
+            serverMessage = data;
+          } else if (typeof data === "object") {
+            serverMessage = (data as any).message || (data as any).error || JSON.stringify(data);
+          }
+        }
+        const finalMsg = serverMessage || err.message || "Request failed";
+        // Use warn to avoid Next overlay intercepting console.error
+        console.warn("Add branch API error:", { status, data: err.response?.data });
+        if (status === 401 || status === 403) {
+          alert("Unauthorized. Please log in again.");
+        } else {
+          alert("Failed to save branch: " + finalMsg);
+        }
       } else {
-        console.error('Error:', err);
+        console.warn('Add branch error:', err);
         alert("Failed to save branch. Please try again.");
       }
     } finally {
@@ -251,6 +266,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
 }
 
 export default function BranchesDashboard() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
@@ -259,23 +275,47 @@ export default function BranchesDashboard() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAddBranch, setShowAddBranch] = useState(false);
-  // Removed unused variables 'router' and 'pathname'
 
   useEffect(() => {
     fetchBranches();
     // eslint-disable-next-line
   }, [searchTerm, activeTab, page]);
 
-  async function fetchBranches() {
+  async function fetchBranches(retry = false) {
     setLoading(true);
     try {
       const params: Record<string, unknown> = { page, limit: 12 };
       if (searchTerm) params.search = searchTerm;
       if (activeTab !== "All") params.status = activeTab;
-      const res = await axios.get(`${API_URL}/super-admin/branches`, { params });
+      
+      // The API instance is now configured with an interceptor to add the auth token.
+      // The layout handles setting the session cookie and redirects on 401.
+
+      const res = await API.get('api/super-admin/branches', { 
+        params,
+      });
       setBranches(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
-    } catch {
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const status = err.response?.status;
+        const data = err.response?.data;
+        let serverMessage = "";
+        if (data) {
+          if (typeof data === "string") {
+            serverMessage = data;
+          } else if (typeof data === "object") {
+            serverMessage = (data as any).message || (data as any).error || JSON.stringify(data);
+          }
+        }
+        console.warn('Fetch branches API error:', { status, data, retry });
+        if (status === 401) {
+          // The layout's auth check will handle this by redirecting to the login page.
+          alert('Authentication failed. Please log in again.');
+        }
+      } else {
+        console.warn('Fetch branches error:', err);
+      }
       setBranches([]);
       setTotalPages(1);
     } finally {
@@ -311,11 +351,15 @@ export default function BranchesDashboard() {
               </Button>
               <div className="flex items-center space-x-2">
                 <Avatar>
-                  <AvatarFallback>{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).profile.businessName?.split(' ').map((n: string) => n[0]).join('') : 'SA'}</AvatarFallback>
+                  <AvatarFallback>{
+                    typeof window !== 'undefined' ? 
+                    (getAuthUser()?.name?.split(' ').map((n: string) => n[0]).join('') || 'SA') : 
+                    'SA'
+                  }</AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block">
-                  <div className="text-sm font-medium">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).profile.businessName : 'Super Admin'}</div>
-                  <div className="text-xs text-gray-500">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).role : 'Admin'}</div>
+                  <div className="text-sm font-medium">{getAuthUser()?.name || 'Super Admin'}</div>
+                  <div className="text-xs text-gray-500">{getAuthUser()?.role || 'Admin'}</div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </div>

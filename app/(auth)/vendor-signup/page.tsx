@@ -130,6 +130,7 @@ export default function VendorRegistration() {
     try {
       await AuthService.verifyOTP(formData.email, otp);
       toast.success("Your account has been verified.");
+
       // Automatically log in the user after verification
       const loginResponse = await AuthService.login(formData.email, formData.password);
       const token = loginResponse.token || (loginResponse.profile && loginResponse.profile.token);
@@ -141,7 +142,7 @@ export default function VendorRegistration() {
       // Fetch real user profile from backend and store it
       let realProfile = null;
       if (userId) {
-        realProfile = await AuthService.fetchMyProfile(userId);
+        realProfile = await AuthService.fetchMyProfile(userId, formData.adminType);
         if (realProfile) {
           AuthService.setUser({
             ...realProfile,
@@ -181,23 +182,37 @@ export default function VendorRegistration() {
       }
       // Route based on account type
       if (formData.adminType === "super-admin") {
-        // Set AuthContext for auto-login
-        if (realProfile) {
-          contextLogin({
-            id: realProfile.id ?? "",
-            name: realProfile.businessName ?? realProfile.email ?? "",
-            email: realProfile.email ?? "",
-            role: realProfile.role ?? "super-admin"
-          });
+      // Set AuthContext for auto-login
+      if (realProfile) {
+        contextLogin({
+          id: realProfile.id ?? "",
+          name: realProfile.businessName ?? realProfile.email ?? "",
+          email: realProfile.email ?? "",
+          role: realProfile.role ?? "super-admin"
+        }, token || "");
           // Wait a tick to ensure context is set before redirect
           setTimeout(() => {
-            router.push("/super-admin/dashboard");
+            router.push("/super-administrator/dashboard");
           }, 150);
         } else {
-          router.push("/super-admin/dashboard");
+          router.push("/super-administrator/dashboard");
         }
       } else {
-        router.push("/vendor-dashboard");
+        // Route to appropriate vendor dashboard based on business type
+        if (loginResponse?.profile?.onboarded) {
+          if (loginResponse.profile.businessType === "hotel") {
+            router.push("/vendor-dashboard/hotel");
+          } else if (loginResponse.profile.businessType === "restaurant") {
+            router.push("/vendor-dashboard/restaurant");
+          } else if (loginResponse.profile.businessType === "club") {
+            router.push("/vendor-dashboard/club");
+          } else {
+            router.push("/vendorDashboard");
+          }
+        } else {
+          // Route to onboarding if not yet onboarded
+          router.push("/onboarding");
+        }
       }
     } catch (error) {
       if (error instanceof Error) {

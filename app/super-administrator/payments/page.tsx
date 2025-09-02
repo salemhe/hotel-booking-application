@@ -97,7 +97,14 @@ export default function SuperAdminPayments() {
   async function fetchVendors() {
     try {
       const data = await apiFetcher("/api/super-admin/vendors");
-      setVendors(data || []);
+      if (Array.isArray(data)) {
+        setVendors(data);
+      } else if (data && Array.isArray((data as any).data)) {
+        setVendors((data as any).data);
+      } else {
+        console.error("Vendors API returned non-array response:", data);
+        setVendors([]);
+      }
     } catch {
       setVendors([]);
     }
@@ -105,7 +112,7 @@ export default function SuperAdminPayments() {
 
   async function fetchPayments() {
     try {
-      let url = "/api/super-admin/payments";
+      let url = "/api/super-admini/payments";
       if (selectedVendor) url += `?vendorId=${selectedVendor}`;
       const data = await apiFetcher(url);
       setStats(data.stats || {});
@@ -135,9 +142,10 @@ export default function SuperAdminPayments() {
                 onChange={e => setSelectedVendor(e.target.value)}
               >
                 <option value="">All Vendors</option>
-                {vendors.map((vendor) => (
+                {Array.isArray(vendors) && vendors.map((vendor) => (
                   <option key={vendor.id} value={vendor.id}>{vendor.name}</option>
                 ))}
+                
               </select>
             </div>
             <div className="flex items-center space-x-4">
@@ -147,10 +155,10 @@ export default function SuperAdminPayments() {
               <div className="flex items-center space-x-2">
                 <Avatar>
                   <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                  <AvatarFallback>{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).profile.businessName?.split(' ').map((n: string) => n[0]).join('') : 'SA'}</AvatarFallback>
+                  <AvatarFallback>{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).name?.split(' ').map((n: string) => n[0]).join('') : 'SA'}</AvatarFallback>
                 </Avatar>
                 <div className="text-sm">
-                  <div className="font-medium">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).profile.businessName : 'Super Admin'}</div>
+                  <div className="font-medium">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).name : 'Super Admin'}</div>
                   <div className="text-gray-500">{typeof window !== 'undefined' && localStorage.getItem('auth_user') ? JSON.parse(localStorage.getItem('auth_user')!).role : 'Admin'}</div>
                 </div>
                 <ChevronDown className="h-4 w-4 text-gray-400" />

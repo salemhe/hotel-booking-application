@@ -1,52 +1,31 @@
 "use client";
 
-import { useState, useEffect, JSX, Fragment } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  Search,
-  Bell,
-  ChevronDown,
-  Edit,
-  Plus,
-  MoreHorizontal,
-  TrendingUp,
-  DollarSign,
   CheckCircle,
+  ChevronDown,
   Clock,
+  DollarSign,
+  Download,
+  Edit,
   Eye,
   Filter,
-  EyeClosed,
-  ArrowUpRightFromSquare,
+  MoreHorizontal,
+  Plus,
+  Search,
+  TrendingUp
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
+import { useEffect, useState } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
-import { AuthService } from "@/app/lib/api/services/userAuth.service";
-import Image from "next/image";
+ import { AuthService } from "@/app/lib/api/services/auth.service";
+import { useVendorDashboardSocket } from "@/hooks/useVendorDashboardSocket";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -88,7 +67,7 @@ interface Transaction {
   date: string;
   transactionId: string;
   customer: string;
-  branch: string;
+  
   method: string;
   status: string;
 }
@@ -99,13 +78,9 @@ interface ChartData {
 }
 
 export default function RestaurantPayments() {
-  // Real-time state
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [vendor, setVendor] = useState<{
-    businessName?: string;
-    role?: string;
-    profileImage?: string;
-  } | null>(null);
+  const { accounts, stats, transactions, loading } = useVendorDashboardSocket(process.env.NEXT_PUBLIC_API_URL || 'https://hotel-booking-app-backend-30q1.onrender.com', process.env.NEXT_PUBLIC_SOCKET_URL || 'https://hotel-booking-app-backend-30q1.onrender.com');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [vendor, setVendor] = useState<{ businessName?: string; role?: string; profileImage?: string } | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [accountForm, setAccountForm] = useState<Account>({
@@ -117,20 +92,22 @@ export default function RestaurantPayments() {
     bankLogoUrl: "",
   });
   const [verifying, setVerifying] = useState(false);
-  const [verifyError, setVerifyError] = useState("");
-  const [stats, setStats] = useState<Stats>({});
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [verifyError, setVerifyError] = useState('');
   const [chartData, setChartData] = useState<ChartData[]>([]);
 
   useEffect(() => {
-    fetchAll();
     const fetchVendor = async () => {
       try {
-        if (await AuthService.isAuthenticated()) {
-          const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!);
-          const profile = await AuthService.fetchMyProfile(id!);
-          setVendor(profile);
+        if (AuthService.isAuthenticated()) {
+          const id = await AuthService.getId();
+          if (id) {
+            const profile = await AuthService.fetchMyProfile(id, 'vendor');
+            setVendor({
+              businessName: (profile as any)?.businessName || (profile as any)?.name,
+              role: (profile as any)?.role || (profile as any)?.businessType || 'Vendor',
+              profileImage: (profile as any)?.profileImage
+            });
+          }
         }
       } catch {
         setVendor(null);
@@ -138,57 +115,20 @@ export default function RestaurantPayments() {
     };
     fetchVendor();
   }, []);
-  const fetchAll = async () => {
-    try {
-      const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("authToken")
-          : null;
-      const [accRes, statsRes, transRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/accounts`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }).then((r) => r.json()),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors/payments/stats`, {
-          credentials: "include",
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }).then((r) => r.json()),
-        fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/vendors/payments/transactions`,
-          {
-            credentials: "include",
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          }
-        ).then((r) => r.json()),
-      ]);
-      // Defensive: ensure accounts is always an array
-      const accountsArray = Array.isArray(accRes)
-        ? accRes
-        : accRes?.accounts || [];
-      setAccounts(accountsArray);
-      setStats(statsRes);
-      // Defensive: ensure transactions is always an array
-      const transactionsArray = Array.isArray(transRes)
-        ? transRes
-        : transRes?.transactions || [];
-      setTransactions(transactionsArray);
-      setChartData(statsRes.chartData || []);
-      console.log("accounts from API:", accRes);
-      console.log("transactions from API:", transRes);
-    } catch {}
-  };
+
+  useEffect(() => {
+    if (stats.chartData) {
+      setChartData(stats.chartData);
+    }
+  }, [stats]);
 
   const verifyAccount = async (accountNumber: string) => {
     setVerifying(true);
     setVerifyError("");
     try {
-      const BASE_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const token2 =
-        typeof window !== "undefined"
-          ? localStorage.getItem("authToken")
-          : null;
-      const res = await fetch(`${BASE_URL}/api/vendor/accounts/verify`, {
+      const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const token2 = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+      const res = await fetch(`${BASE_URL}/api/vendors/accounts/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -197,6 +137,14 @@ export default function RestaurantPayments() {
         credentials: "include",
         body: JSON.stringify({ accountNumber }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Account verification API error:", errorData);
+        setVerifyError(errorData.message || "Account verification failed");
+        return;
+      }
+
       const data = await res.json();
       if (data.accountName) {
         setAccountForm((f) => ({
@@ -205,18 +153,18 @@ export default function RestaurantPayments() {
           bankLogoUrl: data.bankLogoUrl,
         }));
       } else {
-        setVerifyError("Account verification failed");
+        setVerifyError("Account verification failed: No account name returned");
       }
-    } catch {
-      setVerifyError("Account verification failed");
+    } catch (error) {
+      console.error("Account verification fetch error:", error);
+      setVerifyError("Account verification failed: Network error or invalid response");
     } finally {
       setVerifying(false);
     }
   };
 
   const saveAccount = async () => {
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
     try {
       if (accountForm.id) {
         await fetch(
@@ -244,15 +192,7 @@ export default function RestaurantPayments() {
       }
       setShowEditModal(false);
       setShowAddModal(false);
-      setAccountForm({
-        bankName: "",
-        accountNumber: "",
-        type: "savings",
-        id: "",
-        accountName: "",
-        bankLogoUrl: "",
-      });
-      fetchAll();
+      setAccountForm({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' });
     } catch {}
   };
 
@@ -411,109 +351,66 @@ export default function RestaurantPayments() {
   );
 
   // Controlled input for account number
-  const [accountNumberInput, setAccountNumberInput] = useState("");
+  
 
-  useEffect(() => {
-    setAccountNumberInput(accountForm.accountNumber);
-  }, [accountForm.accountNumber]);
-
-  const AccountModal = ({
-    open,
-    onClose,
-    isEdit,
-  }: {
-    open: boolean;
-    onClose: () => void;
-    isEdit: boolean;
-  }) => (
-    <>
-      {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-            <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-              onClick={onClose}
-            >
-              &times;
-            </button>
-            <h2 className="text-xl font-bold mb-4">
-              {isEdit ? "Edit Account" : "Add Account"}
-            </h2>
-            <div className="space-y-4">
-              {/* Modern Searchable Nigerian Banks Dropdown */}
-              <div className="relative">
-                <Input
-                  placeholder="Search or select bank..."
-                  value={bankSearch || accountForm.bankName}
-                  onChange={(e) => {
-                    setBankSearch(e.target.value);
-                    setShowBankDropdown(true);
-                    setAccountForm((f) => ({ ...f, bankName: e.target.value }));
-                  }}
-                  onFocus={() => setShowBankDropdown(true)}
-                  className="mb-2"
-                  autoComplete="off"
-                />
-                {showBankDropdown && (
-                  <div className="absolute z-10 w-full bg-white border border-gray-200 rounded shadow max-h-48 overflow-y-auto">
-                    {filteredBanks.length === 0 && (
-                      <div className="px-4 py-2 text-gray-500">
-                        No banks found
-                      </div>
-                    )}
-                    {filteredBanks.map((bank) => (
-                      <div
-                        key={bank}
-                        className={`px-4 py-2 cursor-pointer hover:bg-teal-100 ${
-                          accountForm.bankName === bank
-                            ? "bg-teal-50 font-semibold"
-                            : ""
-                        }`}
-                        onClick={() => {
-                          setAccountForm((f) => ({ ...f, bankName: bank }));
-                          setBankSearch(bank);
-                          setShowBankDropdown(false);
-                        }}
-                      >
-                        {bank}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+  const AccountModal = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) => (
+    open ? (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+          <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={onClose}>&times;</button>
+          <h2 className="text-xl font-bold mb-4">{isEdit ? "Edit Account" : "Add Account"}</h2>
+          <div className="space-y-4">
+            {/* Modern Searchable Nigerian Banks Dropdown */}
+            <div className="relative">
               <Input
-                placeholder="Account Number"
-                value={accountNumberInput}
-                onChange={(e) => {
-                  setAccountNumberInput(e.target.value);
-                  setAccountForm((f) => ({
-                    ...f,
-                    accountNumber: e.target.value,
-                  }));
+                placeholder="Search or select bank..."
+                value={bankSearch || accountForm.bankName}
+                onChange={e => {
+                  setBankSearch(e.target.value);
+                  setShowBankDropdown(true);
+                  setAccountForm(f => ({ ...f, bankName: e.target.value }));
                 }}
-                maxLength={10}
-                inputMode="numeric"
+                onFocus={() => setShowBankDropdown(true)}
+                className="mb-2"
                 autoComplete="off"
               />
-              <Button
-                onClick={() => verifyAccount(accountNumberInput)}
-                disabled={verifying}
-              >
-                {verifying ? "Verifying..." : "Verify Account"}
-              </Button>
-              {accountForm.accountName && (
-                <div className="text-green-600 font-semibold">
-                  {accountForm.accountName}
+              {showBankDropdown && (
+                <div className="absolute z-10 w-full bg-white border border-gray-200 rounded shadow max-h-48 overflow-y-auto">
+                  {filteredBanks.length === 0 && (
+                    <div className="px-4 py-2 text-gray-500">No banks found</div>
+                  )}
+                  {filteredBanks.map(bank => (
+                    <div
+                      key={bank}
+                      className={`px-4 py-2 cursor-pointer hover:bg-teal-100 ${accountForm.bankName === bank ? "bg-teal-50 font-semibold" : ""}`}
+                      onClick={() => {
+                        setAccountForm(f => ({ ...f, bankName: bank }));
+                        setBankSearch(bank);
+                        setShowBankDropdown(false);
+                      }}
+                    >
+                      {bank}
+                    </div>
+                  ))}
                 </div>
               )}
-              {verifyError && <div className="text-red-600">{verifyError}</div>}
-              <Button
-                className="w-full bg-teal-600 hover:bg-teal-700"
-                onClick={saveAccount}
-              >
-                {isEdit ? "Save Changes" : "Add Account"}
-              </Button>
             </div>
+            <Input
+              placeholder="Account Number"
+              value={accountForm.accountNumber}
+              onChange={e => {
+                setAccountForm(f => ({ ...f, accountNumber: e.target.value }));
+              }}
+              maxLength={10}
+              inputMode="numeric"
+              autoComplete="off"
+            />
+            <Button onClick={() => verifyAccount(accountForm.accountNumber)} disabled={verifying}>
+              {verifying ? "Verifying..." : "Verify Account"}
+            </Button>
+            {accountForm.accountName && <div className="text-green-600 font-semibold">{accountForm.accountName}</div>}
+            {verifyError && <div className="text-red-600">{verifyError}</div>}
+            <Button className="w-full bg-teal-600 hover:bg-teal-700" onClick={saveAccount}>{isEdit ? "Save Changes" : "Add Account"}</Button>
           </div>
         </div>
       ) : null}
@@ -553,7 +450,7 @@ export default function RestaurantPayments() {
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+        {/* <header className="bg-white border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -589,27 +486,23 @@ export default function RestaurantPayments() {
               </div>
             </div>
           </div>
-        </header>
-        <main className="flex-1 overflow-auto w-full p-6">
-          <div className="md:flex w-full space-y-6 items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Payments & Earnings
-            </h1>
-            <div className="flex flex-col md:flex-row space-y-4 items-center gap-4">
-              {rightNav.map((item, i) => (
-                <button
-                  key={i}
-                  onClick={item.onclick}
-                  className={`flex items-center gap-2 py-2.5 px-3 border rounded-xl text-sm w-full md:w-auto font-medium cursor-pointer mb-0 ${
-                    item.variance === "white"
-                      ? "text-[#111827] border-[#E5E7EB] bg-white"
-                      : "text-white border-transparent bg-[#0A6C6D]"
-                  }`}
-                >
-                  {item.icon}
-                  {item.title}
-                </button>
-              ))}
+        </header> */}
+        <main className="flex-1 overflow-auto mt-20 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">Payments & Earnings</h1>
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="sm">
+                <Eye className="h-4 w-4 mr-2" />
+                Hide charts
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+              <Button size="sm" className="bg-teal-600 hover:bg-teal-700" onClick={() => { setAccountForm({ bankName: '', accountNumber: '', type: 'savings', id: '', accountName: '', bankLogoUrl: '' }); setShowAddModal(true); }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Account
+              </Button>
             </div>
           </div>
           {/* Stats Cards */}
@@ -848,7 +741,7 @@ export default function RestaurantPayments() {
                             <span>{transaction.customer}</span>
                           </div>
                         </TableCell>
-                        <TableCell>{transaction.branch}</TableCell>
+                        
                         <TableCell>{transaction.method}</TableCell>
                         <TableCell>
                           <Badge className={getStatusColor(transaction.status)}>

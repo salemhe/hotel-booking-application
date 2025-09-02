@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (userData: User) => void;
+  login: (userData: User, token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -22,13 +22,18 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount, check localStorage for user and token
+  // On mount, check localStorage for user and token using utility functions
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedUser = localStorage.getItem('auth_user');
       const token = localStorage.getItem('auth_token');
       if (storedUser && token) {
-        setUser(JSON.parse(storedUser));
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (error) {
+          console.error('Error parsing stored user data:', error);
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
@@ -36,11 +41,12 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     }
   }, []);
 
-  const login = (userData: User) => {
+  const login = (userData: User, token: string) => {
     setUser(userData);
     if (typeof window !== 'undefined') {
-      // Store user data in localStorage for persistence
+      // Store user data and token in localStorage for persistence
       localStorage.setItem('auth_user', JSON.stringify(userData));
+      localStorage.setItem('auth_token', token);
       console.log('Auth context updated with user:', userData);
     }
   };
@@ -48,8 +54,12 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const logout = () => {
     setUser(null);
     if (typeof window !== 'undefined') {
+      // Clear all authentication data using utility function
       localStorage.removeItem('auth_user');
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('vendor-token');
     }
   };
 
