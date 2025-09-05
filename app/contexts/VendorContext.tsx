@@ -31,7 +31,7 @@ export function VendorProvider({ children }: { children: ReactNode }) {
       if (!id) {
         throw new Error("User ID not found");
       }
-      const userData = await AuthService.fetchMyProfile(id);
+      const userData = await AuthService.fetchMyProfile(id, 'vendor');
       if (userData) {
         setUser(userData);
         setError(null);

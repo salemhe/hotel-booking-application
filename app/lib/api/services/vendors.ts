@@ -35,7 +35,7 @@ export class VendorService {
    */
   static async getVendors(): Promise<Vendor[]> {
     try {
-      const response = await API.get('/vendors');
+      const response = await API.get('/api/vendors');
       return response.data;
     } catch (error) {
       console.error('Error fetching vendors:', error);

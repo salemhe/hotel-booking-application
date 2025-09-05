@@ -118,17 +118,32 @@ export default function RestaurantDashboard() {
   async function fetchStats() {
     try {
       const res = await apiFetcher(`/api/super-admin/analytics/summary`);
-      setStats({
-        reservationsToday: Number(res.data?.reservationsToday) || 0,
-        reservationsChange: Number(res.data?.reservationsChange) || 0,
-        prepaidReservations: Number(res.data?.prepaidReservations) || 0,
-        prepaidChange: Number(res.data?.prepaidChange) || 0,
-        guestsToday: Number(res.data?.guestsToday) || 0,
-        guestsChange: Number(res.data?.guestsChange) || 0,
-        pendingPayments: Number(res.data?.pendingPayments) || 0,
-        paymentsChange: Number(res.data?.paymentsChange) || 0,
-      });
-    } catch {
+      if (res.isError || !res.data) {
+        console.error("Error fetching stats:", res.error);
+        setStats({
+          reservationsToday: 0,
+          reservationsChange: 0,
+          prepaidReservations: 0,
+          prepaidChange: 0,
+          guestsToday: 0,
+          guestsChange: 0,
+          pendingPayments: 0,
+          paymentsChange: 0,
+        });
+      } else {
+        setStats({
+          reservationsToday: Number(res.data?.reservationsToday) || 0,
+          reservationsChange: Number(res.data?.reservationsChange) || 0,
+          prepaidReservations: Number(res.data?.prepaidReservations) || 0,
+          prepaidChange: Number(res.data?.prepaidChange) || 0,
+          guestsToday: Number(res.data?.guestsToday) || 0,
+          guestsChange: Number(res.data?.guestsChange) || 0,
+          pendingPayments: Number(res.data?.pendingPayments) || 0,
+          paymentsChange: Number(res.data?.paymentsChange) || 0,
+        });
+      }
+    } catch (error) {
+      console.error("An unexpected error occurred fetching stats:", error);
       setStats({
         reservationsToday: 0,
         reservationsChange: 0,
@@ -150,8 +165,14 @@ export default function RestaurantDashboard() {
       if (filterStatus && filterStatus !== "All") params.status = filterStatus;
       const url = `/api/super-admin/reservations/today` + (Object.keys(params).length ? `?${new URLSearchParams(params).toString()}` : "");
       const res = await apiFetcher(url);
-      setReservations(res.data || []);
-    } catch {
+      if (res.isError) {
+        console.error("Error fetching reservations:", JSON.stringify(res.error, null, 2));
+        setReservations([]);
+      } else {
+        setReservations(res.data || []);
+      }
+    } catch (error) {
+      console.error("An unexpected error occurred:", error);
       setReservations([]);
     } finally {
       setLoading(false);
@@ -169,8 +190,8 @@ export default function RestaurantDashboard() {
       setShowModal(false);
       setForm({ id: '', name: "", email: "", date: "", time: "", guests: 1, mealPreselected: false, paymentStatus: "Paid", reservationStatus: "Upcoming" });
       fetchReservations();
-    } catch {
-      // handle error
+    } catch (error) {
+      console.error("Error creating reservation:", error);
     } finally {
       setFormLoading(false);
     }
@@ -183,8 +204,8 @@ export default function RestaurantDashboard() {
         method: "DELETE",
       });
       fetchReservations();
-    } catch {
-      // handle error
+    } catch (error) {
+      console.error("Error deleting reservation:", error);
     }
   }
 

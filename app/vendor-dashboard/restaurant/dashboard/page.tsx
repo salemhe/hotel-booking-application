@@ -1,1174 +1,3 @@
-// 'use client'
-
-// import { useState, useEffect } from 'react'
-// import {
-//   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
-//   Calendar, CreditCard, Users, DollarSign
-// } from 'lucide-react'
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Input } from '@/components/ui/input'
-// import { Badge } from '@/components/ui/badge'
-// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-// import { NativeSelect as Select } from '@/components/ui/select'
-// import { 
-//   getDashboardStats, 
-//   getTodayReservations, 
-//   getReservationTrends,
-//   getCustomerFrequency,
-//   getRevenueByCategory,
-
-//   getReservationSources,
-//   getUserProfile,
-//   getUpcomingReservations
-// } from '@/app/lib/api-service'
-
-// // Define interfaces for our data structures
-// interface Reservation {
-//   id: string;
-//   customerName: string;
-//   customerAvatar?: string;
-//   customerInitials?: string;
-//   name?: string;
-//   date: string | Date;
-//   time: string;
-//   guests: number;
-//   status: string;
-// }
-
-// interface ChartDataPoint {
-//   day: string;
-//   value1: number;
-//   value2: number;
-//   value3: number;
-// }
-
-// interface MenuCategory {
-//   name: string;
-//   percentage: number;
-//   amount: string | number;
-//   color: string;
-// }
-
-// // Define API response data interfaces at the module level
-// interface StatsData {
-//   reservationsToday?: number;
-//   prepaidReservations?: number;
-//   expectedGuests?: number;
-//   pendingPayments?: number;
-//   pendingPaymentsTrend?: number;
-//   reservationsTrend?: number;
-//   prepaidTrend?: number;
-//   guestsTrend?: number;
-// }
-
-// interface TrendsData {
-//   chartData?: ChartDataPoint[];
-// }
-
-// interface FrequencyData {
-//   newCustomers?: number;
-//   returningCustomers?: number;
-//   totalCustomers?: number;
-// }
-
-// interface RevenueData {
-//   categories?: MenuCategory[];
-// }
-
-// interface SourcesData {
-//   website?: number;
-//   mobile?: number;
-//   walkIn?: number;
-//   total?: number;
-// }
-
-// export default function Dashboard() {
-//   const [showNotification, setShowNotification] = useState(true)
-//   const [isLoading, setIsLoading] = useState(true)
-//   const [error, setError] = useState<string | null>(null)
-  
-//   // State for user profile
-//   const [userProfile, setUserProfile] = useState({
-//     name: '',
-//     role: '',
-//     avatar: '',
-//     initials: 'VD' // Default initials for Vendor Dashboard
-//   })
-  
-//   // State for upcoming reservations
-//   const [upcomingReservations, setUpcomingReservations] = useState<Reservation[]>([])
-  
-//   // State for dashboard data
-//   const [stats, setStats] = useState({
-//     reservationsToday: 0,
-//     prepaidReservations: 0,
-//     expectedGuests: 0,
-//     pendingPayments: 0,
-//     pendingPaymentsTrend: 0,
-//     reservationsTrend: 0,
-//     prepaidTrend: 0,
-//     guestsTrend: 0
-//   })
-// const [reservations, setReservations] = useState<Reservation[]>([])
-//   const [chartData, setChartData] = useState<ChartDataPoint[]>([])
-//   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([])
-//   const [customerData, setCustomerData] = useState({
-//     newCustomers: 0,
-//     returningCustomers: 0,
-//     totalCustomers: 0
-//   })
-//   const [reservationSources, setReservationSources] = useState({
-//     website: 0,
-//     mobile: 0,
-//     walkIn: 0,
-//     total: 0
-//   })
-//   const [selectedPeriod, setSelectedPeriod] = useState('weekly')
-
-//   // Set up WebSocket connection for real-time updates
-//   useEffect(() => {
-//     // Function to establish WebSocket connection for real-time data
-//     const setupWebSocket = () => {
-//       try {
-//         // Check if WebSocket is supported
-//         if (typeof window !== 'undefined' && 'WebSocket' in window) {
-//           // Replace with your actual WebSocket endpoint
-//           const wsEndpoint = process.env.NEXT_PUBLIC_WS_ENDPOINT || 'wss://api.example.com/ws';
-          
-//           console.log('Attempting to establish WebSocket connection for restaurant dashboard...');
-          
-//           // Create WebSocket connection
-//           const socket = new WebSocket(wsEndpoint);
-          
-//           // Connection opened
-//           socket.addEventListener('open', (event) => {
-//             console.log('WebSocket connection established for restaurant dashboard');
-            
-//             // Subscribe to relevant data channels
-//             socket.send(JSON.stringify({
-//               action: 'subscribe',
-//               channels: ['restaurant_stats', 'restaurant_reservations', 'restaurant_notifications']
-//             }));
-//           });
-          
-//           // Listen for messages from the server
-//           socket.addEventListener('message', (event) => {
-//             try {
-//               const data = JSON.parse(event.data);
-//               console.log('Real-time update received:', data.type);
-              
-//               // Handle different types of updates
-//               switch (data.type) {
-//                 case 'stats_update':
-//                   // Update dashboard stats
-//                   setStats(prevStats => ({
-//                     ...prevStats,
-//                     ...data.stats
-//                   }));
-//                   break;
-                  
-//                 case 'new_reservation':
-//                   // Add new reservation to the list
-//                   setReservations(prev => [data.reservation, ...prev]);
-//                   break;
-                  
-//                 case 'upcoming_reservation':
-//                   // Update upcoming reservations
-//                   setUpcomingReservations(prev => {
-//                     const exists = prev.some(r => r.id === data.reservation.id);
-//                     if (!exists) {
-//                       setShowNotification(true);
-//                       return [data.reservation, ...prev];
-//                     }
-//                     return prev;
-//                   });
-//                   break;
-                  
-//                 default:
-//                   console.log('Unknown update type:', data.type);
-//               }
-//             } catch (error) {
-//               console.error('Error processing WebSocket message:', error);
-//             }
-//           });
-          
-//           // Handle errors
-//           socket.addEventListener('error', (event) => {
-//             console.error('WebSocket error:', event);
-//           });
-          
-//           // Handle connection closing
-//           socket.addEventListener('close', (event) => {
-//             console.log('WebSocket connection closed:', event.code, event.reason);
-            
-//             // Attempt to reconnect after a delay
-//             setTimeout(() => {
-//               console.log('Attempting to reconnect WebSocket...');
-//               setupWebSocket();
-//             }, 5000);
-//           });
-          
-//           // Return cleanup function
-//           return socket;
-//         } else {
-//           console.log('WebSocket not supported, falling back to polling');
-//           return null;
-//         }
-//       } catch (error) {
-//         console.error('Error setting up WebSocket:', error);
-//         return null;
-//       }
-//     };
-    
-//     // Initially set up WebSocket
-//     const socket = setupWebSocket();
-    
-//     // Fetch dashboard data - fallback to regular API calls
-//     const fetchDashboardData = async () => {
-//       try {
-//         setIsLoading(true)
-//         setError(null)
-        
-//         console.log("Fetching real-time dashboard data...");
-        
-//         // Remove the artificial delay - we want real-time data
-//         // if (process.env.NODE_ENV === 'development') {
-//         //   await new Promise(resolve => setTimeout(resolve, 800));
-//         // }
-        
-//         // Modified approach to handle API errors gracefully
-//         // Use the interfaces defined at the module level
-        
-//         // Initialize with properly typed empty objects
-//         let statsData: StatsData = {};
-//         let todayReservations: Reservation[] = [];
-//         let trendsData: TrendsData = {};
-//         let frequencyData: FrequencyData = {};
-//         let revenueData: RevenueData = {};
-//         let sourcesData: SourcesData = {};
-//         let profileData: any = {};
-//         let upcomingData: Reservation[] = [];
-            
-//         // Helper function to safely fetch data and handle errors with proper TypeScript typing
-//         const safelyFetchData = async <T,>(fetchFn: () => Promise<any>, defaultValue: T): Promise<T> => {
-//           try {
-//             const result = await fetchFn();
-            
-//             // Check for error object
-//             if (result && typeof result === 'object' && 'isError' in result && result.isError) {
-//               const errorObj = result.error || {};
-//               const errorMessage = typeof errorObj === 'object' && 'message' in errorObj 
-//                 ? errorObj.message 
-//                 : (typeof errorObj === 'string' ? errorObj : 'Unknown error');
-                
-//               console.log(`API Error fetching data: ${errorMessage}`);
-//               return defaultValue;
-//             }
-            
-//             // Check for empty object (which may not have isError flag)
-//             if (result && typeof result === 'object' && 
-//                 !Array.isArray(result) && 
-//                 Object.keys(result).length === 0) {
-//               console.log('Received empty object from API');
-//               return defaultValue;
-//             }
-            
-//             return result || defaultValue;
-//           } catch (error) {
-//             let errorMessage = 'Unknown error';
-//             if (error) {
-//               if (typeof error === 'string') {
-//                 errorMessage = error;
-//               } else if (typeof error === 'object' && error !== null) {
-//                 // Use proper type checking to access the message property
-//                 errorMessage = error && 'message' in error && typeof error.message === 'string'
-//                   ? error.message
-//                   : JSON.stringify(error);
-//               }
-//             }
-//             console.log(`Exception fetching data: ${errorMessage}`);
-//             return defaultValue;
-//           }
-//         };
-        
-//         // Fetch dashboard data sequentially to avoid overwhelming the API
-//         statsData = await safelyFetchData<StatsData>(() => getDashboardStats(), {});
-//         todayReservations = await safelyFetchData<Reservation[]>(() => getTodayReservations(), []);
-//         trendsData = await safelyFetchData<TrendsData>(() => getReservationTrends(selectedPeriod), {});
-//         frequencyData = await safelyFetchData<FrequencyData>(() => getCustomerFrequency(selectedPeriod), {});
-//         revenueData = await safelyFetchData<RevenueData>(() => getRevenueByCategory(selectedPeriod), {});
-//         sourcesData = await safelyFetchData<SourcesData>(() => getReservationSources(selectedPeriod), {});
-        
-//         // Profile data needs special handling with retries
-//         for (let retry = 0; retry < 3; retry++) {
-//           profileData = await safelyFetchData<any>(() => getUserProfile(), {});
-//           if (profileData && Object.keys(profileData).length > 0) break;
-//           console.log(`Retrying profile fetch, attempt ${retry + 1}/3`);
-//           await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms between retries
-//         }
-        
-//         upcomingData = await safelyFetchData<Reservation[]>(() => getUpcomingReservations(), []);
-        
-//         // Update state with fetched data
-//         setStats({
-//           reservationsToday: statsData.reservationsToday || 0,
-//           prepaidReservations: statsData.prepaidReservations || 0,
-//           expectedGuests: statsData.expectedGuests || 0,
-//           pendingPayments: statsData.pendingPayments || 0,
-//           pendingPaymentsTrend: statsData.pendingPaymentsTrend || 0,
-//           reservationsTrend: statsData.reservationsTrend || 0,
-//           prepaidTrend: statsData.prepaidTrend || 0,
-//           guestsTrend: statsData.guestsTrend || 0
-//         })
-        
-//         setReservations(todayReservations || [])
-//         setChartData(trendsData?.chartData || [])
-        
-//         setCustomerData({
-//           newCustomers: frequencyData?.newCustomers || 0,
-//           returningCustomers: frequencyData?.returningCustomers || 0,
-//           totalCustomers: frequencyData?.totalCustomers || 0
-//         })
-        
-//         setMenuCategories(revenueData?.categories || [])
-        
-//         setReservationSources({
-//           website: sourcesData?.website || 0,
-//           mobile: sourcesData?.mobile || 0,
-//           walkIn: sourcesData?.walkIn || 0,
-//           total: sourcesData?.total || 0
-//         })
-        
-//         // Set user profile data with enhanced flexibility for different API response formats
-//         try {
-//           // Try to get the profile data from localStorage first if API failed
-//           let vendorName = '';
-//           let vendorRole = '';
-//           let vendorAvatar = '';
-//           let vendorInitials = 'VD';
-          
-//           if (typeof window !== 'undefined') {
-//             // Check if we have business name in localStorage
-//             const storedBusinessName = localStorage.getItem('businessName');
-//             const storedRole = localStorage.getItem('user_role');
-            
-//             if (storedBusinessName && storedBusinessName !== 'undefined' && storedBusinessName !== 'null') {
-//               vendorName = storedBusinessName;
-//             }
-            
-//             if (storedRole && storedRole !== 'undefined' && storedRole !== 'null') {
-//               vendorRole = storedRole;
-//             }
-//           }
-          
-//           // Prioritize API data over localStorage data
-//           if (profileData && Object.keys(profileData).length > 0) {
-//             // Try multiple possible property names for the business name
-//             const possibleNameProps = ['businessName', 'name', 'companyName', 'restaurantName', 'hotelName'];
-//             for (const prop of possibleNameProps) {
-//               if (profileData[prop] && typeof profileData[prop] === 'string' && profileData[prop].trim() !== '') {
-//                 vendorName = profileData[prop];
-//                 break;
-//               }
-//             }
-            
-//             // If no business name found, try to construct from first and last name
-//             if (!vendorName && profileData.firstName) {
-//               vendorName = profileData.lastName ? 
-//                 `${profileData.firstName} ${profileData.lastName}` : 
-//                 profileData.firstName;
-//             }
-            
-//             // Get role information
-//             vendorRole = profileData.role || profileData.businessType || vendorRole || 'Vendor';
-            
-//             // Get avatar information
-//             vendorAvatar = profileData.avatar || profileData.profileImage || profileData.image || '';
-            
-//             // Store in localStorage for future use
-//             if (vendorName && typeof window !== 'undefined') {
-//               try {
-//                 localStorage.setItem('businessName', vendorName);
-//                 if (vendorRole) {
-//                   localStorage.setItem('user_role', vendorRole);
-//                 }
-//               } catch (e) {
-//                 console.warn('Failed to store vendor info in localStorage:', e);
-//               }
-//             }
-//           }
-          
-//           // If we still don't have a name, use a friendly default rather than 'Guest User'
-//           if (!vendorName) {
-//             vendorName = 'Vendor Dashboard';
-//           }
-          
-//           // Generate initials from the name
-//           if (vendorName && vendorName !== 'Guest User' && vendorName !== 'Vendor Dashboard') {
-//             const nameParts = vendorName.split(' ').filter(part => part.length > 0);
-//             if (nameParts.length === 1) {
-//               vendorInitials = nameParts[0].charAt(0).toUpperCase();
-//             } else if (nameParts.length > 1) {
-//               vendorInitials = (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
-//             }
-//           }
-          
-//           // Update the profile state
-//           setUserProfile({
-//             name: vendorName,
-//             role: vendorRole,
-//             avatar: vendorAvatar,
-//             initials: vendorInitials
-//           });
-          
-//           console.log('Vendor profile loaded:', { name: vendorName, initials: vendorInitials, role: vendorRole });
-//         } catch (profileError) {
-//           console.error('Error processing profile data:', profileError);
-//           // Fallback to ensure UI doesn't break
-//           setUserProfile({
-//             name: 'Restaurant Dashboard',
-//             role: 'Vendor',
-//             avatar: '',
-//             initials: 'RD'
-//           });
-//         }
-        
-//         // Set upcoming reservations
-//         if (upcomingData && Array.isArray(upcomingData)) {
-//           setUpcomingReservations(upcomingData);
-//         }
-//       } catch (err) {
-//         console.error('Error fetching dashboard data:', err)
-//         setError('Failed to load dashboard data. Please try again later.')
-//       } finally {
-//         setIsLoading(false)
-//       }
-//     }
-    
-//     fetchDashboardData()
-    
-// // Set up fallback polling for when WebSocket is not available or disconnects
-//     let upcomingReservationsInterval: NodeJS.Timeout | null = null;
-//     let dashboardStatsInterval: NodeJS.Timeout | null = null;
-    
-//     // Only set up polling if WebSocket isn't available
-//     if (!socket) {
-//       console.log('Setting up fallback polling for restaurant dashboard');
-      
-//       // Set up real-time polling for upcoming reservations
-//       upcomingReservationsInterval = setInterval(async () => {
-//         try {
-//           console.log('Polling for real-time upcoming reservations...');
-//           const upcomingReservationsData = await getUpcomingReservations();
-//           if (upcomingReservationsData && Array.isArray(upcomingReservationsData)) {
-//             setUpcomingReservations(upcomingReservationsData);
-//             // Show notification if there are upcoming reservations
-//             if (upcomingReservationsData.length > 0) {
-//               setShowNotification(true);
-//             }
-//           }
-//         } catch (err) {
-//           console.error('Error fetching upcoming reservations:', err);
-//         }
-//       }, 15000); // 15 seconds - increased frequency for better real-time experience
-      
-//       // Set up additional polling for dashboard stats
-//       dashboardStatsInterval = setInterval(async () => {
-//         try {
-//           console.log('Refreshing dashboard stats...');
-//           // Use the local intervalSafelyFetchData function
-//           const statsData = await intervalSafelyFetchData<StatsData>(() => getDashboardStats(), {});
-//           const todayReservations = await intervalSafelyFetchData<Reservation[]>(() => getTodayReservations(), []);
-          
-//           // Update the most time-sensitive stats
-//           setStats(prevStats => ({
-//             ...prevStats,
-//             reservationsToday: statsData.reservationsToday || prevStats.reservationsToday,
-//             prepaidReservations: statsData.prepaidReservations || prevStats.prepaidReservations,
-//             expectedGuests: statsData.expectedGuests || prevStats.expectedGuests,
-//             pendingPayments: statsData.pendingPayments || prevStats.pendingPayments
-//           }));
-          
-//           // Update reservations list
-//           if (todayReservations.length > 0) {
-//             setReservations(todayReservations);
-//           }
-//         } catch (err) {
-//           console.error('Error refreshing dashboard stats:', err);
-//         }
-//       }, 30000); // 30 seconds
-//     }
-    
-    
-//     upcomingReservationsInterval = setInterval(async () => {
-//       try {
-//         console.log('Polling for real-time upcoming reservations...');
-//         const upcomingReservationsData = await getUpcomingReservations();
-//         if (upcomingReservationsData && Array.isArray(upcomingReservationsData)) {
-//           setUpcomingReservations(upcomingReservationsData);
-//           // Show notification if there are upcoming reservations
-//           if (upcomingReservationsData.length > 0) {
-//             setShowNotification(true);
-//           }
-//         }
-//       } catch (err) {
-//         console.error('Error fetching upcoming reservations:', err);
-//       }
-//     }, 30000); // 30 seconds - increased frequency for more real-time data
-    
-//     // Define safelyFetchData function for the interval scope
-//     const intervalSafelyFetchData = async <T,>(fetchFn: () => Promise<any>, defaultValue: T): Promise<T> => {
-//       try {
-//         const result = await fetchFn();
-        
-//         // Check for error object
-//         if (result && typeof result === 'object' && 'isError' in result && result.isError) {
-//           const errorObj = result.error || {};
-//           const errorMessage = typeof errorObj === 'object' && 'message' in errorObj 
-//             ? errorObj.message 
-//             : (typeof errorObj === 'string' ? errorObj : 'Unknown error');
-            
-//           console.log(`API Error fetching restaurant data: ${errorMessage}`);
-//           return defaultValue;
-//         }
-        
-//         return result || defaultValue;
-//       } catch (error) {
-//         console.log(`Exception fetching restaurant data in interval: ${error}`);
-//         return defaultValue;
-//       }
-//     };
-    
-//     // Set up additional polling for dashboard stats to keep them up-to-date
-//     dashboardStatsInterval = setInterval(async () => {
-//       try {
-//         console.log('Refreshing dashboard stats...');
-//         // Use the local intervalSafelyFetchData function
-//         const statsData = await intervalSafelyFetchData<StatsData>(() => getDashboardStats(), {});
-//         const todayReservations = await intervalSafelyFetchData<Reservation[]>(() => getTodayReservations(), []);
-        
-//         // Update the most time-sensitive stats
-//         setStats(prevStats => ({
-//           ...prevStats,
-//           reservationsToday: statsData.reservationsToday || prevStats.reservationsToday,
-//           prepaidReservations: statsData.prepaidReservations || prevStats.prepaidReservations,
-//           expectedGuests: statsData.expectedGuests || prevStats.expectedGuests,
-//           pendingPayments: statsData.pendingPayments || prevStats.pendingPayments
-//         }));
-        
-//         // Update reservations list
-//         if (todayReservations.length > 0) {
-//           setReservations(todayReservations);
-//         }
-//       } catch (err) {
-//         console.error('Error refreshing dashboard stats:', err);
-//       }
-//     }, 60000); // 60 seconds
-    
-//     // Clean up function
-//     return () => {
-//       // Close WebSocket if it exists
-//       if (socket && socket.readyState === WebSocket.OPEN) {
-//         console.log('Closing WebSocket connection for restaurant dashboard');
-//         socket.close();
-//       }
-      
-//       // Clear intervals if they exist
-//       if (upcomingReservationsInterval) clearInterval(upcomingReservationsInterval);
-//       if (dashboardStatsInterval) clearInterval(dashboardStatsInterval);
-//     };
-//   }, [selectedPeriod])
-  
-//   // Helper function to get initials from name
-//   const getInitials = (name: string): string => {
-//     if (!name) return 'VD';
-    
-//     const names = name.split(' ');
-//     if (names.length === 1) {
-//       return names[0].charAt(0).toUpperCase();
-//     }
-    
-//     return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
-//   }
-  
-//   // Handler for period change
-//   const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-//     setSelectedPeriod(e.target.value)
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       {/* Header */}
-//       <header className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8">
-//         <div className="flex items-center justify-between h-16">
-//           <div className="flex-1 max-w-lg">
-//             <div className="relative">
-//               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-//               <Input
-//                 type="text"
-//                 placeholder="Search"
-//                 className="pl-10 bg-gray-50 border-gray-200"
-//               />
-//             </div>
-//           </div>
-//           <div className="flex items-center space-x-4">
-//             <Button variant="ghost" size="sm" className="relative">
-//               <Bell className="h-5 w-5" />
-//               {upcomingReservations.length > 0 && (
-//                 <span className="absolute -top-1 -right-1 h-3 w-3 bg-blue-600 rounded-full"></span>
-//               )}
-//             </Button>
-//             <div className="flex items-center space-x-3">
-//               <Avatar className="h-8 w-8">
-//                 <AvatarImage src={userProfile.avatar || "/placeholder.svg?height=32&width=32"} />
-//                 <AvatarFallback>{userProfile.initials}</AvatarFallback>
-//               </Avatar>
-//               <div className="hidden sm:block">
-//                 <p className="text-sm font-medium text-gray-900">{userProfile.name}</p>
-//                 <p className="text-xs text-gray-500">{userProfile.role}</p>
-//               </div>
-//               <ChevronDown className="h-4 w-4 text-gray-400" />
-//             </div>
-//           </div>
-//         </div>
-//       </header>
-
-//       {/* Notification Banner */}
-//       {showNotification && upcomingReservations.length > 0 && (
-//         <div className="bg-yellow-100 border-l-4 border-yellow-400 p-4 mx-4 sm:mx-6 lg:mx-8 mt-4 rounded">
-//           <div className="flex items-center justify-between">
-//             <div className="flex items-center">
-//               <div className="flex-shrink-0">
-//                 <div className="h-5 w-5 text-yellow-400">⏰</div>
-//               </div>
-//               <div className="ml-3">
-//                 <p className="text-sm text-yellow-800">
-//                   {upcomingReservations.length} {upcomingReservations.length === 1 ? 'Reservation' : 'Reservations'} commencing in the next 30 minutes
-//                 </p>
-//               </div>
-//             </div>
-//             <Button
-//               variant="ghost"
-//               size="sm"
-//               onClick={() => setShowNotification(false)}
-//               className="text-yellow-800 hover:text-yellow-900"
-//             >
-//               <X className="h-4 w-4" />
-//             </Button>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Main Content */}
-//       <main className="px-4 sm:px-6 lg:px-8 py-6">
-//         {/* Welcome Section */}
-//         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-//           <div>
-//             <h1 className="text-2xl font-bold text-gray-900">
-//               Welcome Back, {userProfile.name ? (
-//                 userProfile.name.split(' ')[0].replace(/[^a-zA-Z0-9 ]/g, '')
-//               ) : 'there'}!
-//             </h1>
-//             <p className="text-gray-600 mt-1">{"Here's what is happening today."}</p>
-//           </div>
-          
-//         </div>
-
-//         {/* KPI Cards */}
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-//           <Card>
-//             <CardContent className="p-6">
-//               <div className="flex items-center justify-between">
-//                 <div>
-//                   <p className="text-sm text-gray-600">Reservations made today</p>
-//                   <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.reservationsToday}</p>
-//                   <div className="flex items-center mt-2">
-//                     {stats.reservationsTrend >= 0 ? (
-//                       <>
-//                         <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-//                         <span className="text-sm text-green-500">{stats.reservationsTrend}% vs last week</span>
-//                       </>
-//                     ) : (
-//                       <>
-//                         <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-//                         <span className="text-sm text-red-500">{Math.abs(stats.reservationsTrend)}% vs last week</span>
-//                       </>
-//                     )}
-//                   </div>
-//                 </div>
-//                 <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-//                   <Calendar className="h-6 w-6 text-blue-600" />
-//                 </div>
-//               </div>
-//             </CardContent>
-//           </Card>
-
-//           <Card>
-//             <CardContent className="p-6">
-//               <div className="flex items-center justify-between">
-//                 <div>
-//                   <p className="text-sm text-gray-600">Prepaid Reservations</p>
-//                   <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.prepaidReservations}</p>
-//                   <div className="flex items-center mt-2">
-//                     {stats.prepaidTrend >= 0 ? (
-//                       <>
-//                         <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-//                         <span className="text-sm text-green-500">{stats.prepaidTrend}% vs last week</span>
-//                       </>
-//                     ) : (
-//                       <>
-//                         <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-//                         <span className="text-sm text-red-500">{Math.abs(stats.prepaidTrend)}% vs last week</span>
-//                       </>
-//                     )}
-//                   </div>
-//                 </div>
-//                 <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-//                   <CreditCard className="h-6 w-6 text-green-600" />
-//                 </div>
-//               </div>
-//             </CardContent>
-//           </Card>
-
-//           <Card>
-//             <CardContent className="p-6">
-//               <div className="flex items-center justify-between">
-//                 <div>
-//                   <p className="text-sm text-gray-600">Expected Guests Today</p>
-//                   <p className="text-3xl font-bold text-gray-900">{isLoading ? '-' : stats.expectedGuests}</p>
-//                   <div className="flex items-center mt-2">
-//                     {stats.guestsTrend >= 0 ? (
-//                       <>
-//                         <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-//                         <span className="text-sm text-green-500">{stats.guestsTrend}% vs last week</span>
-//                       </>
-//                     ) : (
-//                       <>
-//                         <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-//                         <span className="text-sm text-red-500">{Math.abs(stats.guestsTrend)}% vs last week</span>
-//                       </>
-//                     )}
-//                   </div>
-//                 </div>
-//                 <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-//                   <Users className="h-6 w-6 text-purple-600" />
-//                 </div>
-//               </div>
-//             </CardContent>
-//           </Card>
-
-//           <Card>
-//             <CardContent className="p-6">
-//               <div className="flex items-center justify-between">
-//                 <div>
-//                   <p className="text-sm text-gray-600">Pending Payments</p>
-//                   <p className="text-3xl font-bold text-gray-900">
-//                     {isLoading ? '-' : `₦${stats.pendingPayments.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
-//                   </p>
-//                   <div className="flex items-center mt-2">
-//                     {stats.pendingPaymentsTrend >= 0 ? (
-//                       <>
-//                         <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-//                         <span className="text-sm text-green-500">{stats.pendingPaymentsTrend}% vs last week</span>
-//                       </>
-//                     ) : (
-//                       <>
-//                         <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
-//                         <span className="text-sm text-red-500">{Math.abs(stats.pendingPaymentsTrend)}% vs last week</span>
-//                       </>
-//                     )}
-//                   </div>
-//                 </div>
-//                 <div className="h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-//                   <DollarSign className="h-6 w-6 text-yellow-600" />
-//                 </div>
-//               </div>
-//             </CardContent>
-//           </Card>
-//         </div>
-
-//         {/* Main Content Grid */}
-//         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-//           {/* Today's Reservations */}
-//           <div className="lg:col-span-2">
-//             <Card>
-//               <CardHeader className="flex flex-row items-center justify-between">
-//                 <CardTitle>{"Today's Reservation"}</CardTitle>
-//                 <Button variant="ghost" className="text-blue-600 hover:text-blue-700">
-//                   View All →
-//                 </Button>
-//               </CardHeader>
-//               <CardContent>
-//                 {isLoading ? (
-//                   <div className="flex justify-center items-center h-48">
-//                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-//                   </div>
-//                 ) : error ? (
-//                   <div className="flex justify-center items-center h-48">
-//                     <p className="text-red-500">{error}</p>
-//                   </div>
-//                 ) : reservations.length === 0 ? (
-//                   <div className="flex justify-center items-center h-48">
-//                     <p className="text-gray-500">No reservations for today</p>
-//                   </div>
-//                 ) : (
-//                   <div className="space-y-4">
-//                     {reservations.map((reservation) => (
-//                       <div key={reservation.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-//                         <div className="flex items-center space-x-4">
-//                           <Avatar className="h-10 w-10">
-//                             <AvatarImage src={reservation.customerAvatar || "/placeholder.svg?height=40&width=40"} />
-//                             <AvatarFallback>{reservation.customerInitials || (reservation.name ?? '').substring(0, 2).toUpperCase()}</AvatarFallback>
-//                           </Avatar>
-//                           <div>
-//                             <p className="font-medium text-gray-900">{reservation.customerName}</p>
-//                             <p className="text-sm text-gray-500">ID: {reservation.id}</p>
-//                           </div>
-//                         </div>
-//                         <div className="text-right">
-//                           <p className="text-sm text-gray-900">{new Date(reservation.date).toLocaleDateString()}</p>
-//                           <p className="text-sm text-gray-500">Time: {reservation.time}</p>
-//                         </div>
-//                         <div className="text-center">
-//                           <p className="text-sm font-medium">{reservation.guests} Guests</p>
-//                         </div>
-//                         <Badge
-//                           variant={reservation.status === 'Upcoming' ? 'secondary' : 'default'}
-//                           className={reservation.status === 'Upcoming' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}
-//                         >
-//                           {reservation.status}
-//                         </Badge>
-//                       </div>
-//                     ))}
-//                   </div>
-//                 )}
-//               </CardContent>
-//             </Card>
-//           </div>
-
-//           {/* Reservations Trends */}
-//           <div>
-//             <Card>
-//               <CardHeader className="flex flex-row items-center justify-between">
-//                 <CardTitle>Reservations Trends</CardTitle>
-//                 <div className="flex items-center space-x-2">
-//                   <Button variant="ghost" className="text-blue-600 hover:text-blue-700">
-//                     View All →
-//                   </Button>
-//                   <Select 
-//                     value={selectedPeriod} 
-//                     onChange={handlePeriodChange}
-//                   >
-//                     <option value="weekly">Weekly</option>
-//                     <option value="monthly">Monthly</option>
-//                   </Select>
-//                 </div>
-//               </CardHeader>
-//               <CardContent>{isLoading ? (
-//                 <div className="flex justify-center items-center h-32 mb-4">
-//                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
-//                 </div>
-//               ) : (
-//                 <div className="flex items-center justify-between mb-4">
-//                   <div className="text-2xl font-bold">{chartData.reduce((sum, item) => sum + item.value1, 0)}</div>
-//                   <div className="flex items-center text-green-500">
-//                     <TrendingUp className="h-4 w-4 mr-1" />
-//                     <span className="text-sm">8% vs last week</span>
-//                   </div>
-//                 </div>
-//               )}
-//                 <div className="flex items-center space-x-4 mb-4">
-//                   <div className="flex items-center">
-//                     <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
-//                     <span className="text-xs text-gray-600">This week</span>
-//                   </div>
-//                   <div className="flex items-center">
-//                     <div className="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
-//                     <span className="text-xs text-gray-600">Last week</span>
-//                   </div>
-//                 </div>
-//                 <div className="flex items-end justify-between h-32 space-x-2">
-//                   {chartData.length === 0 && !isLoading ? (
-//                     <div className="w-full flex items-center justify-center h-24">
-//                       <p className="text-gray-500 text-sm">No data available</p>
-//                     </div>
-//                   ) : (
-//                     chartData.map((data, index) => (
-//                       <div key={index} className="flex flex-col items-center flex-1">
-//                         <div className="w-full flex flex-col justify-end h-24 space-y-1">
-//                           <div
-//                             className="w-full bg-blue-400 rounded-t"
-//                             style={{ height: `${Math.max((data.value1 / (chartData.length ? Math.max(...chartData.map(d => d.value1)) : 1)) * 100, 5)}%` }}
-//                           ></div>
-//                           <div
-//                             className="w-full bg-teal-600 rounded"
-//                             style={{ height: `${Math.max((data.value2 / (chartData.length ? Math.max(...chartData.map(d => d.value2)) : 1)) * 100, 5)}%` }}
-//                           ></div>
-//                           <div
-//                             className="w-full bg-yellow-400 rounded-b"
-//                             style={{ height: `${Math.max((data.value3 / (chartData.length ? Math.max(...chartData.map(d => d.value3)) : 1)) * 100, 5)}%` }}
-//                           ></div>
-//                         </div>
-//                         <span className="text-xs text-gray-500 mt-2">{data.day}</span>
-//                       </div>
-//                     ))
-//                   )}
-//                 </div>
-//               </CardContent>
-//             </Card>
-//           </div>
-//         </div>
-
-//         {/* Bottom Analytics */}
-//         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-//           {/* Customer Frequency */}
-//           <Card>
-//             <CardHeader className="flex flex-row items-center justify-between">
-//               <CardTitle>Customer Frequency</CardTitle>
-//               <Select 
-//                 value={selectedPeriod} 
-//                 onChange={handlePeriodChange}
-//                 className="w-24"
-//               >
-//                 <option value="weekly">Weekly</option>
-//                 <option value="monthly">Monthly</option>
-//               </Select>
-//             </CardHeader>
-//             <CardContent>
-//               {isLoading ? (
-//                 <div className="flex justify-center items-center h-48">
-//                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
-//                 </div>
-//               ) : (
-//                 <>
-//                   <div className="flex items-center justify-center mb-4">
-//                     <div className="relative w-32 h-32">
-//                       <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-//                         <path
-//                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-//                           fill="none"
-//                           stroke="#e5e7eb"
-//                           strokeWidth="3"
-//                         />
-//                         <path
-//                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-//                           fill="none"
-//                           stroke="#0d9488"
-//                           strokeWidth="3"
-//                           strokeDasharray={`${(customerData.newCustomers / customerData.totalCustomers) * 100}, 100`}
-//                         />
-//                         <path
-//                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-//                           fill="none"
-//                           stroke="#eab308"
-//                           strokeWidth="3"
-//                           strokeDasharray={`${(customerData.returningCustomers / customerData.totalCustomers) * 100}, 100`}
-//                           strokeDashoffset={`-${(customerData.newCustomers / customerData.totalCustomers) * 100}`}
-//                         />
-//                       </svg>
-//                       <div className="absolute inset-0 flex flex-col items-center justify-center">
-//                         <span className="text-xs text-gray-500">Total Customers</span>
-//                         <span className="text-xl font-bold">{customerData.totalCustomers}</span>
-//                       </div>
-//                     </div>
-//                   </div>
-//                   <div className="space-y-2">
-//                     <div className="flex items-center justify-between">
-//                       <div className="flex items-center">
-//                         <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
-//                         <span className="text-sm">New Customers</span>
-//                       </div>
-//                       <span className="text-sm font-medium">
-//                         {customerData.totalCustomers ? 
-//                           Math.round((customerData.newCustomers / customerData.totalCustomers) * 100) : 0}%
-//                       </span>
-//                     </div>
-//                     <div className="flex items-center justify-between">
-//                       <div className="flex items-center">
-          
-//                         <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-//                         <span className="text-sm">Returning Customers</span>
-//                       </div>
-//                       <span className="text-sm font-medium">
-//                         {customerData.totalCustomers ? 
-//                           Math.round((customerData.returningCustomers / customerData.totalCustomers) * 100) : 0}%
-//                       </span>
-//                     </div>
-//                   </div>
-//                 </>
-//               )}
-//             </CardContent>
-//           </Card>
-
-//           {/* Revenue by Menu Category */}
-//           <Card>
-//             <CardHeader className="flex flex-row items-center justify-between">
-//               <CardTitle>Revenue (Menu Category)</CardTitle>
-//               <Select 
-//                 value={selectedPeriod} 
-//                 onChange={handlePeriodChange}
-//                 className="w-24"
-//               >
-//                 <option value="weekly">Weekly</option>
-//                 <option value="monthly">Monthly</option>
-//               </Select>
-//             </CardHeader>
-//             <CardContent>
-//               {isLoading ? (
-//                 <div className="flex justify-center items-center h-48">
-//                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
-//                 </div>
-//               ) : (
-//                 <>
-//                   <div className="mb-4">
-//                     <div className="text-2xl font-bold">₦{menuCategories.reduce((sum, item) => sum + (typeof item.amount === 'string' ? parseFloat(item.amount.toString().replace(/[^0-9.]/g, '')) : item.amount), 0).toLocaleString()}</div>
-//                     <div className="flex items-center text-green-500">
-//                       <TrendingUp className="h-4 w-4 mr-1" />
-//                       <span className="text-sm">8% vs last week</span>
-//                     </div>
-//                   </div>
-//                   <div className="space-y-3">
-//                     {menuCategories.length === 0 ? (
-//                       <p className="text-gray-500 text-sm">No data available</p>
-//                     ) : (
-//                       menuCategories.map((category, index) => (
-//                         <div key={index}>
-//                           <div className="flex items-center justify-between mb-1">
-//                             <span className="text-sm text-gray-600">{category.name}</span>
-//                             <div className="text-right">
-//                               <span className="text-sm font-medium">{category.percentage}%</span>
-//                               <span className="text-xs text-gray-500 ml-2">(₦{category.amount.toLocaleString()})</span>
-//                             </div>
-//                           </div>
-//                           <div className="w-full bg-gray-200 rounded-full h-2">
-//                             <div
-//                               className={`${category.color} h-2 rounded-full`}
-//                               style={{ width: `${category.percentage}%` }}
-//                             ></div>
-//                           </div>
-//                         </div>
-//                       ))
-//                     )}
-//                   </div>
-//                 </>
-//               )}
-//             </CardContent>
-//           </Card>
-
-//           {/* Reservation Source */}
-//           <Card>
-//             <CardHeader className="flex flex-row items-center justify-between">
-//               <CardTitle>Reservation Source</CardTitle>
-//               <Select 
-//                 value={selectedPeriod} 
-//                 onChange={handlePeriodChange}
-//                 className="w-24"
-//               >
-//                 <option value="weekly">Weekly</option>
-//                 <option value="monthly">Monthly</option>
-//               </Select>
-//             </CardHeader>
-//             <CardContent>
-//               {isLoading ? (
-//                 <div className="flex justify-center items-center h-48">
-//                   <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-teal-500"></div>
-//                 </div>
-//               ) : (
-//                 <>
-//                   <div className="flex items-center justify-center mb-4">
-//                     <div className="relative w-32 h-32">
-//                       <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-//                         <path
-//                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-//                           fill="none"
-//                           stroke="#e5e7eb"
-//                           strokeWidth="3"
-//                         />
-//                         <path
-//                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-//                           fill="none"
-//                           stroke="#0d9488"
-//                           strokeWidth="3"
-//                           strokeDasharray={`${(reservationSources.website / reservationSources.total) * 100}, 100`}
-//                         />
-//                         <path
-//                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-//                           fill="none"
-//                           stroke="#eab308"
-//                           strokeWidth="3"
-//                           strokeDasharray={`${(reservationSources.mobile / reservationSources.total) * 100}, 100`}
-//                           strokeDashoffset={`-${(reservationSources.website / reservationSources.total) * 100}`}
-//                         />
-//                         <path
-//                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-//                           fill="none"
-//                           stroke="#3b82f6"
-//                           strokeWidth="3"
-//                           strokeDasharray={`${(reservationSources.walkIn / reservationSources.total) * 100}, 100`}
-//                           strokeDashoffset={`-${((reservationSources.website + reservationSources.mobile) / reservationSources.total) * 100}`}
-//                         />
-//                       </svg>
-//                       <div className="absolute inset-0 flex flex-col items-center justify-center">
-//                         <span className="text-xs text-gray-500">Total Reservations</span>
-//                         <span className="text-xl font-bold">{reservationSources.total}</span>
-//                       </div>
-//                     </div>
-//                   </div>
-//                   <div className="space-y-2">
-//                     <div className="flex items-center justify-between">
-//                       <div className="flex items-center">
-//                         <div className="w-3 h-3 bg-teal-600 rounded-full mr-2"></div>
-//                         <span className="text-sm">{reservationSources.website} website</span>
-//                       </div>
-//                       <span className="text-sm font-medium">
-//                         {reservationSources.total ? 
-//                           Math.round((reservationSources.website / reservationSources.total) * 100) : 0}%
-//                       </span>
-//                     </div>
-//                     <div className="flex items-center justify-between">
-//                       <div className="flex items-center">
-//                         <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-//                         <span className="text-sm">{reservationSources.mobile} mobile</span>
-//                       </div>
-//                       <span className="text-sm font-medium">
-//                         {reservationSources.total ? 
-//                           Math.round((reservationSources.mobile / reservationSources.total) * 100) : 0}%
-//                       </span>
-//                     </div>
-//                     <div className="flex items-center justify-between">
-//                       <div className="flex items-center">
-//                         <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-//                         <span className="text-sm">{reservationSources.walkIn} walk-in</span>
-//                       </div>
-//                       <span className="text-sm font-medium">
-//                         {reservationSources.total ? 
-//                           Math.round((reservationSources.walkIn / reservationSources.total) * 100) : 0}%
-//                       </span>
-//                     </div>
-//                   </div>
-//                 </>
-//               )}
-//             </CardContent>
-//           </Card>
-//         </div>
-//       </main>
-//     </div>
-//   )
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client";
 
 import { Bar } from 'react-chartjs-2';
@@ -1184,20 +13,16 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip} from "recharts";
-
+import { useVendorDashboardSocket } from '@/hooks/useVendorDashboardSocket';
+import { API_URL } from '../../../config';
+import DashboardLoader from '../../../components/DashboardLoader';
 
 
 export default function Dashboard() {
-  // ----- dummy data for charts -----
-  const reservationTrend = [
-    { name: "Mon", web: 10, walkin: 5 },
-    { name: "Tue", web: 25, walkin: 8 },
-    { name: "Wed", web: 15, walkin: 6 },
-    { name: "Thu", web: 20, walkin: 12 },
-    { name: "Fri", web: 60, walkin: 18 },
-    { name: "Sat", web: 90, walkin: 22 },
-    { name: "Sun", web: 70, walkin: 20 },
-  ];
+  const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || API_URL;
+  const { dashboardData, loading } = useVendorDashboardSocket(API_URL, socketUrl);
+
+  console.log("Dashboard Data:", dashboardData);
 
   ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Legend);
 
@@ -1208,21 +33,21 @@ export default function Dashboard() {
   datasets: [
     {
       label: "Walk-in",
-      data: [5, 8, 9, 4, 20, 25, 15],
+      data: dashboardData?.reservationTrends?.walkIn || [],
       backgroundColor: "#FACC15", // yellow
       borderRadius: 6, // rounded edges
       stack: "stack1",
     },
     {
       label: "Web",
-      data: [10, 12, 14, 6, 25, 30, 20],
+      data: dashboardData?.reservationTrends?.web || [],
       backgroundColor: "#22C55E", // green
       borderRadius: 6,
       stack: "stack1",
     },
     {
       label: "Others",
-      data: [15, 18, 20, 10, 30, 25, 28],
+      data: dashboardData?.reservationTrends?.others || [],
       backgroundColor: "#60A5FA", // blue
       borderRadius: 6,
       stack: "stack1",
@@ -1275,18 +100,33 @@ const options = {
 
 //CUSTOMER FREQUENCY DATA
 const chartData = [
-  { name: "New Customers", value: 45, color: "#0A6C6D" },
-  { name: "Returning Customers", value: 55, color: "#EAB308" },
+  { name: "New Customers", value: dashboardData?.customerFrequency?.new || 0, color: "#0A6C6D" },
+  { name: "Returning Customers", value: dashboardData?.customerFrequency?.returning || 0, color: "#EAB308" },
 ];
 
 //RESERVATION SOURCE DATA
 const ReservationChartData = [
-  { name: "Websites", value: 50, color: "#0A6C6D" },
-  { name: "Mobile", value: 30, color: "#EAB308" },
-  { name: "Walk in", value: 20, color: "#60A5FA"}
+  { name: "Websites", value: dashboardData?.reservationSource?.website || 0, color: "#0A6C6D" },
+  { name: "Mobile", value: dashboardData?.reservationSource?.mobile || 0, color: "#EAB308" },
+  { name: "Walk in", value: dashboardData?.reservationSource?.walkIn || 0, color: "#60A5FA"}
 ];
 
+// Define colors for revenue categories
+const revenueColors = [
+  "#0A6C6D", // Main Dish
+  "#EF4444", // Drinks
+  "#E0B300", // Starters
+  "#60A5FA", // Desserts
+  "#8B5CF6", // Sides
+];
 
+// Calculate total revenue
+const totalRevenue = dashboardData?.revenueByCategory?.reduce((sum: number, item: any) => sum + item.amount, 0) || 0;
+
+
+if (loading) {
+    return <DashboardLoader />;
+}
 
   return (
     <div 
@@ -1295,54 +135,7 @@ const ReservationChartData = [
       className='max-w-[1440px]'
     >
       
-       <div 
-        className="flex top-0 w-full h-[64px] px-[32px] py-[12px] flex-col items-start gap-2 shrink-0 bg-white"
-        // className="w-[1000px] h-[64px] px-[32px] py-[12px] fixed flex-col items-start top-0 shrink-0 border-bottom:1px solid [#E9EBF3] bg-white z-10"
-      >
-        {/* inner row to place search + profile on the same line */}
-        <div className="w-full flex items-center justify-between">
-          {/* search */}
-          <div className="flex justify-center items-center w-[520px] px-3 py-2 gap-2 rounded-lg border border-[#DAE9E9] bg-[#F9FAFB]"> 
-            {/* random search svg */}
-             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <g clip-path="url(#clip0_1224_81)">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.75003 1.66667C7.62052 1.66676 6.50741 1.93697 5.50358 2.45474C4.49974 2.97252 3.63427 3.72285 2.97939 4.64313C2.32451 5.56341 1.8992 6.62696 1.73895 7.74504C1.5787 8.86312 1.68815 10.0033 2.05818 11.0705C2.4282 12.1377 3.04807 13.1009 3.86606 13.8798C4.68405 14.6587 5.67645 15.2306 6.76046 15.548C7.84446 15.8654 8.98865 15.9189 10.0975 15.7041C11.2064 15.4893 12.2479 15.0125 13.135 14.3133L16.1784 17.3567C16.3355 17.5085 16.546 17.5925 16.7645 17.5906C16.983 17.5887 17.192 17.501 17.3465 17.3465C17.501 17.192 17.5887 16.983 17.5906 16.7645C17.5925 16.546 17.5085 16.3355 17.3567 16.1783L14.3134 13.135C15.1367 12.0905 15.6493 10.8353 15.7926 9.5131C15.9359 8.19088 15.704 6.85502 15.1235 5.65841C14.5431 4.4618 13.6374 3.4528 12.5103 2.74686C11.3831 2.04092 10.08 1.66658 8.75003 1.66667ZM3.33336 8.75C3.33336 7.31341 3.90404 5.93566 4.91987 4.91984C5.93569 3.90402 7.31344 3.33333 8.75003 3.33333C10.1866 3.33333 11.5644 3.90402 12.5802 4.91984C13.596 5.93566 14.1667 7.31341 14.1667 8.75C14.1667 10.1866 13.596 11.5643 12.5802 12.5802C11.5644 13.596 10.1866 14.1667 8.75003 14.1667C7.31344 14.1667 5.93569 13.596 4.91987 12.5802C3.90404 11.5643 3.33336 10.1866 3.33336 8.75Z" fill="#606368"/>
-                </g>
-                <defs>
-                  <clipPath id="clip0_1224_81">
-                    <rect width="20" height="20" fill="white"/>
-                  </clipPath>
-                </defs>
-            </svg>
-            <input
-              placeholder="Search"
-              className="w-full h-full outline-none text-sm placeholder:text-gray-400"
-            />
-          </div>
-
-
-          {/* profile area */}
-          <div className="flex items-center gap-4">
-            {/* bell */}
-            <button className="w-10 h-10 grid place-items-center rounded-full bg-white border border-gray-200">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M16 2.66667C13.5246 2.66667 11.1507 3.65 9.40034 5.40034C7.65 7.15068 6.66667 9.52465 6.66667 12V16.704C6.66686 16.9108 6.61893 17.1149 6.52667 17.3L4.23733 21.8773C4.1255 22.101 4.0727 22.3495 4.08393 22.5992C4.09517 22.849 4.17007 23.0918 4.30153 23.3045C4.43298 23.5171 4.61663 23.6927 4.83502 23.8144C5.05342 23.9362 5.2993 24 5.54933 24H26.4507C26.7007 24 26.9466 23.9362 27.165 23.8144C27.3834 23.6927 27.567 23.5171 27.6985 23.3045C27.8299 23.0918 27.9048 22.849 27.9161 22.5992C27.9273 22.3495 27.8745 22.101 27.7627 21.8773L25.4747 17.3C25.3819 17.115 25.3336 16.9109 25.3333 16.704V12C25.3333 9.52465 24.35 7.15068 22.5997 5.40034C20.8493 3.65 18.4754 2.66667 16 2.66667ZM16 28C15.1725 28.0002 14.3653 27.7439 13.6895 27.2663C13.0138 26.7888 12.5027 26.1134 12.2267 25.3333H19.7733C19.4973 26.1134 18.9862 26.7888 18.3105 27.2663C17.6347 27.7439 16.8275 28.0002 16 28Z" fill="#111827"/>
-              </svg>
-            </button> 
-
-            {/* avatar + name */}
-             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gray-300" />
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">
-                  Joseph Eyebiokin
-                </p>
-                <p className="text-xs text-gray-500">Admin</p>
-              </div>
-            </div>
-          </div>
-        </div> 
-      </div> 
+        
 
 
       {/* =========================================================
@@ -1398,7 +191,7 @@ const ReservationChartData = [
         <div className="w-full self-stretch flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              Welcome Back, Joseph!
+              Welcome Back, {dashboardData?.vendorName || 'Vendor'}!
             </h1>
             <p className="text-sm text-gray-500">
               Here’s what is happening today.
@@ -1430,7 +223,7 @@ const ReservationChartData = [
       <div className="flex w-[312px] h-[124px] items-center justify-between px-[29px] py-[20px]">
         <div className="flex flex-col justify-center">
           <p className="text-[12px] text-gray-500">Reservations made today</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">32</p>
+          <p className="text-xl font-semibold text-gray-900 mt-1">{dashboardData?.reservationsMadeToday}</p>
           <div className="flex items-center text-xs mt-1">
             <span className="mr-1 text-green-500">↑ 12%</span>
             <span className="text-gray-400">vs last week</span>
@@ -1473,7 +266,7 @@ const ReservationChartData = [
       <div className="flex w-[312px] h-[124px] items-center justify-between px-[29px] py-[20px]">
         <div className="flex flex-col justify-center">
           <p className="text-[12px] text-gray-500">Prepaid Reservations</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">16</p>
+          <p className="text-xl font-semibold text-gray-900 mt-1">{dashboardData?.prepaidReservations}</p>
           <div className="flex items-center text-xs mt-1">
             <span className="mr-1 text-green-500">↑ 8%</span>
             <span className="text-gray-400">vs last week</span>
@@ -1508,7 +301,7 @@ const ReservationChartData = [
       <div className="flex w-[312px] h-[124px] items-center justify-between px-[29px] py-[20px]">
         <div className="flex flex-col justify-center">
           <p className="text-[12px] text-gray-500">Expected Guests Today</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">80</p>
+          <p className="text-xl font-semibold text-gray-900 mt-1">{dashboardData?.expectedGuestsToday}</p>
           <div className="flex items-center text-xs mt-1">
             <span className="mr-1 text-green-500">↑ 8%</span>
             <span className="text-gray-400">vs last week</span>
@@ -1543,7 +336,7 @@ const ReservationChartData = [
       <div className="flex w-[312px] h-[124px] items-center justify-between px-[29px] py-[20px]">
         <div className="flex flex-col justify-center">
           <p className="text-[12px] text-gray-500">Pending Payments</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">$2,546.00</p>
+          <p className="text-xl font-semibold text-gray-900 mt-1">{dashboardData?.pendingPayments}</p>
           <div className="flex items-center text-xs mt-1">
             <span className="mr-1 text-red-500">↓ 5%</span>
             <span className="text-gray-400">vs last week</span>
@@ -1591,11 +384,11 @@ const ReservationChartData = [
 
             {/* content */}
             <div className="flex w-full px-3 py-1 flex-col items-start gap-3">
-              {[1, 2, 3, 4].map((i) => {
-                const isUpcoming = i % 2 === 0;
+              {dashboardData?.todaysReservations?.map((reservation: any) => {
+                const isUpcoming = reservation.status === "Upcoming";
                 return (
                 <div
-                  key={i}
+                  key={reservation.reservationId}
                   className="w-full flex items-center justify-between py-2 border-b last:border-b-0"
                 >
                   <div className="flex items-center gap-3">
@@ -1603,18 +396,18 @@ const ReservationChartData = [
                     <div className="w-9 h-9 rounded-full bg-gray-200" />
                     <div>
                       <p className="text-sm font-medium text-gray-900">
-                        Emily Johnson
+                        {reservation.customerName}
                       </p>
-                      <p className="text-xs text-gray-500">ID: #12345</p>
+                      <p className="text-xs text-gray-500">ID: #{reservation.reservationId}</p>
                     </div>
                   </div>
 
                   <div className="hidden md:flex flex-col items-start text-xs text-gray-600">
-                    <span>June 5, 2025</span>
-                    <span>Time: 7:30 pm</span>
+                    <span>{reservation.date}</span>
+                    <span>Time: {reservation.time}</span>
                   </div>
 
-                  <div className="text-sm text-gray-700">4 Guests</div>
+                  <div className="text-sm text-gray-700">{reservation.guests} Guests</div>
 
                   {/* Status Badge */}
                   <div>
@@ -1786,7 +579,9 @@ const ReservationChartData = [
             {/* Center content */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <p className="text-xs text-gray-500">Total Customers</p>
-              <p className="text-xl font-semibold text-gray-900">100</p>
+              <p className="text-xl font-semibold text-gray-900">
+                {(dashboardData?.customerFrequency?.new || 0) + (dashboardData?.customerFrequency?.returning || 0)}
+              </p>
             </div>
           </div>
 
@@ -1823,39 +618,36 @@ const ReservationChartData = [
           <CardContent>
         {/* Total & Change */}
         <div className="mb-5 flex gap-2">
-          <p className="text-xl font-semibold text-gray-900">#220,500</p>
+          <p className="text-xl font-semibold text-gray-900">
+            {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(totalRevenue)}
+          </p>
           <p className="text-xs text-gray-500 mt-2">
-            <span className="text-[#0A6C6D] font-medium">+8%</span> vs last week
+            <span className="text-[#0A6C6D] font-medium">+8%</span> vs last week {/* This change is hardcoded, assuming no real-time data for it */}
           </p>
         </div>
 
-        {/* Faux Stacked Bar */}
+        {/* Dynamic Stacked Bar */}
         <div className="h-3 w-full rounded-full bg-gray-200 overflow-hidden flex">
-          <div className="h-full w-[40%] bg-[#0A6C6D]" />
-          <div className="h-full w-[27%] bg-[#EF4444]" />
-          <div className="h-full w-[19%] bg-[#E0B300]" />
-          <div className="h-full w-[9%] bg-[#60A5FA]" />
-          <div className="h-full w-[5%] bg-[#8B5CF6]" />
+          {dashboardData?.revenueByCategory?.map((item: any, index: number) => (
+            <div
+              key={item.category}
+              className="h-full"
+              style={{ width: `${item.percentage}%`, backgroundColor: revenueColors[index % revenueColors.length] }}
+            />
+          ))}
         </div>
 
-        {/* Legend */}
+        {/* Dynamic Legend */}
         <div className="mt-4 gap-y-3 gap-x-4 text-xs text-gray-700 tracking-wide">
-          <div className="flex items-center gap-2">
-            Main Dish <span className="ml-auto text-[#111827] mb-3">40.0% <span className='text-gray-500'>(#110,000)</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            Drinks <span className="ml-auto text-[#111827] mb-3">27.7% <span className='text-gray-500'>(#50,000)</span></span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            Starters <span className="ml-auto text-[#111827] mb-3">19.3% <span className='text-gray-500'>(#30,000)</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            Desserts <span className="ml-auto text-[#111827] mb-3">9.0% <span className='text-gray-500'>(#20,500)</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            Sides <span className="ml-auto text-[#111827] mb-3">4.7% <span className='text-gray-500'>(#10,000)</span></span>
-          </div>
+          {dashboardData?.revenueByCategory?.map((item: any, index: number) => (
+            <div key={item.category} className="flex items-center gap-2">
+              {item.category} <span className="ml-auto text-[#111827] mb-3">
+                {item.percentage}% <span className='text-gray-500'>
+                  ({new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(item.amount)})
+                </span>
+              </span>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>
@@ -1907,7 +699,9 @@ const ReservationChartData = [
             {/* Center content */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <p className="text-xs text-gray-500">Total Customers</p>
-              <p className="text-xl font-semibold text-gray-900">100</p>
+              <p className="text-xl font-semibold text-gray-900">
+                {(dashboardData?.reservationSource?.website || 0) + (dashboardData?.reservationSource?.mobile || 0) + (dashboardData?.reservationSource?.walkIn || 0)}
+              </p>
             </div>
           </div>
 
@@ -1930,17 +724,3 @@ const ReservationChartData = [
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
