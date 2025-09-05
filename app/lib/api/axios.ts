@@ -1,13 +1,9 @@
 import axios from "axios";
 import { AuthService } from "./services/auth.service";
 
-const NEXT_PUBLIC_BASE_URL =
-  process.env.NODE_ENV === 'development'
-    ? "http://localhost:3000/api"
-    : "https://hotel-booking-app-backend-30q1.onrender.com/";
 
 const API = axios.create({
-  baseURL: NEXT_PUBLIC_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
