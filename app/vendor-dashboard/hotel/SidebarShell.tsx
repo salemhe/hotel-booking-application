@@ -5,25 +5,27 @@ import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/app/super-administrator/ThemeContext";
 
 import {
-  ChevronLeft,
-  Menu as MenuIcon,
-  Home,
-  Calendar,
-  CreditCard,
-  Users,
-  Settings,
-  LogOut
-} from "lucide-react";
+  ChevronLeftIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon,
+  HomeIcon,
+  UserGroupIcon,
+  BuildingOffice2Icon,
+  CurrencyDollarIcon,
+} from "@heroicons/react/24/outline";
+import { CalendarIcon, MenuIcon } from "lucide-react";
 
 const mainSidebarItems = [
-  { icon: Home, label: "Dashboard", href: "/vendor-dashboard/hotel/dashboard" },
-  { icon: Calendar, label: "Reservations", href: "/vendor-dashboard/hotel/reservations" },
-  { icon: CreditCard, label: "Payments", href: "/vendor-dashboard/hotel/payments" },
-  { icon: Users, label: "Staff", href: "/vendor-dashboard/hotel/staff" },
+  { icon: HomeIcon, label: "Dashboard", href: "/vendor-dashboard/hotel/dashboard" },
+  //{ icon: BuildingOffice2Icon, label: "Vendor's", href: "/vendor-dashboard/hotel/vendors" },
+  { icon: CalendarIcon, label: "Reservations", href: "/vendor-dashboard/hotel/reservations" },
+  //{ icon: UserGroupIcon, label: "User's Management", href: "/vendor-dashboard/hotel/users" },
+  { icon: CurrencyDollarIcon, label: "Payments", href: "/vendor-dashboard/hotel/payments" },
+  { icon: UserGroupIcon, label: "Staff", href: "/vendor-dashboard/hotel/staff" },
 ];
 const bottomSidebarItems = [
-  { icon: Settings, label: "Settings", href: "/vendor-dashboard/hotel/settings" },
-  { icon: LogOut, label: "Logout", href: "/logout" },
+  { icon: Cog6ToothIcon, label: "Settings", href: "/vendor-dashboard/hotel/settings" },
+  { icon: ArrowRightOnRectangleIcon, label: "Logout", href: "/logout" },
 ];
 
 
@@ -43,10 +45,10 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
             <div className="flex items-center justify-between px-6 py-5 border-b border-teal-700">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
-                  <span className="text-teal-800 font-extrabold text-lg">B</span>
+                  <span className="text-teal-800 font-extrabold text-lg">R</span>
                 </div>
                 {!sidebarCollapsed && (
-                  <span className="text-2xl font-extrabold tracking-wide transition-all duration-300">Bookies</span>
+                  <span className="text-2xl font-extrabold tracking-wide transition-all duration-300">Rhace</span>
                 )}
               </div>
               {!sidebarCollapsed && (
@@ -55,7 +57,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
                   onClick={() => setSidebarCollapsed((prev) => !prev)}
                   aria-label="Collapse sidebar"
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                  <ChevronLeftIcon className="w-6 h-6" />
                 </button>
               )}
             </div>
@@ -78,7 +80,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
                           prefetch={false}
                         >
                           <span className="flex justify-center items-center w-8 h-8">
-                            <Icon className="w-5 h-5" />
+                            <Icon />
                           </span>
                           {!sidebarCollapsed && (
                             <span className="ml-1 transition-all duration-300 group-hover:font-semibold">{item.label}</span>
@@ -104,7 +106,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
                           prefetch={false}
                         >
                           <span className="flex justify-center items-center w-8 h-8">
-                            <Icon className="w-5 h-5" />
+                            <Icon />
                           </span>
                           {!sidebarCollapsed && (
                             <span className="ml-1 transition-all duration-300 group-hover:font-semibold">{item.label}</span>
@@ -125,7 +127,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
               onClick={() => setSidebarCollapsed(false)}
               aria-label="Open sidebar"
             >
-              <span className="text-teal-800 font-extrabold text-lg pointer-events-none select-none">B</span>
+              <span className="text-teal-800 font-extrabold text-lg pointer-events-none select-none">R</span>
               <MenuIcon className="w-4 h-4 absolute opacity-0" />
             </button>
           )}
