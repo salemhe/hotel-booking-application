@@ -30,7 +30,7 @@ function BranchNameDisplay() {
   const { selectedBranch } = useBranchContext();
   if (!selectedBranch) return null;
   return (
-    <div className="mb-4 px-4 py-2 bg-teal-600 text-white rounded-lg font-semibold text-lg">
+    <div className="block text-center text-[#042626]">
       {selectedBranch.branchName}
     </div>
   );
@@ -39,19 +39,22 @@ function BranchNameDisplay() {
 export default function SidebarShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
-  const sidebarWidth = sidebarCollapsed ? "w-16" : "w-64";
+  const sidebarWidth = sidebarCollapsed ? "w-1" : "w-[230px]";
 
   return (
     <ThemeProvider>
       <BranchProvider>
         <div className="flex h-screen bg-gray-50">
           {/* Sidebar */}
-          <div className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-gradient-to-b from-teal-900 via-teal-800 to-teal-700 text-white shadow-xl border-r border-teal-700 transition-all duration-300 ${sidebarWidth}`} style={{ minWidth: sidebarCollapsed ? '4rem' : '16rem', width: sidebarCollapsed ? '4rem' : '16rem' }}>
+          <div 
+            className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-[#042626] text-white shadow-xl border-r border-teal-700 transition-all duration-300 ${sidebarWidth}`} style={{ minWidth: sidebarCollapsed ? '4rem' : '16rem', width: sidebarCollapsed ? '4rem' : '16rem' 
+              
+            }}>
             {/* Logo and Collapse Button */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-teal-700">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
-                  <span className="text-teal-800 font-extrabold text-lg">B</span>
+                  <span className="text-[#042626] font-extrabold text-lg">B</span>
                 </div>
                 {!sidebarCollapsed && (
                   <span className="text-2xl font-extrabold tracking-wide transition-all duration-300">Bookies</span>
@@ -59,7 +62,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
               </div>
               {!sidebarCollapsed && (
                 <button
-                  className="ml-2 p-2 rounded-full hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
+                  className="ml-2 p-2 rounded-full hover:bg-[#042626] transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
                   onClick={() => setSidebarCollapsed((prev) => !prev)}
                   aria-label="Collapse sidebar"
                 >

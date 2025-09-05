@@ -223,7 +223,8 @@ export default function RestaurantLayout({
         <div className="flex min-h-screen bg-gray-50">
           {/* Sidebar */}
           <aside
-            className={`sticky top-0 self-start h-screen ${
+            className={`
+              sticky top-0 self-start h-screen ${
               collapsed ? "w-16" : "w-[230px]"
             } shrink-0 bg-[#042626] text-white transition-[width] duration-300 flex flex-col justify-between`}
           >
