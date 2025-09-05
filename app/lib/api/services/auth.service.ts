@@ -243,11 +243,11 @@ export class AuthService {
     }
   }
 
-    static async fetchMyProfile(id: string, role: string): Promise<UserProfile | null> {
+  static async fetchMyProfile(id: string, role: string): Promise<UserProfile | null> {
     try {
-      let url = `/vendors/${id}`; // Default for vendors
+      let url = `/api/vendors/${id}`; // Default for vendors
       if (role === "super-admin") {
-        url = `/super-admins/${id}`; // Use super-admin endpoint
+        url = `/api/super-admins/${id}`; // Use super-admin endpoint
       }
       const response = await API.get(url, { withCredentials: true });
       console.log("fetchMyProfile response:", response);
