@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, CreditCard, Users } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
@@ -32,7 +31,7 @@ export default function RestaurantSplitPaymentPage() {
     status: "pending",
   });
 
-  const handleSplitPaymentComplete = async (data: any) => {
+  const handleSplitPaymentComplete = async (data: unknown) => {
     try {
       // In a real application, this would be an API call
       console.log("Processing split payment:", data);

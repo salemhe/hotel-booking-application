@@ -121,7 +121,7 @@ const revenueColors = [
 ];
 
 // Calculate total revenue
-const totalRevenue = dashboardData?.revenueByCategory?.reduce((sum: number, item: any) => sum + item.amount, 0) || 0;
+const totalRevenue = dashboardData?.revenueByCategory?.reduce((sum: number, item: { category: string; percentage: number; amount: number }) => sum + item.amount, 0) || 0;
 
 
 if (loading) {
@@ -384,7 +384,7 @@ if (loading) {
 
             {/* content */}
             <div className="flex w-full px-3 py-1 flex-col items-start gap-3">
-              {dashboardData?.todaysReservations?.map((reservation: any) => {
+              {dashboardData?.todaysReservations?.map((reservation: { reservationId: string; customerName: string; status: string; date: string; time: string; guests: number }) => {
                 const isUpcoming = reservation.status === "Upcoming";
                 return (
                 <div
@@ -628,7 +628,7 @@ if (loading) {
 
         {/* Dynamic Stacked Bar */}
         <div className="h-3 w-full rounded-full bg-gray-200 overflow-hidden flex">
-          {dashboardData?.revenueByCategory?.map((item: any, index: number) => (
+          {dashboardData?.revenueByCategory?.map((item: { category: string; percentage: number; amount: number }, index: number) => (
             <div
               key={item.category}
               className="h-full"
@@ -639,7 +639,7 @@ if (loading) {
 
         {/* Dynamic Legend */}
         <div className="mt-4 gap-y-3 gap-x-4 text-xs text-gray-700 tracking-wide">
-          {dashboardData?.revenueByCategory?.map((item: any, index: number) => (
+          {dashboardData?.revenueByCategory?.map((item: { category: string; percentage: number; amount: number }) => (
             <div key={item.category} className="flex items-center gap-2">
               {item.category} <span className="ml-auto text-[#111827] mb-3">
                 {item.percentage}% <span className='text-gray-500'>

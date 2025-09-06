@@ -4,25 +4,19 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CreditCard, Users, Divide, Plus, Trash2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Divide, Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import {
 
   Form,
-  FormControl,
-  FormField,
-  FormItem,
   FormLabel,
-  FormMessage,
 } from "@/app/components/ui/form";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
@@ -33,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
 import { toast } from "sonner";
 
 const splitPaymentSchema = z.object({
@@ -55,7 +48,7 @@ type SplitPaymentFormValues = z.infer<typeof splitPaymentSchema>;
 
 interface SplitPaymentFormProps {
   totalAmount: number;
-  onComplete: (data: any) => void;
+  onComplete: (data: unknown) => void;
   onCancel: () => void;
 }
 
@@ -97,9 +90,9 @@ export default function SplitPaymentForm({
     form.setValue("participants", newParticipants);
   };
 
-  const updateParticipant = (index: number, field: string, value: any) => {
+  const updateParticipant = (index: number, field: string, value: unknown) => {
     const newParticipants = [...participants];
-    (newParticipants[index] as any)[field] = value;
+    (newParticipants[index] as Record<string, unknown>)[field] = value;
     setParticipants(newParticipants);
     form.setValue("participants", newParticipants);
   };

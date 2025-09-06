@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeProvider } from "./ThemeContext";
 import { useAuth } from "@/app/contexts/AuthContext";
-import API from "@/app/lib/api/axios";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import {
   ChevronLeft, 
@@ -124,7 +123,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
 
         if (token) {
           console.log("setCookie: Sending token to backend for session cookie.");
-          await AuthService.setToken(token, "super-admin");
+          await AuthService.setToken(token);
           console.log("setCookie: Backend response for set-admin-token:");
           setCookieSet(true); // Mark cookie as set
           console.log("setCookie: cookieSet state set to true.");

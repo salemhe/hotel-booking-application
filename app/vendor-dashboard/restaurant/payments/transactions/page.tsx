@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
+import { Card, CardContent } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
 import { Badge } from "@/app/components/ui/badge";
-import { Search, Download, Filter, ArrowUpDown, Eye } from "lucide-react";
+import { Search, Download, Eye } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -151,11 +150,44 @@ const MOCK_TRANSACTIONS = [
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState(MOCK_TRANSACTIONS);
-  const [filteredTransactions, setFilteredTransactions] = useState(MOCK_TRANSACTIONS);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
-  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  type SplitDetail = {
+    name: string;
+    amount: number;
+    status: string;
+  };
+
+  type PaymentDetails = {
+    cardType?: string;
+    last4?: string;
+    processorFee: number;
+    netAmount: number;
+    refundReason?: string;
+    refundDate?: Date;
+    splitDetails?: SplitDetail[];
+  };
+
+  type TransactionItem = {
+    name: string;
+    quantity: number;
+    price: number;
+  };
+
+  type Transaction = {
+    id: string;
+    date: Date;
+    customer: string;
+    amount: number;
+    status: string;
+    paymentMethod: string;
+    items: TransactionItem[];
+    paymentDetails: PaymentDetails;
+  };
+
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   useEffect(() => {
@@ -172,7 +204,7 @@ export default function TransactionsPage() {
     applyFilters(MOCK_TRANSACTIONS, searchQuery, statusFilter, dateFilter);
   }, []);
 
-  const applyFilters = (data: any[], query: string, status: string, date: string) => {
+  const applyFilters = (data: Transaction[], query: string, status: string, date: string) => {
     let filtered = [...data];
 
     // Apply search query filter
@@ -238,7 +270,7 @@ export default function TransactionsPage() {
     applyFilters(transactions, searchQuery, statusFilter, value);
   };
 
-  const handleViewDetails = (transaction: any) => {
+  const handleViewDetails = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setIsDetailsOpen(true);
   };
@@ -407,7 +439,7 @@ export default function TransactionsPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {selectedTransaction.items.map((item: any, index: number) => (
+                      {selectedTransaction.items.map((item: TransactionItem, index: number) => (
                         <TableRow key={index}>
                           <TableCell>{item.name}</TableCell>
                           <TableCell className="text-right">{item.quantity}</TableCell>
@@ -450,7 +482,7 @@ export default function TransactionsPage() {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {selectedTransaction.paymentDetails.splitDetails.map((split: any, index: number) => (
+                              {selectedTransaction.paymentDetails.splitDetails.map((split: SplitDetail, index: number) => (
                                 <TableRow key={index}>
                                   <TableCell>{split.name}</TableCell>
                                   <TableCell className="text-right">{formatCurrency(split.amount)}</TableCell>

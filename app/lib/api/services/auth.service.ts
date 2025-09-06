@@ -341,7 +341,34 @@ export class AuthService {
     return response.json();
   }
 
-  static async setToken(token: string) {
+  // static async setToken(token: string, role: string = 'vendor') {
+  //   if (typeof window !== "undefined") {
+  //     localStorage.setItem("auth_token", token);
+  //   }
+  //   // Optionally, also send to backend if needed
+  //   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
+  //   let endpoint = "set-vendor-token"; // Default for vendors
+  //   if (role === "super-admin") {
+  //     endpoint = "set-admin-token"; // Use set-admin-token for super-admins
+  //   }
+  //   const fetchUrl = `${backendUrl}/api/auth/${endpoint}`;
+  //   console.log("AuthService.setToken: Fetching URL:", fetchUrl);
+  //   await fetch(fetchUrl, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ token }),
+  //     credentials: "include"
+  //   });
+  // }
+
+  // static async getToken(): Promise<string | null> {
+  //   if (typeof window !== "undefined") {
+  //     return localStorage.getItem("auth_token");
+  //   }
+  //   return null;
+  // }
+
+    static async setToken(token: string) {
     await fetch(`${getFrontendUrl()}/api/auth/set-vendor-token`, {
       method: "POST",
       body: JSON.stringify({ token }),
@@ -355,6 +382,7 @@ export class AuthService {
     const data = await response.json();
     return data.token;
   }
+  
   static getUser(): AuthUser | null {
     if (typeof window !== "undefined") {
       const userStr = localStorage.getItem(this.USER_KEY);

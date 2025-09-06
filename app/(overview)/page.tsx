@@ -51,6 +51,7 @@ export default function Home() {
       setError(null);
       try {
         const data = await VendorService.getVendors();
+        console.log("Vendors: ", data);
         setVendors(data);
       } catch (err) {
         console.error('Error fetching vendors:', err);
