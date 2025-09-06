@@ -47,15 +47,15 @@ interface FrequencyData {
 interface RevenueData {
   totalRevenue?: number;
   revenueTrend?: number;
-  categories?: any[];
+  categories?: string[];
 }
 
-interface SourcesData {
-  website?: number;
-  mobile?: number;
-  walkIn?: number;
-  total?: number;
-}
+// interface SourcesData {
+//   website?: number;
+//   mobile?: number;
+//   walkIn?: number;
+//   total?: number;
+// }
 import { 
   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
   Calendar, CreditCard, Users, DollarSign
@@ -132,6 +132,7 @@ export default function Dashboard() {
           
           // Connection opened
           socket.addEventListener('open', (event) => {
+            event.preventDefault();
             console.log('WebSocket connection established for hotel dashboard');
             
             // Subscribe to relevant data channels
@@ -229,15 +230,17 @@ export default function Dashboard() {
         // Use the interfaces defined at the module level
         
         // Helper function to safely fetch data and handle errors
-        const safelyFetchData = async <T,>(fetchFn: () => Promise<any>, defaultValue: T): Promise<T> => {
+        const safelyFetchData = async <T,>(fetchFn: () => Promise<unknown>, defaultValue: T): Promise<T> => {
           try {
             const result = await fetchFn();
             
             // Check for error object
             if (result && typeof result === 'object' && 'isError' in result && result.isError) {
-              const errorObj = result.error || {};
-              const errorMessage = typeof errorObj === 'object' && 'message' in errorObj 
-                ? errorObj.message 
+              const errorObj = (typeof result === 'object' && result !== null && 'error' in result)
+                ? (result as { error?: unknown }).error
+                : {};
+              const errorMessage = typeof errorObj === 'object' && errorObj !== null && 'message' in errorObj
+                ? (errorObj as { message?: string }).message
                 : (typeof errorObj === 'string' ? errorObj : 'Unknown error');
                 
               console.log(`API Error fetching hotel data: ${errorMessage}`);
@@ -252,7 +255,11 @@ export default function Dashboard() {
               return defaultValue;
             }
             
-            return result || defaultValue;
+            // If result is an empty object, return defaultValue
+            if (result && typeof result === 'object' && !Array.isArray(result) && Object.keys(result).length === 0) {
+              return defaultValue;
+            }
+            return result as T;
           } catch (error) {
             let errorMessage = 'Unknown error';
             if (error) {
@@ -281,7 +288,7 @@ export default function Dashboard() {
         // Profile data needs special handling with retries
         let profileData = {};
         for (let retry = 0; retry < 3; retry++) {
-          profileData = await safelyFetchData<any>(() => getUserProfile(), {});
+          profileData = await safelyFetchData<Record<string, unknown>>(() => getUserProfile(), {});
           if (profileData && Object.keys(profileData).length > 0) break;
           console.log(`Retrying profile fetch for hotel, attempt ${retry + 1}/3`);
           await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms between retries
@@ -338,31 +345,46 @@ export default function Dashboard() {
           }
           
           // Prioritize API data over localStorage data
+          // Define a type for possible profile data keys
+          type ProfileData = {
+            businessName?: string;
+            name?: string;
+            companyName?: string;
+            hotelName?: string;
+            restaurantName?: string;
+            firstName?: string;
+            lastName?: string;
+            role?: string;
+            businessType?: string;
+            avatar?: string;
+            profileImage?: string;
+            image?: string;
+          };
+
           if (profileData && Object.keys(profileData).length > 0) {
-            // Cast profileData to any to allow indexing with strings
-            const profileDataAny = profileData as any;
+            const profileDataTyped = profileData as ProfileData;
             
             // Try multiple possible property names for the business name
-            const possibleNameProps = ['businessName', 'name', 'companyName', 'hotelName', 'restaurantName'];
+            const possibleNameProps = ['businessName', 'name', 'companyName', 'hotelName', 'restaurantName'] as const;
             for (const prop of possibleNameProps) {
-              if (profileDataAny[prop] && typeof profileDataAny[prop] === 'string' && profileDataAny[prop].trim() !== '') {
-                vendorName = profileDataAny[prop];
+              if (profileDataTyped[prop] && typeof profileDataTyped[prop] === 'string' && profileDataTyped[prop]!.trim() !== '') {
+                vendorName = profileDataTyped[prop]!;
                 break;
               }
             }
             
             // If no business name found, try to construct from first and last name
-            if (!vendorName && profileDataAny.firstName) {
-              vendorName = profileDataAny.lastName ? 
-                `${profileDataAny.firstName} ${profileDataAny.lastName}` : 
-                profileDataAny.firstName;
+            if (!vendorName && profileDataTyped.firstName) {
+              vendorName = profileDataTyped.lastName ? 
+                `${profileDataTyped.firstName} ${profileDataTyped.lastName}` : 
+                profileDataTyped.firstName;
             }
             
             // Get role information
-            vendorRole = profileDataAny.role || profileDataAny.businessType || vendorRole || 'Hotel Manager';
+            vendorRole = profileDataTyped.role || profileDataTyped.businessType || vendorRole || 'Hotel Manager';
             
             // Get avatar information
-            vendorAvatar = profileDataAny.avatar || profileDataAny.profileImage || profileDataAny.image || '';
+            vendorAvatar = profileDataTyped.avatar || profileDataTyped.profileImage || profileDataTyped.image || '';
             
             // Store in localStorage for future use
             if (vendorName && typeof window !== 'undefined') {
@@ -492,7 +514,7 @@ export default function Dashboard() {
     }, 30000); // 30 seconds - increased frequency for more real-time data
     
     // Define safelyFetchData function for the interval scope
-    const intervalSafelyFetchData = async <T,>(fetchFn: () => Promise<any>, defaultValue: T): Promise<T> => {
+    const intervalSafelyFetchData = async <T,>(fetchFn: () => Promise<string | T | { isError: boolean; error?: unknown }>, defaultValue: T): Promise<T> => {
       try {
         const result = await fetchFn();
         
@@ -507,7 +529,13 @@ export default function Dashboard() {
           return defaultValue;
         }
         
-        return result || defaultValue;
+        if (typeof result === 'object' && result !== null && 'isError' in result) {
+          return defaultValue;
+        }
+        if (typeof result === 'string') {
+          return defaultValue;
+        }
+        return result as T || defaultValue;
       } catch (error) {
         console.log(`Exception fetching hotel data in interval: ${error}`);
         return defaultValue;

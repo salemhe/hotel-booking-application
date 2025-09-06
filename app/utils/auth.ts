@@ -22,7 +22,12 @@ export const getAuthToken = (): string | null => {
 /**
  * Get user data from localStorage
  */
-export const getAuthUser = (): any | null => {
+export interface AuthUser {
+  role?: string;
+  [key: string]: unknown;
+}
+
+export const getAuthUser = (): AuthUser | null => {
   const userKeys = ["auth_user", "user"];
   
   for (const key of userKeys) {
@@ -31,7 +36,7 @@ export const getAuthUser = (): any | null => {
       try {
         const userData = JSON.parse(user);
         console.log(`Found user data in ${key}:`, userData);
-        return userData;
+        return userData as AuthUser;
       } catch (error) {
         console.error(`Invalid user data in ${key}:`, error);
       }
@@ -58,16 +63,11 @@ export const isAuthenticated = (): boolean => {
     console.error("User data missing");
     return false;
   }
-  
   return true;
-};
-
-/**
- * Get user role
- */
+}
 export const getUserRole = (): string | null => {
   const user = getAuthUser();
-  return user?.role || null;
+  return user && user.role ? user.role : null;
 };
 
 /**
@@ -118,7 +118,7 @@ export const clearAuthData = (): void => {
 /**
  * Set authentication data
  */
-export const setAuthData = (token: string, user: any): void => {
+export const setAuthData = (token: string, user: unknown): void => {
   localStorage.setItem("auth_token", token);
   localStorage.setItem("auth_user", JSON.stringify(user));
   console.log("Authentication data set successfully");

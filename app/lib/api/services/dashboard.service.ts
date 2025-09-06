@@ -10,10 +10,11 @@ async function preflightAuth() {
       localStorage.getItem('vendor-token');
     if (token) {
       // Use AuthService.setToken to handle setting the vendor token
-      await AuthService.setToken(token, "vendor");
+      await AuthService.setToken(token);
     }
   } catch (e) {
     // non-fatal
+    console.error(e)
   }
 }
 

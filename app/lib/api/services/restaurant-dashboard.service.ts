@@ -67,7 +67,7 @@ export interface ReservationSource {
 
 export interface RealTimeUpdate {
   type: 'stats_update' | 'new_reservation' | 'reservation_update' | 'reservation_cancelled';
-  data: any;
+  data: unknown;
   timestamp: number;
 }
 
@@ -79,7 +79,7 @@ class RestaurantDashboardService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
-  private listeners: Map<string, Function[]> = new Map();
+  private listeners: Map<string, Array<(data: unknown) => void>> = new Map();
 
   /**
    * Get restaurant dashboard stats for the authenticated vendor
@@ -227,7 +227,7 @@ class RestaurantDashboardService {
   /**
    * Get restaurant details
    */
-  async getRestaurantDetails(restaurantId?: string): Promise<any> {
+  async getRestaurantDetails(restaurantId?: string): Promise<unknown> {
     const endpoint = restaurantId 
       ? `${this.baseUrl}/restaurant/${restaurantId}`
       : `${this.baseUrl}/restaurant`;
@@ -307,7 +307,7 @@ class RestaurantDashboardService {
   /**
    * Add event listener for real-time updates
    */
-  addEventListener(eventType: string, callback: Function) {
+  addEventListener(eventType: string, callback: (data: unknown) => void) {
     if (!this.listeners.has(eventType)) {
       this.listeners.set(eventType, []);
     }
@@ -317,7 +317,7 @@ class RestaurantDashboardService {
   /**
    * Remove event listener
    */
-  removeEventListener(eventType: string, callback: Function) {
+  removeEventListener(eventType: string, callback: (data: unknown) => void) {
     const callbacks = this.listeners.get(eventType);
     if (callbacks) {
       const index = callbacks.indexOf(callback);
@@ -330,7 +330,7 @@ class RestaurantDashboardService {
   /**
    * Notify listeners of real-time updates
    */
-  private notifyListeners(eventType: string, data: any) {
+  private notifyListeners(eventType: string, data: unknown) {
     const callbacks = this.listeners.get(eventType);
     if (callbacks) {
       callbacks.forEach(callback => {

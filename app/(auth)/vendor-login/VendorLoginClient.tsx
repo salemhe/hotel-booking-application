@@ -38,7 +38,7 @@ interface VendorProfile {
 export default function VendorLoginClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("vendor");
+  // const [role, setRole] = useState("vendor");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -73,7 +73,7 @@ export default function VendorLoginClient() {
     setLoading(true);
 
     try {
-      const loginResponse = await AuthService.login(email, password, role);
+      const loginResponse = await AuthService.login(email, password);
       if (!loginResponse || !loginResponse.profile) {
         throw new Error("Login failed - invalid response");
       }

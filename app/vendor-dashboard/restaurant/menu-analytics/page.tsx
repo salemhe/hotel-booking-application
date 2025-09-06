@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
 import { Button } from "@/app/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -48,10 +47,10 @@ export default function MenuAnalyticsPage() {
       setIsLoading(true);
       try {
         // In a real implementation, you would fetch data from your API
-        // const data = await apiFetcher(`/api/vendor/menu-analytics?timeRange=${timeRange}`);
-        // setBestSelling(data.bestSelling);
-        // setRevenueByCategory(data.revenueByCategory);
-        // setMonthlySales(data.monthlySales);
+        const data = await apiFetcher(`/api/vendor/menu-analytics?timeRange=${timeRange}`);
+        setBestSelling(data.bestSelling);
+        setRevenueByCategory(data.revenueByCategory);
+        setMonthlySales(data.monthlySales);
         
         // For now, we'll just simulate a delay
         await new Promise(resolve => setTimeout(resolve, 500));

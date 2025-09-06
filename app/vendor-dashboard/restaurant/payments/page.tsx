@@ -24,7 +24,7 @@ import {
 import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
- import { AuthService } from "@/app/lib/api/services/auth.service";
+ import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";
 import { useVendorDashboardSocket } from "@/hooks/useVendorDashboardSocket";
 
 const getStatusColor = (status: string) => {
@@ -49,28 +49,28 @@ interface Account {
   bankLogoUrl?: string;
 }
 
-interface Stats {
-  totalEarnings?: number;
-  earningsVsLastYear?: string;
-  earningsThisWeek?: number;
-  earningsVsLastWeek?: string;
-  completedPayments?: number;
-  completedVsLastWeek?: string;
-  pendingPayments?: number;
-  pendingVsLastWeek?: string;
-  availableBalance?: number;
-  lastPaymentProcessed?: string;
-  chartData?: ChartData[];
-}
+// interface Stats {
+//   totalEarnings?: number;
+//   earningsVsLastYear?: string;
+//   earningsThisWeek?: number;
+//   earningsVsLastWeek?: string;
+//   completedPayments?: number;
+//   completedVsLastWeek?: string;
+//   pendingPayments?: number;
+//   pendingVsLastWeek?: string;
+//   availableBalance?: number;
+//   lastPaymentProcessed?: string;
+//   chartData?: ChartData[];
+// }
 
-interface Transaction {
-  date: string;
-  transactionId: string;
-  customer: string;
+// interface Transaction {
+//   date: string;
+//   transactionId: string;
+//   customer: string;
   
-  method: string;
-  status: string;
-}
+//   method: string;
+//   status: string;
+// }
 
 interface ChartData {
   name: string;
@@ -78,7 +78,7 @@ interface ChartData {
 }
 
 export default function RestaurantPayments() {
-  const { accounts, stats, transactions, loading } = useVendorDashboardSocket(process.env.NEXT_PUBLIC_API_URL || 'https://hotel-booking-app-backend-30q1.onrender.com', process.env.NEXT_PUBLIC_SOCKET_URL || 'https://hotel-booking-app-backend-30q1.onrender.com');
+  const { accounts, stats, transactions } = useVendorDashboardSocket(process.env.NEXT_PUBLIC_API_URL || 'https://hotel-booking-app-backend-30q1.onrender.com', process.env.NEXT_PUBLIC_SOCKET_URL || 'https://hotel-booking-app-backend-30q1.onrender.com');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [vendor, setVendor] = useState<{ businessName?: string; role?: string; profileImage?: string } | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -96,9 +96,9 @@ export default function RestaurantPayments() {
           if (id) {
             const profile = await AuthService.fetchMyProfile(id, 'vendor');
             setVendor({
-              businessName: (profile as any)?.businessName || (profile as any)?.name,
-              role: (profile as any)?.role || (profile as any)?.businessType || 'Vendor',
-              profileImage: (profile as any)?.profileImage
+              businessName: (profile as UserProfile)?.businessName || (profile as UserProfile)?.name,
+              role: (profile as UserProfile)?.role || (profile as UserProfile)?.businessType || 'Vendor',
+              profileImage: (profile as UserProfile)?.profileImage
             });
           }
         }

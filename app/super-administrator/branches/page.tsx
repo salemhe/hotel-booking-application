@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import API from "@/app/lib/api/axios";
 import axios from "axios";
 import {
@@ -28,7 +27,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import { getAuthUser } from "@/app/utils/auth";
-import { AuthService } from "@/app/lib/api/services/auth.service";
 
 // Removed unused sidebarItems
 
@@ -64,24 +62,24 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
       // The layout handles setting the session cookie.
       // Manual token handling is no longer needed here.
 
-      const response = await API.post(
-        'api/super-admin/branches',
-        {
-          name: formData.branchName,
-          address: formData.address,
-          city: formData.city,
-          phoneNumber: formData.countryCode + formData.phoneNumber,
-          email: formData.email,
-          password: formData.password,
-          businessType: "restaurant",
-          openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
-          opensAt: formData.opensAt,
-          closesAt: formData.closesAt,
-          assignedManager: formData.assignedManager,
-          assignedMenu: formData.assignedMenu,
-          importAllMenuItems: formData.importAllMenuItems,
-        }
-      );
+      // const response = await API.post(
+      //   'api/super-admin/branches',
+      //   {
+      //     name: formData.branchName,
+      //     address: formData.address,
+      //     city: formData.city,
+      //     phoneNumber: formData.countryCode + formData.phoneNumber,
+      //     email: formData.email,
+      //     password: formData.password,
+      //     businessType: "restaurant",
+      //     openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
+      //     opensAt: formData.opensAt,
+      //     closesAt: formData.closesAt,
+      //     assignedManager: formData.assignedManager,
+      //     assignedMenu: formData.assignedMenu,
+      //     importAllMenuItems: formData.importAllMenuItems,
+      //   }
+      // );
       onBranchAdded(); // Refresh branch list
       if (action === "saveAndAdd") {
         setFormData({
@@ -113,7 +111,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           if (typeof data === "string") {
             serverMessage = data;
           } else if (typeof data === "object") {
-            serverMessage = (data as any).message || (data as any).error || JSON.stringify(data);
+            serverMessage = (data as Record<string, unknown>).message as string || (data as Record<string, unknown>).error as string || JSON.stringify(data);
           }
         }
         const finalMsg = serverMessage || err.message || "Request failed";
@@ -266,7 +264,6 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
 }
 
 export default function BranchesDashboard() {
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
@@ -300,13 +297,9 @@ export default function BranchesDashboard() {
       if (axios.isAxiosError(err)) {
         const status = err.response?.status;
         const data = err.response?.data;
-        let serverMessage = "";
         if (data) {
-          if (typeof data === "string") {
-            serverMessage = data;
-          } else if (typeof data === "object") {
-            serverMessage = (data as any).message || (data as any).error || JSON.stringify(data);
-          }
+          // Optionally, you can log the message or error if needed
+          // const serverMessage = typeof data === "string" ? data : (data as any).message || (data as any).error || JSON.stringify(data);
         }
         console.warn('Fetch branches API error:', { status, data, retry });
         if (status === 401) {
@@ -353,13 +346,15 @@ export default function BranchesDashboard() {
                 <Avatar>
                   <AvatarFallback>{
                     typeof window !== 'undefined' ? 
-                    (getAuthUser()?.name?.split(' ').map((n: string) => n[0]).join('') || 'SA') : 
+                    (typeof (getAuthUser() as { name?: string })?.name === 'string'
+                      ? ((getAuthUser() as { name: string }).name.split(' ').map((n: string) => n[0]).join(''))
+                      : 'SA') : 
                     'SA'
                   }</AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block">
-                  <div className="text-sm font-medium">{getAuthUser()?.name || 'Super Admin'}</div>
-                  <div className="text-xs text-gray-500">{getAuthUser()?.role || 'Admin'}</div>
+                  <div className="text-sm font-medium">{typeof getAuthUser()?.name === 'string' ? String(getAuthUser()?.name) : 'Super Admin'}</div>
+                  <div className="text-xs text-gray-500">{typeof getAuthUser()?.role === 'string' ? getAuthUser()?.role : 'Admin'}</div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
               </div>

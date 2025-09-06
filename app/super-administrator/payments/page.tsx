@@ -99,8 +99,8 @@ export default function SuperAdminPayments() {
       const data = await apiFetcher("/api/super-admin/vendors");
       if (Array.isArray(data)) {
         setVendors(data);
-      } else if (data && Array.isArray((data as any).data)) {
-        setVendors((data as any).data);
+      } else if (data && typeof data === "object" && Array.isArray((data as { data?: unknown }).data)) {
+        setVendors((data as { data: Vendor[] }).data);
       } else {
         console.error("Vendors API returned non-array response:", data);
         setVendors([]);
