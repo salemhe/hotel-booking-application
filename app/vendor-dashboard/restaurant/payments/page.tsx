@@ -25,7 +25,7 @@ import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
  import { AuthService } from "@/app/lib/api/services/auth.service";
-import { useVendorDashboardSocket } from "@/hooks/useVendorDashboardSocket";
+import { useVendorDashboardSocket } from "@/app/hooks/useVendorDashboardSocket";
 
 const getStatusColor = (status: string) => {
   switch (status) {
