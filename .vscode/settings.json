@@ -1,5 +1,6 @@
 {
     "marquee.widgets.npm-stats.packageNames": [
         "hotel-booking-application"
-    ]
+    ],
+    "codium.codeCompletion.enable": false
 }

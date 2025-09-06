@@ -210,7 +210,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: isHotel ? "Hotel Listings" : isRestaurant ? "Restaurant Listings" : "My Listings",
-      url: isHotel ? "/vendorDashboard/hostelListings" : isRestaurant ? "/vendorDashboard/restaurantListings" : "/vendorDashboard/listings",
+      url: isHotel ? "/vendor-dashboard/hostelListings" : isRestaurant ? "/vendor-dashboard/restaurantListings" : "/vendor-dashboard/listings",
       icon: StickyNote,
       items: [
         {
@@ -229,7 +229,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: isHotel ? "Hotel Bookings" : isRestaurant ? "Restaurant Bookings" : "Restaurant Bookings",
-      url: isHotel ? "/vendorDashboard/hotel-reservations" : isRestaurant ? "/vendorDashboard/restaurantBookings"  : "/vendorDashboard/restaurantBookings",
+      url: isHotel ? "/vendor-dashboard/hotel/reservations" : isRestaurant ? "/vendor-dashboard/restaurantBookings"  : "/vendor-dashboard/restaurantBookings",
       icon: IoDocumentTextOutline,
       items: [
         {
@@ -252,7 +252,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: "Availability & Pricing",
-      url: "/vendorDashboard/pricing",
+      url: "/vendor-dashboard/pricing",
       icon: PieChart,
       items: [
         {
@@ -275,7 +275,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: "Payments & Earnings",
-      url: "/vendorDashboard/payment",
+      url: "/vendor-dashboard/payment",
       icon: PiHandCoinsLight,
       items: [
         {
@@ -298,7 +298,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: isRestaurant ? "Manage Menu" : "Manage Rooms",
-      url: isRestaurant ? "/vendorDashboard/menu" : "/vendorDashboard/rooms-mangement",
+      url: isRestaurant ? "/vendor-dashboard/menu" : "/vendor-dashboard/hotel/rooms-mangement",
       icon: isRestaurant ? BookOpen : Bed,
       items: [
         {

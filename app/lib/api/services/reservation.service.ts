@@ -43,8 +43,9 @@ export interface ReservationResponse {
   date: string;
   time: string;
   guests: number;
-  status: "pending" | "confirmed" | "completed" | "cancelled";
+    status: "pending" | "confirmed" | "completed" | "cancelled";
   totalPrice: number;
+  paymentStatus?: string;
   meals?: ReservationMeal[];
   rooms?: Array<{
     id: string;
@@ -398,7 +399,7 @@ export class ReservationService {
       console.error("Error checking availability:", error);
       
       // Default to available if endpoint doesn't exist
-      if (error.response?.status === 404) {
+      if ((error as { response?: { status?: number } }).response?.status === 404) {
         return { available: true, message: "Availability check not implemented" };
       }
       

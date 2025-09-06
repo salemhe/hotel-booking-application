@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import Image from "next/image";
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/app/components/sammys-ui/card';
+import { Badge } from '@/app/components/sammys-ui/badge';
 
 // Simulate fetching menus from the super admin (shared state or backend)
 const fetchMenus = () => {

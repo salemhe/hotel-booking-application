@@ -40,7 +40,7 @@ import { Alert, AlertDescription } from "@/app/components/ui/alert";
 import Image from "next/image";
 import { getBanks, verifyBankAccount } from "@/app/lib/action";
 import { BankCombobox } from "@/app/components/BankComboBox";
-import { AuthService } from "@/app/lib/api/services/auth.service";
+import { AuthService, AuthUser } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
 import API from "@/app/lib/api/axios";
 import { useRouter } from "next/navigation";
@@ -229,12 +229,12 @@ interface Bank {
 }
 
 export default function BusinessProfileSetup() {
-  const user = AuthService.getUser();
-  const timeOptions = generateTimeOptions();
+  const router = useRouter();
+  const [userState, setUserState] = useState<AuthUser | null>(null);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [redirectPath, setRedirectPath] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
-  const [businessType] = useState<"restaurant" | "hotel">(
-    user?.profile.businessType.toLowerCase() as "restaurant" | "hotel"
-  );
+  const [businessType, setBusinessType] = useState<"restaurant" | "hotel">("restaurant");
   const [skippedSections, setSkippedSections] = useState<number[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -242,11 +242,11 @@ export default function BusinessProfileSetup() {
   const [banks, setBanks] = useState<Bank[]>([]);
   const [isLoadingBanks, setIsLoadingBanks] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const timeOptions = generateTimeOptions();
 
   const [formData, setFormData] = useState<BusinessData>({
     profileImages: [],
-    paymentVerified: false,
+    paymentVerified: false, 
     accountName: "",
     accountNumber: "",
     bankCode: "",
@@ -265,6 +265,40 @@ export default function BusinessProfileSetup() {
     availableSlots: [], // New field
   });
 
+  // Initialize user data
+  useEffect(() => {
+    const user = AuthService.getUser();
+    setUserState(user);
+    
+    if (!user) {
+      return;
+    }
+    
+    // Set business type based on user data
+    setBusinessType((user.businessType?.toLowerCase() as "restaurant" | "hotel") || "restaurant");
+    
+    // Check if user is already onboarded and set redirect
+    if (user.onboarded) {
+      if (user.businessType === "hotel") {
+        setRedirectPath("/vendor-dashboard/hotel");
+      } else if (user.businessType === "restaurant") {
+        setRedirectPath("/vendor-dashboard/restaurant");
+      } else if (user.businessType === "club") {
+        setRedirectPath("/vendor-dashboard/club");
+      } else {
+        setRedirectPath("/vendorDashboard");
+      }
+      setShouldRedirect(true);
+    }
+  }, []);
+
+  // Handle redirection
+  useEffect(() => {
+    if (shouldRedirect && redirectPath) {
+      router.replace(redirectPath);
+    }
+  }, [shouldRedirect, redirectPath, router]);
+
   const handleRetry = async () => {
     try {
       setIsLoadingBanks(true);
@@ -278,6 +312,7 @@ export default function BusinessProfileSetup() {
     }
   };
 
+  // Load banks
   useEffect(() => {
     async function loadBanks() {
       try {
@@ -428,7 +463,7 @@ export default function BusinessProfileSetup() {
   // Menu item management functions
   const addMenuItem = () => {
     const newMenuItem: MenuItem = {
-      vendorId: user?.id || "",
+      vendorId: userState?.id || "",
       addOns: [],
       availabilityStatus: true,
       category: "",
@@ -583,21 +618,39 @@ export default function BusinessProfileSetup() {
       toast.error("Please complete all required fields before submitting.");
       return;
     }
+    // Validate all required fields for rooms
+    if (businessType === "hotel") {
+      const hasEmptyRoomDescription = formData.rooms.some(
+        room => !room.roomDescription || room.roomDescription.trim() === ""
+      );
+      if (hasEmptyRoomDescription) {
+        toast.error("Please provide a description for every room.");
+        return;
+      }
+    }
 
     try {
       setIsLoading(true);
+      // Log all required fields before sending
+      console.log({
+        businessDescription: formData.businessDescription,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
+        openTime: formData.openTime,
+        closeTime: formData.closeTime,
+        accountNumber: formData.accountNumber,
+        bankCode: formData.bankCode,
+      });
       const form = new FormData();
 
       // Append profile images
       for (let i = 0; i < formData.profileImages.length; i++) {
         form.append("profileImages", formData.profileImages[i]);
       }
-      for (let i = 0; i < formData.availableSlots.length; i++) {
-        form.append("availableSlots", formData.availableSlots[i]);
-      }
-      for (let i = 0; i < formData.cuisines.length; i++) {
-        form.append("cuisines", formData.cuisines[i]);
-      }
+      form.append("availableSlots", JSON.stringify(formData.availableSlots));
+      form.append("cuisines", JSON.stringify(formData.cuisines));
 
       // Append basic fields
       form.append("accountName", formData.accountName);
@@ -632,13 +685,27 @@ export default function BusinessProfileSetup() {
         });
       }
 
-      const response = await API.post(`/vendors/onboard/${user?.id}`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
+      // Get token and add Authorization header manually
+      const token = await AuthService.getToken();
+      const response = await API.post(`/vendors/onboard/${userState?.id}`, form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (response.status === 200) {
         toast.success("Profile setup completed successfully!");
-        router.push("/vendorDashboard");
+        // Redirect to dashboard based on business type
+        if (businessType === "hotel") {
+          router.push("/vendor-dashboard/hotel");
+        } else if (businessType === "restaurant") {
+          router.push("/vendor-dashboard/restaurant");
+        } else if (businessType === "club") {
+          router.push("/vendor-dashboard/club");
+        } else {
+          router.push("/vendorDashboard");
+        }
       } else {
         toast.error(
           response.data?.message || "Failed to complete profile setup."
@@ -651,6 +718,16 @@ export default function BusinessProfileSetup() {
       setIsLoading(false);
     }
   };
+
+  // Show loading or not found message
+  if (!userState) {
+    return <div className="p-8 text-red-600 text-center text-lg font-semibold">User not found. Please log in again.</div>;
+  }
+
+  // Skip rendering if redirecting
+  if (shouldRedirect) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

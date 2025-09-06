@@ -33,6 +33,7 @@ const Navigation = () => {
   const [isLoginSlug, setIsLoginSlug] = useState(pathname?.startsWith('-login'));
   const[ishotelPaymentPage, setIsHotelPaymentPage] = useState(pathname?.startsWith('/hotels/:id/payment'));
   const [onboarding, setOnboarding] = useState(pathname === '/onboarding');
+  const[isverifyStaffPage, setIsVerifyStaffPage] = useState(pathname?.startsWith('/verify-staff'));
 
 
   // Check if the current path is a login slug
@@ -41,6 +42,7 @@ const Navigation = () => {
     setIsLoginSlug(pathname?.endsWith('-login'));
     setIsHotelPaymentPage(pathname?.startsWith('/hotels/') && pathname.endsWith('/payment'));
     setOnboarding(pathname === '/onboarding');
+    setIsVerifyStaffPage(pathname?.startsWith('/verify-staff'));
   }, [pathname]);
 
   useEffect(() => {
@@ -95,7 +97,7 @@ const Navigation = () => {
     setProfile(null);
   };
 
-  const hideNavigation = !isLoginSlug && !ishotelPaymentPage && !onboarding ;
+  const hideNavigation = !isLoginSlug && !ishotelPaymentPage && !onboarding && !isverifyStaffPage;
 
   const renderAuthButtons = () => {
     if (loading) {

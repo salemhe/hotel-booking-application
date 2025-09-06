@@ -97,20 +97,24 @@ export const useRealtimeBookings = () => {
         // Set up event listeners for booking updates
         SocketService.onNewReservation((data) => {
           console.log('New booking received:', data);
-          addBooking(data.booking);
+          addBooking(data.booking as UserBooking);
         });
 
         SocketService.onReservationUpdate((data) => {
           console.log('Booking updated:', data);
-          updateBooking(data.booking);
+          updateBooking(data.booking as UserBooking);
         });
 
         SocketService.onReservationCancelled((data) => {
           console.log('Booking cancelled:', data);
           if (data.action === 'remove') {
-            removeBooking(data.bookingId);
+            if (data.bookingId) {
+              removeBooking(data.bookingId);
+            } else {
+              console.warn('No bookingId provided for removal:', data);
+            }
           } else {
-            updateBooking(data.booking);
+            updateBooking(data.booking as UserBooking);
           }
         });
 

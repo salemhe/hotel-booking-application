@@ -199,17 +199,7 @@ export default function Restaurants() {
     setCurrentPage(1);
   };
 
-  useEffect(() => {
-    applyFilters();
-  }, [
-    cuisineFilter,
-    priceFilter,
-    ratingFilter,
-    sortOrder,
-    sortBy,
-    restaurants,
-    applyFilters,
-  ]);
+
 
   const paginatedRestaurants = filteredRestaurants.slice(
     (currentPage - 1) * itemsPerPage,
@@ -259,6 +249,18 @@ export default function Restaurants() {
     setCurrentPage(1);
   }, [restaurants, searchQuery, locationFilter]);
 
+
+    useEffect(() => {
+    applyFilters();
+  }, [
+    cuisineFilter,
+    priceFilter,
+    ratingFilter,
+    sortOrder,
+    sortBy,
+    restaurants,
+    applyFilters,
+  ]);
   const handlePriceChange = (price: string) => {
     setPriceFilter((prev) =>
       prev.includes(price) ? prev.filter((p) => p !== price) : [...prev, price]

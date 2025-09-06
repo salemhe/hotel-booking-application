@@ -104,7 +104,7 @@ function calculateSplitPaymentAmount(
         if (await AuthService.isAuthenticated()) {
           const token = await AuthService.getToken();
           const id = AuthService.extractUserId(token!);
-          setUser(await AuthService.getUser(id!));
+          setUser(await AuthService.fetchMyProfile(id!));
         }
       } catch (error) {
         console.log(error);

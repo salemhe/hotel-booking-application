@@ -19,7 +19,7 @@ import {
   CheckCircle,
   Loader2
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface ReservationSummary {
@@ -41,7 +41,6 @@ interface ReservationSummary {
 
 export default function PaymentSelectionPage() {
   const router = useRouter();
-  useSearchParams();
   
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'mobile' | 'bank'>('card');
   const [loading, setLoading] = useState(false);

@@ -15,7 +15,7 @@ import {
   FormHelperText 
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import axios, { AxiosError } from 'axios';
+import { apiFetcher } from "@/app/lib/fetcher";
 
 
 const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/';
@@ -71,10 +71,10 @@ const LocationCreateForm: React.FC = () => {
   useEffect(() => {
     const fetchChains = async () => {
       try {
-        const response = await axios.get(`${API_URL}/super-admin/chains`, {
+        const data = await apiFetcher(`${API_URL}/super-admin/chains`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setChains(response.data.data || []);
+        setChains(data.data || []);
       } catch (error) {
         console.error('Error fetching chains:', error);
       } finally {
@@ -96,18 +96,19 @@ const LocationCreateForm: React.FC = () => {
     setError('');
     
     try {
-      await axios.post(`${API_URL}/locations`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
+      await apiFetcher(`${API_URL}/locations`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify(formData)
       });
-      
       setSuccess(true);
       setTimeout(() => {
         router.push('/super-admin/dashboard');
       }, 2000);
     } catch (error: unknown) {
       console.error('Error creating location:', error);
-      if (error instanceof AxiosError) {
-        setError(error.response?.data?.message || 'Failed to create location');
+      if (error instanceof Error) {
+        setError(error.message || 'Failed to create location');
       } else {
         setError('Failed to create location');
       }

@@ -1,44 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import SocketService from "@/app/lib/socket";
-import { AuthService } from "@/app/lib/api/services/auth.service";
-import {
-  Plus,
-  Search,
-  Filter,
-  Edit,
-  Trash2,
-  Copy,
-  Eye,
-  MoreHorizontal,
-  ArrowLeft,
-  Grid3X3,
-  List,
-  // Upload,
-  Download,
-} from "lucide-react";
+import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
+import useSWR from "swr";
+import { apiFetcher, ApiResponse } from "@/app/lib/fetcher";
 import {
   Card,
   CardContent,
-  // CardHeader,
-  // CardTitle,
 } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import {
-  Tabs,
-  // TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/app/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import { Input } from "@/app/components/ui/input";
+import { Switch } from "@/app/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -47,14 +24,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/components/ui/table";
-import { Switch } from "@/app/components/ui/switch";
+import {
+  Tabs,
+  // TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/app/components/ui/tabs";
+import { AuthService } from "@/app/lib/api/services/auth.service";
+import SocketService from "@/app/lib/socket";
+import {
+  Copy,
+  // Upload,
+  Download,
+  Edit,
+  Eye,
+  Filter,
+  Grid3X3,
+  List,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Trash2
+} from "lucide-react";
+import { useEffect, useState } from "react";
 // import {
 //   Avatar,
 //   AvatarFallback,
 //   AvatarImage,
 // } from "@/app/components/ui/avatar";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface MenuItem {
   id: string;
@@ -72,123 +71,12 @@ interface MenuItem {
   updatedDaysAgo: number;
 }
 
-const mockMenuItems: MenuItem[] = [
-  {
-    id: "1",
-    name: "Joe's Platter",
-    description: "Hummus, baba ghanoush, tzatziki, pita bread",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 3,
-  },
-  {
-    id: "2",
-    name: "Mezze Platter",
-    description: "Hummus, baba ghanoush, tzatzaki, pita bread",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 3,
-  },
-  {
-    id: "3",
-    name: "Weekend Buffet",
-    description: "Weekend special buffet selection",
-    price: 45000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "buffet",
-    status: "available",
-    orders: 12,
-    menuType: "Buffet",
-    mealTimes: ["Brunch", "Dinner"],
-    tags: ["Vegan Options", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 5,
-  },
-  {
-    id: "4",
-    name: "Kid's Happy Menu",
-    description: "Special menu for children",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "fixed",
-    status: "available",
-    orders: 4,
-    menuType: "Fixed",
-    mealTimes: ["All Day"],
-    tags: ["Kids", "Sweet", "Small Bites"],
-    isActive: true,
-    updatedDaysAgo: 2,
-  },
-  {
-    id: "5",
-    name: "Chef's Special",
-    description: "Daily chef special selection",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "A la Carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 1,
-  },
-  {
-    id: "6",
-    name: "Grilled Salmon",
-    description: "Fresh grilled salmon with herbs",
-    price: 25000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "main-dish",
-    status: "available",
-    orders: 6,
-    menuType: "Buffet, A la carte",
-    mealTimes: ["Lunch", "Dinner"],
-    tags: ["Best seller", "Sweet", "Savory"],
-    isActive: true,
-    updatedDaysAgo: 4,
-  },
-  {
-    id: "7",
-    name: "Chicken springrolls",
-    description: "Crispy chicken spring rolls",
-    price: 7000,
-    image:
-      "https://cdn.builder.io/api/v1/image/assets%2F1196aafa7c6a4490bc0c7538d03b126b%2Fa21d330fcea4493ebbafb7b5d8b57a14?format=webp&width=400",
-    category: "starters",
-    status: "unavailable",
-    orders: 0,
-    menuType: "Set Menu, Buffet",
-    mealTimes: ["All day"],
-    tags: ["Sweet", "Savory"],
-    isActive: false,
-    updatedDaysAgo: 1,
-  },
-];
 
 export default function MenuManagementPage() {
   const router = useRouter();
+  const { data } = useSWR<ApiResponse<MenuItem[]>>("/vendor/menus", apiFetcher, { refreshInterval: 5000 });
+  // Safely handle the data which might be an error response
+  const menuItems: MenuItem[] = data && !('isError' in data) ? data : [];
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus] = useState("all");
@@ -240,12 +128,12 @@ export default function MenuManagementPage() {
     { value: "all", label: "All Category" },
     { value: "main-dish", label: "Main Dish" },
     { value: "starters", label: "Starters" },
-    { value: "desserts", label: "Desserts" },
-    { value: "beverages", label: "Drinks" },
-    { value: "sides", label: "Sides" },
+    // { value: "desserts", label: "Desserts" },
+    // { value: "beverages", label: "Drinks" },
+    // { value: "sides", label: "Sides" },
   ];
 
-  const filteredItems = mockMenuItems.filter((item) => {
+  const filteredItems = menuItems.filter((item) => {
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -265,7 +153,7 @@ export default function MenuManagementPage() {
   const MenuItemCard = ({ item }: { item: MenuItem }) => {
     return (
       <Card className="overflow-hidden">
-        <div className="relative">
+        <div className="relative bg-amber-600">
           <Image
             src={item.image}
             alt={item.name}
@@ -323,10 +211,10 @@ export default function MenuManagementPage() {
             <div>
               <h3 className="font-semibold text-lg">{item.name}</h3>
               <p className="text-sm text-gray-600">{item.menuType}</p>
-              <p className="text-xs text-gray-500">{item.orders} items</p>
+              {/* <p className="text-xs text-gray-500">{item.orders} items</p>
               <p className="text-xs text-gray-500">
                 Updated {item.updatedDaysAgo} days ago
-              </p>
+              </p> */}
             </div>
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-gray-900">
@@ -345,23 +233,26 @@ export default function MenuManagementPage() {
   const MenuItemTableRow = ({ item }: { item: MenuItem }) => {
     return (
       <TableRow>
-        <TableCell>
-          <div className="flex items-center w-12 h-12 relative space-x-3">
-            <Image
+        <TableCell className="text-sm text-gray-600">
+ <Image
               src={item.image}
               alt={item.name}
               className="w-12 h-12 rounded object-cover"
               width={48}
               height={48}
             />
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center w-12 h-12 relative space-x-3">
+           
             <div>
               <div className="font-medium">{item.name}</div>
-              <div className="text-sm text-gray-500">{item.description}</div>
+              {/* <div className="text-sm text-gray-500">{item.description}</div> */}
             </div>
           </div>
         </TableCell>
         <TableCell>₦{item.price.toLocaleString()}</TableCell>
-        <TableCell>{item.category}</TableCell>
+        {/* <TableCell>{item.category}</TableCell> */}
         <TableCell>{item.menuType}</TableCell>
         <TableCell>{item.mealTimes.join(", ")}</TableCell>
         <TableCell>{item.orders}</TableCell>
@@ -421,23 +312,14 @@ export default function MenuManagementPage() {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6 mt-20">
       {/* Header */}
+      
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <span>Restaurant 1 - HQ</span>
-              <span className="text-gray-400">•</span>
-              <span>2</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Menu Management
-            </h1>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Menu Management
+          </h1>
         </div>
         <div className="flex items-center space-x-3">
           <Button variant="outline" size="sm">
@@ -460,17 +342,37 @@ export default function MenuManagementPage() {
       </div>
 
       {/* Filters and View Toggle */}
-      <Card>
-        <CardContent className="p-6">
+      {/* <Card> */}
+        
+      {/* </Card> */}
+
+      {/* Menu Items */}
+      <div>
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+          <div className="flex justify-between items-center">
+
+            <TabsList className="grid  grid-cols-3 h-10.5">
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category.value}
+                value={category.value}
+                className="text-sm"
+              >
+                {category.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <CardContent className="p-6">
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
+            <div className="flex-1 ">
+              <div className="relative ">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
                   placeholder="Search menu"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-10.5"
                 />
               </div>
             </div>
@@ -488,18 +390,18 @@ export default function MenuManagementPage() {
                 ))}
               </select>
 
-              <Button variant="outline">
-                <Filter className="w-4 h-4 mr-2" />
+              <Button variant="outline" className="p-2 h-10.5">
+                <Filter className="w-4 h-4 mr-2 " />
                 Advanced Filter
               </Button>
 
-              <div className="flex border rounded-md">
+              <div className="flex border rounded-md p-1">
                 <Button
                   variant={viewMode === "table" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("table")}
                   className={
-                    viewMode === "table" ? "bg-gray-900 text-white" : ""
+                    viewMode === "table" ? "bg-white text-[#606368]" : ""
                   }
                 >
                   <List className="w-4 h-4" />
@@ -509,7 +411,7 @@ export default function MenuManagementPage() {
                   size="sm"
                   onClick={() => setViewMode("grid")}
                   className={
-                    viewMode === "grid" ? "bg-gray-900 text-white" : ""
+                    viewMode === "grid" ? "bg-white text-[#606368]" : ""
                   }
                 >
                   <Grid3X3 className="w-4 h-4" />
@@ -518,22 +420,7 @@ export default function MenuManagementPage() {
             </div>
           </div>
         </CardContent>
-      </Card>
-
-      {/* Menu Items */}
-      <div>
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-          <TabsList className="grid w-full grid-cols-6 mb-6">
-            {categories.map((category) => (
-              <TabsTrigger
-                key={category.value}
-                value={category.value}
-                className="text-sm"
-              >
-                {category.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          </div>
 
           {viewMode === "table" ? (
             <Card>
@@ -544,7 +431,7 @@ export default function MenuManagementPage() {
                       <TableHead>Image</TableHead>
                       <TableHead>Menu name</TableHead>
                       <TableHead>Price</TableHead>
-                      <TableHead>Category</TableHead>
+                      {/* <TableHead>Category</TableHead> */}
                       <TableHead>Menu Type</TableHead>
                       <TableHead>Meal Times</TableHead>
                       <TableHead>Items</TableHead>
