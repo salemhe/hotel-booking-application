@@ -13,7 +13,7 @@ const fetchRestaurant = async (
   data: Restaurant[];
 }> => {
   try {
-    const response = await API.get(`/vendors?vendorId=${id}`);
+    const response = await API.get(`/vendors?vendorId=${id}`)
     const data = await response.data;
     return { data };
   } catch (error) {

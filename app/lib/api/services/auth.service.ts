@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import API from "../axios";
 import { SessionService } from "./session.service";
 import { DecodedToken } from "./userAuth.service";
+import { getFrontendUrl } from "../../config";
 interface LoginResponse {
   message?: string;
   token?: string;
@@ -153,66 +154,118 @@ export class AuthService {
   }
 
   // auth.services.ts - Enhanced error handling
-  static async login(email: string, password: string, role: string = 'vendor'): Promise<LoginResponse> {
-    try {
-      let url = `${this.BASE_URL}/api/vendors/login`;
-      if (role === 'super-admin') {
-        url = `${this.BASE_URL}/api/super-admins/login`;
-      }
+  // static async login(email: string, password: string, role: string = 'vendor'): Promise<LoginResponse> {
+  //   try {
+  //     let url = `${this.BASE_URL}/api/vendors/login`;
+  //     if (role === 'super-admin') {
+  //       url = `${this.BASE_URL}/api/super-admins/login`;
+  //     }
 
-      console.log("Starting login attempt with:", { email, passwordLength: password.length, role });
-      console.log("API URL:", url);
+  //     console.log("Starting login attempt with:", { email, passwordLength: password.length, role });
+  //     console.log("API URL:", url);
       
-      // Log the exact request payload
-      const payload = { email, password };
-      console.log("Request payload:", payload);
+  //     // Log the exact request payload
+  //     const payload = { email, password };
+  //     console.log("Request payload:", payload);
       
-      const requestOptions = {
+  //     const requestOptions = {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Accept": "application/json"
+  //       },
+  //       body: JSON.stringify(payload),
+  //       credentials: "include" as RequestCredentials
+  //     };
+      
+  //     console.log("Request options:", { 
+  //       method: requestOptions.method,
+  //       headers: requestOptions.headers,
+  //       credentials: requestOptions.credentials
+  //     });
+
+  //     // Make the request
+  //     const response = await fetch(url, requestOptions);
+  //     console.log("Response received:", { 
+  //       status: response.status, 
+  //       statusText: response.statusText,
+  //       headers: [...response.headers.entries()].reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {})
+  //     });
+      
+  //     // Get the raw response text first
+  //     const responseText = await response.text();
+  //     console.log("Raw response body:", responseText);
+      
+  //     // Attempt to parse JSON
+  //     let data;
+  //     try {
+  //       data = responseText ? JSON.parse(responseText) : {};
+  //       console.log("Parsed response data:", data);
+  //     } catch (parseError) {
+  //       console.error("JSON parse error:", parseError);
+  //       throw new Error(`Server returned invalid JSON: ${responseText}`);
+  //     }
+      
+  //     if (!response.ok) {
+  //       console.error(`Authentication failed with status ${response.status}: ${data.message || 'No error message provided'}`);
+  //       throw new Error(data.message || "Login failed");
+  //     }
+
+  //     // Only set token if it exists in the response
+  //     if (data.profile && data.profile.token) {
+  //       await this.setToken(data.profile.token, data.profile.role); // Pass role here
+  //     }
+
+  //     // Create session
+  //     const expiresAt = new Date(
+  //       Date.now() + 24 * 60 * 60 * 1000
+  //     ).toISOString();
+  //     const session = await SessionService.createSession(
+  //       data.profile.id,
+  //       data.profile.token,
+  //       expiresAt
+  //     );
+
+  //     // Store session ID
+  //     localStorage.setItem(this.SESSION_ID_KEY, session._id);
+  //     // Store auth data
+  //     this.setUser({
+  //       email: data.profile.email,
+  //       role: data.profile.role || "vendor",
+  //       token: data.profile.token,
+  //       profile: data.profile,
+  //       id: data.profile.id,
+  //     });
+
+  //     return data;
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     throw error;
+  //   }
+  // }
+
+  static async login(email: string, password: string): Promise<LoginResponse> {
+    try {
+      console.log("Starting login attempt with:", { email }); // Log the attempt
+
+      const response = await fetch(`${this.BASE_URL}/api/vendors/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          Accept: "application/json",
         },
-        body: JSON.stringify(payload),
-        credentials: "include" as RequestCredentials
-      };
-      
-      console.log("Request options:", { 
-        method: requestOptions.method,
-        headers: requestOptions.headers,
-        credentials: requestOptions.credentials
+        body: JSON.stringify({ email, password }),
+        credentials: "same-origin", // Change from 'include' to 'same-origin' if cookies are on the same domain
       });
 
-      // Make the request
-      const response = await fetch(url, requestOptions);
-      console.log("Response received:", { 
-        status: response.status, 
-        statusText: response.statusText,
-        headers: [...response.headers.entries()].reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {})
-      });
-      
-      // Get the raw response text first
-      const responseText = await response.text();
-      console.log("Raw response body:", responseText);
-      
-      // Attempt to parse JSON
-      let data;
-      try {
-        data = responseText ? JSON.parse(responseText) : {};
-        console.log("Parsed response data:", data);
-      } catch (parseError) {
-        console.error("JSON parse error:", parseError);
-        throw new Error(`Server returned invalid JSON: ${responseText}`);
-      }
-      
+      console.log("Response status:", response.status); // Log the response status
+
+      const data = await response.json();
+      this.setToken(data.profile.token);
+      console.log("Response data:", data); // Log the response data
+
       if (!response.ok) {
-        console.error(`Authentication failed with status ${response.status}: ${data.message || 'No error message provided'}`);
         throw new Error(data.message || "Login failed");
-      }
-
-      // Only set token if it exists in the response
-      if (data.profile && data.profile.token) {
-        await this.setToken(data.profile.token, data.profile.role); // Pass role here
       }
 
       // Create session
@@ -288,32 +341,48 @@ export class AuthService {
     return response.json();
   }
 
-  static async setToken(token: string, role: string = 'vendor') {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("auth_token", token);
-    }
-    // Optionally, also send to backend if needed
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
-    let endpoint = "set-vendor-token"; // Default for vendors
-    if (role === "super-admin") {
-      endpoint = "set-admin-token"; // Use set-admin-token for super-admins
-    }
-    const fetchUrl = `${backendUrl}/api/auth/${endpoint}`;
-    console.log("AuthService.setToken: Fetching URL:", fetchUrl);
-    await fetch(fetchUrl, {
+  // static async setToken(token: string, role: string = 'vendor') {
+  //   if (typeof window !== "undefined") {
+  //     localStorage.setItem("auth_token", token);
+  //   }
+  //   // Optionally, also send to backend if needed
+  //   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "https://hotel-booking-app-backend-30q1.onrender.com";
+  //   let endpoint = "set-vendor-token"; // Default for vendors
+  //   if (role === "super-admin") {
+  //     endpoint = "set-admin-token"; // Use set-admin-token for super-admins
+  //   }
+  //   const fetchUrl = `${backendUrl}/api/auth/${endpoint}`;
+  //   console.log("AuthService.setToken: Fetching URL:", fetchUrl);
+  //   await fetch(fetchUrl, {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ token }),
+  //     credentials: "include"
+  //   });
+  // }
+
+  // static async getToken(): Promise<string | null> {
+  //   if (typeof window !== "undefined") {
+  //     return localStorage.getItem("auth_token");
+  //   }
+  //   return null;
+  // }
+
+    static async setToken(token: string) {
+    await fetch(`${getFrontendUrl()}/api/auth/set-vendor-token`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
-      credentials: "include"
     });
   }
 
   static async getToken(): Promise<string | null> {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("auth_token");
-    }
-    return null;
+    const response = await fetch(`${getFrontendUrl()}/api/auth/get-vendor-token`, {
+      method: "GET",
+    });
+    const data = await response.json();
+    return data.token;
   }
+  
   static getUser(): AuthUser | null {
     if (typeof window !== "undefined") {
       const userStr = localStorage.getItem(this.USER_KEY);
