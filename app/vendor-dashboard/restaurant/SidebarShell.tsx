@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/app/super-administrator/ThemeContext";
 
 import { useState } from "react";
-import { useVendorDashboardSocket } from '@/hooks/useVendorDashboardSocket';
+import { useVendorDashboardSocket } from '@/app/hooks/useVendorDashboardSocket';
 import { API_URL } from '../../config';
 import DashboardLoader from '../../components/DashboardLoader';
 

@@ -2,22 +2,22 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {ArrowUp, ArrowDown,Eye, EyeClosed, UserRoundPlus } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/app/components/sammys-ui/input";
 import {
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/app/components/sammys-ui/select";
 
 import { apiFetcher } from "@/app/lib/fetcher";
 import StaffTable from "@/app/components/dashboard/StaffTable";
 import Image  from "next/image";
 
 import { Search, Bell, ChevronDown} from 'lucide-react'
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from "@/app/components/sammys-ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/sammys-ui/avatar'
 
 import {getUserProfile} from '@/app/lib/api-service'
 

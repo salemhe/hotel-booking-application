@@ -118,7 +118,7 @@ export const clearAuthData = (): void => {
 /**
  * Set authentication data
  */
-export const setAuthData = (token: string, user: any): void => {
+export const setAuthData = (token: string, user: string): void => {
   localStorage.setItem("auth_token", token);
   localStorage.setItem("auth_user", JSON.stringify(user));
   console.log("Authentication data set successfully");

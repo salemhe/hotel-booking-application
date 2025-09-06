@@ -1,9 +1,9 @@
 "use client";
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/app/components/sammys-ui/avatar';
+import { Badge } from '@/app/components/sammys-ui/badge';
+import { Button } from '@/app/components/sammys-ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/app/components/sammys-ui/dropdown-menu';
 import { Booking } from '@/types/booking';
 import { MoreHorizontal } from 'lucide-react';
 

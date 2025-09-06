@@ -10,7 +10,7 @@ import {
   Check,
   X,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
 // Removed unused Badge import
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";

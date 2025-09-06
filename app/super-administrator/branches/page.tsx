@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import API from "@/app/lib/api/axios";
 import axios from "axios";
 import {
@@ -22,13 +21,12 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Card, CardContent } from "@/app/components/sammys-ui/card";
+import { Badge } from "@/app/components/sammys-ui/badge";
+import { Avatar, AvatarFallback } from "@/app/components/sammys-ui/avatar";
 
 import { getAuthUser } from "@/app/utils/auth";
-import { AuthService } from "@/app/lib/api/services/auth.service";
 
 // Removed unused sidebarItems
 
@@ -64,24 +62,24 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
       // The layout handles setting the session cookie.
       // Manual token handling is no longer needed here.
 
-      const response = await API.post(
-        'api/super-admin/branches',
-        {
-          name: formData.branchName,
-          address: formData.address,
-          city: formData.city,
-          phoneNumber: formData.countryCode + formData.phoneNumber,
-          email: formData.email,
-          password: formData.password,
-          businessType: "restaurant",
-          openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
-          opensAt: formData.opensAt,
-          closesAt: formData.closesAt,
-          assignedManager: formData.assignedManager,
-          assignedMenu: formData.assignedMenu,
-          importAllMenuItems: formData.importAllMenuItems,
-        }
-      );
+      // const response = await API.post(
+      //   'api/super-admin/branches',
+      //   {
+      //     name: formData.branchName,
+      //     address: formData.address,
+      //     city: formData.city,
+      //     phoneNumber: formData.countryCode + formData.phoneNumber,
+      //     email: formData.email,
+      //     password: formData.password,
+      //     businessType: "restaurant",
+      //     openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
+      //     opensAt: formData.opensAt,
+      //     closesAt: formData.closesAt,
+      //     assignedManager: formData.assignedManager,
+      //     assignedMenu: formData.assignedMenu,
+      //     importAllMenuItems: formData.importAllMenuItems,
+      //   }
+      // );
       onBranchAdded(); // Refresh branch list
       if (action === "saveAndAdd") {
         setFormData({
@@ -113,7 +111,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
           if (typeof data === "string") {
             serverMessage = data;
           } else if (typeof data === "object") {
-            serverMessage = (data as any).message || (data as any).error || JSON.stringify(data);
+            serverMessage = (data).message || (data).error || JSON.stringify(data);
           }
         }
         const finalMsg = serverMessage || err.message || "Request failed";
@@ -266,7 +264,7 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
 }
 
 export default function BranchesDashboard() {
-  const router = useRouter();
+  // const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
@@ -305,7 +303,8 @@ export default function BranchesDashboard() {
           if (typeof data === "string") {
             serverMessage = data;
           } else if (typeof data === "object") {
-            serverMessage = (data as any).message || (data as any).error || JSON.stringify(data);
+            serverMessage = (data).message || (data).error || JSON.stringify(data);
+            console.log(serverMessage);
           }
         }
         console.warn('Fetch branches API error:', { status, data, retry });

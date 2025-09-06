@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/app/components/sammys-ui/button';
 import { Eye, Download, Plus } from 'lucide-react';
 import { BookingTable } from './components/booking-table';
 import { BookingFilters } from './components/booking-filters';

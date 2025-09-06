@@ -60,12 +60,12 @@ import {
   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
   Calendar, CreditCard, Users, DollarSign
 } from 'lucide-react'
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { NativeSelect as Select } from '@/components/ui/select'
+import { Button } from "@/app/components/sammys-ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
+import { Input } from '@/app/components/sammys-ui/input'
+import { Badge } from '@/app/components/sammys-ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/sammys-ui/avatar'
+import { NativeSelect as Select } from '@/app/components/sammys-ui/select'
 import { 
   getDashboardStats, 
   getTodayReservations, 

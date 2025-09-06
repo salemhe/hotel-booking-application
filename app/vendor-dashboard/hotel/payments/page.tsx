@@ -16,13 +16,13 @@ import {
   Download,
   Filter,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
+import { Button } from "@/app/components/sammys-ui/button";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Badge } from "@/app/components/sammys-ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/sammys-ui/avatar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/sammys-ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/sammys-ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
