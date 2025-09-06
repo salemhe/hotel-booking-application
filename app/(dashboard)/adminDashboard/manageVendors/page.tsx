@@ -82,7 +82,51 @@ function VendorsTable({
           <span className="sr-only">Search</span>
         </Button>
       </div>
-      <div className="rounded-md border">
+
+      {/* Mobile list */}
+      <div className="md:hidden space-y-3">
+        {vendors.map((vendor) => (
+          <div key={vendor._id} className="bg-white rounded-xl border p-4 flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+                  <Store className="h-4 w-4" />
+                </div>
+                <p className="font-semibold">{vendor.businessName}</p>
+              </div>
+              <p className="text-sm text-gray-600">{vendor.businessType}</p>
+              <p className="text-xs text-gray-500 mt-1">{vendor.branch} • {vendor.phone}</p>
+              <div className="flex flex-wrap gap-1 mt-2">
+                {vendor.services.slice(0,2).map((service, i) => (
+                  <Badge key={i} variant="outline">{service}</Badge>
+                ))}
+                {vendor.services.length > 2 && (
+                  <Badge variant="outline">+{vendor.services.length - 2} more</Badge>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={vendor.menuVisible ? "destructive" : "outline"}
+                size="sm"
+                onClick={async () => {
+                  try {
+                    await axios.patch(`https://hotel-booking-app-backend-30q1.onrender.com/api/admin/vendors/${vendor._id}/menu-visibility`, { visible: !vendor.menuVisible });
+                  } catch (error) {
+                    console.error("Error toggling menu visibility", error);
+                  }
+                }}
+              >
+                {vendor.menuVisible ? "Hide" : "Show"}
+              </Button>
+              <DropDown setShowConfirm={setShowConfirm} setId={setId} vendorId={vendor._id} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -124,21 +168,15 @@ function VendorsTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <DropDown setShowConfirm={setShowConfirm} setId={setId} vendorId={vendor._id} />
-                  {/* Show/Hide Menu Button */}
                   <Button
                     variant={vendor.menuVisible ? "destructive" : "default"}
                     size="sm"
                     className="ml-2"
                     onClick={async () => {
-                      // Toggle menu visibility for this vendor
                       try {
                         await axios.patch(`https://hotel-booking-app-backend-30q1.onrender.com/api/admin/vendors/${vendor._id}/menu-visibility`, {
                           visible: !vendor.menuVisible,
                         });
-                        // Update UI
-                        // if (updateVendor) {
-                        //   updateVendor({ ...vendor, menuVisible: !vendor.menuVisible });
-                        // }
                       } catch (error) {
                         console.error("Error toggling menu visibility", error);
                       }
@@ -152,6 +190,7 @@ function VendorsTable({
           </TableBody>
         </Table>
       </div>
+
       {showConfirm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-lg p-6 shadow-lg max-w-sm w-full">
