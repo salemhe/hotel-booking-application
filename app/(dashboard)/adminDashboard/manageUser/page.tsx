@@ -79,7 +79,32 @@ function UsersTable({
           <span className="sr-only">Search</span>
         </Button>
       </div>
-      <div className="rounded-md border">
+
+      {/* Mobile list */}
+      <div className="md:hidden space-y-3">
+        {users.map((user) => (
+          <div key={user._id} className="bg-white rounded-xl border p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage src={`/api/placeholder/40/40`} alt={user.firstName} />
+                <AvatarFallback>
+                  {user.firstName[0]}
+                  {user.lastName[0]}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-medium text-sm">{user.firstName} {user.lastName}</p>
+                <p className="text-xs text-gray-500">{user.email}</p>
+                <p className="text-xs text-gray-500">Last Active: {formatDate(user.createdAt)}</p>
+              </div>
+            </div>
+            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Active</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
