@@ -40,7 +40,7 @@ import {
   CarouselPrevious,
 } from "@/app/components/ui/carousel";
 import { Badge } from "@/app/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/app/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/app/lib/utils";
 import { format } from "date-fns";

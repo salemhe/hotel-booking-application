@@ -9,9 +9,9 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/app/components/sammys-ui/button";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Badge } from "@/app/components/sammys-ui/badge";
 import Image from "next/image";
 // import { fas } from '@fortawesome/free-solid-svg-icons';
 import { Eye, PenLine, Ban, RotateCcw, CircleX } from "lucide-react";

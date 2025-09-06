@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/app/components/sammys-ui/button";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
+import { Switch } from "@/app/components/sammys-ui/switch";
 import { CheckCircle, XCircle, Loader2, Moon, Sun } from "lucide-react";
 import { useTheme } from "../ThemeContext";
 import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";

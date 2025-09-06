@@ -1,7 +1,7 @@
 "use client";
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '@/app/components/sammys-ui/input';
+import { Label } from '@/app/components/sammys-ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Checkbox } from '@/app/components/ui/checkbox';

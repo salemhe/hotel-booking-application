@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/app/components/sammys-ui/button';
+import { Input } from '@/app/components/sammys-ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/sammys-ui/select';
 import { BookingStatus, PaymentStatus } from '@/types/booking';
 import { Filter, Search } from 'lucide-react';
 

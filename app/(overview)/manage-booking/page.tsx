@@ -5,7 +5,7 @@ import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/app/hooks/use-toast"
 
 export default function ManageBookingPage() {
   const [bookingNumber, setBookingNumber] = useState("")

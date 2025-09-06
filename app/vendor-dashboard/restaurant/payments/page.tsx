@@ -1,12 +1,12 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback } from "@/app/components/sammys-ui/avatar";
+import { Badge } from "@/app/components/sammys-ui/badge";
+import { Button } from "@/app/components/sammys-ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/sammys-ui/dropdown-menu";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/sammys-ui/table";
 import {
   CheckCircle,
   ChevronDown,
@@ -25,7 +25,7 @@ import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
  import { AuthService } from "@/app/lib/api/services/auth.service";
-import { useVendorDashboardSocket } from "@/hooks/useVendorDashboardSocket";
+import { useVendorDashboardSocket } from "@/app/hooks/useVendorDashboardSocket";
 
 const getStatusColor = (status: string) => {
   switch (status) {

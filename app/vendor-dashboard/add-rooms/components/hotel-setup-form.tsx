@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Label } from "@/app/components/sammys-ui/label";
+import { Textarea } from "@/app/components/sammys-ui/textarea";
 import { Upload, MapPin, X } from "lucide-react";
 import { HotelCategory, HotelFormData } from "@/types/hotels";
 import {
