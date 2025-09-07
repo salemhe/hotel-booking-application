@@ -59,45 +59,49 @@ export default function RestaurantLayout({
 
   return (
     <ThemeProvider>
-      <div className="flex min-h-screen bg-gray-50">
-        {/* Sidebar */}
-        <aside
-          className={`sticky top-0 self-start h-screen ${
-            collapsed ? "w-16" : "w-[230px]"
-          } shrink-0 bg-[#042626] text-white transition-[width] duration-300 flex flex-col justify-between`}
-        >
-          {/* Top header */}
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between h-16 border-b border-[#0A6C6D] px-3">
-              <span className="text-xl font-semibold select-none">
-                Bookies
-              </span>
-              <button
-                onClick={() => setCollapsed((v) => !v)}
-                className="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-[#0A6C6D] focus:outline-none"
-                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-                aria-expanded={!collapsed}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  className={`transition-transform ${
-                    collapsed ? "rotate-180" : ""
-                  }`}
+      <BranchProvider>
+        <div className="flex min-h-screen bg-gray-50">
+          {/* Sidebar */}
+          <aside
+            className={`sticky top-0 self-start h-screen ${
+              collapsed ? "w-16" : "w-[230px]"
+            } shrink-0 bg-[#042626] text-white transition-[width] duration-300 flex flex-col justify-between`}
+          >
+            {/* Top header */}
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between h-16 border-b border-[#0A6C6D] px-3">
+                <span className="text-xl font-semibold select-none">
+                  Bookies
+                </span>
+                <button
+                  onClick={() => setCollapsed((v) => !v)}
+                  className="inline-flex items-center justify-center w-8 h-8 rounded hover:bg-[#0A6C6D] focus:outline-none"
+                  aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                  aria-expanded={!collapsed}
                 >
-                  <path
-                    d="M12.5 15L8.333 10.833L12.5 6.666"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    className={`transition-transform ${
+                      collapsed ? "rotate-180" : ""
+                    }`}
+                  >
+                    <path
+                      d="M12.5 15L8.333 10.833L12.5 6.666"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Branch */}
+              <BranchNameDisplay collapsed={collapsed} />
 
             {/* Navigation */}
             <nav className="mt-4 flex flex-col space-y-2 px-3">

@@ -404,64 +404,150 @@ const SearchSection = ({ activeTab, onSearch }: SearchSectionProps) => {
   };
 
   return (
-    <form onSubmit={handleSearchSubmit} className="bg-white z-50 sm:absolute top-15 w-[90%] mx-auto left-0 right-0 rounded-2xl sm:rounded-full shadow-lg p-4 sm:p-2 justify-center mb-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Restaurant/Cuisine */}
-        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 pl-3">
-          <label className="text-xs text-text-secondary text-left mb-1">
-            {activeTab === "restaurants" ? " Restaurant/Cuisine" : "Hotels"}
-          </label>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={activeTab === "restaurants" ? "Enter Restaurant or Cuisine" : "Enter Hotels"}
-            className="w-full focus:outline-none text-text-primary placeholder:text-text-secondary text-sm sm:text-base"
-          />
-        </div>
+    // <form  
+    //   onSubmit={handleSearchSubmit}   
+    //   className="bg-white z-50 sm:absolute top-15 w-[90%] mx-auto left-0 right-0 rounded-2xl sm:rounded-full shadow-lg p-4 sm:p-2 justify-center mb-8"
+    // >
+    //   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    //     {/* Restaurant/Cuisine */}
+    //     <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 pl-3">
+    //       <label className="text-xs text-text-secondary text-left mb-1">
+    //         {activeTab === "restaurants" ? " Restaurant/Cuisine" : "Hotels"}
+    //       </label>
+    //       <input
+    //         type="text"
+    //         value={searchQuery}
+    //         onChange={(e) => setSearchQuery(e.target.value)}
+    //         placeholder={activeTab === "restaurants" ? "Enter Restaurant or Cuisine" : "Enter Hotels"}
+    //         className="w-full focus:outline-none text-text-primary placeholder:text-text-secondary text-sm sm:text-base"
+    //       />
+    //     </div>
 
-        {/* Date */}
-        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
-          <label className="text-xs text-text-secondary text-left mb-1">
-            Date
-          </label>
-          <DateDropdown selectedDate={date} onChange={(d) => setDate(d)} />
-        </div>
+    //     {/* Date */}
+    //     <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+    //       <label className="text-xs text-text-secondary text-left mb-1">
+    //         Date
+    //       </label>
+    //       <DateDropdown selectedDate={date} onChange={(d) => setDate(d)} />
+    //     </div>
 
-        {/* Time */}
-        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
-          <label className="text-xs text-text-secondary text-left mb-1">
-            Time
-          </label>
-          <TimeDropdown selectedTime={time} onChange={setTime} />
-        </div>
+    //     {/* Time */}
+    //     <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+    //       <label className="text-xs text-text-secondary text-left mb-1">
+    //         Time
+    //       </label>
+    //       <TimeDropdown selectedTime={time} onChange={setTime} />
+    //     </div>
 
-        {/* Guests */}
-        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
-          <label className="text-xs text-text-secondary text-left mb-1">
-            Guests
-          </label>
-          <GuestDropdown
-            onChange={(counts) => setGuests(counts)}
-          />
-        </div>
+    //     {/* Guests */}
+    //     <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+    //       <label className="text-xs text-text-secondary text-left mb-1">
+    //         Guests
+    //       </label>
+    //       <GuestDropdown
+    //         onChange={(counts) => setGuests(counts)}
+    //       />
+    //     </div>
         
-        {/* Search button */}
-        <div className="flex items-center justify-center sm:justify-end w-full">
-          <button
-            type="submit"
-            className={`flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-3 transition ${
-              activeTab === "restaurants"
-                ? "bg-gradient-to-b from-[#0A6C6D] to-[#08577C] hover:from-[#084F4F] hover:to-[#064E5C]"
-                : "bg-gradient-to-b from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600"
-            }`}
-          >
-            <FiSearch className="w-5 h-5" />
-            <span className="text-sm sm:text-base">Search</span>
-          </button>
-        </div>
+    //     {/* Search button */}
+    //     <div className="flex items-center justify-center sm:justify-end w-full">
+    //       <button
+    //         type="submit"
+    //         className={`flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-3 transition ${
+    //           activeTab === "restaurants"
+    //             ? "bg-gradient-to-b from-[#0A6C6D] to-[#08577C] hover:from-[#084F4F] hover:to-[#064E5C]"
+    //             : "bg-gradient-to-b from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600"
+    //         }`}
+    //       >
+    //         <FiSearch className="w-5 h-5" />
+    //         <span className="text-sm sm:text-base">Search</span>
+    //       </button>
+    //     </div>
+    //   </div>
+    // </form>
+<form
+  onSubmit={handleSearchSubmit}
+  className="bg-white z-50 sm:absolute top-15 w-[90%] mx-auto left-0 right-0 rounded-2xl sm:rounded-full shadow-lg p-4 sm:p-2 justify-center mb-8"
+>
+  <div
+    className="
+      grid gap-4
+      grid-cols-1
+      sm:grid-cols-2
+      lg:grid-cols-5
+    "
+  >
+    {/* Row 1: Restaurant/Cuisine */}
+    <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 px-3 col-span-1 sm:col-span-2 lg:col-span-1">
+      <label className="text-xs text-text-secondary text-left mb-1">
+        {activeTab === "restaurants" ? " Restaurant/Cuisine" : "Hotels"}
+      </label>
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder={
+          activeTab === "restaurants"
+        ? "Enter Restaurant or Cuisine"
+        : activeTab === "hotels"
+        ? "Enter Hotels"
+        : activeTab === "clubs"
+        ? "Enter Clubs"
+        : ""
+        }
+        className="w-full focus:outline-none text-text-primary placeholder:text-text-secondary text-sm sm:text-base"
+      />
+    </div>
+
+    {/* Row 2: Date + Time */}
+    <div className="grid grid-cols-2 gap-4 col-span-1 sm:col-span-2 lg:col-span-2">
+      {/* Date */}
+      <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+        <label className="text-xs text-text-secondary text-left mb-1">
+          Date
+        </label>
+        <DateDropdown selectedDate={date} onChange={(d) => setDate(d)} />
       </div>
-    </form>
+
+      {/* Time */}
+      <div className="flex flex-col justify-center border-b sm:border-b-0 lg:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+        <label className="text-xs text-text-secondary text-left mb-1">
+          Time
+        </label>
+        <TimeDropdown selectedTime={time} onChange={setTime} />
+      </div>
+    </div>
+
+    {/* Row 3: Guests + Search button */}
+    <div className="grid grid-cols-2 gap-4 col-span-1 sm:col-span-2 lg:col-span-2">
+      {/* Guests */}
+      <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+        <label className="text-xs text-text-secondary text-left mb-1">
+          Guests
+        </label>
+        <GuestDropdown onChange={(counts) => setGuests(counts)} />
+      </div>
+
+      {/* Search button */}
+      <div className="flex items-center justify-center sm:justify-end w-full">
+        <button
+          type="submit"
+          className={`flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-3 transition w-full sm:w-auto justify-center ${
+            activeTab === "restaurants"
+              ? "bg-gradient-to-b from-[#0A6C6D] to-[#08577C] hover:from-[#084F4F] hover:to-[#064E5C]"
+              : "bg-gradient-to-b from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600"
+          }`}
+        >
+          <FiSearch className="w-5 h-5" />
+          <span className="text-sm sm:text-base">Search</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+
   );
 };
 
@@ -600,8 +686,8 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
 
       {/* Mobile Search Bar */}
       <div className="sm:hidden">
-        <div className="bg-white rounded-xl shadow-lg p-4 space-y-4">
-          {/* Restaurant/Cuisine */}
+        <div className="bg-black  shadow-lg p-4 space-y-4">
+         {/* Resurants & Cusisine */}
           <div className="space-y-2">
             <label className="text-xs text-text-secondary font-medium">
               Restaurant/Cuisine
@@ -615,7 +701,7 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
             />
           </div>
           
-          {/* Date and Time Row */}
+          {/* Date + Time */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <label className="text-xs text-text-secondary font-medium">
@@ -646,7 +732,8 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
             </div>
           </div>
           
-          {/* Guests */}
+
+          {/* Guest  */}
           <div className="space-y-2">
             <label className="text-xs text-text-secondary font-medium">
               Guests
@@ -660,7 +747,7 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
             </div>
           </div>
           
-          {/* Search Button */}
+         {/* Search Bar */}
           <button type="submit" className="w-full flex items-center justify-center gap-2 cursor-pointer text-white rounded-lg px-6 py-4 transition bg-gradient-to-r from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600 focus:outline-none shadow-md">
             <FiSearch className="w-5 h-5" />
             <span className="text-base font-medium">Search</span>
@@ -670,22 +757,6 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
     </form>
   );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
