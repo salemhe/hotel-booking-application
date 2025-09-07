@@ -13,6 +13,7 @@ import {
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { CalendarIcon, MenuIcon } from "lucide-react";
+import { MdRoomService } from "react-icons/md";
 
 const mainSidebarItems = [
   { icon: HomeIcon, label: "Dashboard", href: "/vendor-dashboard/hotel/dashboard" },
@@ -21,6 +22,7 @@ const mainSidebarItems = [
   //{ icon: UserGroupIcon, label: "User's Management", href: "/vendor-dashboard/hotel/users" },
   { icon: CurrencyDollarIcon, label: "Payments", href: "/vendor-dashboard/hotel/payments" },
   { icon: UserGroupIcon, label: "Staff", href: "/vendor-dashboard/hotel/staff" },
+  { icon: MdRoomService, label: "Rooms", href: "/vendor-dashboard/hotel/rooms-management" },
 ];
 const bottomSidebarItems = [
   { icon: Cog6ToothIcon, label: "Settings", href: "/vendor-dashboard/hotel/settings" },
