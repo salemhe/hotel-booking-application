@@ -100,7 +100,7 @@ const RoomsManagement = () => {
   const handleDeleteRoom = async (roomId: string) => {
     if (window.confirm('Are you sure you want to delete this room?')) {
       try {
-        await API.delete(`hotels/685dbe1b348bf4006362be1f/rooms/${roomId}`);
+        await API.delete(`/api/vendors/rooms/${roomId}`);
         setRooms(prev => prev.filter(room => room._id !== roomId));
       } catch (error) {
         console.error('Failed to delete room:', error);
@@ -125,7 +125,7 @@ const RoomsManagement = () => {
       return;
     }
     // Fetch rooms data
-    const response = await API.get(`vendors/${user.id}/available-rooms`);
+    const response = await API.get(`/api/vendors/rooms?vendorId=${user.id}`);
     
     // Updated to match your actual API response structure
     if (response.data && Array.isArray(response.data.availableRooms)) {
@@ -181,14 +181,14 @@ console.log(editingRoom?._id)
         if (roomData.images && roomData.images.length > 0) {
           const formData = new FormData();
           (roomData.images as File[]).forEach((img) => formData.append("images", img));
-          await API.post(`hotels/${user?.id}/rooms/${editingRoom._id}/images`, formData, {
+          await API.post(`/api/vendors/rooms/${editingRoom._id}/images`, formData, {
             headers: {
               "Content-Type": "multipart/form-data"
             }
           });
         }
         // Update existing room (excluding images)
-        response = await API.put(`hotels/${user?.id}/rooms/${editingRoom._id}`, {
+        response = await API.put(`/api/vendors/rooms/${editingRoom._id}`, {
           ...roomData,
           images: undefined // Don't send images array as part of normal data
         });
@@ -207,7 +207,7 @@ console.log(editingRoom?._id)
             formData.append(key, String(val));
           }
         });
-        response = await API.post('hotels/6850ab4aaa1efab40071dd98/rooms', formData, {
+        response = await API.post('/api/vendors/rooms', formData, {
           headers: {
             "Content-Type": "multipart/form-data"
           }
