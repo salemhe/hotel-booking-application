@@ -78,7 +78,7 @@ export default function MenuPage({ id }: { id: string }) {
 
   useEffect(() => {
     fetchMenus();
-  }, []);
+  }, [fetchMenus]);
 
   const categories = ["All", "Main Course", "Appetizer", "Dessert", "Drinks"];
   const filteredItems =

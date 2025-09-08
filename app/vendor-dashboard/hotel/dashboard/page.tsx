@@ -50,46 +50,36 @@
 //   categories?: any[];
 // }
 
-// interface SourcesData {
-//   website?: number;
-//   mobile?: number;
-//   walkIn?: number;
-//   total?: number;
-// }
-// import { 
-//   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
-//   Calendar, CreditCard, Users, DollarSign
-// } from 'lucide-react'
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Input } from '@/components/ui/input'
-// import { Badge } from '@/components/ui/badge'
-// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-// import { NativeSelect as Select } from '@/components/ui/select'
-// import { 
-//   getDashboardStats, 
-//   getTodayReservations, 
-//   getReservationTrends,
-//   getCustomerFrequency,
-//   getRevenueByCategory,
-//   getUpcomingReservations,
-//   getUserProfile
-// } from '@/app/lib/api-service'
-// import {
-//   Chart as ChartJS,
-//   CategoryScale,
-//   LinearScale,
-//   BarElement,
-//   Title,
-//   // Tooltip,
-//   Legend
-// } from 'chart.js';
-// import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Bar} from "recharts";
+interface SourcesData {
+  website?: number;
+  mobile?: number;
+  walkIn?: number;
+  total?: number;
+}
+import { 
+  Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
+  Calendar, CreditCard, Users, DollarSign
+} from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { NativeSelect as Select } from '@/components/ui/select'
+import { 
+  getDashboardStats, 
+  getTodayReservations, 
+  getReservationTrends,
+  getCustomerFrequency,
+  getRevenueByCategory,
+  getUpcomingReservations,
+  getUserProfile
+} from '@/app/lib/api-service'
 
-// export default function Dashboard() {
-//   const [showNotification, setShowNotification] = useState(true)
-//   const [isLoading, setIsLoading] = useState(true)
-//   const [error, setError] = useState<string | null>(null)
+export default function Dashboard() {
+  const [showNotification, setShowNotification] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   
 //   // State for dashboard data
 //   const [stats, setStats] = useState({

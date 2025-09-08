@@ -226,8 +226,11 @@
 //   CardFooter,
 // } from "@/app/components/ui/card";
 // import { toast } from "sonner";
-// import { AxiosError } from "axios";
-// import { AuthService } from "@/lib/api/services/userAuth.service";
+// // import { AxiosError } from "axios";
+// import { AxiosError } from 'axios';
+// // import { AuthService } from "@/lib/api/services/userAuth.service";
+// import { AuthService } from "@/app/lib/api/services/userAuth.service";
+// import { useRouter } from "next/router";
 
 // const UserLoginPage = () => {
 //   const [email, setEmail] = useState("");
@@ -237,6 +240,7 @@
 //   const searchParams = useSearchParams();
 //   const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
 //   const [loading, setLoading] = useState(false);
+//   // const router = useRouter();
 //   const router = useRouter();
 
 //   const handleSubmit = async (e: React.FormEvent) => {
@@ -386,19 +390,13 @@
 
 // export default UserLoginPage;
 
+
+
 "use client";
-import React, { Suspense, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import {
-  Mail,
-  Lock,
-  Loader2,
-  ArrowRight,
-  AlertCircle,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Mail, Lock, Loader2, ArrowRight, AlertCircle } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
@@ -413,59 +411,17 @@ import {
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
-import Loading from "@/app/components/loading";
 
 const UserLoginPage = () => {
-  return (
-    <div className="min-h-[100dvh] bg-white flex items-center justify-center p-4 sm:p-6 md:p-8">
-      <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
-        <Card className="border rounded-lg shadow-md bg-white">
-          <CardHeader className="space-y-3 pb-6 md:pb-8 px-6 sm:px-8">
-            <CardTitle className="text-2xl sm:text-3xl font-light text-center text-[#222]">
-              Welcome back
-            </CardTitle>
-            <CardDescription className="text-center text-[#6d727b] text-sm sm:text-base">
-              Enter your credentials to access your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-6 sm:px-8">
-            <Suspense fallback={<Loading />}>
-              <Form />
-            </Suspense>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-5 sm:space-y-6 pb-6 sm:pb-8 px-6 sm:px-8">
-            <div className="flex items-center gap-3 w-full">
-              <div className="flex-1 border-t border-gray-300" />
-              <span className="text-xs sm:text-sm text-[#6d727b] font-light">
-                OR
-              </span>
-              <div className="flex-1 border-t border-gray-300" />
-            </div>
-            <Link
-              href="/user-signup"
-              className="inline-flex items-center justify-center gap-2 text-[#0a646d] hover:text-[#094c52] transition-colors text-sm sm:text-base font-light group"
-            >
-              Create a new account
-              <ArrowRight className="h-4 w-4 stroke-[1.25] group-hover:translate-x-1 transition-transform stroke-[#0a646d]" />
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-    </div>
-  );
-};
-
-const Form = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
-  // const router = useRouter();
   const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
-  
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -489,16 +445,10 @@ const Form = () => {
 
     try {
       const { data } = await AuthService.login(email, password);
-      console.log("Setting token in localStorage:", data.token);
-      localStorage.setItem("auth_token", data.token);
-      document.cookie = `user-token=${data.token}; path=/; Secure; SameSite=None`;
+      await AuthService.setToken(data.token);
+
       toast.success("Welcome back!");
-      
-      // Create a slight delay to ensure the toast is visible
-      setTimeout(() => {
-        // Use window.location for a hard navigation
-        window.location.href = redirectTo;
-      }, 800);
+      router.push(redirectTo);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data?.message || "Login failed");
@@ -508,102 +458,549 @@ const Form = () => {
         toast.error("An unknown error occurred");
       }
 
-      localStorage.clear();
+      localStorage.clear(); // optional: adjust to your flow
     } finally {
       setLoading(false);
     }
   };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-      <div className="space-y-1">
-        <Label htmlFor="email" className="text-sm font-light text-[#6d727b]">
-          Email address
-        </Label>
-        <div className="relative">
-          <Mail
-            className="absolute left-3 top-3.5 h-4 w-4 text-[#8a8f9a]"
-            strokeWidth={1.25}
-          />
-          <Input
-            id="email"
-            type="email"
-            placeholder="Enter your email address"
-            className="pl-10 h-10 sm:h-12 rounded-md bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8] focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {emailError && (
-            <div className="flex items-center gap-1 text-red-500 text-xs font-light mt-1">
-              <AlertCircle className="w-4 h-4" />
-              <span>{emailError}</span>
-            </div>
-          )}
-        </div>
-      </div>
+    <div className="min-h-[100dvh] bg-white flex items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
+        <Card className="border rounded-lg shadow-md bg-white">
+          <CardHeader className="space-y-3 pb-6 md:pb-8 px-6 sm:px-8">
+            <CardTitle className="text-2xl sm:text-3xl font-semibold text-left text-[#222] mt-8">
+              Welcome back
+            </CardTitle>
+            <CardDescription className=" mt-[-3px] text-left text-[#6d727b] text-sm sm:text-base">
+              Enter your credentials to access your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-6 sm:px-8">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              <div className="space-y-1">
+                <Label
+                  htmlFor="email"
+                  className="text-sm font-light text-black"
+                >
+                  Email address
+                </Label>
+                <div className="relative">
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="Enter email address"
+                    className="h-10 sm:h-12 w-full rounded-md border-gray-100 bg-gray-100 
+                        text-black text-sm placeholder-[#a0a3a8] text-left
+                        focus:outline-none focus:border-[#0A6C6D] focus:ring-1 focus:ring-[#0A6C6D]
+                        hover:border-[#0A6C6D] transition-all duration-300 ease-in-out pl-3"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  {emailError && (
+                    <div className="flex items-center gap-1 text-red-500 text-xs font-light mt-1">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{emailError}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-      <div className="space-y-1">
-        <Label htmlFor="password" className="text-sm font-light text-[#6d727b]">
-          Password
-        </Label>
-        <div>
-          <div className="relative flex items-center">
-            <Lock
-              className="absolute left-3 h-4 w-4 text-[#8a8f9a]"
-              strokeWidth={1.25}
-            />
-            <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your secure password"
-              className="px-10 h-10 sm:h-12 rounded-md  border-gray-100 bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8] focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {showPassword ? (
-              <Eye
-                className="absolute right-3 h-4 w-4 text-[#8a8f9a] cursor-pointer"
-                onClick={() => setShowPassword(false)}
-                strokeWidth={1.25}
-              />
-            ) : (
-              <EyeOff
-                className="absolute right-3 h-4 w-4 text-[#8a8f9a] cursor-pointer"
-                onClick={() => setShowPassword(true)}
-                strokeWidth={1.25}
-              />
-            )}
-          </div>
-          {passwordError && (
-            <div className="flex items-center gap-1 text-red-500 text-xs font-light mt-1">
-              <AlertCircle className="w-4 h-4" />
-              <span>{passwordError}</span>
-            </div>
-          )}
-        </div>
-        <Link
-          href="/forgot-password"
-          className="text-xs sm:text-sm text-[#6d727b] hover:text-[#0a646d] transition-colors inline-flex items-center gap-1 mt-1"
-        >
-          Forgot your password?
-        </Link>
-      </div>
+              <div className="space-y-1">
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-light text-black"
+                >
+                  Password
+                </Label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your secure password"
+                    className="h-10 sm:h-12 w-full rounded-md border-gray-100 bg-gray-100 
+                        text-black text-sm placeholder-[#a0a3a8] text-left
+                        focus:outline-none focus:border-[#0A6C6D] focus:ring-1 focus:ring-[#0A6C6D]
+                        hover:border-[#0A6C6D] transition-all duration-300 ease-in-out pl-3"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  {passwordError && (
+                    <div className="flex items-center gap-1 text-red-500 text-xs font-light mt-1">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>{passwordError}</span>
+                    </div>
+                  )}
+                </div>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs sm:text-sm text-[#6d727b] hover:text-[#0A6C6D] transition-colors inline-flex items-center gap-1 mt-1"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
 
-      <Button
-        type="submit"
-        className="w-full h-10 sm:h-12 rounded-md bg-[#0a646d] text-white text-sm sm:text-base font-light shadow-md hover:shadow-lg hover:bg-[#127a87] transition-colors duration-300"
-        disabled={loading}
-      >
-        {loading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white" />
-            Signing in...
-          </>
-        ) : (
-          "Sign in"
-        )}
-      </Button>
-    </form>
+              <Button
+                type="submit"
+                className="w-full h-10 sm:h-12 rounded-md bg-[#0A6C6D] text-white text-sm sm:text-base font-light shadow-md hover:shadow-lg hover:bg-[#0A6C6D] transition-colors duration-300 py-6"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-5 sm:space-y-6 pb-6 sm:pb-8 px-6 sm:px-8">
+            <div className="flex items-center gap-3 w-full">
+              <div className="flex-1 border-t border-gray-300" />
+              <span className="text-xs sm:text-sm text-[#6d727b] font-light">
+                OR
+              </span>
+              <div className="flex-1 border-t border-gray-300" />
+            </div>
+            <Link
+              href="/user-signup"
+              className="inline-flex items-center justify-center gap-2 text-[#0A6C6D] hover:text-[#0A6C6D] transition-colors text-sm sm:text-base font-light group"
+            >
+              Create a new account
+              <ArrowRight className="h-4 w-4 stroke-[1.25] group-hover:translate-x-1 transition-transform stroke-[#0A6C6D]" />
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
   );
 };
 
 export default UserLoginPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// "use client";
+// import React, { useState } from "react";
+// import Link from "next/link";
+// import { useRouter} from "next/navigation";
+// import {
+//   Mail,
+//   Lock,
+//   Loader2,
+//   ArrowRight,
+// } from "lucide-react";
+// import { Button } from "@/app/components/ui/button";
+// import { Input } from "@/app/components/ui/input";
+// import { Label } from "@/app/components/ui/label";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+//   CardFooter,
+// } from "@/app/components/ui/card";
+// import { toast } from "sonner";
+// import { AxiosError } from "axios";
+// import { AuthService } from "@/app/lib/api/services/userAuth.service";
+
+// const UserLoginPage = () => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const router = useRouter();
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setLoading(true);
+
+//     try {
+//       const response = await AuthService.login(email, password);
+      
+//       if (response.data.token) {
+//         // Set token and get user profile
+//         AuthService.setToken(response.data.token);
+//         const userId = AuthService.extractUserId(response.data.token);
+        
+//         if (userId) {
+//           const user = await AuthService.getUser(userId);
+//           if (user) {
+//             AuthService.setUser(user);
+//           }
+//         }
+        
+//         toast.success("Welcome back!");
+//         router.push("/userDashboard/search");
+//       }
+//     } catch (error: unknown) {
+//       if (error instanceof AxiosError) {
+//         toast.error(error.response?.data?.message || "Login failed");
+//       } else if (error instanceof Error) {
+//         toast.error(error.message || "Login failed");
+//       } else {
+//         toast.error("An unknown error occurred");
+//       }
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-[100dvh] bg-white flex items-center justify-center p-4 sm:p-6 md:p-8">
+//       <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
+//         <Card className="border rounded-lg shadow-md bg-white">
+//           <CardHeader className="space-y-3 pb-6 md:pb-8 px-6 sm:px-8">
+//             <CardTitle className="text-2xl sm:text-3xl font-light text-center text-[#222]">
+//               Welcome back
+//             </CardTitle>
+//             <CardDescription className="text-center text-[#6d727b] text-sm sm:text-base">
+//               Enter your credentials to access your account
+//             </CardDescription>
+//           </CardHeader>
+//           <CardContent className="px-6 sm:px-8">
+//             <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+//               <div className="space-y-1">
+//                 <Label
+//                   htmlFor="email"
+//                   className="text-sm font-light text-[#6d727b]"
+//                 >
+//                   Email
+//                 </Label>
+//                 <div className="relative">
+//                   <Mail
+//                     className="absolute left-3 top-3.5 h-4 w-4 stroke-[1.25] text-[#8a8f9a]"
+//                     strokeWidth={1.25}
+//                   />
+//                   <Input
+//                     id="email"
+//                     type="email"
+//                     placeholder="Enter your email address"
+//                     className="pl-10 h-10 sm:h-12 rounded-md border border-gray-300 bg-white text-[#6d727b] placeholder-[#a0a3a8]
+//                     focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
+//                     value={email}
+//                     onChange={(e) => setEmail(e.target.value)}
+//                     required
+//                   />
+//                 </div>
+//               </div>
+//               <div className="space-y-1">
+//                 <Label
+//                   htmlFor="password"
+//                   className="text-sm font-light text-[#6d727b]"
+//                 >
+//                   Password
+//                 </Label>
+//                 <div className="relative">
+//                   <Lock
+//                     className="absolute left-3 top-3.5 h-4 w-4 stroke-[1.25] text-[#8a8f9a]"
+//                     strokeWidth={1.25}
+//                   />
+//                   <Input
+//                     id="password"
+//                     type="password"
+//                     placeholder="Enter your password"
+//                     className="pl-10 h-10 sm:h-12 rounded-md border border-gray-300 bg-white text-[#6d727b] placeholder-[#a0a3a8]
+//                     focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
+//                     value={password}
+//                     onChange={(e) => setPassword(e.target.value)}
+//                     required
+//                   />
+//                 </div>
+//               </div>
+
+//               <Button
+//                 type="submit"
+//                 className="w-full h-10 sm:h-12 bg-[#60a5fa] hover:bg-[#3b82f6] text-white font-light rounded-md
+//                 transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+//                 disabled={loading}
+//               >
+//                 {loading ? (
+//                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+//                 ) : (
+//                   <>
+//                     Sign in
+//                     <ArrowRight className="ml-2 h-4 w-4" />
+//                   </>
+//                 )}
+//               </Button>
+//             </form>
+//           </CardContent>
+//           <CardFooter className="px-6 sm:px-8 pb-6 md:pb-8">
+//             <p className="w-full text-center text-sm text-[#6d727b]">
+//               Don&apos;t have an account?{" "}
+//               <Link
+//                 href="/user-signup"
+//                 className="text-[#60a5fa] hover:text-[#3b82f6] font-normal transition-colors duration-300"
+//               >
+//                 Sign up
+//               </Link>
+//             </p>
+//           </CardFooter>
+//         </Card>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const Form = () => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [emailError, setEmailError] = useState("");
+//   const [passwordError, setPasswordError] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [showPassword, setShowPassword] = useState(false);
+//   const searchParams = useSearchParams();
+//   // const router = useRouter();
+//   const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
+  
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+
+//     // Reset previous errors
+//     setEmailError("");
+//     setPasswordError("");
+
+//     let hasError = false;
+//     if (!email.trim()) {
+//       setEmailError("Enter a valid email");
+//       hasError = true;
+//     }
+//     if (!password.trim()) {
+//       setPasswordError("Enter your password");
+//       hasError = true;
+//     }
+
+//     if (hasError) return;
+
+//     setLoading(true);
+
+//     try {
+//       const { data } = await AuthService.login(email, password);
+//       console.log("Setting token in localStorage:", data.token);
+//       localStorage.setItem("auth_token", data.token);
+//       document.cookie = `user-token=${data.token}; path=/; Secure; SameSite=None`;
+//       toast.success("Welcome back!");
+      
+//       // Create a slight delay to ensure the toast is visible
+//       setTimeout(() => {
+//         // Use window.location for a hard navigation
+//         window.location.href = redirectTo;
+//       }, 800);
+//     } catch (error: unknown) {
+//       if (error instanceof AxiosError) {
+//         toast.error(error.response?.data?.message || "Login failed");
+//       } else if (error instanceof Error) {
+//         toast.error(error.message || "Login failed");
+//       } else {
+//         toast.error("An unknown error occurred");
+//       }
+
+//       localStorage.clear();
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+//   return (
+//     <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+//       <div className="space-y-1">
+//         <Label htmlFor="email" className="text-sm font-light text-[#6d727b]">
+//           Email address
+//         </Label>
+//         <div className="relative">
+//           <Mail
+//             className="absolute left-3 top-3.5 h-4 w-4 text-[#8a8f9a]"
+//             strokeWidth={1.25}
+//           />
+//           <Input
+//             id="email"
+//             type="email"
+//             placeholder="Enter your email address"
+//             className="pl-10 h-10 sm:h-12 rounded-md bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8] focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
+//             value={email}
+//             onChange={(e) => setEmail(e.target.value)}
+//           />
+//           {emailError && (
+//             <div className="flex items-center gap-1 text-red-500 text-xs font-light mt-1">
+//               <AlertCircle className="w-4 h-4" />
+//               <span>{emailError}</span>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+
+//       <div className="space-y-1">
+//         <Label htmlFor="password" className="text-sm font-light text-[#6d727b]">
+//           Password
+//         </Label>
+//         <div>
+//           <div className="relative flex items-center">
+//             <Lock
+//               className="absolute left-3 h-4 w-4 text-[#8a8f9a]"
+//               strokeWidth={1.25}
+//             />
+//             <Input
+//               id="password"
+//               type={showPassword ? "text" : "password"}
+//               placeholder="Enter your secure password"
+//               className="px-10 h-10 sm:h-12 rounded-md  border-gray-100 bg-gray-100 text-[#6d727b] text-sm placeholder-[#a0a3a8] focus:outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] transition-all duration-300 ease-in-out"
+//               value={password}
+//               onChange={(e) => setPassword(e.target.value)}
+//             />
+//             {showPassword ? (
+//               <Eye
+//                 className="absolute right-3 h-4 w-4 text-[#8a8f9a] cursor-pointer"
+//                 onClick={() => setShowPassword(false)}
+//                 strokeWidth={1.25}
+//               />
+//             ) : (
+//               <EyeOff
+//                 className="absolute right-3 h-4 w-4 text-[#8a8f9a] cursor-pointer"
+//                 onClick={() => setShowPassword(true)}
+//                 strokeWidth={1.25}
+//               />
+//             )}
+//           </div>
+//           {passwordError && (
+//             <div className="flex items-center gap-1 text-red-500 text-xs font-light mt-1">
+//               <AlertCircle className="w-4 h-4" />
+//               <span>{passwordError}</span>
+//             </div>
+//           )}
+//         </div>
+//         <Link
+//           href="/forgot-password"
+//           className="text-xs sm:text-sm text-[#6d727b] hover:text-[#0a646d] transition-colors inline-flex items-center gap-1 mt-1"
+//         >
+//           Forgot your password?
+//         </Link>
+//       </div>
+
+//       <Button
+//         type="submit"
+//         className="w-full h-10 sm:h-12 rounded-md bg-[#0a646d] text-white text-sm sm:text-base font-light shadow-md hover:shadow-lg hover:bg-[#127a87] transition-colors duration-300"
+//         disabled={loading}
+//       >
+//         {loading ? (
+//           <>
+//             <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white" />
+//             Signing in...
+//           </>
+//         ) : (
+//           "Sign in"
+//         )}
+//       </Button>
+//     </form>
+//   );
+// };
+
+// export default UserLoginPage;

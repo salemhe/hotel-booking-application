@@ -82,7 +82,7 @@ export const hasRole = (role: string): boolean => {
  * Check if user is super admin
  */
 export const isSuperAdmin = (): boolean => {
-  return hasRole("super_admin") || hasRole("super-admin");
+  return hasRole("super-admin");
 };
 
 /**
@@ -118,7 +118,7 @@ export const clearAuthData = (): void => {
 /**
  * Set authentication data
  */
-export const setAuthData = (token: string, user: any): void => {
+export const setAuthData = (token: string, user: string): void => {
   localStorage.setItem("auth_token", token);
   localStorage.setItem("auth_user", JSON.stringify(user));
   console.log("Authentication data set successfully");

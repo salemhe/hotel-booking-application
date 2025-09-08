@@ -17,17 +17,17 @@ import {
   DollarSign,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/app/components/sammys-ui/input";
 import { Switch } from "@/app/components/ui/switch";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/app/components/sammys-ui/card";
+import { Badge } from "@/app/components/sammys-ui/badge";
 import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/app/components/sammys-ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -35,10 +35,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from "@/app/components/sammys-ui/table";
+import { Label } from "@/app/components/sammys-ui/label";
+import { Textarea } from "@/app/components/sammys-ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/app/components/sammys-ui/radio-group";
 
 // Removed unused sidebarItems
 

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/app/components/sammys-ui/button";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
+import { Switch } from "@/app/components/sammys-ui/switch";
 import { CheckCircle, XCircle, Loader2, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/app/super-administrator/ThemeContext";
 
@@ -31,7 +31,7 @@ export default function HotelSettings() {
         const { AuthService } = await import("@/app/lib/api/services/auth.service");
         const user = AuthService.getUser();
         if (user && user.id) {
-          const realProfile = await AuthService.fetchMyProfile(user.id);
+          const realProfile = await AuthService.fetchMyProfile(user.id, user.role);
           if (realProfile) {
             setProfile({
               name: realProfile.businessName || realProfile.name || "",

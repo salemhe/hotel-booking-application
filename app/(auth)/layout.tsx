@@ -8,7 +8,7 @@ const layout = ({
 }>) => {
   return (
     <div>
-      <Navigation />
+      {/* <Navigation /> */}
       <div className="mt-[60px]">
 
       {children}

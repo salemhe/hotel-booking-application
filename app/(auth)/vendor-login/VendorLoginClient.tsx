@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/app/components/sammys-ui/button";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Label } from "@/app/components/sammys-ui/label";
 import {
   Card,
   CardContent,
@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/components/ui/card";
+} from "@/app/components/sammys-ui/card";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import { toast } from "sonner";
@@ -38,6 +38,7 @@ interface VendorProfile {
 export default function VendorLoginClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("vendor");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -72,7 +73,7 @@ export default function VendorLoginClient() {
     setLoading(true);
 
     try {
-      const loginResponse = await AuthService.login(email, password);
+      const loginResponse = await AuthService.login(email, password, role);
       if (!loginResponse || !loginResponse.profile) {
         throw new Error("Login failed - invalid response");
       }
@@ -136,11 +137,7 @@ export default function VendorLoginClient() {
       }
 
       if (userRole === "super-admin") {
-        localStorage.setItem("super_admin_redirect", "true");
-        localStorage.setItem("last_login_time", Date.now().toString());
-        setTimeout(() => {
-          window.location.href = redirectTo || redirectUrl;
-        }, 300);
+        router.push(redirectTo || redirectUrl);
         return;
       }
 
@@ -209,6 +206,8 @@ export default function VendorLoginClient() {
 
             <CardContent className="px-4 sm:px-6 md:px-8">
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6" noValidate>
+              
+
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-light text-gray-700">
                     Email address

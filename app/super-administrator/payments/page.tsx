@@ -16,13 +16,13 @@ import {
   Download,
   Filter,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
+import { Button } from "@/app/components/sammys-ui/button";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Badge } from "@/app/components/sammys-ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/sammys-ui/avatar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/sammys-ui/table";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/sammys-ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
 // API endpoints to be implemented by backend:
@@ -97,8 +97,14 @@ export default function SuperAdminPayments() {
   async function fetchVendors() {
     try {
       const data = await apiFetcher("/api/super-admin/vendors");
-    
-      setVendors(data || []);
+      if (Array.isArray(data)) {
+        setVendors(data);
+      } else if (data && Array.isArray((data as any).data)) {
+        setVendors((data as any).data);
+      } else {
+        console.error("Vendors API returned non-array response:", data);
+        setVendors([]);
+      }
     } catch {
       setVendors([]);
     }
@@ -106,7 +112,7 @@ export default function SuperAdminPayments() {
 
   async function fetchPayments() {
     try {
-      let url = "/api/super-admin/payments";
+      let url = "/api/super-admini/payments";
       if (selectedVendor) url += `?vendorId=${selectedVendor}`;
       const data = await apiFetcher(url);
       setStats(data.stats || {});
@@ -136,7 +142,7 @@ export default function SuperAdminPayments() {
                 onChange={e => setSelectedVendor(e.target.value)}
               >
                 <option value="">All Vendors</option>
-                {vendors.map((vendor) => (
+                {Array.isArray(vendors) && vendors.map((vendor) => (
                   <option key={vendor.id} value={vendor.id}>{vendor.name}</option>
                 ))}
                 

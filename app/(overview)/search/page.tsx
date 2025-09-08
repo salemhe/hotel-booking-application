@@ -1,8 +1,9 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Image from 'next/image';
 import { Star, Heart, Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
 import { SearchSectionTwo } from '@/app/components/SearchSection';
 
@@ -15,7 +16,18 @@ interface SearchData {
   timestamp: string;
 }
 
-const SearchResults = () => {
+const LoadingFallback = () => (
+  <div className="min-h-screen mt-[100px] bg-gray-50">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-600">Loading...</span>
+      </div>
+    </div>
+  </div>
+);
+
+const SearchContent = () => {
   const [selectedCuisine, setSelectedCuisine] = useState('International');
   const [priceRange, setPriceRange] = useState([10000, 70000]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,12 +35,70 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [searchData, setSearchData] = useState<SearchData | null>(null);
-  
-  const router = useRouter();
 
-  // Load search data from localStorage on component mount
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query.trim()) return;
+    setLoading(true);
+
+    try {
+      const response = await restaurantService.searchRestaurants(query);
+      setRestaurants(response.data);
+
+      // Update localStorage with the current search
+      const updatedSearchData: SearchData = {
+        ...(searchData || {}),
+        query: query,
+        tab: (searchData && searchData.tab) || 'restaurants',
+        timestamp: new Date().toISOString(),
+      };
+      setSearchData(updatedSearchData);
+      localStorage.setItem('searchData', JSON.stringify(updatedSearchData));
+
+    } catch (err) {
+      console.error('Search error:', err);
+      setRestaurants([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchData]);
+
+  // Load search data from URL parameters or localStorage on component mount
   useEffect(() => {
     setMounted(true);
+
+    // First check URL parameters
+    const urlQuery = searchParams.get('q');
+    const urlDate = searchParams.get('date');
+    const urlTime = searchParams.get('time');
+    const urlGuests = searchParams.get('guests');
+    const urlCategory = searchParams.get('category');
+
+    if (urlQuery || urlDate || urlTime || urlGuests) {
+      const urlSearchData: SearchData = {
+        query: urlQuery || '',
+        tab: urlCategory || 'Restaurant',
+        date: urlDate || undefined,
+        time: urlTime || undefined,
+        guests: urlGuests || undefined,
+        timestamp: new Date().toISOString()
+      };
+
+      setSearchData(urlSearchData);
+      setSearchQuery(urlQuery || '');
+
+      // Save to localStorage for persistence
+      localStorage.setItem('searchData', JSON.stringify(urlSearchData));
+
+      if (urlQuery) {
+        handleSearch(urlQuery);
+      }
+      return;
+    }
+
+    // Fall back to localStorage if no URL parameters
     const stored = localStorage.getItem('searchData');
     if (stored) {
       try {
@@ -42,33 +112,7 @@ const SearchResults = () => {
         console.error('Error parsing search data from localStorage:', error);
       }
     }
-  }, []);
-
-  const handleSearch = async (query: string) => {
-    if (!query.trim()) return;
-    setLoading(true);
-    
-    try {
-      const response = await restaurantService.searchRestaurants(query);
-      setRestaurants(response.data);
-      
-      // Update localStorage with the current search
-      const updatedSearchData: SearchData = {
-        ...(searchData || {}),
-        query: query,
-        tab: (searchData && searchData.tab) || 'restaurants',
-        timestamp: new Date().toISOString(),
-      };
-      setSearchData(updatedSearchData);
-      localStorage.setItem('searchData', JSON.stringify(updatedSearchData));
-      
-    } catch (err) {
-      console.error('Search error:', err);
-      setRestaurants([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [searchParams, handleSearch]);
 
   const handleNewSearch = (newSearchData: SearchData) => {
     setSearchQuery(newSearchData.query);
@@ -284,4 +328,13 @@ const SearchResults = () => {
   );
 };
 
-export default SearchResults;
+// Add this wrapper component
+const Page = () => {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SearchContent />
+    </Suspense>
+  );
+};
+
+export default Page;
