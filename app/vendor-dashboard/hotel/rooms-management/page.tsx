@@ -100,7 +100,7 @@ const RoomsManagement = () => {
   const handleDeleteRoom = async (roomId: string) => {
     if (window.confirm('Are you sure you want to delete this room?')) {
       try {
-        await API.delete(`/api/vendors/rooms/${roomId}`);
+        await API.delete(`/api/vendors/rooms/${roomId}`); 
         setRooms(prev => prev.filter(room => room._id !== roomId));
       } catch (error) {
         console.error('Failed to delete room:', error);
