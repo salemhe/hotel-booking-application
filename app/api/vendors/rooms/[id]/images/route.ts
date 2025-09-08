@@ -3,10 +3,10 @@ import { API_URL } from '@/app/config';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const formData = await request.formData();
     const authHeader = request.headers.get('authorization');
 
