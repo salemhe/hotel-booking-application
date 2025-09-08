@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { API_URL } from '@/app/config';
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const authHeader = request.headers.get('authorization');
 
