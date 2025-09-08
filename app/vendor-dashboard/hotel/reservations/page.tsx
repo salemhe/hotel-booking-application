@@ -159,7 +159,7 @@ export default function Home() {
       }
       
       // Fetch reservations data
-      const response = await API.get(`users/bookings?vendorId=${user.id}`);
+      const response = await API.get(`/api/vendors/reservations?vendorId=${user.id}`);
       console.log(response.data, "response.data");
       
       if (response.data && Array.isArray(response.data)) {

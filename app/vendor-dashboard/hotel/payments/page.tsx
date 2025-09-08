@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Bell,
@@ -28,6 +28,7 @@ import { useMemo } from "react";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
 
 import { apiFetcher } from "@/app/lib/fetcher";
+import SocketService from "@/app/lib/socket";
 const getStatusColor = (status: string) => {
   switch (status) {
     case "Paid":
@@ -91,10 +92,24 @@ export default function HotelPayments() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [chartData, setChartData] = useState<ChartData[]>([]);
 
+  const handleNewAccount = useCallback((newAccount: Account) => {
+    setAccounts(prev => [newAccount, ...prev]);
+  }, []);
+
+  const handleUpdateAccount = useCallback((updatedAccount: Account) => {
+    setAccounts(prev => prev.map(acc => acc.id === updatedAccount.id ? updatedAccount : acc));
+  }, []);
+
+  const handleDeleteAccount = useCallback((accountId: string) => {
+    setAccounts(prev => prev.filter(acc => acc.id !== accountId));
+  }, []);
+
   useEffect(() => {
     fetchAll();
-    const fetchVendor = async () => {
+
+    const initializeComponent = async () => {
       try {
+        // Fetch vendor profile
         if (await AuthService.isAuthenticated()) {
           const token = await AuthService.getToken();
           const id = AuthService.extractUserId(token!);
@@ -104,15 +119,69 @@ export default function HotelPayments() {
       } catch {
         setVendor(null);
       }
+
+      // Setup socket connection and event listeners
+      try {
+        const token = await AuthService.getToken();
+        const userId = token ? AuthService.extractUserId(token) : null;
+        if (userId) {
+          const socket = SocketService.connect(userId, 'vendor');
+          SocketService.joinVendorRoom(userId);
+
+          socket.on('account_added', (data: { account: Account }) => {
+            if (data.account) {
+              handleNewAccount(data.account);
+            }
+          });
+
+          socket.on('account_updated', (data: { account: Account }) => {
+            if (data.account) {
+              handleUpdateAccount(data.account);
+            }
+          });
+
+          socket.on('account_deleted', (data: { accountId: string }) => {
+            if (data.accountId) {
+              handleDeleteAccount(data.accountId);
+            }
+          });
+
+          socket.on('payment_stats_updated', (data: Stats) => {
+            setStats(data);
+            setChartData(data.chartData || []);
+          });
+
+          socket.on('payment_transaction_added', (data: Transaction) => {
+            setTransactions(prev => [data, ...prev]);
+          });
+
+          return () => {
+            SocketService.leaveVendorRoom(userId);
+            socket.off('account_added');
+            socket.off('account_updated');
+            socket.off('account_deleted');
+            socket.off('payment_stats_updated');
+            socket.off('payment_transaction_added');
+          };
+        }
+      } catch (error) {
+        console.error('Error initializing socket:', error);
+      }
     };
-    fetchVendor();
-  }, []);
+
+    const cleanup = initializeComponent();
+
+    return () => {
+      cleanup?.then(cleanupFn => cleanupFn?.());
+    };
+  }, [handleNewAccount, handleUpdateAccount, handleDeleteAccount]);
+
   const fetchAll = async () => {
     try {
       const [accRes, statsRes, transRes] = await Promise.all([
-        apiFetcher("/api/vendor/hotel-accounts"),
-        apiFetcher("/api/vendor/hotel-payments/stats"),
-        apiFetcher("/api/vendor/hotel-payments/transactions"),
+        apiFetcher("/api/vendors/accounts"),
+        apiFetcher("/api/vendors/payments/stats"),
+        apiFetcher("/api/vendors/payments/transactions"),
       ]);
       setAccounts(accRes);
       setStats(statsRes);
@@ -126,7 +195,7 @@ export default function HotelPayments() {
     setVerifyError('');
     try {
       const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const data = await apiFetcher(`${BASE_URL}/api/vendor/hotel-accounts/verify`, {
+      const data = await apiFetcher(`${BASE_URL}/api/vendors/accounts/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accountNumber })
@@ -146,13 +215,13 @@ export default function HotelPayments() {
   const saveAccount = async () => {
     try {
       if (accountForm.id) {
-        await apiFetcher(`/api/vendor/hotel-accounts/${accountForm.id}`, {
+        await apiFetcher(`/api/vendors/accounts/${accountForm.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(accountForm)
         });
       } else {
-        await apiFetcher(`/api/vendor/hotel-accounts`, {
+        await apiFetcher(`/api/vendors/accounts`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(accountForm)
