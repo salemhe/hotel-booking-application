@@ -30,6 +30,8 @@ const bottomSidebarItems = [
 
 
 
+
+
 export default function SidebarShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
