@@ -12,7 +12,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       headers: {
         'Content-Type': 'application/json',
         ...(authHeader && { 'Authorization': authHeader })
-      },
+      }, 
       body: JSON.stringify(body)
     });
 
