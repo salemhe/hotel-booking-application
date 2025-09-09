@@ -59,8 +59,7 @@ export default function RestaurantLayout({
 
   return (
     <ThemeProvider>
-      <BranchProvider>
-        <div className="flex min-h-screen bg-gray-50">
+      <div className="flex min-h-screen bg-gray-50">
           {/* Sidebar */}
           <aside
             className={`sticky top-0 self-start h-screen ${
@@ -99,9 +98,6 @@ export default function RestaurantLayout({
                   </svg>
                 </button>
               </div>
-
-              {/* Branch */}
-              <BranchNameDisplay collapsed={collapsed} />
 
             {/* Navigation */}
             <nav className="mt-4 flex flex-col space-y-2 px-3">
