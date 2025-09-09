@@ -50,7 +50,7 @@ export const TimeDropdown: React.FC<TimeDropdownProps> = ({
 
       {/* dropdown */}
       {show && (
-        <div className="absolute z-50 mt-2 bg-white w-96 rounded-lg shadow-lg p-4">
+        <div className="absolute right-0  z-50 mt-2 bg-white w-72 sm:w-96 rounded-lg shadow-lg p-4">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 ">
             {slots.map((t) => (
               <button

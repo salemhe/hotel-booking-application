@@ -104,7 +104,7 @@ interface DateDropdownProps {
  
        {/* calendar dropdown */}
        {show && (
-         <div className="absolute  mt-4 w-64 sm:w-96 right-0 sm:right-1 bg-white rounded-lg shadow-lg z-50 p-4">
+         <div className="absolute  mt-4 w-64 sm:w-96 left-0 sm:right-1 bg-white rounded-lg shadow-lg z-50 p-4">
            {/* header */}
            <div className="flex items-center justify-between mb-2 px-2">
              <span className="text-base flex-1 font-medium text-gray-800">

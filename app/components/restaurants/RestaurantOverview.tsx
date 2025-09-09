@@ -20,12 +20,16 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
 
   return (
     <div className="space-y-6 text-sm md:text-base">
-      <div className="flex flex-col sm:flex-row sm:flex-wrap w-full gap-4">
-        <div className="bg-[#E8FFE1] p-3 rounded-xl border border-[#72E94E] flex items-center gap-4">
+      <div 
+        // className="flex flex-col sm:flex-row sm:flex-wrap w-full gap-4"
+        className="grid grid-cols-2 gap-2 sm:flex sm:flex-row sm:flex-wrap sm:gap-4 w-full"
+      >
+        <div className="bg-[#E8FFE1] p-3 rounded-xl border border-[#72E94E] flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
           <div>
             <svg
-              width="34"
-              height="34"
+              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
+              // width="34"
+              // height="34"
               viewBox="0 0 34 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -41,11 +45,12 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
             <p className="font-semibold text-sm">{openingTime} - {closingTime} Daily</p>
           </div>
         </div>
-        <div className="bg-[#C8FAFF] p-3 rounded-xl border border-[#49EDFF] flex items-center gap-4">
+        <div className="bg-[#C8FAFF] p-3 rounded-xl border border-[#49EDFF] flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
           <div>
             <svg
-              width="30"
-              height="34"
+              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
+              // width="30"
+              // height="34"
               viewBox="0 0 30 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -63,11 +68,12 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
             <p className="font-semibold text-sm">{address}</p>
           </div>
         </div>
-        <div className="bg-[#FFEFE1] p-3 rounded-xl border border-[#FFB778] flex items-center gap-4">
+        <div className="bg-[#FFEFE1] p-3 rounded-xl border border-[#FFB778] flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
           <div>
             <svg
-              width="30"
-              height="31"
+              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
+              // width="30"
+              // height="31"
               viewBox="0 0 30 31"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -87,11 +93,12 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
             </p>
           </div>
         </div>
-        <div className="bg-[#EBE1FF] p-3 rounded-xl border border-[#C0A1FF] flex items-center gap-4">
+        <div className="bg-[#EBE1FF] p-3 rounded-xl border border-[#C0A1FF] flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
           <div>
             <svg
-              width="34"
-              height="34"
+              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
+              // width="34"
+              // height="34"
               viewBox="0 0 34 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"

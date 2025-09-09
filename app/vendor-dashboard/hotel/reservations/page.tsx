@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/app/components/sammys-ui/button';
 import { Eye, Download, Plus } from 'lucide-react';
 import { BookingTable } from './components/booking-table';
 import { BookingFilters } from './components/booking-filters';
@@ -159,7 +159,7 @@ export default function Home() {
       }
       
       // Fetch reservations data
-      const response = await API.get(`users/bookings?vendorId=${user.id}`);
+      const response = await API.get(`/api/vendors/reservations?vendorId=${user.id}`);
       console.log(response.data, "response.data");
       
       if (response.data && Array.isArray(response.data)) {

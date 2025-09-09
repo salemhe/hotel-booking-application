@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '@/app/components/sammys-ui/input';
+import { Label } from '@/app/components/sammys-ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Textarea } from '@/app/components/ui/textarea';
 import { Checkbox } from '@/app/components/ui/checkbox';
@@ -11,25 +10,14 @@ import { advanceBookingOptions, BookingPolicyData, cancellationTypes, checkInTim
 
 interface BookingPolicyFormProps {
   onSubmit: (data: BookingPolicyData) => void;
+  formData: BookingPolicyData;
+  setFormData: React.Dispatch<React.SetStateAction<BookingPolicyData>>;
+  initialData?: BookingPolicyData | null;
 }
 
-export function BookingPolicyForm({ onSubmit }: BookingPolicyFormProps) {
-  const [formData, setFormData] = useState<BookingPolicyData>({
-    checkInTime: '2:00 PM',
-    roomTypeName: 'e.g Luxury room',
-    advanceBookingHours: 24,
-    cancellationType: '2',
-    freeCancellationHours: 48,
-    customPolicyNote: '',
-    paymentOptions: {
-      fullPaymentRequired: true,
-      allowPartPayment: true,
-      payAtHotel: false,
-    },
-    paymentInstructions: '',
-  });
 
-  const handleInputChange = <K extends keyof BookingPolicyData>(field: K, value: BookingPolicyData[K]) => {
+export function BookingPolicyForm({ onSubmit, formData, setFormData }: BookingPolicyFormProps) {
+  const handleInputChange = (field: keyof BookingPolicyData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

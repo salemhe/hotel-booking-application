@@ -6,7 +6,7 @@ import RestaurantCard, { RestaurantType } from "@/app/components/restaurant-card
 import FilterSidebar from "@/app/components/filter-sidebar";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/app/hooks/use-toast";
 import API from "@/app/lib/api/userAxios";
 import { AxiosError } from "axios";
 import { useAuth } from "@/app/contexts/AuthContext";

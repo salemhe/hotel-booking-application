@@ -21,10 +21,10 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Card, CardContent } from "@/app/components/sammys-ui/card";
+import { Badge } from "@/app/components/sammys-ui/badge";
+import { Avatar, AvatarFallback } from "@/app/components/sammys-ui/avatar";
 
 import { getAuthUser } from "@/app/utils/auth";
 
@@ -62,6 +62,24 @@ function AddNewBranchModal({ isOpen, setIsOpen, onBranchAdded }: { isOpen: boole
       // The layout handles setting the session cookie.
       // Manual token handling is no longer needed here.
 
+      // const response = await API.post(
+      //   'api/super-admin/branches',
+      //   {
+      //     name: formData.branchName,
+      //     address: formData.address,
+      //     city: formData.city,
+      //     phoneNumber: formData.countryCode + formData.phoneNumber,
+      //     email: formData.email,
+      //     password: formData.password,
+      //     businessType: "restaurant",
+      //     openingDays: Object.keys(formData.openingDays).filter(day => formData.openingDays[day as keyof typeof formData.openingDays]),
+      //     opensAt: formData.opensAt,
+      //     closesAt: formData.closesAt,
+      //     assignedManager: formData.assignedManager,
+      //     assignedMenu: formData.assignedMenu,
+      //     importAllMenuItems: formData.importAllMenuItems,
+      //   }
+      // );
       // const response = await API.post(
       //   'api/super-admin/branches',
       //   {

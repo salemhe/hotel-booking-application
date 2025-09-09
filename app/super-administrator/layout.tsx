@@ -7,17 +7,20 @@ import { ThemeProvider } from "./ThemeContext";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import {
-  ChevronLeft, 
-  ChevronRight, 
+  ChevronLeft,
+  ChevronRight,
   Home,
   Calendar,
   MapPin,
   UtensilsCrossed,
   CreditCard,
+  CurrencyIcon,
   Users,
+  MenuIcon,
   Settings,
   LogOut,
 } from "lucide-react";
+import {UserGroupIcon, BuildingOffice2Icon, CurrencyDollarIcon} from "@heroicons/react/24/outline";
 
 interface SidebarItemType {
   icon: React.ElementType;
@@ -29,10 +32,10 @@ interface SidebarItemType {
 const sidebarItems: SidebarItemType[] = [
   { icon: Home, label: "Dashboard", href: "/super-administrator/dashboard" },
   { icon: Calendar, label: "Reservations", href: "/super-administrator/reservations" },
-  { icon: MapPin, label: "Branches", href: "/super-administrator/branches" },
-  { icon: UtensilsCrossed, label: "Menu Management", href: "/super-administrator/menu" },
-  { icon: CreditCard, label: "Payments", href: "/super-administrator/payments" },
-  { icon: Users, label: "Staff", href: "/super-administrator/staff" },
+  { icon: BuildingOffice2Icon, label: "Branches", href: "/super-administrator/branches" },
+  { icon: MenuIcon, label: "Menu Management", href: "/super-administrator/menu" },
+  { icon: CurrencyDollarIcon, label: "Payments", href: "/super-administrator/payments" },
+  { icon: UserGroupIcon, label: "Staff", href: "/super-administrator/staff" },
   { icon: Settings, label: "Settings", href: "/super-administrator/settings" },
   {
     icon: LogOut,
@@ -60,8 +63,8 @@ const SidebarItem = ({ item, isCollapsed, isActive }: SidebarItemProps) => {
     isCollapsed ? "justify-center px-0 py-3" : "px-3 py-3"
   } ${
     isActive
-      ? "bg-emerald-500 text-white shadow-lg"
-      : "text-gray-300 hover:bg-white hover:bg-opacity-10 hover:text-white"
+      ? "bg-white/10 text-white shadow-inner"
+      : "text-teal-100 hover:bg-white/10 hover:text-white"
   }`;
 
   const content = (
@@ -158,17 +161,17 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
       <div className="flex h-screen bg-gray-50">
         {/* Sidebar */}
         <div
-          className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-gray-900 text-white shadow-xl border-r border-gray-800 transition-all duration-300 ${sidebarCollapsed ? "w-16" : "w-64"}`}
+          className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-gradient-to-b from-teal-900 via-teal-800 to-teal-700 text-white shadow-xl border-r border-teal-700 transition-all duration-300 ${sidebarCollapsed ? "w-16" : "w-64"}`}
           style={{ minWidth: sidebarCollapsed ? '4rem' : '16rem', width: sidebarCollapsed ? '4rem' : '16rem' }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-4 border-b border-gray-800">
+          <div className="flex items-center justify-between px-4 py-4 border-b border-teal-700">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
-                <span className="text-emerald-600 font-extrabold text-lg">B</span>
+                <span className="text-emerald-600 font-extrabold text-lg">R</span>
               </div>
               {!sidebarCollapsed && (
-                <span className="text-xl font-extrabold tracking-wide transition-all duration-300">Bookies</span>
+                <span className="text-xl font-extrabold tracking-wide transition-all duration-300">Rhace</span>
               )}
             </div>
             {/* Collapse/Expand Button (always visible, icon toggles) */}
@@ -203,7 +206,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
           </nav>
 
           {/* Bottom items */}
-          <div className="px-2 py-3 border-t border-gray-800">
+          <div className="px-2 py-3 border-t border-teal-700">
             <ul className="space-y-1">
               {bottomItems.map((item, index) => {
                 return (
@@ -228,7 +231,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
             onClick={() => setSidebarCollapsed(false)}
             aria-label="Open sidebar"
           >
-            <span className="text-emerald-600 font-extrabold text-lg pointer-events-none select-none">B</span>
+            <span className="text-emerald-600 font-extrabold text-lg pointer-events-none select-none">R</span>
           </button>
         )}
 

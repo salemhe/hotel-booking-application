@@ -19,16 +19,16 @@ import {
   Check,
   X,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
+import { Button } from "@/app/components/sammys-ui/button";
+import { Input } from "@/app/components/sammys-ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/sammys-ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/app/components/sammys-ui/dropdown-menu";
 
 const API_URL = "https://hotel-booking-app-backend-30q1.onrender.com/api";
 

@@ -1,23 +1,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home,
-  Calendar,
-  MapPin,
-  Menu as MenuIcon,
-  CreditCard,
-  Settings,
-  LogOut,
-  Star,
-} from "lucide-react";
+  HomeIcon,
+  BuildingOffice2Icon,
+  CalendarIcon,
+  UserGroupIcon,
+  CurrencyDollarIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon,
+} from "@heroicons/react/24/outline";
+import { Settings } from "@mui/icons-material";
+import { LogOut } from "lucide-react";
 
 const sidebarItems = [
-  { label: "Dashboard", icon: Home, href: "/super-admin/dashboard" },
-  { label: "Reservations", icon: Calendar, href: "/super-admin/reservations" },
-  { label: "Branches", icon: MapPin, href: "/super-admin/branches" },
-  { label: "Menu Management", icon: MenuIcon, href: "/super-admin/menu" },
-  { label: "Payments", icon: CreditCard, href: "/super-admin/payments" },
-  { label: "Reviews", icon: Star, href: "/super-admin/reviews" },
+  { label: "Dashboard", icon: HomeIcon, href: "/super-admin/dashboard" },
+  { label: "Vendor's", icon: BuildingOffice2Icon, href: "/super-admin/vendors" },
+  { label: "Reservations", icon: CalendarIcon, href: "/super-admin/reservations" },
+  { label: "User's Management", icon: UserGroupIcon, href: "/super-admin/users" },
+  { label: "Payments", icon: CurrencyDollarIcon, href: "/super-admin/payments" },
+  { label: "Reviews", icon: Cog6ToothIcon, href: "/super-admin/reviews" },
 ];
 
 export default function SuperAdminSidebar() {
@@ -27,9 +28,9 @@ export default function SuperAdminSidebar() {
       <div className="p-6 border-b border-teal-700">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-            <span className="text-teal-800 font-bold text-sm">B</span>
+            <span className="text-teal-800 font-bold text-sm">R</span>
           </div>
-          <span className="text-xl font-bold">Bookies</span>
+          <span className="text-xl font-bold">Rhace</span>
         </div>
       </div>
       <nav className="flex-1 p-4">
@@ -46,7 +47,7 @@ export default function SuperAdminSidebar() {
                   }`}
                   prefetch={false}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon />
                   <span>{item.label}</span>
                 </Link>
               </li>

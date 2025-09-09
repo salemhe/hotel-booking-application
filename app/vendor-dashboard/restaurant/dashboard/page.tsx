@@ -11,9 +11,9 @@ import {
   Legend
 } from 'chart.js';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip} from "recharts";
-import { useVendorDashboardSocket } from '@/hooks/useVendorDashboardSocket';
+import { useVendorDashboardSocket } from '../../../hooks/useVendorDashboardSocket';
 import { API_URL } from '../../../config';
 import DashboardLoader from '../../../components/DashboardLoader';
 
@@ -191,7 +191,7 @@ if (loading) {
         <div className="w-full self-stretch flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-gray-900">
-              Welcome Back, {dashboardData?.vendorName || 'Vendor'}!
+              Welcome Back {dashboardData?.vendorName || 'Vendor'}!
             </h1>
             <p className="text-sm text-gray-500">
               Here’s what is happening today.

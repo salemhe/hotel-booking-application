@@ -32,7 +32,7 @@ export default function AddMenuPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await apiFetcher("/api/vendor/menus", {
+      const res = await apiFetcher("/api/vendors/menus", {
         method: "POST",
         body: JSON.stringify({
           ...form,

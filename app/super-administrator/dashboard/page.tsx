@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/sammys-ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/sammys-ui/table";
+import { Badge } from "@/app/components/sammys-ui/badge";
 import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
 import { BookingService } from "@/app/lib/api/services/bookings.service";
 import { DashboardService } from "@/app/lib/api/services/dashboard.service";
@@ -66,10 +66,7 @@ function SuperAdminDashboardContent() {
       <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-center">Super Admin Dashboard Overview</h1>
       {profile && (
         <div className="mb-8 p-4 bg-gray-100 rounded-lg">
-          <h2 className="text-xl font-semibold mb-2">Welcome, {profile.businessName} ({profile.email})</h2>
-          <div className="text-gray-700">Business Type: {profile.businessType}</div>
-          <div className="text-gray-700">Address: {profile.address}</div>
-          <div className="text-gray-700">Phone: {profile.phone}</div>
+          <h2 className="text-xl font-semibold mb-2">Welcome, {profile.businessName} </h2>
         </div>
       )}
       {/* Summary Cards */}
