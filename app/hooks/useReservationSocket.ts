@@ -7,7 +7,6 @@ export interface Reservation {
   type: "in-house" | "external";
   meals?: string[];
   rooms?: string[];
-  [key: string]: any; // For extensibility
 }
 
 let socket: Socket | null = null;
