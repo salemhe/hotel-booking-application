@@ -50,36 +50,36 @@
 //   categories?: any[];
 // }
 
-interface SourcesData {
-  website?: number;
-  mobile?: number;
-  walkIn?: number;
-  total?: number;
-}
-import { 
-  Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
-  Calendar, CreditCard, Users, DollarSign
-} from 'lucide-react'
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { NativeSelect as Select } from '@/components/ui/select'
-import { 
-  getDashboardStats, 
-  getTodayReservations, 
-  getReservationTrends,
-  getCustomerFrequency,
-  getRevenueByCategory,
-  getUpcomingReservations,
-  getUserProfile
-} from '@/app/lib/api-service'
+// interface SourcesData {
+//   website?: number;
+//   mobile?: number;
+//   walkIn?: number;
+//   total?: number;
+// }
+// import { 
+//   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
+//   Calendar, CreditCard, Users, DollarSign
+// } from 'lucide-react'
+// import { Button } from "@/components/ui/button";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Input } from '@/components/ui/input'
+// import { Badge } from '@/components/ui/badge'
+// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+// import { NativeSelect as Select } from '@/components/ui/select'
+// import { 
+//   getDashboardStats, 
+//   getTodayReservations, 
+//   getReservationTrends,
+//   getCustomerFrequency,
+//   getRevenueByCategory,
+//   getUpcomingReservations,
+//   getUserProfile
+// } from '@/app/lib/api-service'
 
-export default function Dashboard() {
-  const [showNotification, setShowNotification] = useState(true)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+// export default function Dashboard() {
+//   const [showNotification, setShowNotification] = useState(true)
+//   const [isLoading, setIsLoading] = useState(true)
+//   const [error, setError] = useState<string | null>(null)
   
 //   // State for dashboard data
 //   const [stats, setStats] = useState({
@@ -1595,23 +1595,23 @@ import {
   Legend
 } from 'chart.js';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip} from "recharts";
-import { Button } from '@/app/components/button';
+import { CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
+import { Card } from '@mui/material';
 
 
 
 export default function Dashboard() {
   // ----- dummy data for charts -----
-  const reservationTrend = [
-    { name: "Mon", web: 10, walkin: 5 },
-    { name: "Tue", web: 25, walkin: 8 },
-    { name: "Wed", web: 15, walkin: 6 },
-    { name: "Thu", web: 20, walkin: 12 },
-    { name: "Fri", web: 60, walkin: 18 },
-    { name: "Sat", web: 90, walkin: 22 },
-    { name: "Sun", web: 70, walkin: 20 },
-  ];
+  // const reservationTrend = [
+  //   { name: "Mon", web: 10, walkin: 5 },
+  //   { name: "Tue", web: 25, walkin: 8 },
+  //   { name: "Wed", web: 15, walkin: 6 },
+  //   { name: "Thu", web: 20, walkin: 12 },
+  //   { name: "Fri", web: 60, walkin: 18 },
+  //   { name: "Sat", web: 90, walkin: 22 },
+  //   { name: "Sun", web: 70, walkin: 20 },
+  // ];
 
   ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Legend);
 

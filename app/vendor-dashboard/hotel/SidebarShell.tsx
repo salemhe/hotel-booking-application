@@ -29,19 +29,6 @@ const bottomSidebarItems = [
   { icon: ArrowRightOnRectangleIcon, label: "Logout", href: "/logout" },
 ];
 
-<<<<<<< HEAD
-function BranchNameDisplay() {
-  const { selectedBranch } = useBranchContext();
-  if (!selectedBranch) return null;
-  return (
-    <div className="block text-center text-[#042626]">
-      {selectedBranch.branchName}
-    </div>
-  );
-}
-=======
-
->>>>>>> 1005cee8afe8205ad1b719983821cc07b093c2a0
 
 export default function SidebarShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -61,11 +48,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
             <div className="flex items-center justify-between px-6 py-5 border-b border-teal-700">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
-<<<<<<< HEAD
-                  <span className="text-[#042626] font-extrabold text-lg">B</span>
-=======
                   <span className="text-teal-800 font-extrabold text-lg">R</span>
->>>>>>> 1005cee8afe8205ad1b719983821cc07b093c2a0
                 </div>
                 {!sidebarCollapsed && (
                   <span className="text-2xl font-extrabold tracking-wide transition-all duration-300">Rhace</span>
