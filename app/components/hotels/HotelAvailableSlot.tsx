@@ -215,12 +215,12 @@ const HotelRoomBooking =  ({id}:{id: string}) => {
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Select Room Type</h1>
           
           {/* Tabs */}
-          <div className="flex space-x-1 bg-white rounded-lg p-1 inline-flex">
+          <div className="flex space-x-1 bg-white rounded-lg p-1 ">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-md text-sm text-nowrap font-medium transition-colors ${
                   activeTab === tab
                     ? 'bg-gray-100 text-gray-900'
                     : 'text-gray-600 hover:text-gray-900'

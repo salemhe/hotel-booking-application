@@ -13,21 +13,20 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip} from "recharts";
-import { Button } from '@/app/components/button';
 
 
 
 export default function Dashboard() {
   // ----- dummy data for charts -----
-  const reservationTrend = [
-    { name: "Mon", web: 10, walkin: 5 },
-    { name: "Tue", web: 25, walkin: 8 },
-    { name: "Wed", web: 15, walkin: 6 },
-    { name: "Thu", web: 20, walkin: 12 },
-    { name: "Fri", web: 60, walkin: 18 },
-    { name: "Sat", web: 90, walkin: 22 },
-    { name: "Sun", web: 70, walkin: 20 },
-  ];
+  // const reservationTrend = [
+  //   { name: "Mon", web: 10, walkin: 5 },
+  //   { name: "Tue", web: 25, walkin: 8 },
+  //   { name: "Wed", web: 15, walkin: 6 },
+  //   { name: "Thu", web: 20, walkin: 12 },
+  //   { name: "Fri", web: 60, walkin: 18 },
+  //   { name: "Sat", web: 90, walkin: 22 },
+  //   { name: "Sun", web: 70, walkin: 20 },
+  // ];
 
   ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Legend);
 

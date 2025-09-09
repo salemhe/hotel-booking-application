@@ -396,9 +396,8 @@
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Mail, Lock, Loader2, ArrowRight, AlertCircle } from "lucide-react";
+import { Loader2, ArrowRight, AlertCircle } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import {
   Card,
@@ -418,7 +417,7 @@ const UserLoginForm = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/userDashboard/search";
+  const redirectTo = searchParams.get("redirect") || "/";
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
