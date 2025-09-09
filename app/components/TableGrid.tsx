@@ -592,7 +592,7 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
         <FiChevronRight className="ml-1" />
       </Button>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {restaurants?.map((restaurant: Hotel) => {
           const images = getImagesForRestaurant(restaurant);
           const currentIndex = currentIndices[restaurant.id || 0];
@@ -723,7 +723,7 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
 
        {/* Mobile scroll */}
       <div className="flex sm:hidden gap-4 overflow-x-auto scrollbar-hide">
-        {restaurants.map((restaurant) => {
+        {restaurants.map((restaurant: Hotel) => {
          const images = getImagesForRestaurant(restaurant);
           const currentIndex = currentIndices[restaurant.id || 0];
           const multipleImages = hasMultipleImages(restaurant);
@@ -733,7 +733,7 @@ export const TableGridTwo = ({ title, restaurants }: { title: string; restaurant
             <div
               key={restaurant.id}
               onClick={() => {
-                router.push(`/restaurants/${restaurant._id}`);
+                router.push(`/hotels/${restaurant._id}`);
               }}
               className="min-w-[260px] max-w-[260px] h-72 px-2 cursor-pointer pt-2 pb-4 flex flex-col bg-white rounded-[20px] border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
             >

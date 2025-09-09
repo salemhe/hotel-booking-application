@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronDown, LogOut, Menu } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import {
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { SearchSectionTwo } from "./SearchSection";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
 export interface UserProfile {
   id: string;
   email: string;
@@ -53,7 +54,7 @@ const Navigation = () => {
   // Auth state management
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-
+ const router = useRouter();
   const navItems = [
     { name: "Home", href: "/" },
     // { name: "Restaurants", href: "/userDashboard/search" },
@@ -80,7 +81,8 @@ const Navigation = () => {
         if (await AuthService.isAuthenticated()) {
           const token = await AuthService.getToken();
           const id = AuthService.extractUserId(token!)
-          setProfile(await AuthService.getUser(id!));
+          setProfile(await AuthService.getUser(id as string));
+          console.log(id)
         }
       } catch (error) {
         console.log(error)
@@ -105,7 +107,7 @@ const Navigation = () => {
         <div className="size-10 bg-gray-300 mr-[50px] animate-pulse rounded-full" />
       );
     }
-
+console.log(profile)
     if (profile) {
       return (
         <DropdownMenu>
@@ -197,68 +199,68 @@ const Navigation = () => {
     );
   };
 
-  // const renderMobileMenu = () => {
-  //   return (
-  //     <div className="pt-4 pb-3 border-t border-gray-200 z-20 flex flex-col">
-  //       {profile ? (
-  //         <>
-  //           <div className="flex items-center px-4">
-  //             <Avatar>
-  //               <AvatarFallback>
-  //                 {profile.firstName.charAt(0).toUpperCase()}
-  //                 {profile.lastName.charAt(0).toUpperCase()}
-  //               </AvatarFallback>
-  //             </Avatar>
-  //             <div className="ml-3">
-  //               <div className="text-sm font-medium text-gray-800">
-  //                 {profile.firstName}
-  //               </div>
-  //               <div className="text-xs font-medium text-gray-500">
-  //                 {profile.email}
-  //               </div>
-  //             </div>
-  //           </div>
-  //           <div className="mt-3 space-y-1 w-full">
-  //             <SheetClose
-  //               className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
-  //               asChild
-  //             >
-  //               <Link
-  //                 href="/userDashboard/search"
-  //                 className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
-  //               >
-  //                 Dashboard
-  //               </Link>
-  //             </SheetClose>
-  //             <SheetClose
-  //               className="w-full text-left hover:bg-accent hover:text-red-600 px-4 py-2 text-sm text-red-600 flex items-center"
-  //               onClick={handleLogout}
-  //             >
-  //               <LogOut className="h-4 w-4 mr-2" />
-  //               Logout
-  //             </SheetClose>
-  //           </div>
-  //         </>
-  //       ) : (
-  //         <div className="mt-3 space-y-2 flex flex-col w-full">
-  //           <Button
-  //             className="cursor-pointer rounded-full"
-  //             variant="outline"
-  //             asChild
-  //           >
-  //             <Link href="/user-login">Login</Link>
-  //           </Button>
-  //           <Button
-  //             className="cursor-pointer rounded-full bg-blue-700 hover:bg-blue-700/90"
-  //             asChild
-  //           >
-  //             <Link href="user-signup">Create Account</Link>
-  //           </Button>
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
-  // };
+  const renderMobileMenu = () => {
+    return (
+      <div className="pt-4 pb-3 border-t border-gray-200 z-20 flex flex-col">
+        {profile ? (
+          <>
+            <div className="flex items-center px-4">
+              <Avatar>
+                <AvatarFallback>
+                  {profile.firstName.charAt(0).toUpperCase()}
+                  {profile.lastName.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="ml-3">
+                <div className="text-sm font-medium text-gray-800">
+                  {profile.firstName}
+                </div>
+                <div className="text-xs font-medium text-gray-500">
+                  {profile.email}
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 space-y-1 w-full">
+              <SheetClose
+                className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
+                asChild
+              >
+                <Link
+                  href="/userDashboard/search"
+                  className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
+                >
+                  Dashboard
+                </Link>
+              </SheetClose>
+              <SheetClose
+                className="w-full text-left hover:bg-accent hover:text-red-600 px-4 py-2 text-sm text-red-600 flex items-center"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </SheetClose>
+            </div>
+          </>
+        ) : (
+          <div className="mt-3 space-y-2 flex flex-col w-full">
+            <Button
+              className="cursor-pointer rounded-full"
+              variant="outline"
+              asChild
+            >
+              <Link href="/user-login">Login</Link>
+            </Button>
+            <Button
+              className="cursor-pointer rounded-full bg-blue-700 hover:bg-blue-700/90"
+              asChild
+            >
+              <Link href="user-signup">Create Account</Link>
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  };
   const handleSearch = (searchData: {
     query: string;
     tab: string;
@@ -284,7 +286,7 @@ const Navigation = () => {
                 <Link href="/" className="flex items-center space-x-2">
                   <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
                   <span className={`text-2xl font-bold ${scrolled || !isHomePage ? 'text-gray-900' : 'text-[#F9FAFB]'}`}>
-                    Bookies
+                    Rhace
                   </span>
                 </Link>
               </div>
@@ -323,7 +325,7 @@ const Navigation = () => {
             <div className="hidden md:ml-6 md:flex items-center space-x-4">
               {renderAuthButtons()}
             </div>
-            {/* <div className="md:hidden flex items-center">
+            <div className="md:hidden flex items-center">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className={`${scrolled || isSearchPage ? 'text-gray-700' : 'text-white'}`}>
@@ -351,7 +353,7 @@ const Navigation = () => {
                   {renderMobileMenu()}
                 </SheetContent>
               </Sheet>
-            </div> */}
+            </div>
           </div>
         </div>
       </nav>
