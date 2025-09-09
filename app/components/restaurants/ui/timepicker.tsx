@@ -12,9 +12,11 @@ import { Label } from "../../ui/label";
 export function TimePicker({
   value,
   onChange,
+  className,
 }: {
   value?: string;
   onChange?: (val: string) => void;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const slots = [
@@ -31,7 +33,7 @@ export function TimePicker({
           variant="outline"
           className={cn(
             "w-full justify-start text-left font-normal bg-[#F9FAFB] border border-[#E5E7EB] flex-col items-start rounded-xl px-6 min-w-[150px] flex h-[60px]",
-            !value && "text-muted-foreground"
+            !value && "text-muted-foreground", className
           )}
         >
           <Label htmlFor="date" className="text-black">

@@ -4,7 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import { api } from "@/app/lib/axios-config";
 import { SessionService } from "./session.service";
 import API from "../userAxios";
-import { apiFetcher } from "@/app/lib/fetcher";
+// import { apiFetcher } from "@/app/lib/fetcher";
+import { getFrontendUrl } from "../../config";
 
 interface LoginResponse {
   message: string;
@@ -40,7 +41,7 @@ export class AuthService {
   private static SESSION_ID_KEY = "session_id";
   private static AUTH_TOKEN_KEY = "auth_token";
 
-  static async fetchMyProfile(id: string): Promise<UserProfile | null> {
+static async fetchMyProfile(id: string): Promise<UserProfile | null> {
     try {
       const response = await API.get(`/users/profile/${id}`);
       if (response.status === 200) {
@@ -57,17 +58,18 @@ export class AuthService {
 
 
   static async setToken(token: string) {
-    await apiFetcher(`/api/auth/set-user-token`, {
+    await fetch(`${getFrontendUrl()}/api/auth/set-user-token`, {
       method: "POST",
       body: JSON.stringify({ token }),
     });
   }
 
   static async getToken(): Promise<string | null> {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(this.AUTH_TOKEN_KEY);
-    }
-    return null;
+    const response = await fetch(`${getFrontendUrl()}/api/auth/get-user-token`, {
+      method: "GET",
+    });
+    const data = await response.json();
+    return data.token;
   }
 
   static async getUser(id: string): Promise<UserProfile | null> {
@@ -82,7 +84,7 @@ export class AuthService {
   }
 
   static async clearToken() {
-    await apiFetcher(`/api/auth/clear-token`, {
+    await fetch(`${getFrontendUrl()}/api/auth/clear-token`, {
       method: "GET",
     });
   }

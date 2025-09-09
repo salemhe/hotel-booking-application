@@ -21,10 +21,10 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/app/components/ui/input";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { Badge } from "@/app/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 
 import { getAuthUser } from "@/app/utils/auth";
 

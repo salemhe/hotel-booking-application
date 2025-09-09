@@ -1,12 +1,12 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
+import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/app/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
+import { Input } from "@/app/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table";
 import {
   CheckCircle,
   ChevronDown,
@@ -21,11 +21,12 @@ import {
   Search,
   TrendingUp
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
  import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";
-import { useVendorDashboardSocket } from "@/hooks/useVendorDashboardSocket";
+import { useVendorDashboardSocket } from "@/app/hooks/useVendorDashboardSocket";
+import Image from "next/image";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -354,7 +355,8 @@ export default function RestaurantPayments() {
   
 
   const AccountModal = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) => (
-    open ? (
+    <>
+    { open ? (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
         <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
           <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-600" onClick={onClose}>&times;</button>
@@ -413,39 +415,41 @@ export default function RestaurantPayments() {
             <Button className="w-full bg-teal-600 hover:bg-teal-700" onClick={saveAccount}>{isEdit ? "Save Changes" : "Add Account"}</Button>
           </div>
         </div>
-      ) : null}
+      </div>
+    ) : null }
     </>
   );
-  const rightNav = [
-    {
-      icon: <EyeClosed className="text-[#606368] size-5" />,
-      title: "Hide Charts",
-      variance: "white",
-      onclick: () => {},
-    },
-    {
-      icon: <ArrowUpRightFromSquare className="size-5" />,
-      title: "Export",
-      variance: "white",
-      onclick: () => {},
-    },
-    {
-      icon: <Plus className="size-5" />,
-      title: "Withdraw",
-      variance: "green",
-      onclick: () => {
-        setAccountForm({
-          bankName: "",
-          accountNumber: "",
-          type: "savings",
-          id: "",
-          accountName: "",
-          bankLogoUrl: "",
-        });
-        setShowAddModal(true);
-      },
-    },
-  ];
+
+  // const rightNav = [
+  //   {
+  //     icon: <EyeClosed className="text-[#606368] size-5" />,
+  //     title: "Hide Charts",
+  //     variance: "white",
+  //     onclick: () => {},
+  //   },
+  //   {
+  //     icon: <ArrowUpRightFromSquare className="size-5" />,
+  //     title: "Export",
+  //     variance: "white",
+  //     onclick: () => {},
+  //   },
+  //   {
+  //     icon: <Plus className="size-5" />,
+  //     title: "Withdraw",
+  //     variance: "green",
+  //     onclick: () => {
+  //       setAccountForm({
+  //         bankName: "",
+  //         accountNumber: "",
+  //         type: "savings",
+  //         id: "",
+  //         accountName: "",
+  //         bankLogoUrl: "",
+  //       });
+  //       setShowAddModal(true);
+  //     },
+  //   },
+  // ];
 
   return (
     <div className="flex h-screen bg-gray-50">

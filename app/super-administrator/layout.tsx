@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ThemeProvider } from "./ThemeContext";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { AuthService } from "@/app/lib/api/services/auth.service";
 import {
@@ -18,6 +17,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { ThemeProvider } from "../components/theme-provider";
 
 interface SidebarItemType {
   icon: React.ElementType;

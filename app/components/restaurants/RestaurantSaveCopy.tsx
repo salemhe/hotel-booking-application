@@ -16,7 +16,7 @@ const RestaurantSaveCopy = ({ id }: { id: string }) => {
       });
   };
   return (
-    <div className="flex gap-4">
+    <div className="gap-4 hidden md:flex">
       <Button onClick={handleCopy} variant="outline" className="rounded-xl cursor-pointer">
         <Share2Icon />
         Share

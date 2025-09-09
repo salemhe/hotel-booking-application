@@ -20,9 +20,11 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 const DatePicker = ({
       value,
   onChange,
+  className,
 }: {
   value?: Date;
   onChange?: (val: Date) => void;
+  className?: string;
 }) => {
       const [open, setOpen] = useState(false);
       const [currentMonth, setCurrentMonth] = useState(value || new Date());
@@ -81,7 +83,7 @@ const DatePicker = ({
             variant="outline"
             className={cn(
               "w-full justify-start text-left font-normal bg-[#F9FAFB] border border-[#E5E7EB] flex-col items-start rounded-xl px-6 min-w-[150px] flex h-[60px]",
-              !value && "text-muted-foreground"
+              !value && "text-muted-foreground", className
             )}
           >
             <Label htmlFor="date" className="text-black">

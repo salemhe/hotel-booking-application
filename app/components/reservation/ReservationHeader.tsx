@@ -15,7 +15,7 @@ const ReservationHeader = ({
   const { setPage } = useReservations();
   const router = useRouter()
   return (
-    <div className="bg-white border-b">
+    <div className="bg-white border-b hidden md:block">
       <div className="max-w-4xl mx-auto px-4 py-4">
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div className="flex items-center gap-3">

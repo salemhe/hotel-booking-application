@@ -1,5 +1,5 @@
-import Navigation from "@/app/components/Navigation";
-import Footer from "@/app/components/Footer";
+// import Navigation from "@/app/components/Navigation";
+// import Footer from "@/app/components/Footer";
 import { Inter } from "next/font/google";
 
 
@@ -14,9 +14,9 @@ export default function layout({
 
   return (
     <div className={`flex flex-col ${inter.className} min-h-screen bg-[#F9FAFB]`}>
-      <Navigation />
+      {/* <Navigation /> */}
       <main className="grow ">{children}</main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

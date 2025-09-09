@@ -36,7 +36,7 @@ const RestaurantImages = ({
 
   return (
     <>
-      <div className="grid md:grid-flow-col gap-2 w-full rounded-xl overflow-clip h-[400px] md:h-[460px] relative">
+      <div className="hidden md:grid md:grid-flow-col gap-2 w-full rounded-xl overflow-clip h-[400px] md:h-[460px] relative">
         <Button
           onClick={() => {
             setCurrentImageIndex(0);
@@ -64,7 +64,7 @@ const RestaurantImages = ({
       {showImageModal && (
         <div
           className={cn(
-            "fixed inset-0 z-90 flex items-center justify-center p-2 h-screen w-full sm:p-4 backdrop-blur-sm bg-black/80"
+            "fixed inset-0 z-90 hidden md:flex items-center justify-center p-2 h-screen w-full sm:p-4 backdrop-blur-sm bg-black/80"
           )}
         >
           <button

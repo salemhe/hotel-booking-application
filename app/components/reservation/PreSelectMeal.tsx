@@ -27,10 +27,23 @@ export interface MenuItem {
 }
 
 export default function PreSelectMeal({ id }: { id: string }) {
-  const {activeTab, setActiveTab, additionalNote, setAdditionalNote, menuItems, setMenuItems, vendor, time, guestCount, date, handleSubmit, isLoading} = useReservations()
+  const {
+    activeTab,
+    setActiveTab,
+    additionalNote,
+    setAdditionalNote,
+    menuItems,
+    setMenuItems,
+    vendor,
+    time,
+    guestCount,
+    date,
+    handleSubmit,
+    isLoading,
+  } = useReservations();
   const [visibleCount, setVisibleCount] = useState(3);
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const tabs = [
     {
@@ -55,34 +68,34 @@ export default function PreSelectMeal({ id }: { id: string }) {
     },
   ];
 
-      const fetchMenuItems = useCallback(async () => {
-        setLoading(true);
-        try {
-            const res = await API.get(`/vendors/menus?vendorId=${id}`);
-            const data = res.data.menus as MenuItem[];
-            setMenuItems(
-                data.map((item) => ({
-                    ...item,
-                    selected: false, 
-                    quantity: 1,
-                    specialRequest: "",
-                }))
-            );
-            if (data.length === 0) {
-                toast.info("No menu items available at the moment.");
-            }
-        } catch (error) {
-            console.error("Error fetching menu items:", error);
-            toast.error("Failed to load menu items. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+  const fetchMenuItems = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await API.get(`/vendors/menus?vendorId=${id}`);
+      const data = res.data.menus as MenuItem[];
+      setMenuItems(
+        data.map((item) => ({
+          ...item,
+          selected: false,
+          quantity: 1,
+          specialRequest: "",
+        }))
+      );
+      if (data.length === 0) {
+        toast.info("No menu items available at the moment.");
+      }
+    } catch (error) {
+      console.error("Error fetching menu items:", error);
+      toast.error("Failed to load menu items. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    useEffect(() => {
-        fetchMenuItems();
-    }, [])
-      const menuFiltered = menuItems.filter((a) => a.category === activeTab);
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
+  const menuFiltered = menuItems.filter((a) => a.category === activeTab);
 
   // const router = useRouter();
   const handleQuantityChange = (id: string, change: number, type?: string) => {
@@ -137,9 +150,9 @@ export default function PreSelectMeal({ id }: { id: string }) {
     );
   };
 
-  const handleClick =() => {
-    router.push("/completed")
-  }
+  const handleClick = () => {
+    router.push("/completed");
+  };
 
   if (loading) {
     return (
@@ -155,54 +168,58 @@ export default function PreSelectMeal({ id }: { id: string }) {
       <ReservationHeader title="Pre-Select your Meal" index={2} />
       <div className="bg-gray-100  w-full">
         <div className="max-w-4xl mx-auto rounded-md mb-6 p-4">
-          <div className="text-sm text-gray-600 mb-1">
+          <div className="text-xs md:text-sm text-gray-600 mb-1">
             Reservation Completed
           </div>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-            <span className="font-medium">{vendor?.businessName || "Restaurant Name"}</span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs md:text-sm">
+            <span className="font-medium">
+              {vendor?.businessName || "Restaurant Name"}
+            </span>
             <span className="flex items-center">
-              <span className="size-2 bg-black rounded-full mx-2"></span>
-                {date
-                ? date.toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                  }).replace(
-                  /^(\d{1,2})/,
-                  (d) =>
-                    d +
-                    (["1", "21", "31"].includes(d)
-                    ? "st"
-                    : ["2", "22"].includes(d)
-                    ? "nd"
-                    : ["3", "23"].includes(d)
-                    ? "rd"
-                    : "th")
-                  )
+              <span className="md:size-2 size-1 bg-black rounded-full mx-2"></span>
+              {date
+                ? date
+                    .toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
+                    .replace(
+                      /^(\d{1,2})/,
+                      (d) =>
+                        d +
+                        (["1", "21", "31"].includes(d)
+                          ? "st"
+                          : ["2", "22"].includes(d)
+                          ? "nd"
+                          : ["3", "23"].includes(d)
+                          ? "rd"
+                          : "th")
+                    )
                 : "N/A"}
             </span>
             <span className="flex items-center">
-              <span className="size-2 bg-black rounded-full mx-2"></span>
-                {time
+              <span className="md:size-2 size-1 bg-black rounded-full mx-2"></span>
+              {time
                 ? (() => {
-                  const [hourStr, minuteStr] = time.split(":");
-                  let hour = parseInt(hourStr, 10);
-                  const minute = minuteStr || "00";
-                  const ampm = hour >= 12 ? "PM" : "AM";
-                  hour = hour % 12 || 12;
-                  return `${hour}:${minute} ${ampm}`;
+                    const [hourStr, minuteStr] = time.split(":");
+                    let hour = parseInt(hourStr, 10);
+                    const minute = minuteStr || "00";
+                    hour = hour % 12 || 12;
+                    return `${hour}:${minute}`;
                   })()
                 : "N/A"}
             </span>
             <span className="flex items-center">
-              <span className="size-2 bg-black rounded-full mx-2"></span>
-              {guestCount || "N/A"} Guest{guestCount && parseInt(guestCount) > 1 ? "s" : ""}
+              <span className="md:size-2 size-1 bg-black rounded-full mx-2"></span>
+              {guestCount || "N/A"} Guest
+              {guestCount && parseInt(guestCount) > 1 ? "s" : ""}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-2">
+      <div className="max-w-4xl mx-auto px-4 mb-15 py-2">
         <div className="bg-[#FFFBEB] border border-[#E0B300] rounded-2xl p-4 mb-6">
           <div className="flex gap-3">
             <div className="text-[#E0B300]">
@@ -212,6 +229,7 @@ export default function PreSelectMeal({ id }: { id: string }) {
                 viewBox="0 0 40 40"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                className="size-[28px] md:size-[40px]"
               >
                 <g clipPath="url(#clip0_227_468)">
                   <path
@@ -224,10 +242,10 @@ export default function PreSelectMeal({ id }: { id: string }) {
               </svg>
             </div>
             <div>
-              <h3 className="font-medium mb-1">
+              <h3 className="font-medium text-xs md:text-md mb-1">
                 Want to pre-select your meal?
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="md:text-sm text-xs text-gray-600">
                 Pre-selecting your meal helps the restaurant prepare faster and
                 ensures your favorite dishes are available. You can always make
                 changes later
@@ -246,10 +264,10 @@ export default function PreSelectMeal({ id }: { id: string }) {
               <TabsTrigger
                 key={i}
                 value={tab.value}
-                className={`px-4 py-2 rounded-full shadow-none! cursor-pointer ${
+                className={`px-4 py-2 text-xs md:text-sm rounded-full shadow-none! cursor-pointer ${
                   activeTab === tab.value
                     ? "bg-[#0A6C6D]! text-white!"
-                    : "text-[#6B7280]"
+                    : "text-[#6B7280] bg-gray-100"
                 }`}
               >
                 {tab.name}
@@ -362,7 +380,9 @@ export default function PreSelectMeal({ id }: { id: string }) {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8 rounded-full border-[#1E3A8A] border-2 text-[#1E3A8A]"
-                                onClick={() => handleQuantityChange(item._id, 1)}
+                                onClick={() =>
+                                  handleQuantityChange(item._id, 1)
+                                }
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -432,7 +452,7 @@ export default function PreSelectMeal({ id }: { id: string }) {
           </div>
         )}
 
-        <Card className="bg-[#E9EBF3] rounded-2xl border-[#E5E7EB] mb-6">
+        <Card className="bg-[#E9EBF3] hidden md:block rounded-2xl border-[#E5E7EB] mb-6">
           <CardContent className="p-6">
             <h3 className="font-medium mb-4">
               Your Selection ({selectedItems.length} items)
@@ -456,7 +476,7 @@ export default function PreSelectMeal({ id }: { id: string }) {
           </CardContent>
         </Card>
 
-        <div className="mb-6">
+        <div className="hidden md:block mb-6">
           <p className="text-sm font-medium mb-2">
             Additional note for the restaurant
           </p>
@@ -467,16 +487,62 @@ export default function PreSelectMeal({ id }: { id: string }) {
             className="min-h-[100px] resize-none rounded-2xl p-4"
           />
         </div>
-
       </div>
-      <div className="w-full bg-white border-t border-[#E5E7EB]">
-        <div className="flex flex-col sm:flex-row justify-between gap-2 items-center max-w-4xl mx-auto p-4">
-          <Button onClick={handleClick}  variant="ghost" className="text-teal-600">
-            Skip for now
-          </Button>
-          <Button onClick={handleSubmit} disabled={!selectedItems.length || isLoading} className="bg-teal-600 hover:bg-teal-700 px-8 w-full max-w-xs">
-            {isLoading ? <span className="flex gap-2"><Loader2 className="animate-spin" /> Confirming</span> : "Confirm Meal Selection"}
-          </Button>
+      <div className="w-full fixed bottom-0 left-0 bg-white border-t border-[#E5E7EB]">
+        <div className="flex justify-between gap-2 items-center max-w-4xl mx-auto p-4">
+          <div className="hidden md:block w-full">
+            <Button
+              onClick={handleClick}
+              variant="ghost"
+              className="text-teal-600"
+            >
+              Skip for now
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={!selectedItems.length || isLoading}
+              className="bg-[#0A6C6D] rounded-xl px-8 w-full max-w-xs hidden md:inline-flex"
+            >
+              {isLoading ? (
+                <span className="flex gap-2">
+                  <Loader2 className="animate-spin" /> Confirming
+                </span>
+              ) : (
+                "Confirm Meal Selection"
+              )}
+            </Button>
+          </div>
+          <div className="md:hidden w-full flex justify-between items-center gap-2">
+            {selectedItems.length > 0 ? (
+              <Button onClick={handleSubmit} className="flex items-center justify-between rounded-xl bg-[#0A6C6D] px-8 w-full">
+                <span>Checkout ({selectedItems.length} items)</span>
+                <span>₦{calculateSubtotal().toLocaleString()}</span>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={handleClick}
+                  variant="ghost"
+                  className="text-teal-600"
+                >
+                  Skip for now
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!selectedItems.length || isLoading}
+                  className="bg-[#0A6C6D] rounded-xl px-8 w-full max-w-[170px] md:hidden"
+                >
+                  {isLoading ? (
+                    <span className="flex gap-2">
+                      <Loader2 className="animate-spin" /> Confirming
+                    </span>
+                  ) : (
+                    "Confirm"
+                  )}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -7,13 +7,15 @@ import API from "@/app/lib/api/userServerAxios";
 import { Restaurant } from "../../lib/types/restaurant";
 import RestaurantImages from "./RestaurantImages";
 import RestaurantSaveCopy from "./RestaurantSaveCopy";
+import BookingPopup from "./BookingPopup";
+import RestaurantImages2 from "./RestaurantImages2";
 const fetchRestaurant = async (
   id: string
 ): Promise<{
   data: Restaurant[];
 }> => {
   try {
-    const response = await API.get(`/vendors?vendorId=${id}`)
+    const response = await API.get(`/vendors?vendorId=${id}`);
     const data = await response.data;
     return { data };
   } catch (error) {
@@ -25,19 +27,24 @@ const fetchRestaurant = async (
 const RestaurantsPage = async ({ id }: { id: string }) => {
   const data = await fetchRestaurant(id);
   const restaurant = data.data[0];
+
   return (
-    <main className="mx-auto mt-[85px] py-8 px-4 max-w-7xl sm:px-6 lg:px-8">
+    <main className="mx-auto md:mt-[85px] mb-[160px] md:mb-[16px] md:py-8 max-w-7xl md:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row gap-8 w-full">
-        <div className="w-full space-y-8">
+        <div className="w-full space-y-4 md:space-y-8">
           <div className="col-span-2">
             <div className="w-full space-y-6">
               <RestaurantImages
                 images={restaurant?.profileImages ?? []}
                 name={restaurant.businessName}
               />
+              <RestaurantImages2
+                images={restaurant?.profileImages ?? []}
+                name={restaurant.businessName}
+              />
               <div className="space-y-2">
                 <div className="flex flex-col md:flex-row md:justify-between md:items-cente w-full gap-4">
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2 items-center pt-2 md:pt-0 px-4 md:px-0">
                     <h1 className="text-2xl text-[#111827] font-semibold">
                       {restaurant.businessName}{" "}
                     </h1>{" "}
@@ -48,9 +55,12 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
                   </div>
                   <RestaurantSaveCopy id={id} />
                 </div>
-                <div className="flex gap-1 items-center text-xs">
+                <div className="md:flex hidden gap-1 items-center text-xs">
                   <Star className="fill-[#F0AE02] text-[#F0AE02] h-4" />{" "}
-                  {restaurant.rating} <span className="text-[#6B7280]">({restaurant.reviews.toLocaleString()} reviews)</span>
+                  {restaurant.rating}{" "}
+                  <span className="text-[#6B7280]">
+                    ({restaurant.reviews.toLocaleString()} reviews)
+                  </span>
                 </div>
               </div>
             </div>
@@ -59,8 +69,8 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
             <RestaurantInfo data={restaurant} />
           </div>
         </div>
-        <div className="space-y-8">
-          <div className="p-4 rounded-2xl bg-[#E7F0F0] border border-[#E5E7EB]">
+        <div className="space-y-8 px-4 md:px-0">
+          <div className="p-4 rounded-2xl bg-[#E7F0F0] border border-[#E5E7EB] hidden md:block">
             <h2 className="text-[#111827] font-semibold text-xl">
               Reserve your Table
             </h2>
@@ -79,7 +89,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-900 mb-1">
+              <h3 className="font-semibold w-full text-gray-900 mb-1">
                 Contact Information
               </h3>
               <div className="flex items-center gap-2">
@@ -110,6 +120,7 @@ const RestaurantsPage = async ({ id }: { id: string }) => {
           </div>
         </div>
       </div>
+      <BookingPopup id={id} />
     </main>
   );
 };
