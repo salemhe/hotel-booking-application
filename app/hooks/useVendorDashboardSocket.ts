@@ -45,11 +45,11 @@ interface DashboardData {
     prepaidReservations: number;
     expectedGuestsToday: number;
     pendingPayments: number;
-    todaysReservations: any[];
-    reservationTrends: any;
-    customerFrequency: any;
-    revenueByCategory: any;
-    reservationSource: any;
+    todaysReservations: string[];
+    reservationTrends: string;
+    customerFrequency: string;
+    revenueByCategory: string;
+    reservationSource: string;
     vendorName?: string;
     vendorProfilePictureUrl?: string;
 }
