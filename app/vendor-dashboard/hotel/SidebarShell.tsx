@@ -29,7 +29,6 @@ const bottomSidebarItems = [
   { icon: ArrowRightOnRectangleIcon, label: "Logout", href: "/logout" },
 ];
 
-
 export default function SidebarShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
@@ -37,12 +36,12 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
 
   return (
     <ThemeProvider>
-      
+
         <div className="flex h-screen bg-gray-50">
           {/* Sidebar */}
-          <div 
-            className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-[#042626] text-white shadow-xl border-r border-teal-700 transition-all duration-300 ${sidebarWidth}`} style={{ minWidth: sidebarCollapsed ? '4rem' : '16rem', width: sidebarCollapsed ? '4rem' : '16rem' 
-              
+          <div
+            className={`fixed z-30 top-0 left-0 h-full flex flex-col bg-[#042626] text-white shadow-xl border-r border-teal-700 transition-all duration-300 ${sidebarWidth}`} style={{ minWidth: sidebarCollapsed ? '4rem' : '16rem', width: sidebarCollapsed ? '4rem' : '16rem'
+
             }}>
             {/* Logo and Collapse Button */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-teal-700">
@@ -68,7 +67,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
             <nav className="flex-1 px-2 py-4 overflow-y-auto flex flex-col justify-between">
               <div>
                 {/* Vendor Name Display (not editable) */}
-                
+
                 <ul className="space-y-1">
                   {mainSidebarItems.map((item, index) => {
                     const isActive = pathname === item.href;
@@ -139,7 +138,7 @@ export default function SidebarShell({ children }: { children: React.ReactNode }
             {children}
           </div>
         </div>
-      
+
     </ThemeProvider>
   );
 }
