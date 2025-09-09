@@ -393,7 +393,7 @@
 
 
 "use client";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Mail, Lock, Loader2, ArrowRight, AlertCircle } from "lucide-react";
@@ -412,7 +412,7 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { AuthService } from "@/app/lib/api/services/userAuth.service";
 
-const UserLoginPage = () => {
+const UserLoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -575,6 +575,31 @@ const UserLoginPage = () => {
         </Card>
       </div>
     </div>
+  );
+
+};
+
+const UserLoginPage = () => {
+  return (
+    <Suspense fallback={<div className="min-h-[100dvh] bg-white flex items-center justify-center p-4 sm:p-6 md:p-8">
+      <div className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-md">
+        <Card className="border rounded-lg shadow-md bg-white">
+          <CardHeader className="space-y-3 pb-6 md:pb-8 px-6 sm:px-8">
+            <CardTitle className="text-2xl sm:text-3xl font-semibold text-left text-[#222] mt-8">
+              Welcome back
+            </CardTitle>
+            <CardDescription className=" mt-[-3px] text-left text-[#6d727b] text-sm sm:text-base">
+              Enter your credentials to access your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-6 sm:px-8">
+            <div className="animate-pulse">Loading...</div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>}>
+      <UserLoginForm />
+    </Suspense>
   );
 };
 
