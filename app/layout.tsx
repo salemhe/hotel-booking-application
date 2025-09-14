@@ -1,4 +1,4 @@
-import ErrorBoundary from "@/app/components/Errorboundary";
+import ErrorBoundary from "@/components/Errorboundary";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { ToastContainer } from 'react-toastify';

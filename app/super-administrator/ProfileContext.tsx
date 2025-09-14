@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";
+import { AuthService, UserProfile } from "@/lib/api/services/auth.service";
 
 interface ProfileContextType {
   profile: UserProfile | null;

@@ -1,4 +1,4 @@
-import SuccessPage from "@/app/components/SuccessPage";
+import SuccessPage from "@/components/SuccessPage";
 import React from "react";
 
 const page = async ({ params }: { params: Promise<{ id: string }> }) => {

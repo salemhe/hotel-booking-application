@@ -1,16 +1,16 @@
 "use client";
 
-import { HotelFormData } from '@/types/hotels';
+import { HotelFormData } from '@/lib/types/hotels';
 import { useState } from 'react';
 import { SetupSteps } from './components/setup-steps';
 import { HotelSetupForm } from './components/hotel-setup-form';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/components/ui/button';
 import Header from './components/Header';
 import { AddRoomType } from './components/add-rooms';
-import { RoomTypes } from '@/types/rooms';
+import { RoomTypes } from '@/lib/types/rooms';
 import { Plus } from 'lucide-react';
 import { BookingPolicyForm } from './components/booking-policy';
-import { BookingPolicyData } from '@/types/booking-policy';
+import { BookingPolicyData } from '@/lib/types/booking-policy';
 import HotelBookingInterface from './components/rooms-confirmation';
 
 export default function Home() {

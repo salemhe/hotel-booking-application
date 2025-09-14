@@ -1,4 +1,4 @@
-import { MenuUpdateForm } from "@/app/components/MenuUpdateForm";
+import { MenuUpdateForm } from "@/components/MenuUpdateForm";
 
 export default function AddMenuButton() {
     const formData = {

@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
-import { Textarea } from '@/app/components/ui/textarea';
-import { Checkbox } from '@/app/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Info } from 'lucide-react';
-import { advanceBookingOptions, BookingPolicyData, cancellationTypes, checkInTimes, freeCancellationOptions } from '@/types/booking-policy';
+import { advanceBookingOptions, BookingPolicyData, cancellationTypes, checkInTimes, freeCancellationOptions } from '@/lib/types/booking-policy';
 
 interface BookingPolicyFormProps {
   onSubmit: (data: BookingPolicyData) => void;

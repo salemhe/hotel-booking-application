@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRealtimeReservations } from '@/app/hooks/useRealtimeReservations';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Button } from '@/app/components/ui/button';
-import { Badge } from '@/app/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
+import { useRealtimeReservations } from '@/hooks/useRealtimeReservations';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Calendar,
   Clock,
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { format, parseISO, isToday } from 'date-fns';
 import Link from 'next/link';
-import { AuthService } from '@/app/lib/api/services/auth.service';
+import { AuthService } from '@/lib/api/services/auth.service';
 import { toast } from 'sonner';
 
 interface DashboardStats {

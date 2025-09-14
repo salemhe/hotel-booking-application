@@ -1,17 +1,17 @@
 "use client";
 
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/components/ui/card";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Textarea } from "@/app/components/ui/textarea";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ChevronLeft,
   ChevronRight,
@@ -26,7 +26,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 // import Link from "next/link";
-import { AuthService } from "@/app/lib/api/services/auth.service";
+import { AuthService } from "@/lib/api/services/auth.service";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useAuth } from "@/app/contexts/AuthContext";

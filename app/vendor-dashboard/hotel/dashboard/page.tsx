@@ -60,12 +60,12 @@ import {
   Search, Bell, ChevronDown, X, Plus, TrendingDown, TrendingUp,
   Calendar, CreditCard, Users, DollarSign
 } from 'lucide-react'
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Input } from '@/app/components/ui/input'
-import { Badge } from '@/app/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar'
-import { NativeSelect as Select } from '@/app/components/ui/select'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { NativeSelect as Select } from '@/components/ui/select'
 import { 
   getDashboardStats, 
   getTodayReservations, 
@@ -74,7 +74,7 @@ import {
   getRevenueByCategory,
   getUpcomingReservations,
   getUserProfile
-} from '@/app/lib/api-service'
+} from '@/lib/api-service'
 
 export default function Dashboard() {
   const [showNotification, setShowNotification] = useState(true)

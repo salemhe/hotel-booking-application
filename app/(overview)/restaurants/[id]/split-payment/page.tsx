@@ -4,15 +4,15 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/components/ui/card";
-import SplitPaymentForm from "@/app/components/SplitPaymentForm";
+} from "@/components/ui/card";
+import SplitPaymentForm from "@/components/SplitPaymentForm";
 import { toast } from "sonner";
 
 export default function RestaurantSplitPaymentPage() {

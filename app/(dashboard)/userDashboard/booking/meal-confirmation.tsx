@@ -1,5 +1,5 @@
-import ReservationDetails from "@/app/components/ReservationDetails";
-import MealSelectionSummary from "@/app/components/MealSelectionSummary";
+import ReservationDetails from "@/components/ReservationDetails";
+import MealSelectionSummary from "@/components/MealSelectionSummary";
 
 export default function MealConfirmation() {
   return (

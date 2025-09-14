@@ -1,12 +1,12 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
-import { Input } from "@/app/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   CheckCircle,
   ChevronDown,
@@ -24,8 +24,8 @@ import {
 import { JSX, useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
- import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";
-import { useVendorDashboardSocket } from "@/app/hooks/useVendorDashboardSocket";
+ import { AuthService, UserProfile } from "@/lib/api/services/auth.service";
+import { useVendorDashboardSocket } from "@/hooks/useVendorDashboardSocket";
 import Image from "next/image";
 
 const getStatusColor = (status: string) => {

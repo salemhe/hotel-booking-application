@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent } from '@/app/components/ui/card';
-import { Button } from '@/app/components/ui/button';
-import { Badge } from '@/app/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
-import { Input } from '@/app/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import { 
   Calendar, 
   Clock, 
@@ -24,8 +24,8 @@ import {
 import { format, parseISO, isToday, isTomorrow, isPast } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/app/components/ui/dropdown-menu';
-import { useRealtimeBookings, UserBooking } from '@/app/hooks/useRealtimeBookings';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useRealtimeBookings, UserBooking } from '@/hooks/useRealtimeBookings';
 
 export default function BookingsPage() {
   const { bookings, loading, connected, cancelBooking } = useRealtimeBookings();

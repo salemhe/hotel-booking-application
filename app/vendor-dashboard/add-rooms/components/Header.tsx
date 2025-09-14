@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react'
 // import {
 //   SidebarTrigger,
 // } from "@/app/components/ui/sidebar"
-import { Button } from "@/app/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
-import { AuthService } from "@/app/lib/api/services/auth.service"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { AuthService } from "@/lib/api/services/auth.service"
 import { ArrowLeft, BellDot, ChevronDown, LogOut } from "lucide-react"
 import { useRouter } from 'next/navigation'
 // import { api } from '@/lib/axios-config'
-import WebSocketStatus from '@/app/components/WebSocketStatus'
-import API from '@/app/lib/api/axios'
+import WebSocketStatus from '@/components/WebSocketStatus'
+import API from '@/lib/api/axios'
 
 export interface VendorProfile {
   _id: string

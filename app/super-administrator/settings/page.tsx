@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { CheckCircle, XCircle, Loader2, Moon, Sun } from "lucide-react";
 import { useTheme } from "../ThemeContext";
-import { AuthService, UserProfile } from "@/app/lib/api/services/auth.service";
+import { AuthService, UserProfile } from "@/lib/api/services/auth.service";
 
 export default function SuperAdminSettings() {
   // Real user data

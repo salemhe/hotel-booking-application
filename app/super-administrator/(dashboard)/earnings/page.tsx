@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { apiFetcher } from '@/app/lib/fetcher'
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card'
+import { apiFetcher } from '@/lib/fetcher'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/app/components/ui/table'
+} from '@/components/ui/table'
 import { DollarSign, Hotel, UtensilsCrossed } from 'lucide-react'
 
 // API_URL removed, use apiFetcher

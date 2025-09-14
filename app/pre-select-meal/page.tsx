@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import MealSelectionComponent from './MealSelectionComponent';
-import { Skeleton } from '@/app/components/ui/skeleton'; // Example for a loading UI
+import { Skeleton } from '@/components/ui/skeleton'; // Example for a loading UI
 
 // A simple loading fallback component
 function LoadingFallback() {

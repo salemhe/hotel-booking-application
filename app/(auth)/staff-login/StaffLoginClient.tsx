@@ -17,7 +17,7 @@ import {
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/app/contexts/AuthContext";
-import API from "@/app/lib/api/axios";
+import API from "@/lib/api/axios";
 
 interface StaffProfile {
   id?: string;

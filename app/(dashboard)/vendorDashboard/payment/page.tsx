@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { PaymentStats } from "@/app/components/PaymentStats";
-import { PaymentBreakdown } from "@/app/components/PaymentBreakdown";
-import { Button } from "@/app/components/ui/button";
+import { PaymentStats } from "@/components/PaymentStats";
+import { PaymentBreakdown } from "@/components/PaymentBreakdown";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Withdraw from "@/app/components/Withdraw";
-import { VendorPaymentSetup } from "@/app/components/VendorPaymentSetup";
+import Withdraw from "@/components/Withdraw";
+import { VendorPaymentSetup } from "@/components/VendorPaymentSetup";
 // import AccountDetails from "@/app/components/AccountDetails";
 
 export default function Payment() {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
-import { DecodedToken } from "./app/lib/api/services/userAuth.service";
+import { DecodedToken } from "./lib/api/services/userAuth.service";
 
 export function middleware(request: NextRequest) {
   const { pathname, origin } = request.nextUrl;

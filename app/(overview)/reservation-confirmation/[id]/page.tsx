@@ -1,5 +1,5 @@
 import { CheckCircle, ChevronLeft } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/app/components/ui/card";
+} from "@/components/ui/card";
 import { redirect } from "next/navigation";
 
 export default async function ReservationConfirmationPage({

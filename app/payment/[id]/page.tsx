@@ -1,5 +1,5 @@
 import React from 'react'
-import PaymentPage from '../../components/Payment'
+import PaymentPage from '../../../components/Payment'
 
 const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;

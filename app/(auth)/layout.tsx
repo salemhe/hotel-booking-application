@@ -1,4 +1,4 @@
-import Navigation from "@/app/components/Navigation";
+import Navigation from "@/components/Navigation";
 import React from "react";
 
 const layout = ({

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table";
-import { Badge } from "@/app/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, CreditCard, Calendar } from "lucide-react";
-import { BookingService } from "@/app/lib/api/services/bookings.service";
-import { DashboardService } from "@/app/lib/api/services/dashboard.service";
+import { BookingService } from "@/lib/api/services/bookings.service";
+import { DashboardService } from "@/lib/api/services/dashboard.service";
 import { ProfileProvider, useProfile } from "../ProfileContext";
 // import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";

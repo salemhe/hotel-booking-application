@@ -1,16 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { AuthService } from "@/app/lib/api/services/auth.service";
-import { MenuService, MenuItem } from "@/app/lib/api/services/menu.service";
+import { AuthService } from "@/lib/api/services/auth.service";
+import { MenuService, MenuItem } from "@/lib/api/services/menu.service";
 import { toast } from "sonner";
-import { MenuPopup } from "@/app/components/MenuPopup";
-import { Button } from "@/app/components/ui/button";
-import SocketService from "@/app/lib/socket";
-import { Input } from "@/app/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
-import { Badge } from "@/app/components/ui/badge";
-import { Switch } from "@/app/components/ui/switch";
+import { MenuPopup } from "@/components/MenuPopup";
+import { Button } from "@/components/ui/button";
+import SocketService from "@/lib/socket";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
   Search,
   Grid3X3,
@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 
 export default function VendorMenuPage() {

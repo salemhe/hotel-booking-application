@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -12,10 +12,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
+} from "@/components/ui/table";
 import { MapPin, Edit, Trash2, Plus } from "lucide-react";
-import SuperAdminSidebar from "@/app/components/sidebars/SuperAdminSidebar";
-import { SidebarProvider } from "@/app/components/ui/sidebar";
+import SuperAdminSidebar from "@/components/sidebars/SuperAdminSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 const API_URL = 'https://hotel-booking-app-backend-30q1.onrender.com/api/';
 
 interface Location {

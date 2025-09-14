@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Booking } from '@/types/booking';
+import { Booking } from '@/lib/types/booking';
 import { MoreHorizontal } from 'lucide-react';
 
 interface BookingTableProps {

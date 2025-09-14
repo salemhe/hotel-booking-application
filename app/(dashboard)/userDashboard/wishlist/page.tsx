@@ -1,7 +1,7 @@
 import { Heart } from "lucide-react"
 import Image from "next/image";
 // import Layout from "@/app/components/layout"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function Favorites() {
   const favorites = [

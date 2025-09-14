@@ -4,8 +4,8 @@ import Image from 'next/image';
 import { ArrowLeft, MapPin, Edit2, Star } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { format } from 'date-fns';
-import BookingGuard from '../../../../components/BookingGuard';
-import { useBookingData } from '@/app/hooks/useBookingData';
+import BookingGuard from '../../../../../components/BookingGuard';
+import { useBookingData } from '@/hooks/useBookingData';
 
 const BookingDetails = () => {
   const [selectedPayment, setSelectedPayment] = useState('full');

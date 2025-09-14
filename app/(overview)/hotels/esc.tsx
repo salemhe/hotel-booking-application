@@ -4,12 +4,12 @@ import { useState, useEffect, Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Star, ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/app/components/ui/button"
-import { Input } from "@/app/components/ui/input"
-import { Label } from "@/app/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { Slider } from "@/app/components/ui/slider"
-import { Checkbox } from "@/app/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Slider } from "@/components/ui/slider"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const hotels = [
   {

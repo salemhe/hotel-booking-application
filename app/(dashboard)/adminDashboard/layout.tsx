@@ -1,9 +1,9 @@
 "use client";
-import Header from "@/app/components/headers/AdminHeader";
-import { Sidebar } from "@/app/components/layout/Sidebar";
+import Header from "@/components/headers/AdminHeader";
+import { Sidebar } from "@/components/layout/Sidebar";
 import { useState } from "react";
 
-import { SidebarProvider } from "@/app/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function OwnerDasboardLayout({
   children,

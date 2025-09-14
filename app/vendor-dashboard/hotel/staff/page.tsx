@@ -11,15 +11,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { apiFetcher } from "@/app/lib/fetcher";
-import StaffTable from "@/app/components/dashboard/StaffTable";
+import { apiFetcher } from "@/lib/fetcher";
+import StaffTable from "@/components/dashboard/StaffTable";
 import Image  from "next/image";
 
 import { Search, Bell, ChevronDown} from 'lucide-react'
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-import {getUserProfile} from '@/app/lib/api-service'
+import {getUserProfile} from '@/lib/api-service'
 
 
 interface StaffMember {

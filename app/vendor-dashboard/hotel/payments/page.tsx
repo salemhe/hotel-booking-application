@@ -25,9 +25,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useMemo } from "react";
-import { AuthService } from "@/app/lib/api/services/userAuth.service";
+import { AuthService } from "@/lib/api/services/userAuth.service";
 
-import { apiFetcher } from "@/app/lib/fetcher";
+import { apiFetcher } from "@/lib/fetcher";
 const getStatusColor = (status: string) => {
   switch (status) {
     case "Paid":

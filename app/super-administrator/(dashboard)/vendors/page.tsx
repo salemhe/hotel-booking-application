@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { apiFetcher } from "@/app/lib/fetcher";
+import { apiFetcher } from "@/lib/fetcher";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -12,11 +12,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
-import { Badge } from "@/app/components/ui/badge";
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
-import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
-import { SidebarProvider } from "@/app/components/ui/sidebar";
+import SuperAdminSidebar from "@/components/SuperAdminSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 // API_URL removed, use apiFetcher with path only
 
 interface Vendor {

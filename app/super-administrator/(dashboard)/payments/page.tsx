@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiFetcher } from "@/app/lib/fetcher";
+import { apiFetcher } from "@/lib/fetcher";
 import {
   Search,
   Bell,

@@ -1,12 +1,12 @@
 "use client";
 
 import { Check, Mail, Clock } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent } from "@/app/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import API from "../lib/api/userAxios";
-import { BookingDetails } from "../lib/types/restaurant";
+import API from "../../lib/api/userAxios";
+import { BookingDetails } from "../../lib/types/restaurant";
 
 const page = () => {
   return (

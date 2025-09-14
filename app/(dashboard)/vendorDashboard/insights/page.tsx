@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
-import Chart from '@/app/components/chart';
-import { useRealtimeReservations } from '@/app/hooks/useRealtimeReservations';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Chart from '@/components/chart';
+import { useRealtimeReservations } from '@/hooks/useRealtimeReservations';
 import { format, parseISO, startOfDay, eachDayOfInterval, subDays } from 'date-fns';
 
 function InsightsPage() {

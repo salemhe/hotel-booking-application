@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -9,11 +9,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
+} from "@/components/ui/table";
 import { DollarSign, Hotel, UtensilsCrossed } from "lucide-react";
-import SuperAdminSidebar from "@/app/components/SuperAdminSidebar";
-import { SidebarProvider } from "@/app/components/ui/sidebar";
-import { apiFetcher } from "@/app/lib/fetcher";
+import SuperAdminSidebar from "@/components/SuperAdminSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { apiFetcher } from "@/lib/fetcher";
 // API_URL removed, use apiFetcher with path only
 
 interface MonthlyData {

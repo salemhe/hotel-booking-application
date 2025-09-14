@@ -11,10 +11,10 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 // import {
 //   Select,
 //   SelectContent,
@@ -34,11 +34,11 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/components/ui/popover";
+} from "@/components/ui/popover";
 // import { BookingService } from "@/app/lib/api/services/booking.services";
 import { format } from "date-fns";
-import { Calendar as CalendarComponent } from "@/app/components/ui/calendar";
-import { BookingService } from "@/app/lib/api/services/bookings.service";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { BookingService } from "@/lib/api/services/bookings.service";
 
 export default function EditBookingForm({ bookingId }: { bookingId: string }) {
   const router = useRouter();

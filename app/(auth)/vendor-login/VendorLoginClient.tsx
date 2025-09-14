@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -13,12 +13,12 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/app/components/ui/card";
+} from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
-import { AuthService } from "@/app/lib/api/services/auth.service";
+import { AuthService } from "@/lib/api/services/auth.service";
 import { toast } from "sonner";
 import { useAuth } from "@/app/contexts/AuthContext";
-import API from "@/app/lib/api/axios";
+import API from "@/lib/api/axios";
 
 interface VendorProfile {
   id?: string;

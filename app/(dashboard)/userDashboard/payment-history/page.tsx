@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
+} from "@/components/ui/table";
 
 import {
   Select,
@@ -18,14 +18,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/app/components/ui/select";
+} from "@/components/ui/select";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 // Type for payment history entry
 interface PaymentEntry {

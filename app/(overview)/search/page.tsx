@@ -4,8 +4,8 @@ import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Image from 'next/image';
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { restaurantService, Restaurant as ApiRestaurant } from '@/app/lib/api/services/restaurant.service';
-import { SearchSectionTwo } from '@/app/components/SearchSection';
+import { restaurantService, Restaurant as ApiRestaurant } from '@/lib/api/services/restaurant.service';
+import { SearchSectionTwo } from '@/components/SearchSection';
 
 interface SearchData {
   query: string;

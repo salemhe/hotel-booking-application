@@ -1,26 +1,26 @@
 "use client";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/components/ui/card";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Textarea } from "@/app/components/ui/textarea";
-import { Badge } from "@/app/components/ui/badge";
-import { Checkbox } from "@/app/components/ui/checkbox";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/app/components/ui/select";
+} from "@/components/ui/select";
 import {
   ChevronLeft,
   ChevronRight,
@@ -36,13 +36,13 @@ import {
   Trash2,
   Star,
 } from "lucide-react";
-import { Alert, AlertDescription } from "@/app/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Image from "next/image";
-import { getBanks, verifyBankAccount } from "@/app/lib/action";
-import { BankCombobox } from "@/app/components/BankComboBox";
-import { AuthService, AuthUser } from "@/app/lib/api/services/auth.service";
+import { getBanks, verifyBankAccount } from "@/lib/action";
+import { BankCombobox } from "@/components/BankComboBox";
+import { AuthService, AuthUser } from "@/lib/api/services/auth.service";
 import { toast } from "sonner";
-import API from "@/app/lib/api/axios";
+import API from "@/lib/api/axios";
 import { useRouter } from "next/navigation";
 
 interface Room {

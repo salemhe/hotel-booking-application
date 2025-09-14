@@ -1,4 +1,4 @@
-import Reservation from "@/app/components/reservation/Reservation";
+import Reservation from "@/components/reservation/Reservation";
 import React from "react";
 
 const Page = async ({

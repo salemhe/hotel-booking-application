@@ -1,6 +1,6 @@
 "use client";
 
-import { RealtimeReservations } from "@/app/components/reservations/RealtimeReservations";
+import { RealtimeReservations } from "@/components/reservations/RealtimeReservations";
 
 export default function VendorReservationsPage() {
   return (

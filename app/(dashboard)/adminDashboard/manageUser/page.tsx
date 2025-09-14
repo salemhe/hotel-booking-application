@@ -2,8 +2,8 @@
 import { Suspense, useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -11,13 +11,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
+} from "@/components/ui/table";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/app/components/ui/avatar";
-import { Skeleton } from "@/app/components/ui/skeleton";
+} from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 
 function UserTableSkeleton() {

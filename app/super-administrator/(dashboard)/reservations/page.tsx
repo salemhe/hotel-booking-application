@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiFetcher } from "@/app/lib/fetcher";
+import { apiFetcher } from "@/lib/fetcher";
 // axios removed, use apiFetcher
 
 // Define the Reservation type

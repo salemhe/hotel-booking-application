@@ -1,4 +1,4 @@
-import BookingInfo from "@/app/components/bookingInfo"
+import BookingInfo from "@/components/bookingInfo"
 
 export default async function Home({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

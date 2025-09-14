@@ -2,8 +2,8 @@
 import { Suspense, useEffect, useState } from "react";
 import { Search, Store } from "lucide-react";
 
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -11,10 +11,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
-import { Badge } from "@/app/components/ui/badge";
-import { Skeleton } from "@/app/components/ui/skeleton";
-import DropDown from "@/app/components/DropDown";
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import DropDown from "@/components/DropDown";
 import axios from "axios";
 
 interface Vendor {

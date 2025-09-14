@@ -2,14 +2,14 @@
 import React, { useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Input } from "@/app/components/ui/input";
-import { Card, CardContent } from "@/app/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { Banknote, DollarSign, ImageIcon } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Switch } from "@/app/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useRouter } from "next/navigation";
-import { Checkbox } from "@/app/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Page = () => {
   const router = useRouter();

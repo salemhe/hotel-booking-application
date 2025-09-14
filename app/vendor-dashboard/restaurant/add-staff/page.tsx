@@ -5,13 +5,13 @@ import { Check } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { fetchForFormData } from "@/app/lib/fetcher";
+import { fetchForFormData } from "@/lib/fetcher";
 import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
 import { Search, Bell, ChevronDown} from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-import {getUserProfile} from '@/app/lib/api-service'
+import {getUserProfile} from '@/lib/api-service'
 
 export default function AddStaffPage() {
   const [step, setStep] = useState(1);

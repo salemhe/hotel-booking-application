@@ -1,13 +1,13 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/app/components/ui/accordion';
-import { Button } from '@/app/components/ui/button';
-import { Checkbox } from '@/app/components/ui/checkbox';
-import { Input } from '@/app/components/ui/input';
-import { Label } from '@/app/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
-import { Textarea } from '@/app/components/ui/textarea';
-import { RoomConfigurationData, RoomTypes, defaultAmenities } from '@/types/rooms';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { RoomConfigurationData, RoomTypes, defaultAmenities } from '@/lib/types/rooms';
 import { Edit, Plus, Trash2, Upload } from 'lucide-react';
 import { useState } from 'react';
 

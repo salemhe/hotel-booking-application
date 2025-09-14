@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from 'react';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Upload, MapPin, Info } from 'lucide-react';
-import { HotelCategory, HotelFormData } from '@/types/hotels';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import { HotelCategory, HotelFormData } from '@/lib/types/hotels';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface HotelSetupFormProps {
   onSubmit: (data: HotelFormData) => void;

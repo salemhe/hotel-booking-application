@@ -19,7 +19,7 @@ import {
   Download as Export,
   X,
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

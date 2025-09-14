@@ -1,4 +1,4 @@
-import ReservationDetails from "@/app/components/ReservationDetails";
+import ReservationDetails from "@/components/ReservationDetails";
 
 export default function PaymentSuccess() {
   return (

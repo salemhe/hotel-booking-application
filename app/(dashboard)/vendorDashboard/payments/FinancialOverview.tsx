@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardContent } from "@/app/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "react-toastify";
 
 const FinancialOverview = () => {

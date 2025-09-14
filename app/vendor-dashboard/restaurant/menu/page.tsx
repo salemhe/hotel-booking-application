@@ -1,21 +1,21 @@
 "use client";
 
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import useSWR from "swr";
-import { apiFetcher, ApiResponse } from "@/app/lib/fetcher";
+import { apiFetcher, ApiResponse } from "@/lib/fetcher";
 import {
   Card,
   CardContent,
-} from "@/app/components/ui/card";
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
-import { Input } from "@/app/components/ui/input";
-import { Switch } from "@/app/components/ui/switch";
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -23,15 +23,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/components/ui/table";
+} from "@/components/ui/table";
 import {
   Tabs,
   // TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/app/components/ui/tabs";
-import { AuthService } from "@/app/lib/api/services/auth.service";
-import SocketService from "@/app/lib/socket";
+} from "@/components/ui/tabs";
+import { AuthService } from "@/lib/api/services/auth.service";
+import SocketService from "@/lib/socket";
 import {
   Copy,
   // Upload,

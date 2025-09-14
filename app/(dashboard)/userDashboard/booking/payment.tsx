@@ -1,7 +1,7 @@
 'use client';
 
-import MealSelectionSummary from '@/app/components/MealSelectionSummary';
-import PaymentForm from '@/app/components/paymentForm';
+import MealSelectionSummary from '@/components/MealSelectionSummary';
+import PaymentForm from '@/components/paymentForm';
 
 export default function PaymentPage() {
   return (

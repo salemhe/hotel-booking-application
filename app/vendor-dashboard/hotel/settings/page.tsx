@@ -28,7 +28,7 @@ export default function HotelSettings() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { AuthService } = await import("@/app/lib/api/services/auth.service");
+        const { AuthService } = await import("@/lib/api/services/auth.service");
         const user = AuthService.getUser();
         if (user && user.id) {
           const realProfile = await AuthService.fetchMyProfile(user.id, user.role);

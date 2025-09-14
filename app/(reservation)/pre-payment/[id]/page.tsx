@@ -1,11 +1,11 @@
 import { Banknote, AlertTriangle } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent } from "@/app/components/ui/card";
-import ReservationHeader from "@/app/components/reservation/ReservationHeader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import ReservationHeader from "@/components/reservation/ReservationHeader";
 import { redirect } from "next/navigation";
 import { AxiosError } from "axios";
-import API from "@/app/lib/api/userServerAxios";
-import { BookingDetails } from "@/app/lib/types/restaurant";
+import API from "@/lib/api/userServerAxios";
+import { BookingDetails } from "@/lib/types/restaurant";
 
 const fetchBookingDetails = async (id: string) => {
   try {

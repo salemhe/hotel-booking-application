@@ -1,14 +1,14 @@
 "use client";
 
 import { Suspense } from "react";
-import { PaymentStats } from "@/app/components/PaymentStats";
-import { PaymentBreakdown } from "@/app/components/PaymentBreakdown";
-import { Button } from "@/app/components/ui/button";
+import { PaymentStats } from "@/components/PaymentStats";
+import { PaymentBreakdown } from "@/components/PaymentBreakdown";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Withdraw from "@/app/components/Withdraw";
+import Withdraw from "@/components/Withdraw";
 import FinancialOverview from "./FinancialOverview";
 import InitializePayment from "./initializePayment";
-import SplitSetup from "@/app/components/form-sections/SplitSetup";
+import SplitSetup from "@/components/form-sections/SplitSetup";
 import BankDetailsForm from "./BankDetailsForm";
 // import InitializePayment from "@/app/";
 // import BankDetailsForm from "/BankDetailsForm";

@@ -8,9 +8,9 @@ import {
   X,
   Eye
 } from 'lucide-react';
-import { AuthService } from '@/app/lib/api/services/auth.service';
+import { AuthService } from '@/lib/api/services/auth.service';
 
-import API from "@/app/lib/api/axios";
+import API from "@/lib/api/axios";
 import { AxiosResponse } from 'axios';
 import { useRouter } from 'next/navigation';
 

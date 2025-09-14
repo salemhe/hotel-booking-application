@@ -1,4 +1,4 @@
-import HotelPage from "@/app/components/HotelsPage";
+import HotelPage from "@/components/HotelsPage";
 import React from "react";
 import { Suspense } from "react";
 

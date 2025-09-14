@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Eye, Download, Plus } from 'lucide-react';
 import { BookingTable } from './components/booking-table';
 import { BookingFilters } from './components/booking-filters';
-import { BookingStatus, PaymentStatus } from '@/types/booking';
-import API from '@/app/lib/api/axios';
-import { AuthService } from '@/app/lib/api/services/auth.service';
+import { BookingStatus, PaymentStatus } from '@/lib/types/booking';
+import API from '@/lib/api/axios';
+import { AuthService } from '@/lib/api/services/auth.service';
 import { formatDate } from '@/utils/constant';
 
 interface Reservation {

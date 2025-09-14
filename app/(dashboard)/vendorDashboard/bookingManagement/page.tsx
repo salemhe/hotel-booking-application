@@ -1,12 +1,12 @@
 "use client";
 
-import { RealtimeReservations } from '@/app/components/reservations/RealtimeReservations';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Button } from '@/app/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/components/ui/tabs';
+import { RealtimeReservations } from '@/components/reservations/RealtimeReservations';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState, useEffect } from 'react';
-import { AuthService } from '@/app/lib/api/services/auth.service';
-import API from '@/app/lib/api/axios';
+import { AuthService } from '@/lib/api/services/auth.service';
+import API from '@/lib/api/axios';
 import {
   Calendar,
   Clock,

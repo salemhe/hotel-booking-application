@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { VendorService, Vendor } from '@/app/lib/api/services/vendors';
-import SearchSection from "@/app/components/SearchSection";
-import TableGrid, { TableGridTwo, Restaurant } from "@/app/components/TableGrid";
+import { VendorService, Vendor } from '@/lib/api/services/vendors';
+import SearchSection from "@/components/SearchSection";
+import TableGrid, { TableGridTwo, Restaurant } from "@/components/TableGrid";
 
 interface ApiRestaurant {
   _id: string;

@@ -14,9 +14,9 @@ import {
   CheckCircle2,
   CircleDot,
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -24,14 +24,14 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
-} from "@/app/components/ui/card";
+} from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/app/components/ui/carousel";
+} from "@/components/ui/carousel";
 import Image from "next/image";
 import { cuisineTypes, deals, features, restaurants, testimonials } from "@/utils/constant";
 
