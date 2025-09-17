@@ -50,7 +50,7 @@ const Navigation = () => {
   // Auth state management
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
- const router = useRouter();
+//  const router = useRouter();
   const navItems = [
     { name: "Home", href: "/" },
     // { name: "Restaurants", href: "/userDashboard/search" },

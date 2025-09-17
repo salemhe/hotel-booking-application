@@ -46,7 +46,7 @@ export default SessionManager;
 // import { createContext, useContext, useEffect, useState } from 'react';
 // import { useRouter, usePathname } from 'next/navigation';
 // import { AuthService, UserProfile } from '@/services/userAuth.services';
-// import { toast } from '@/app/components/ui/use-toast';
+// import { toast } from '@/components/ui/use-toast';
 
 // interface SessionContextProps {
 //   user: UserProfile | null;

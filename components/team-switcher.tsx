@@ -11,7 +11,7 @@ import * as React from "react"
 //   DropdownMenuSeparator,
 //   DropdownMenuShortcut,
 //   DropdownMenuTrigger,
-// } from "@/app/components/ui/dropdown-menu"
+// } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,

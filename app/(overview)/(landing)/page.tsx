@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { VendorService, Vendor } from "@/services/vendors";
 import SearchSection from "@/components/SearchSection";
 import TableGrid, { TableGridTwo, Restaurant, TableGridThree } from "@/components/TableGrid";
-import { useRouter } from "next/navigation";
 
 interface ApiRestaurant {
   _id: string;
@@ -35,7 +34,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
 
   // Handle client-side mounting to prevent hydration issues
   useEffect(() => {
@@ -357,7 +355,7 @@ export default function Home() {
               </p>
               <p className="text-red-500 text-sm mt-1">{error}</p>
               <button
-                onClick={() => router.refresh()}
+                onClick={() => window.location.reload()}
                 className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
               >
                 Try Again

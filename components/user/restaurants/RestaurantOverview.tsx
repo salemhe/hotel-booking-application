@@ -1,13 +1,24 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc, priceRange }: { address: string; openingTime: string; closingTime: string; cuisines: string[]; desc: string; priceRange: number; }) => {
+const RestaurantOverview = ({
+  address,
+  openingTime,
+  closingTime,
+  cuisines,
+  desc,
+  priceRange,
+}: {
+  address: string;
+  openingTime: string;
+  closingTime: string;
+  cuisines: string[];
+  desc: string;
+  priceRange: number;
+}) => {
   const [showMore, setShowMore] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -24,9 +35,6 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
         <div className="bg-[#E8FFE1] rounded-xl border border-[#72E94E] flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4">
           <div>
             <svg
-              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
-              // width="34"
-              // height="34"
               viewBox="0 0 34 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -40,19 +48,18 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
           </div>
           <div className="space-y-1">
             <p className="text-xs">Opening Hours</p>
-            <p className="font-semibold text-sm">{openingTime} - {closingTime} Daily</p>
+            <p className="font-semibold text-sm">
+              {openingTime} - {closingTime} Daily
+            </p>
           </div>
         </div>
         <div className="bg-[#C8FAFF] rounded-xl border border-[#49EDFF] flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4">
           <div>
             <svg
-              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
-              // width="30"
-              // height="34"
               viewBox="0 0 30 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-                            className="size-[24px] sm:size-[34px]"
+              className="size-[24px] sm:size-[34px]"
             >
               <path
                 fillRule="evenodd"
@@ -70,13 +77,10 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
         <div className="bg-[#FFEFE1] rounded-xl border border-[#FFB778] flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4">
           <div>
             <svg
-              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
-              // width="30"
-              // height="31"
               viewBox="0 0 30 31"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-                            className="size-[24px] sm:size-[34px]"
+              className="size-[24px] sm:size-[34px]"
             >
               <path
                 fillRule="evenodd"
@@ -88,21 +92,16 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
           </div>
           <div className="space-y-1">
             <p className="text-xs">Cuisine</p>
-            <p className="font-semibold text-sm">
-              {cuisines.join(", ")}
-            </p>
+            <p className="font-semibold text-sm">{cuisines.join(", ")}</p>
           </div>
         </div>
         <div className="bg-[#EBE1FF] rounded-xl border border-[#C0A1FF] flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4">
           <div>
             <svg
-              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
-              // width="34"
-              // height="34"
               viewBox="0 0 34 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-                            className="size-[24px] sm:size-[34px]"
+              className="size-[24px] sm:size-[34px]"
             >
               <path
                 fillRule="evenodd"
@@ -129,9 +128,7 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
         >
           <p className="text-gray-700 text-sm leading-relaxed">
             {desc.split("  ").map((part, idx) => (
-              <span key={idx}>
-                {part}
-              </span>
+              <span key={idx}>{part}</span>
             ))}
           </p>
         </div>

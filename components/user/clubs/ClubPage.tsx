@@ -68,7 +68,7 @@ const ClubPage = async ({ id }: { id: string }) => {
                       ({club.reviews.toLocaleString()} reviews)
                     </span>{" "}
                     <span className="size-1 rounded-full bg-black"></span>
-                    <span>{club.slots.toLocaleString()} booked</span>
+                    {/* <span>{club.slots.toLocaleString()} booked</span> */}
                   </div>
                 </div>
               </div>

@@ -7,7 +7,7 @@ import {
   UserGroupIcon,
   CurrencyDollarIcon,
   Cog6ToothIcon,
-  ArrowRightOnRectangleIcon,
+  // ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { Settings } from "@mui/icons-material";
 import { LogOut } from "lucide-react";

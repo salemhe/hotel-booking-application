@@ -23,7 +23,7 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 
 // import { NavMain } from "@/components/nav-main"
 // import { NavProjects } from "@/components/nav-projects"
-// import { NavUser } from "@/app/components/nav-user"
+// import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,

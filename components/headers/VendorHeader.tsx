@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 // import {
 //   SidebarTrigger,
-// } from "@/app/components/ui/sidebar"
+// } from "@/components/ui/sidebar"
 import { BellDot, ChevronDown, LogOut } from "lucide-react"
 import { getTimeBasedGreeting } from "../../utils/timeGreeting"
 import { useRouter } from 'next/navigation'

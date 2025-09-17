@@ -2,7 +2,7 @@
 // import React, { useState } from "react";
 // import { Button } from "../ui/button";
 // import Image from "next/image";
-// import { cn } from "@/app/lib/utils";
+// import { cn } from "@/lib/utils";
 // import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 // const RestaurantImages = ({
@@ -141,7 +141,7 @@ import { Button } from "../../ui/button";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { Swiper, SwiperSlide } from "swiper/react";
+// import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
 const Images = ({

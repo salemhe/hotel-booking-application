@@ -37,7 +37,6 @@ export function middleware(request: NextRequest) {
       redirectUrl.searchParams.set("redirect", redirectPath);
       return NextResponse.redirect(redirectUrl);
     }
-    console.log("Token decoded", decoded)
 
   } catch {
     // If token is invalid or can't be decoded, redirect to login
