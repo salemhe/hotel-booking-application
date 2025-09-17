@@ -37,9 +37,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import PaymentForm from "@/components/paymentForm";
 import Image from "next/image";
-import { AuthService, UserProfile } from "@/lib/api/services/userAuth.service";
+import { AuthService, UserProfile } from "@/services/userAuth.service";
 import { AxiosError } from "axios";
-import API from "@/lib/api/userAxios";
+import API from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 // Restaurant details

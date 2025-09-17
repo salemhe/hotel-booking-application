@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { AuthService } from "@/lib/api/services/auth.service";
-import { MenuService, MenuItem } from "@/lib/api/services/menu.service";
+import { AuthService } from "@/services/auth.service";
+import { MenuService, MenuItem } from "@/services/menu.service";
 import { toast } from "sonner";
 import { MenuPopup } from "@/components/MenuPopup";
 import { Button } from "@/components/ui/button";

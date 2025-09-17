@@ -1,6 +1,6 @@
 "use client";
 import { ReactNode, useEffect, useState } from "react";
-import { AuthService } from "@/lib/api/services/userAuth.service";
+import { AuthService } from "@/services/userAuth.service";
 import { useRouter } from "next/navigation";
 
 const SessionManager = ({ children }: { children: ReactNode }) => {

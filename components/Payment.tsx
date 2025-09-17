@@ -9,10 +9,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { AuthService, UserProfile } from "../lib/api/services/userAuth.service";
-import API from "../lib/api/userAxios";
+import { AuthService } from "../services/auth.service";
+import API from "../lib/api";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import { UserProfile } from "@/types/auth";
 
 export default function PaymentPage({ id }: { id: string }) {
   const router = useRouter();
@@ -102,8 +103,7 @@ function calculateSplitPaymentAmount(
     const fetchUserData = async () => {
       try {
         if (await AuthService.isAuthenticated()) {
-          const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!);
+          const id = await AuthService.getId();
           setUser(await AuthService.fetchMyProfile(id!));
         }
       } catch (error) {

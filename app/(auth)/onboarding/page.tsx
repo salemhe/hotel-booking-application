@@ -40,9 +40,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Image from "next/image";
 import { getBanks, verifyBankAccount } from "@/lib/action";
 import { BankCombobox } from "@/components/BankComboBox";
-import { AuthService, AuthUser } from "@/lib/api/services/auth.service";
+import { AuthService, AuthUser } from "@/services/auth.service";
 import { toast } from "sonner";
-import API from "@/lib/api/axios";
+import API from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 interface Room {

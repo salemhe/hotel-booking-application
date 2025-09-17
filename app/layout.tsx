@@ -1,12 +1,9 @@
-import ErrorBoundary from "@/components/Errorboundary";
 import "./globals.css";
 import { Toaster } from "sonner";
-import { ToastContainer } from 'react-toastify';
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { AuthProvider } from "@/app/contexts/AuthContext";
+import { ReduxProvider } from "./providers";
 
-// import { DM_Sans } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,13 +22,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={` ${inter.className} antialiased`}>
-        <ErrorBoundary>
-          <AuthProvider>
-            {children}
-            <Toaster />
-            <ToastContainer />
-          </AuthProvider>
-        </ErrorBoundary>
+        <ReduxProvider>
+          {children}
+          <Toaster />
+        </ReduxProvider>
       </body>
     </html>
   );

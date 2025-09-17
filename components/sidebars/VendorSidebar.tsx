@@ -25,9 +25,9 @@ import { PiHandCoinsLight } from "react-icons/pi";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { useEffect, useState } from "react"
 
-import { AuthService } from "@/lib/api/services/auth.service"
-// import { api } from '@/lib/axios-config'
-import API from '@/lib/api/axios'
+import { AuthService } from "@/services/auth.service"
+// import { api } from '@/lib/api-config'
+import API from '@/lib/api'
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 // import { NavUser } from "@/app/components/nav-user"

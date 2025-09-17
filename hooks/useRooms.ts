@@ -1,4 +1,4 @@
-import { Room } from "@/lib/types/rooms";
+import { Room } from "@/types/rooms";
 import { fetcher } from "@/utils/api";
 import useSWR from "swr";
 

@@ -1,4 +1,4 @@
-import Hotels from "@/components/hotels/Hotels";
+import Hotels from "@/components/user/hotels/Hotels";
 import Loading from "@/components/loading";
 import { Suspense } from "react";
 

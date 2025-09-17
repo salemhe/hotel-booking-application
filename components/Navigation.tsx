@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { RootState } from "@/redux/store";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,16 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 // import AccountTypeModal from "./AccountTypeModal";
-import { AuthService } from "@/lib/api/services/userAuth.service";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { SearchSectionTwo } from "./SearchSection";
-export interface UserProfile {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  profileImage?: string;
-}
+import { useSelector } from "react-redux";
+import { logout } from "@/redux/slices/authSlice";
+import { UserProfile } from "@/types/auth";
 
 const Navigation = () => {
   
@@ -34,6 +30,7 @@ const Navigation = () => {
   const[ishotelPaymentPage, setIsHotelPaymentPage] = useState(pathname?.startsWith('/hotels/:id/payment'));
   const [onboarding, setOnboarding] = useState(pathname === '/onboarding');
   const[isverifyStaffPage, setIsVerifyStaffPage] = useState(pathname?.startsWith('/verify-staff'));
+  const  user = useSelector((state: RootState) => state.auth);
 
 
   // Check if the current path is a login slug
@@ -77,10 +74,9 @@ const Navigation = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        if (await AuthService.isAuthenticated()) {
-          const token = await AuthService.getToken();
-          const id = AuthService.extractUserId(token!)
-          setProfile(await AuthService.getUser(id!));
+        console.log(user)
+        if (user.isAuthenticated) {
+          setProfile(user.user as UserProfile);
         }
       } catch (error) {
         console.log(error)
@@ -93,7 +89,7 @@ const Navigation = () => {
   }, []);
 
   const handleLogout = async () => {
-    AuthService.logout();
+    logout();
     setProfile(null);
   };
 
@@ -184,81 +180,18 @@ const Navigation = () => {
 
     return (
       <>
-        <Button className="cursor-pointer rounded-full" variant={scrolled || !isHomePage ? "ghost" : "default"} asChild>
-          <Link href="/user-login">Login</Link>
+        <Button className="cursor-pointer hidden md:flex rounded-full" variant={scrolled || !isHomePage ? "ghost" : "default"} asChild>
+          <Link href="/auth/user/login">Login</Link>
         </Button>
         <Button
           className="cursor-pointer rounded-full bg-blue-700 hover:bg-blue-700/90"
           asChild
         >
-          <Link href="/user-signup">Create Account</Link>
+          <Link href="/auth/user/signup">Create Account</Link>
         </Button>
       </>
     );
   };
-
-  // const renderMobileMenu = () => {
-  //   return (
-  //     <div className="pt-4 pb-3 border-t border-gray-200 z-20 flex flex-col">
-  //       {profile ? (
-  //         <>
-  //           <div className="flex items-center px-4">
-  //             <Avatar>
-  //               <AvatarFallback>
-  //                 {profile.firstName.charAt(0).toUpperCase()}
-  //                 {profile.lastName.charAt(0).toUpperCase()}
-  //               </AvatarFallback>
-  //             </Avatar>
-  //             <div className="ml-3">
-  //               <div className="text-sm font-medium text-gray-800">
-  //                 {profile.firstName}
-  //               </div>
-  //               <div className="text-xs font-medium text-gray-500">
-  //                 {profile.email}
-  //               </div>
-  //             </div>
-  //           </div>
-  //           <div className="mt-3 space-y-1 w-full">
-  //             <SheetClose
-  //               className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
-  //               asChild
-  //             >
-  //               <Link
-  //                 href="/userDashboard/search"
-  //                 className="w-full text-left hover:bg-accent hover:text-accent-foreground px-4 py-2 text-sm"
-  //               >
-  //                 Dashboard
-  //               </Link>
-  //             </SheetClose>
-  //             <SheetClose
-  //               className="w-full text-left hover:bg-accent hover:text-red-600 px-4 py-2 text-sm text-red-600 flex items-center"
-  //               onClick={handleLogout}
-  //             >
-  //               <LogOut className="h-4 w-4 mr-2" />
-  //               Logout
-  //             </SheetClose>
-  //           </div>
-  //         </>
-  //       ) : (
-  //         <div className="mt-3 space-y-2 flex flex-col w-full">
-  //           <Button
-  //             className="cursor-pointer rounded-full"
-  //             variant="outline"
-  //             asChild
-  //           >
-  //             <Link href="/user-login">Login</Link>
-  //           </Button>
-  //           <Button
-  //             className="cursor-pointer rounded-full bg-blue-700 hover:bg-blue-700/90"
-  //             asChild
-  //           >
-  //             <Link href="user-signup">Create Account</Link>
-  //           </Button>
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
-  // };
   const handleSearch = (searchData: {
     query: string;
     tab: string;
@@ -320,38 +253,9 @@ const Navigation = () => {
                 </div>
               )
             }
-            <div className="hidden md:ml-6 md:flex items-center space-x-4">
+            <div className="md:ml-6 flex items-center space-x-4">
               {renderAuthButtons()}
             </div>
-            {/* <div className="md:hidden flex items-center">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className={`${scrolled || isSearchPage ? 'text-gray-700' : 'text-white'}`}>
-                    <span className="sr-only">Open main menu</span>
-                    <Menu className="h-6 w-6" aria-hidden="true" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right">
-                  <div className="pt-4 pb-3 space-y-1">
-                    {navItems.map((item) => (
-                      <SheetClose
-                        key={item.name}
-                        asChild
-                        onClick={() => router.push(item.href)}
-                      >
-                        <Link
-                          href={item.href}
-                          className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 py-2 border-l-4 text-base font-medium w-full text-start"
-                        >
-                          {item.name}
-                        </Link>
-                      </SheetClose>
-                    ))}
-                  </div>
-                  {renderMobileMenu()}
-                </SheetContent>
-              </Sheet>
-            </div> */}
           </div>
         </div>
       </nav>

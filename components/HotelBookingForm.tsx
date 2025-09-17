@@ -19,10 +19,10 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { AuthService } from "../lib/api/services/userAuth.service";
+import { AuthService } from "@/services/auth.service";
 import { useBookingData } from "../hooks/useBookingData";
 import { bookingStorage } from "../utils/bookingStorage";
-import { Restaurant } from "../lib/types/restaurant";
+import { Restaurant } from "../types/user/restaurant";
 
 const HotelBookingForm = ({ id, restaurant }: { id: string; restaurant?: Restaurant }) => {
   const [date, setDate] = useState<Date>();
@@ -88,7 +88,7 @@ const HotelBookingForm = ({ id, restaurant }: { id: string; restaurant?: Restaur
       
       if (!isAuthenticated) {
         console.log("User not authenticated, redirecting to login");
-        router.push(`/user-login?redirect=${encodeURIComponent(paymentUrl)}`);
+        router.push(`/auth/user/login?redirect=${encodeURIComponent(paymentUrl)}`);
         return;
       }
     } catch (error) {

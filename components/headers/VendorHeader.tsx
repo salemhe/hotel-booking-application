@@ -4,13 +4,13 @@ import React, { useEffect, useState } from 'react'
 //   SidebarTrigger,
 // } from "@/app/components/ui/sidebar"
 import { BellDot, ChevronDown, LogOut } from "lucide-react"
-import { getTimeBasedGreeting } from "./timeGreeting"
+import { getTimeBasedGreeting } from "../../utils/timeGreeting"
 import { useRouter } from 'next/navigation'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
-import { AuthService } from "@/lib/api/services/auth.service"
-// import { api } from '@/lib/axios-config'
-import API from '@/lib/api/axios'
+import { AuthService } from "@/services/auth.service"
+// import { api } from '@/lib/api-config'
+import API from '@/lib/api'
 import WebSocketStatus from '../WebSocketStatus'
 
 export interface VendorProfile {

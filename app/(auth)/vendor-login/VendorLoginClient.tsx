@@ -15,10 +15,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
-import { AuthService } from "@/lib/api/services/auth.service";
+import { AuthService } from "@/services/auth.service";
 import { toast } from "sonner";
-import { useAuth } from "@/app/contexts/AuthContext";
-import API from "@/lib/api/axios";
+import { useAuth } from "@/contexts/AuthContext";
+import API from "@/lib/api";
 
 interface VendorProfile {
   id?: string;

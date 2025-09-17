@@ -7,9 +7,9 @@ import FilterSidebar from "@/components/filter-sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import API from "@/lib/api/userAxios";
+import API from "@/lib/api";
 import { AxiosError } from "axios";
-import { useAuth } from "@/app/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function Home() {

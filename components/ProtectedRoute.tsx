@@ -2,7 +2,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AuthService } from '@/lib/api/services/auth.service';
+import { AuthService } from '@/services/auth.service';
 
 export default function ProtectedRoute({ 
   children, 

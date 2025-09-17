@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import SocketService from '@/lib/socket';
-import { AuthService } from '@/lib/api/services/userAuth.service';
+import { AuthService } from '@/services/userAuth.service';
 
 export interface UserBooking {
   _id: string;

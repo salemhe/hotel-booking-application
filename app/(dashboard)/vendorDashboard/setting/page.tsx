@@ -35,7 +35,7 @@ export default function Page() {
 //   X,
 // } from "lucide-react";
 // import Image from "next/image";
-// import { useUser } from "@/app/contexts/VendorContext";
+// import { useUser } from "@/contexts/VendorContext";
 // import { toast } from "sonner";
 // import { useSearchParams } from "next/navigation";
 // import { Button } from "@/app/components/ui/button";

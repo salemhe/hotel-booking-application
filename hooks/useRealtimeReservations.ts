@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import SocketService from '@/lib/socket';
-import { AuthService } from '@/lib/api/services/auth.service';
-import { ReservationService, ReservationResponse } from '@/lib/api/services/reservation.service';
+import { AuthService } from '@/services/auth.service';
+import { ReservationService, ReservationResponse } from '@/services/reservation.service';
 import { toast } from 'sonner';
 
 // Re-export the Reservation interface from the service for consistency

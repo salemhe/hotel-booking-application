@@ -4,7 +4,7 @@
    SidebarTrigger,
  } from "@/components/ui/sidebar"
 import { BellDot, ChevronDown } from "lucide-react"
-import { getTimeBasedGreeting } from "./timeGreeting"
+import { getTimeBasedGreeting } from "../../utils/timeGreeting"
 
 // import Image from 'next/image';
 // import { useRouter } from 'next/navigation';

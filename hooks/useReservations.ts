@@ -1,4 +1,4 @@
-import { Reservation, ReservationStatus } from "@/lib/types/reservation";
+import { Reservation, ReservationStatus } from "@/types/reservation";
 import { fetcher } from "@/utils/api";
 import useSWR from "swr";
 

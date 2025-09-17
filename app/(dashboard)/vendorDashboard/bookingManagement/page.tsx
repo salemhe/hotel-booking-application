@@ -5,8 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState, useEffect } from 'react';
-import { AuthService } from '@/lib/api/services/auth.service';
-import API from '@/lib/api/axios';
+import { AuthService } from '@/services/auth.service';
+import API from '@/lib/api';
 import {
   Calendar,
   Clock,

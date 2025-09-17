@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useEffect, useState } from "react"
-import API from "@/lib/api/userAxios"
+import API from "@/lib/api"
 
 interface Booking {
   _id: string

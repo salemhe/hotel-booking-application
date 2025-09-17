@@ -30,9 +30,9 @@ import { getBanks, verifyBankAccount } from "@/lib/action";
 import { BankCombobox } from "./BankComboBox";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import API from "@/lib/api/axios";
+import API from "@/lib/api";
 import { AxiosError } from "axios";
-import { AuthService, AuthUser } from "@/lib/api/services/auth.service";
+import { AuthService, AuthUser } from "@/services/auth.service";
 
 // Form validation schema
 const formSchema = z.object({

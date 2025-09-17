@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { format, parseISO, isToday } from 'date-fns';
 import Link from 'next/link';
-import { AuthService } from '@/lib/api/services/auth.service';
+import { AuthService } from '@/services/auth.service';
 import { toast } from 'sonner';
 
 interface DashboardStats {

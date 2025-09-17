@@ -1,4 +1,3 @@
-import Navigation from "@/components/Navigation";
 import React from "react";
 
 const layout = ({
@@ -8,11 +7,7 @@ const layout = ({
 }>) => {
   return (
     <div>
-      <Navigation />
-      <div className="mt-[60px]">
-
       {children}
-      </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect, } from 'react';
 import Image from "next/image";
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { restaurantService, Restaurant as ApiRestaurant } from '@/lib/api/services/restaurant.service';
+import { restaurantService, Restaurant as ApiRestaurant } from '@/services/restaurant.service';
 import { SearchSectionTwo } from '@/components/SearchSection';
 
 // Separate component that uses useSearchParams - wrapped in Suspense

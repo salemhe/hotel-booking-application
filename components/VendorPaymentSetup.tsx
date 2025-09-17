@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { paymentService } from '../lib/api/services/paymentService';
+import { paymentService } from '../services/paymentService';
 
 export function VendorPaymentSetup() {
     const [formData, setFormData] = useState({

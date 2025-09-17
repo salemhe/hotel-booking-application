@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BellDot, ChevronDown, LogOut, User, Settings } from "lucide-react";
-import { getTimeBasedGreeting } from "./timeGreeting";
+import { getTimeBasedGreeting } from "../../utils/timeGreeting";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AuthService } from "@/lib/api/services/userAuth.service";
+import { AuthService } from "@/services/userAuth.service";
 import { UserProfile } from "../Navigation";
 
 function Header() {

@@ -2,14 +2,14 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { TimePicker } from "./restaurants/ui/timepicker";
+import { TimePicker } from "./user/ui/timepicker";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import DatePicker from "./restaurants/ui/datepicker";
-import { GuestPicker } from "./restaurants/ui/guestpicker";
+import DatePicker from "./user/ui/datepicker";
+import { GuestPicker } from "./user/ui/guestpicker";
 
 const BookingForm = ({ id }: { id: string }) => {
   const [date, setDate] = useState<Date>();

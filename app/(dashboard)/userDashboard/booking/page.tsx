@@ -38,9 +38,9 @@ import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
-import API from "@/lib/api/userAxios";
-import { ReservationService } from "@/lib/api/services/reservation.service";
-import { AuthService, UserProfile } from "@/lib/api/services/userAuth.service";
+import API from "@/lib/api";
+import { ReservationService } from "@/services/reservation.service";
+import { AuthService, UserProfile } from "@/services/userAuth.service";
 import { toast } from "sonner";
 import { Edit, X, AlertTriangle, Star } from "lucide-react";
 
