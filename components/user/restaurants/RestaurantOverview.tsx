@@ -24,8 +24,9 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
         <div className="bg-[#E8FFE1] rounded-xl border border-[#72E94E] flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4">
           <div>
             <svg
-              width="34"
-              height="34"
+              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
+              // width="34"
+              // height="34"
               viewBox="0 0 34 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -45,8 +46,9 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
         <div className="bg-[#C8FAFF] rounded-xl border border-[#49EDFF] flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4">
           <div>
             <svg
-              width="30"
-              height="34"
+              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
+              // width="30"
+              // height="34"
               viewBox="0 0 30 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -68,8 +70,9 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
         <div className="bg-[#FFEFE1] rounded-xl border border-[#FFB778] flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4">
           <div>
             <svg
-              width="30"
-              height="31"
+              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
+              // width="30"
+              // height="31"
               viewBox="0 0 30 31"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -93,8 +96,9 @@ const RestaurantOverview = ({ address, openingTime, closingTime, cuisines, desc,
         <div className="bg-[#EBE1FF] rounded-xl border border-[#C0A1FF] flex flex-col sm:flex-row sm:items-center p-4 sm:p-3 gap-4">
           <div>
             <svg
-              width="34"
-              height="34"
+              className="w-6 h-6 sm:w-[34px] sm:h-[34px]"
+              // width="34"
+              // height="34"
               viewBox="0 0 34 34"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"

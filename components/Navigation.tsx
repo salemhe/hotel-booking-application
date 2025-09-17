@@ -50,7 +50,7 @@ const Navigation = () => {
   // Auth state management
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-
+ const router = useRouter();
   const navItems = [
     { name: "Home", href: "/" },
     // { name: "Restaurants", href: "/userDashboard/search" },
@@ -101,7 +101,7 @@ const Navigation = () => {
         <div className="size-10 bg-gray-300 mr-[50px] animate-pulse rounded-full" />
       );
     }
-
+console.log(profile)
     if (profile) {
       return (
         <DropdownMenu>
@@ -217,7 +217,7 @@ const Navigation = () => {
                 <Link href="/" className="flex items-center space-x-2">
                   <span className="w-6 h-6 bg-blue-400 rounded-full inline-block" />
                   <span className={`text-2xl font-bold ${scrolled || !isHomePage ? 'text-gray-900' : 'text-[#F9FAFB]'}`}>
-                    Bookies
+                    Rhace
                   </span>
                 </Link>
               </div>

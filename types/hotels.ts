@@ -17,6 +17,10 @@ export interface HotelDashboardStats {
   hotelType: 'Apartment' | 'Hotel' | 'Resort' | 'Villa';
   hotelCategory: 'Standard' | 'Luxury' | 'Business';
   logoImage?: File;
+  contactEmail?: string;
+  contactPhone?: string;
+  location?: string;
+  images?: File[];
 }
 
 export type HotelCategory = 'Standard' | 'Luxury' | 'Business';

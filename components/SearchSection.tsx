@@ -73,31 +73,31 @@ const SearchSection = ({ activeTab, onSearch }: SearchSectionProps) => {
           />
         </div>
 
-        {/* Date */}
-        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
-          <label className="text-xs text-text-secondary text-left mb-1">
-            Date
-          </label>
-          <DateDropdown selectedDate={date} onChange={(d) => setDate(d)} />
-        </div>
+    //     {/* Date */}
+    //     <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+    //       <label className="text-xs text-text-secondary text-left mb-1">
+    //         Date
+    //       </label>
+    //       <DateDropdown selectedDate={date} onChange={(d) => setDate(d)} />
+    //     </div>
 
-        {/* Time */}
-        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
-          <label className="text-xs text-text-secondary text-left mb-1">
-            Time
-          </label>
-          <TimeDropdown selectedTime={time} onChange={setTime} />
-        </div>
+    //     {/* Time */}
+    //     <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+    //       <label className="text-xs text-text-secondary text-left mb-1">
+    //         Time
+    //       </label>
+    //       <TimeDropdown selectedTime={time} onChange={setTime} />
+    //     </div>
 
-        {/* Guests */}
-        <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
-          <label className="text-xs text-text-secondary text-left mb-1">
-            Guests
-          </label>
-          <GuestDropdown
-            onChange={(counts) => setGuests(counts)}
-          />
-        </div>
+    //     {/* Guests */}
+    //     <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+    //       <label className="text-xs text-text-secondary text-left mb-1">
+    //         Guests
+    //       </label>
+    //       <GuestDropdown
+    //         onChange={(counts) => setGuests(counts)}
+    //       />
+    //     </div>
         
         {/* Search button */}
         <div className="flex items-center justify-center sm:justify-end w-full">
@@ -116,7 +116,46 @@ const SearchSection = ({ activeTab, onSearch }: SearchSectionProps) => {
           </button>
         </div>
       </div>
-    </form>
+
+      {/* Time */}
+      <div className="flex flex-col justify-center border-b sm:border-b-0 lg:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+        <label className="text-xs text-text-secondary text-left mb-1">
+          Time
+        </label>
+        <TimeDropdown selectedTime={time} onChange={setTime} />
+      </div>
+    </div>
+
+    {/* Row 3: Guests + Search button */}
+    <div className="grid grid-cols-2 gap-4 col-span-1 sm:col-span-2 lg:col-span-2">
+      {/* Guests */}
+      <div className="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-gray-200 pb-4 sm:pb-0 sm:pr-4">
+        <label className="text-xs text-text-secondary text-left mb-1">
+          Guests
+        </label>
+        <GuestDropdown onChange={(counts) => setGuests(counts)} />
+      </div>
+
+      {/* Search button */}
+      <div className="flex items-center justify-center sm:justify-end w-full">
+        <button
+          type="submit"
+          className={`flex items-center gap-2 cursor-pointer text-white rounded-full px-6 py-3 transition w-full sm:w-auto justify-center ${
+            activeTab === "restaurants"
+              ? "bg-gradient-to-b from-[#0A6C6D] to-[#08577C] hover:from-[#084F4F] hover:to-[#064E5C]"
+              : "bg-gradient-to-b from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600"
+          }`}
+        >
+          <FiSearch className="w-5 h-5" />
+          <span className="text-sm sm:text-base">Search</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+
   );
 };
 
@@ -255,8 +294,8 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
 
       {/* Mobile Search Bar */}
       <div className="sm:hidden">
-        <div className="bg-white rounded-xl shadow-lg p-4 space-y-4">
-          {/* Restaurant/Cuisine */}
+        <div className="bg-black  shadow-lg p-4 space-y-4">
+         {/* Resurants & Cusisine */}
           <div className="space-y-2">
             <label className="text-xs text-text-secondary font-medium">
               Restaurant/Cuisine
@@ -270,7 +309,7 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
             />
           </div>
           
-          {/* Date and Time Row */}
+          {/* Date + Time */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <label className="text-xs text-text-secondary font-medium">
@@ -301,7 +340,8 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
             </div>
           </div>
           
-          {/* Guests */}
+
+          {/* Guest  */}
           <div className="space-y-2">
             <label className="text-xs text-text-secondary font-medium">
               Guests
@@ -315,7 +355,7 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
             </div>
           </div>
           
-          {/* Search Button */}
+         {/* Search Bar */}
           <button type="submit" className="w-full flex items-center justify-center gap-2 cursor-pointer text-white rounded-lg px-6 py-4 transition bg-gradient-to-r from-blue-800 to-violet-500 hover:from-blue-900 hover:to-violet-600 focus:outline-none shadow-md">
             <FiSearch className="w-5 h-5" />
             <span className="text-base font-medium">Search</span>
@@ -325,22 +365,6 @@ export const SearchSectionTwo = ({ onSearch, searchData }: SearchSectionTwoProps
     </form>
   );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
