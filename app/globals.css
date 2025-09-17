@@ -2,9 +2,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
-no-scroll-bars {
-  scrollbar-width: thin;
-  scrollbar-color: transparent;
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @theme {
