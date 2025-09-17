@@ -21,8 +21,8 @@ import {
 import { FaHotel } from "react-icons/fa6";
 import { IoDocumentTextOutline } from "react-icons/io5";
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
+// import { NavMain } from "@/components/nav-main"
+// import { NavProjects } from "@/components/nav-projects"
 // import { NavUser } from "@/app/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
@@ -218,8 +218,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {/* <NavMain items={data.navMain} />
+        <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         {/* <NavUser

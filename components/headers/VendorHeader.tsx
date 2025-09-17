@@ -11,7 +11,7 @@ import { Button } from "../ui/button"
 import { AuthService } from "@/services/auth.service"
 // import { api } from '@/lib/api-config'
 import API from '@/lib/api'
-import WebSocketStatus from '../WebSocketStatus'
+// import WebSocketStatus from '../WebSocketStatus'
 
 export interface VendorProfile {
   _id: string
@@ -130,7 +130,7 @@ function Header() {
           </div>
         </div>
         <div className="flex justify-center items-center gap-4">
-          <WebSocketStatus className="mr-2" />
+          {/* <WebSocketStatus className="mr-2" /> */}
           <BellDot />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

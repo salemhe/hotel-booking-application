@@ -7,7 +7,8 @@ import {
   ReactNode,
 } from "react";
 import DashboardLoader from "../components/DashboardLoader";
-import { AuthService, UserProfile } from "@/services/auth.service";
+import { AuthService } from "@/services/auth.service";
+import { UserProfile } from "@/types/auth";
 
 
 interface UserContextType {
@@ -31,7 +32,7 @@ export function VendorProvider({ children }: { children: ReactNode }) {
       if (!id) {
         throw new Error("User ID not found");
       }
-      const userData = await AuthService.fetchMyProfile(id, 'vendor');
+      const userData = await AuthService.fetchMyProfile(id);
       if (userData) {
         setUser(userData);
         setError(null);

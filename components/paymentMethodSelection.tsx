@@ -37,10 +37,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import PaymentForm from "@/components/paymentForm";
 import Image from "next/image";
-import { AuthService, UserProfile } from "@/services/userAuth.service";
+import { AuthService } from "@/services/auth.service";
 import { AxiosError } from "axios";
 import API from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { UserProfile } from "@/types/auth";
 
 // Restaurant details
 const RESTAURANT_INFO = {
@@ -97,8 +98,7 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
       const fetchUserData = async () => {
         try {
           if (await AuthService.isAuthenticated()) {
-            const token = await AuthService.getToken();
-            const id = AuthService.extractUserId(token!);
+            const id = await AuthService.getId();
             const profile = await AuthService.fetchMyProfile(id!);
             if (profile) {
               setUser(profile as UserProfile);
@@ -183,7 +183,7 @@ export default function PaymentMethodSelection({ id }: { id: string }) {
           metadata: {
             vendorId: booking?.vendorId,
             bookingId: id,
-            userId: user?.id,
+            userId: user?._id,
             amount: subtotal,
             total,
             custom_fields: [

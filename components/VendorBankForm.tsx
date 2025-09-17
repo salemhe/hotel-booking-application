@@ -32,7 +32,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import API from "@/lib/api";
 import { AxiosError } from "axios";
-import { AuthService, AuthUser } from "@/services/auth.service";
+import { AuthService } from "@/services/auth.service";
+import { RestaurantData } from "@/types/auth";
 
 // Form validation schema
 const formSchema = z.object({
@@ -58,7 +59,7 @@ export default function VendorBankForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const user = AuthService.getUser() as AuthUser;
+  const user = AuthService.getVendor() as RestaurantData;
   if (!user) {
     router.push("/vendor-login");
   }
@@ -66,8 +67,8 @@ export default function VendorBankForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      accountNumber: user?.profile.paymentDetails.accountNumber || "",
-      bankCode: user?.profile.paymentDetails.bankCode || "",
+      accountNumber: user?.paymentDetails.accountNumber || "",
+      bankCode: user?.paymentDetails.bankCode || "",
     },
   });
 
@@ -143,7 +144,7 @@ export default function VendorBankForm() {
     }
     setIsLoading(true);
     setError(null);
-    const businessName = AuthService.getUser()?.profile.businessName;
+    const businessName = AuthService.getVendor()?.businessName;
 
     try {
       const response = await API.patch("/vendors/save-payment", {
@@ -152,14 +153,15 @@ export default function VendorBankForm() {
         accountNumber: values.accountNumber,
       });
       // Update user profile in local storage with new payment details
-      const updatedUser = {
-        ...user,
-        profile: {
-          ...user.profile,
-          paymentDetails: response.data.data,
-        },
-      };
-      AuthService.setUser(updatedUser);
+      // const updatedUser = {
+      //   ...user,
+      //   profile: {
+      //     ...user,
+      //     paymentDetails: response.data.data,
+      //   },
+      //   id: user._id, // Ensure 'id' property is present
+      // };
+      // AuthService.setUser(updatedUser);
       toast.success("Payment details saved successfully!");
       console.log("Payment details saved:", response);
       router.replace("/vendorDashboard/payment");

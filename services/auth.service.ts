@@ -5,6 +5,7 @@ import {
   AuthUser,
   DecodedToken,
   RegisterData,
+  RestaurantData,
   UserLoginResponse,
   UserProfile,
   VendorLoginResponse,
@@ -15,6 +16,7 @@ export class AuthService {
     "https://hotel-booking-app-backend-30q1.onrender.com";
   private static TOKEN_KEY = "auth_token";
   private static USER_KEY = "auth_user";
+  private static VENDOR_KEY = "auth_vendor";
   private static SESSION_ID_KEY = "session_id";
 
   static async register(data: RegisterData) {
@@ -152,9 +154,16 @@ export class AuthService {
     return data.token;
   }
 
-  static getUser(): AuthUser | null {
+  static getUser(): UserProfile | null {
     if (typeof window !== "undefined") {
       const userStr = localStorage.getItem(this.USER_KEY);
+      return userStr ? JSON.parse(userStr) : null;
+    }
+    return null;
+  }
+  static getVendor(): RestaurantData | null {
+    if (typeof window !== "undefined") {
+      const userStr = localStorage.getItem(this.VENDOR_KEY);
       return userStr ? JSON.parse(userStr) : null;
     }
     return null;

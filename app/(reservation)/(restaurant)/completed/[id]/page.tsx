@@ -1,6 +1,6 @@
 import { Check, Mail, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import API from "../../../../../../lib/api";
+import API from "../../../../../lib/api";
 import { redirect } from "next/navigation";
 import { BookingDetails } from "@/types/user/restaurant";
 import { AxiosError } from "axios";

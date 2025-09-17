@@ -1,5 +1,5 @@
 import { Reservation, ReservationStatus } from "@/types/reservation";
-import { fetcher } from "@/utils/api";
+// import { fetcher } from "@/utils/api";
 import useSWR from "swr";
 
 interface ReservationFilters {
@@ -24,7 +24,7 @@ export function useReservations(hotelId: string, filters: ReservationFilters = {
   const query = buildQuery(filters);
   const { data, error, isLoading, mutate } = useSWR<Reservation[]>(
     `https://your-api-domain.com/api/hotels/${hotelId}/reservations${query}`,
-    fetcher
+    // fetcher
   );
   return { reservations: data || [], error, isLoading, mutate };
 }

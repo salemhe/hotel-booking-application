@@ -7,7 +7,8 @@ import {
   ReactNode,
 } from "react";
 import DashboardLoader from "../components/DashboardLoader";
-import { AuthService, UserProfile } from "@/services/userAuth.service";
+import { AuthService } from "@/services/auth.service";
+import { UserProfile } from "@/types/auth";
 
 
 interface UserContextType {

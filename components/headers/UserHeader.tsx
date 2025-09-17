@@ -12,8 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AuthService } from "@/services/userAuth.service";
-import { UserProfile } from "../Navigation";
+import { AuthService } from "@/services/auth.service";
+import { UserProfile } from "@/types/auth";
 
 function Header() {
   const { timePhrase, greeting } = getTimeBasedGreeting();
@@ -31,9 +31,9 @@ function Header() {
         if (await AuthService.isAuthenticated()) {
           const token = await AuthService.getToken();
           if (token) {
-            const id = AuthService.extractUserId(token);
+            const id = await AuthService.getId();
             if (id) {
-              const userData = await AuthService.getUser(id);
+              const userData = await AuthService.getUser();
               setUser(userData);
             }
           }

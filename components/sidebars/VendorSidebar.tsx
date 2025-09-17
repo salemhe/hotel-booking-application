@@ -28,8 +28,8 @@ import { useEffect, useState } from "react"
 import { AuthService } from "@/services/auth.service"
 // import { api } from '@/lib/api-config'
 import API from '@/lib/api'
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
+// import { NavMain } from "@/components/nav-main"
+// import { NavProjects } from "@/components/nav-projects"
 // import { NavUser } from "@/app/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
@@ -344,14 +344,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent className="bg-emerald-950">
-        <NavMain items={data.navMain} />
+        {/* <NavMain items={data.navMain} /> */}
       </SidebarContent>
       <SidebarFooter>
         {/* <NavUser
          user={data.user}
           /> */}
           
-        <NavProjects projects={data.projects} />
+        {/* <NavProjects projects={data.projects} /> */}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

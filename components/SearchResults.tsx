@@ -2,15 +2,16 @@ import React, { useState, useEffect, } from 'react';
 import Image from "next/image";
 import { Star, Heart, Loader2 } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { restaurantService, Restaurant as ApiRestaurant } from '@/services/restaurant.service';
+import { restaurantService } from '@/services/restaurant.service';
 import { SearchSectionTwo } from '@/components/SearchSection';
+import { RestaurantData } from '@/types/auth';
 
 // Separate component that uses useSearchParams - wrapped in Suspense
 export const SearchResults = () => {
    const [selectedCuisine, setSelectedCuisine] = useState('International');
    const [priceRange, setPriceRange] = useState([10000, 70000]);
    const [searchQuery, setSearchQuery] = useState('');
-   const [restaurants, setRestaurants] = useState<ApiRestaurant[]>([]);
+   const [restaurants, setRestaurants] = useState<RestaurantData[]>([]);
    const [loading, setLoading] = useState(false);
    // const [error, setError] = useState<string | null>(null);
    
@@ -187,7 +188,7 @@ export const SearchResults = () => {
                    >
                      <div className="relative">
                        <Image
-                         src={restaurant.profileImage || "/restaurant.jpg"}
+                         src={restaurant.profileImages[0]|| "/restaurant.jpg"}
                          alt={restaurant.businessName}
                          className="w-full h-48 object-cover"
                          width={400}
@@ -210,7 +211,7 @@ export const SearchResults = () => {
                        <p className="text-xs text-gray-500 mb-3">{restaurant.address}</p>
                        
                        {/* Menu Items Preview */}
-                       {restaurant.menus.length > 0 && (
+                       {/* {restaurant.menus.length > 0 && (
                          <div className="border-t pt-3">
                            <p className="text-xs text-gray-500 mb-2">Popular items:</p>
                            <div className="space-y-1">
@@ -225,7 +226,7 @@ export const SearchResults = () => {
                              )}
                            </div>
                          </div>
-                       )}
+                       )} */}
                      </div>
                    </div>
                  ))}

@@ -6,7 +6,7 @@ import {
   MenuSquare, Utensils, Tags, Bell,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api-config';
+import  api  from '@/lib/api';
 import { AuthService } from '@/services/auth.service';
 import { ChevronDown, LogOut, X, Menu } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"

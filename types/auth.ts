@@ -68,6 +68,7 @@ export interface UserProfile {
   isVerified: boolean;
   role: string;
   _id: string;
+  id: string;
 }
 
 export interface RestaurantData {
@@ -77,6 +78,10 @@ export interface RestaurantData {
   address: string;
   branch: string;
   profileImages: string;
+  paymentDetails: {
+    accountNumber: string;
+    bankCode: string;
+  }
   services: string[];
   onboarded: boolean;
   role: string;
@@ -109,6 +114,7 @@ export interface AuthUser {
   role: string;
   token?: string;
   id: string;
+  _id: string;
   businessName?: string;
   businessType?: string;
   address?: string;
@@ -116,6 +122,7 @@ export interface AuthUser {
   profileImage?: string;
   onboarded?: boolean;
   profile: {
+    _id: string;
     id: string;
     businessName: string;
     businessType: string;

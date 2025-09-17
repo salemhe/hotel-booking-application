@@ -94,7 +94,7 @@ export function PaymentBreakdown() {
     setLoading(true);
     try {
       // const data = await fetchPaymentBreakdown();
-      const res = await API.get(`/vendors/transactions?vendorId=${user?.id}`);
+      const res = await API.get(`/vendors/transactions?vendorId=${user?._id}`);
       const data = res.data.transactions;
 
       setPayments((data as PaymentType[]).filter((e: PaymentType) => e.type === "payment"))
@@ -103,7 +103,7 @@ export function PaymentBreakdown() {
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [user?._id]);
 
   useEffect(() => {
     fetchRestaurants();
